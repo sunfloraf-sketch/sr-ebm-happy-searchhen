@@ -1993,8 +1993,8 @@ if (typeof module !== "undefined" && module.exports) {
   // 次標目 subheading（%T=主標目, %S=次標目代碼，原樣帶過；各庫代碼不同，需人工核對）
   var CV_SUB = { pubmed:'"%T/%S"[mh]', ovid:'exp "%T"/%S', embase:'"%T"/%S', cochrane:'[mh "%T"/%S]', ebsco:'(MH "%T/%S")' };
   // 不展開（不含下位／狹義詞）
-  var CV_NOEXP = { pubmed:'"%T"[mh:noexp]', ovid:'%T/', embase:'"%T"/de', cochrane:'[mh ^"%T"]', ebsco:'MH ("%T")' };
-  var CV_NOEXP_MJ = { pubmed:'"%T"[majr:noexp]', ovid:'*%T/', embase:'"%T"/mj', cochrane:'[mh ^"%T"[mj]]', ebsco:'MM ("%T")' };   // L3 精準：不展開但取主要焦點（PubMed majr:noexp、Ovid *、Embase /mj、Cochrane ^…[mj]、CINAHL MM）
+  var CV_NOEXP = { pubmed:'"%T"[mh:noexp]', ovid:'"%T"/', embase:'"%T"/de', cochrane:'[mh ^"%T"]', ebsco:'MH ("%T")' };
+  var CV_NOEXP_MJ = { pubmed:'"%T"[majr:noexp]', ovid:'*"%T"/', embase:'"%T"/mj', cochrane:'[mh ^"%T"[mj]]', ebsco:'MM ("%T")' };   // L3 精準：不展開但取主要焦點（PubMed majr:noexp、Ovid *、Embase /mj、Cochrane ^…[mj]、CINAHL MM）
   var CV_NOEXP_RE=/[（(]\s*(?:不含[^)）]{0,12}|不狹[義詞]{0,2}|no[\s-]?exp\w*)\s*[)）]|(?:^|\s)no[\s-]?exp(?=\s|$)/i;  // (不含狹義詞)/(不含下位詞)/(不狹)/(noexp)/(no exp) 或行末 noexp、no exp
   function cvTermRender(term, eng, level, noexp){
     term=String(term).replace(/^[,;]+|[,;]+$/g,"").trim();
