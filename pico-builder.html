@@ -627,7 +627,7 @@ function tokenize(str) {
   return toks;
 }
 
-function classifyOp(v) {
+function classifyOp(v, src) {
   var low = v.toLowerCase(), m;
   if (low === "and") return { op: "AND" };
   if (low === "or") return { op: "OR" };
@@ -637,8 +637,10 @@ function classifyOp(v) {
   if ((m = low.match(/^next\/(\d+)$/))) return { prox: { dist: +m[1], ordered: true } };
   if ((m = low.match(/^w\/(\d+)$/)))   return { prox: { dist: +m[1], ordered: false } };
   if ((m = low.match(/^pre\/(\d+)$/)))  return { prox: { dist: +m[1], ordered: true } };
-  if ((m = v.match(/^N(\d+)$/)))       return { prox: { dist: +m[1], ordered: false } };
-  if ((m = v.match(/^W(\d+)$/)))       return { prox: { dist: +m[1], ordered: true } };
+  if (src === "ebsco") {   // 無斜線的 Nn／Wn 為 EBSCO 專屬鄰近字語法；非以 EBSCO 為起始時不視為運算子（如 N3、W3 等詞不誤判）
+    if ((m = v.match(/^N(\d+)$/)))       return { prox: { dist: +m[1], ordered: false } };
+    if ((m = v.match(/^W(\d+)$/)))       return { prox: { dist: +m[1], ordered: true } };
+  }
   return null;
 }
 
@@ -838,7 +840,7 @@ function parseExpression(toks, src, warn) {
   function parseProx() {
     var left = parsePrimary();
     while (peek() && peek().k === "term" && !peek().phrase) {
-      var cl = classifyOp(peek().v);
+      var cl = classifyOp(peek().v, src);
       if (cl && cl.prox) {
         pos++;
         var right = parsePrimary();
@@ -855,8 +857,8 @@ function parseExpression(toks, src, warn) {
       var tk = peek();
       if (!tk || tk.k === ")") break;
       if (tk.k === "term" && !tk.phrase) {
-        var cl = classifyOp(tk.v);
-        if (cl && cl.op === "AND") { pos++; var _nx=peek(); if(_nx && _nx.k==="term" && !_nx.phrase){ var _cn=classifyOp(_nx.v); if(_cn && _cn.op==="NOT"){ pos++; left = mkBool("NOT", left, parseProx()); continue; } } left = mkBool("AND", left, parseProx()); continue; }   // 「AND NOT」（如 Scopus 排除）視為 NOT
+        var cl = classifyOp(tk.v, src);
+        if (cl && cl.op === "AND") { pos++; var _nx=peek(); if(_nx && _nx.k==="term" && !_nx.phrase){ var _cn=classifyOp(_nx.v, src); if(_cn && _cn.op==="NOT"){ pos++; left = mkBool("NOT", left, parseProx()); continue; } } left = mkBool("AND", left, parseProx()); continue; }   // 「AND NOT」（如 Scopus 排除）視為 NOT
         if (cl && cl.op === "NOT") { pos++; left = mkBool("NOT", left, parseProx()); continue; }
         if (cl && cl.op === "OR") break;
         if (cl && cl.prox) break;
@@ -869,7 +871,7 @@ function parseExpression(toks, src, warn) {
           var t2 = peek();
           if (!t2 || t2.k === ")") break;
           if (t2.k === "term" && !t2.phrase) {
-            var c2 = classifyOp(t2.v);
+            var c2 = classifyOp(t2.v, src);
             if (c2 && (c2.op || c2.prox)) break;
             if (groupFieldOf(t2.v, src)) { pos++; continue; }
           }
@@ -889,7 +891,7 @@ function parseExpression(toks, src, warn) {
     for (;;) {
       var tk = peek();
       if (tk && tk.k === "term" && !tk.phrase) {
-        var cl = classifyOp(tk.v);
+        var cl = classifyOp(tk.v, src);
         if (cl && cl.op === "OR") { pos++; left = mkBool("OR", left, parseAnd()); continue; }
       }
       break;
@@ -1962,21 +1964,29 @@ if (typeof module !== "undefined" && module.exports) {
     RENDER_OPTS.variants = (db==="pubmed" ? (PM_VARIANTS||null) : null);
     RENDER_OPTS.fieldExpand=false;   // strippedRoots 由 buildForTarget 於整份策略開始時重置、跨概念行累積
     // 中文鄰近字：「鄰(近)N個(單)字」→ NEAR/(N + 該庫offset)，再交給引擎依各庫轉換
+    freetext = String(freetext||"").replace(/[\u201c\u201d\u201e\u201f\u2033]/g,'"').replace(/[\u2018\u2019\u201a\u201b\u2032]/g,"'");   // 智慧引號（彎引號）→ 直引號，避免片語無法辨識
     freetext = String(freetext||"").replace(/鄰\s*近?\s*(\d+)(?:\s*個)?(?:\s*單)?(?:\s*字)?(?:\s*(?:以|之)?內)?/g, function(m,n){ return " NEAR/"+(parseInt(n,10)+(SYNTAX_MAP.proximityOffset[startDB]||0))+" "; });
     // 英文同義詞：Enter 換行 → 相鄰「詞」之間插 OR；若前一行結尾為「(」或運算子、或下一行開頭為「)」或運算子，則只接空白(保留使用者的括號/鄰近字結構)
     var _lns = freetext.split(/\r?\n/).map(function(l){return l.trim();}).filter(Boolean);
-    var _OP = "(?:OR|AND|NOT|ADJ\\d*|NEAR(?:\\/\\d+)?|NEXT(?:\\/\\d+)?|PRE\\/\\d+|W\\/?\\d+|N\\/?\\d+)";
-    var _endsOpen = function(s){ return /\($/.test(s) || new RegExp("(?:^|\\s)"+_OP+"$","i").test(s); };
-    var _startsClose = function(s){ return /^\)/.test(s) || new RegExp("^"+_OP+"(?:\\s|$)","i").test(s); };
+    // 運算子偵測分兩類：文字運算子與帶斜線鄰近字（大小寫皆可）；EBSCO 無斜線的 Nn／Wn 只認大寫，避免把 n3／w3（如 omega-3＝n-3）誤判為運算子
+    var _OPI = "(?:OR|AND|NOT|ADJ\\d*|NEAR(?:\\/\\d+)?|NEXT(?:\\/\\d+)?|PRE\\/\\d+|W\\/\\d+|N\\/\\d+)";
+    var _OPU = "(?:N\\d+|W\\d+)";
+    var _ebProx = (startDB==="ebsco");   // 無斜線 Nn／Wn 僅在以 EBSCO 為起始時才視為鄰近字
+    var _endsOpen = function(s){ return /\($/.test(s) || new RegExp("(?:^|\\s)"+_OPI+"$","i").test(s) || (_ebProx && new RegExp("(?:^|\\s)"+_OPU+"$").test(s)); };
+    var _startsClose = function(s){ return /^\)/.test(s) || new RegExp("^"+_OPI+"(?:\\s|$)","i").test(s) || (_ebProx && new RegExp("^"+_OPU+"(?:\\s|$)").test(s)); };
     // 多字片語處理：一行為「純多字片語」(無運算子/引號/括號) 時，預設加引號當片語；勾「片語用鄰近字」則改 NEAR/3
     var _nearMode = cbNearPhrase && cbNearPhrase.checked;
     var _nearN = (nearN && nearN.value!=="" && parseInt(nearN.value,10)>=0) ? parseInt(nearN.value,10) : 2;
-    var _hasOp = new RegExp("(?:^|\\s)"+_OP+"(?:\\s|$)","i");
+    var _hasOp = function(s){ return new RegExp("(?:^|\\s)"+_OPI+"(?:\\s|$)","i").test(s) || (_ebProx && new RegExp("(?:^|\\s)"+_OPU+"(?:\\s|$)").test(s)); };
     _lns = _lns.map(function(l){
-      if(/["()]/.test(l) || _hasOp.test(l)) return l;           // 已有結構（引號/括號/運算子），尊重使用者
-      var ws = l.split(/\s+/).filter(Boolean);
-      if(ws.length<2) return l;                                  // 單字不處理
-      return _nearMode ? ("("+ws.join(" NEAR/"+(_nearN + (SYNTAX_MAP.proximityOffset[startDB]||0))+" ")+")") : ('"'+l+'"');
+      // 先拆出前導／尾隨括號，只看中間核心詞：即使該行帶括號（屬鄰近字堆），多字片語仍需加引號（如 (fatty acid* → ("fatty acid*"）
+      var mpx = l.match(/^(\(*)\s*([\s\S]*?)\s*(\)*)$/);
+      var _pre = mpx[1], _core = mpx[2], _suf = mpx[3];
+      if(/["()]/.test(_core) || _hasOp(_core)) return l;   // 核心仍含引號／括號／運算子 → 尊重使用者原樣
+      var ws = _core.split(/\s+/).filter(Boolean);
+      if(ws.length<2) return l;                             // 單字不處理
+      var _wrapped = _nearMode ? ("("+ws.join(" NEAR/"+(_nearN + (SYNTAX_MAP.proximityOffset[startDB]||0))+" ")+")") : ('"'+_core+'"');
+      return _pre + _wrapped + _suf;
     });
     var _joined = _lns[0]||"";
     for(var _i=1;_i<_lns.length;_i++){ _joined += ((_endsOpen(_lns[_i-1])||_startsClose(_lns[_i]))?" ":" OR ") + _lns[_i]; }
