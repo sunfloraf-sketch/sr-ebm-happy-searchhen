@@ -304,24 +304,12 @@
           <span style="color:var(--mut);font-size:12px;flex-basis:100%"><span data-zh>尚未整理部份資料庫（平台）語法者，將於檢索策略標示「請自行確認 Filters」</span><span data-en>Databases (platforms) whose filter syntax isn’t compiled yet are flagged “please verify Filters yourself” in the strategy.</span></span>
         </div>
         <div id="dateOpt" style="margin-top:12px;display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap;font-size:13px">
-          <span class="fld" style="margin:0" title="限定出版日期：以「年」為主，月/日可留空。多數資料庫僅支援到年（自動改用年並加註）。留空＝不限定。"><span data-zh>出版日期（限定）：</span><span data-en>Publication date (limit):</span></span>
-          <span style="display:inline-flex;align-items:center;gap:2px">
-            <input type="number" id="pubY1" min="1800" max="2100" placeholder="YYYY" style="width:62px;font-size:12px;padding:4px 5px;border:1px solid var(--line);border-radius:6px">
-            <span style="color:var(--mut)">/</span>
-            <input type="number" id="pubM1" min="1" max="12" placeholder="MM" style="width:46px;font-size:12px;padding:4px 5px;border:1px solid var(--line);border-radius:6px">
-            <span style="color:var(--mut)">/</span>
-            <input type="number" id="pubD1" min="1" max="31" placeholder="DD" style="width:46px;font-size:12px;padding:4px 5px;border:1px solid var(--line);border-radius:6px">
-          </span>
+          <span class="fld" style="margin:0" title="限定出版年：填起訖年，可只填一邊。留空＝不限定。限定會接在最後合併行之後。"><span data-zh>出版年（限定）：</span><span data-en>Publication year (limit):</span></span>
+          <input type="number" id="pubY1" min="1800" max="2100" placeholder="YYYY" style="width:72px;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
           <span style="color:var(--mut)"><span data-zh>～</span><span data-en>to</span></span>
-          <span style="display:inline-flex;align-items:center;gap:2px">
-            <input type="number" id="pubY2" min="1800" max="2100" placeholder="YYYY" style="width:62px;font-size:12px;padding:4px 5px;border:1px solid var(--line);border-radius:6px">
-            <span style="color:var(--mut)">/</span>
-            <input type="number" id="pubM2" min="1" max="12" placeholder="MM" style="width:46px;font-size:12px;padding:4px 5px;border:1px solid var(--line);border-radius:6px">
-            <span style="color:var(--mut)">/</span>
-            <input type="number" id="pubD2" min="1" max="31" placeholder="DD" style="width:46px;font-size:12px;padding:4px 5px;border:1px solid var(--line);border-radius:6px">
-          </span>
+          <input type="number" id="pubY2" min="1800" max="2100" placeholder="YYYY" style="width:72px;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
           <button class="btn ghost" id="pubClear" type="button" style="font-size:11px;padding:2px 8px"><span data-zh>清除</span><span data-en>Clear</span></button>
-          <span style="color:var(--mut);font-size:12px;flex-basis:100%"><span data-zh>以「年」為主，月／日可留空；各資料庫出版日期多僅支援到「年」（自動改用年範圍並加註）。留空＝不限定。限定會接在最後合併行之後。IEEE／華藝／國圖請用資料庫介面的年份篩選。</span><span data-en>Year-based; month/day optional. Publication date is year-only for these databases (auto-fallback with a note). Empty = no limit. Appended after the final combined line. For IEEE / Airiti / NDLTD, use the database's own year filter.</span></span>
+          <span style="color:var(--mut);font-size:12px;flex-basis:100%"><span data-zh>限定出版「年」；起始／結束可只填一邊。留空＝不限定。限定會接在最後合併行之後。IEEE／華藝／國圖請用資料庫介面的年份篩選。</span><span data-en>Limit by publication year; either the start or end may be left blank. Empty = no limit. Appended after the final combined line. For IEEE / Airiti / NDLTD, use the database's own year filter.</span></span>
         </div>
       </div>
     </div>
@@ -1785,20 +1773,17 @@ if (typeof module !== "undefined" && module.exports) {
   function saveDraft(){ try{ sessionStorage.setItem(DRAFT_KEY, JSON.stringify(serializeState())); }catch(e){} }
   function saveDraftDebounced(){ if(_saveT) clearTimeout(_saveT); _saveT=setTimeout(saveDraft, 400); }
 
-  // ---- 出版日期限定（接在最後合併行之後）----
-  function _pad2(n){ return (n<10?"0":"")+n; }
+  // ---- 出版年限定（接在最後合併行之後；僅年）----
   function _pint(id){ var el=$("#"+id); var v=((el&&el.value)||"").trim(); return /^\d+$/.test(v)?parseInt(v,10):null; }
   function readPubDate(){
-    var y1=_pint("pubY1"),m1=_pint("pubM1"),d1=_pint("pubD1"),y2=_pint("pubY2"),m2=_pint("pubM2"),d2=_pint("pubD2");
+    var y1=_pint("pubY1"), y2=_pint("pubY2");
     if(y1===null && y2===null) return null;
-    return { y1:y1,m1:m1,d1:d1, y2:y2,m2:m2,d2:d2 };
+    return { y1:y1, y2:y2 };
   }
   function appendPubDate(allRows, eng, pd, andTok, reminders, tgLabel){
     if(!pd) return allRows;
     var y1=pd.y1, y2=pd.y2, CUR=new Date().getFullYear();
-    var mdGiven=!!(pd.m1||pd.d1||pd.m2||pd.d2), noteMd=mdGiven;
-    var syntax=null;
-    var Y1=(y1!==null?y1:1800), Y2=(y2!==null?y2:CUR);
+    var Y1=(y1!==null?y1:1800), Y2=(y2!==null?y2:CUR), syntax=null;
     if(eng==="ebsco"){ syntax="PY "+Y1+"-"+Y2; }
     else if(eng==="wos"){ syntax="PY=("+Y1+"-"+Y2+")"; }
     else if(eng==="scopus"){ var ps=[]; if(y1!==null) ps.push("PUBYEAR > "+(y1-1)); if(y2!==null) ps.push("PUBYEAR < "+(y2+1)); syntax=ps.join(" AND "); }
@@ -1812,9 +1797,6 @@ if (typeof module !== "undefined" && module.exports) {
       reminders.push(isEn()? (tgLabel+": set the publication year via the database's own year filter; no inline syntax was added.") : (tgLabel+"：出版年請用該資料庫介面的年份篩選設定；未加入行內語法。"));
       return allRows;
     }
-    if(noteMd){ reminders.push(isEn()
-      ? (tgLabel+": publication date supports year only here — month/day were ignored and the year range was used.")
-      : (tgLabel+"：此資料庫的出版日期僅支援到「年」，已略過月／日、改用年範圍。")); }
     var lastN=null, flat=null;
     for(var i=0;i<allRows.length;i++){ if(allRows[i].n!=null) lastN=allRows[i].n; }
     if(allRows.length===1 && allRows[0].n==null) flat=allRows[0];
@@ -1823,8 +1805,8 @@ if (typeof module !== "undefined" && module.exports) {
     return allRows;
   }
   function _setPub(id,v){ var el=$("#"+id); if(el) el.value=(v!==null&&v!==undefined)?v:""; }
-  function applyPubDate(pd){ if(!pd){ ["pubY1","pubM1","pubD1","pubY2","pubM2","pubD2"].forEach(function(id){_setPub(id,"");}); return; } _setPub("pubY1",pd.y1);_setPub("pubM1",pd.m1);_setPub("pubD1",pd.d1);_setPub("pubY2",pd.y2);_setPub("pubM2",pd.m2);_setPub("pubD2",pd.d2); }
-  ["pubY1","pubM1","pubD1","pubY2","pubM2","pubD2"].forEach(function(id){ var el=$("#"+id); if(el) el.addEventListener("input", function(){ saveDraftDebounced(); autoRegenDebounced(); }); });
+  function applyPubDate(pd){ if(!pd){ _setPub("pubY1","");_setPub("pubY2",""); return; } _setPub("pubY1",pd.y1);_setPub("pubY2",pd.y2); }
+  ["pubY1","pubY2"].forEach(function(id){ var el=$("#"+id); if(el) el.addEventListener("input", function(){ saveDraftDebounced(); autoRegenDebounced(); }); });
   (function(){ var pc=$("#pubClear"); if(pc) pc.onclick=function(){ applyPubDate(null); saveDraft(); autoRegen(); }; })();
   function saveSnapshot(){ try{ var st=serializeState(); if(stateNonEmpty(st)) localStorage.setItem(SNAP_KEY, JSON.stringify(st)); }catch(e){} }
   function clearPersist(){ try{ sessionStorage.removeItem(DRAFT_KEY); }catch(e){} try{ localStorage.removeItem(SNAP_KEY); }catch(e){} }
