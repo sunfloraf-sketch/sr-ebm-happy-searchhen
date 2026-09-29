@@ -987,6 +987,8 @@ function renderTerm(node, dst, warn, ctx) {
   if (isPhrase && dst === "cochrane" && /\s/.test(val) && /[*?]/.test(val)) {
     // Cochrane 不允許引號片語內含截字："high dose*" -> (high NEXT dose*)
     body = "(" + val.split(/\s+/).join(" NEXT ") + ")";
+  } else if (!isPhrase && dst === "ebsco" && val && !/[*?#]/.test(val)) {
+    body = '"' + val + '"';   // EBSCOhost 會對未切截的單字自動加 *（home→home*）；單字強制雙引號改為精確比對
   } else {
     body = isPhrase ? '"' + val + '"' : val;
   }

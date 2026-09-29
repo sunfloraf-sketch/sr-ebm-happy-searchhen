@@ -1176,6 +1176,8 @@ function renderTerm(node, dst, warn, ctx) {
   if (isPhrase && dst === "cochrane" && /\s/.test(val) && /[*?]/.test(val)) {
     // Cochrane 不允許引號片語內含截字："high dose*" -> (high NEXT dose*)
     body = "(" + val.split(/\s+/).join(" NEXT ") + ")";
+  } else if (!isPhrase && dst === "ebsco" && val && !/[*?#]/.test(val)) {
+    body = '"' + val + '"';   // EBSCOhost 會對未切截的單字自動加 *（home→home*）；單字強制雙引號改為精確比對
   } else {
     body = isPhrase ? '"' + val + '"' : val;
   }
@@ -2369,7 +2371,7 @@ if (typeof module !== "undefined" && module.exports) {
       var _unpairedQuote=function(cell){ if(!cell) return false; return String(cell).split(/\r?\n/).some(function(ln){ var n=(ln.replace(/[\u201c\u201d\u201e\u201f\u2033]/g,'"').match(/"/g)||[]).length; return (n%2)===1; }); };
       var ub=[]; rows.forEach(function(r){ if(_cells(r).some(function(c){return c && inputUnbalanced(c);})) ub.push(r.label); });
       if(ub.length) msgs.push(isEn()?("Unbalanced parentheses: "+ub.join(", ")+" — the number of ( and ) doesn't match."):("圓括弧無法成對："+ub.join("、")+" 概念，請檢查（左、右括號數量不一致）"));
-      var _unpairedLines=function(cell){ var _out=[]; if(!cell) return _out; String(cell).split(/\r?\n/).forEach(function(ln){ var _n=(ln.replace(/[“”„‟″]/g,'"').match(/"/g)||[]).length; if((_n%2)===1) _out.push(ln.trim()); }); return _out; };
+      var _unpairedLines=function(cell){ var _out=[]; if(!cell) return _out; String(cell).split(/\r?\n/).forEach(function(ln){ var _n=(ln.replace(/[“”„‟″]/g,'"').match(/"/g)||[]).length; if((_n%2)===1) _out.push(ln.replace(/[()]/g,"").trim()); }); return _out; };
       var _hesc=function(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); };
       var uq=[]; rows.forEach(function(r){ var _bad=[]; _cells(r).forEach(function(c){ _unpairedLines(c).forEach(function(b){ _bad.push(b); }); }); if(_bad.length) uq.push(r.label+_bad.map(function(x){return "〈"+_hesc(x)+"〉";}).join("")); });
       if(uq.length) msgs.push(isEn()?("Unpaired double quote: "+uq.join("; ")):("雙引號未成對："+uq.join("、")+"，請檢查"));
