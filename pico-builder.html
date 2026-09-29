@@ -2368,8 +2368,10 @@ if (typeof module !== "undefined" && module.exports) {
       var _unpairedQuote=function(cell){ if(!cell) return false; return String(cell).split(/\r?\n/).some(function(ln){ var n=(ln.replace(/[\u201c\u201d\u201e\u201f\u2033]/g,'"').match(/"/g)||[]).length; return (n%2)===1; }); };
       var ub=[]; rows.forEach(function(r){ if(_cells(r).some(function(c){return c && inputUnbalanced(c);})) ub.push(r.label); });
       if(ub.length) msgs.push(isEn()?("Unbalanced parentheses: "+ub.join(", ")+" — the number of ( and ) doesn't match."):("圓括弧無法成對："+ub.join("、")+" 概念，請檢查（左、右括號數量不一致）"));
-      var uq=[]; rows.forEach(function(r){ if(_cells(r).some(_unpairedQuote)) uq.push(r.label); });
-      if(uq.length) msgs.push(isEn()?("Unpaired double quote: "+uq.join(", ")+" — a line has a lone \" (missing its pair)."):("雙引號未成對："+uq.join("、")+" 概念，請檢查（某一行的 \" 只出現單邊、缺另一個）"));
+      var _unpairedLine=function(cell){ if(!cell) return null; var _ls=String(cell).split(/\r?\n/); for(var _i=0;_i<_ls.length;_i++){ var _n=(_ls[_i].replace(/[“”„‟″]/g,'"').match(/"/g)||[]).length; if((_n%2)===1) return _ls[_i].trim(); } return null; };
+      var _hesc=function(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); };
+      var uq=[]; rows.forEach(function(r){ var _bad=null; _cells(r).forEach(function(c){ if(_bad===null){ var _b=_unpairedLine(c); if(_b!==null) _bad=_b; } }); if(_bad!==null) uq.push(r.label+"〈"+_hesc(_bad)+"〉"); });
+      if(uq.length) msgs.push(isEn()?("Unpaired double quote — a line has a lone \" (missing its pair): "+uq.join("; ")):("雙引號未成對（某一行的 \" 只出現單邊、缺另一個）："+uq.join("、")+"，請檢查"));
       var lt=[]; rows.forEach(function(r){ if(r.ft && /(^|[\s("'])\*/.test(r.ft)) lt.push(r.label); });
       if(lt.length) msgs.push(isEn()?("Leading truncation (word-initial *) in: "+lt.join(", ")+" — only Cochrane / Scopus / Web of Science support it; the leading * is removed for other databases."):("字頭切截（詞首 *）出現在："+lt.join("、")+" 概念 —— 僅 Cochrane / Scopus / Web of Science 支援，其餘資料庫的詞首 * 已自動移除。"));
       if(msgs.length){ picoWarn.innerHTML="\u26A0 "+msgs.join("<br>\u26A0 "); picoWarn.style.display="block"; } else picoWarn.style.display="none";
