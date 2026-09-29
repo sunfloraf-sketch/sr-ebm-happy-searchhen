@@ -973,7 +973,7 @@ function encodeTrunc(value, dst, warn) {
   }
   return value.replace(/[*?#]/g, function (ch) {
     if (ch in enc) {
-      if (enc[ch] === null) { warn.push(DB_LABEL[dst] + (_EN()?(": does not support " + (ch === "*" ? "multi-character" : ch === "?" ? "0/1-character" : "single-character") + " truncation — removed"):("：不支援「" + (ch === "*" ? "多字元" : ch === "?" ? "0/1字元" : "單字元") + "」截字，已移除"))); return ""; }
+      if (enc[ch] === null) { var _kd=(ch==="*"?(_EN()?"multi-character (*)":"多字元(*)"):ch==="?"?(_EN()?"0/1-character (?)":"0或1字元(?)"):(_EN()?"single-character (#)":"單字元(#)")); warn.push("‼WILD‼"+DB_LABEL[dst]+(_EN()?"：‼IMPORTANT‼ the "+_kd+" wildcard is NOT supported here — kept AS-IS (not converted); this term will likely fail or error. Rewrite it manually, e.g. list full forms: woman OR women":"：‼強烈提醒‼ 不支援「"+_kd+"」萬用字元，已保留原樣、未轉換 —— 此詞在該資料庫很可能無法檢索或報錯，請務必手動改寫（例如改列完整字形：woman OR women）")); return ch; }
       return enc[ch];
     }
     return ch;
@@ -1107,7 +1107,7 @@ function convert(input, src, dsts, opts) {
     var d = dsts[idx], w = [], out;
     try { out = render(parsed.ast, d, w, { scoped: false }); }
     catch (e) { out = "[convert error " + e.message + "]"; w.push(String(e.message)); }
-    results[d] = { text: out, warn: dedupe(w) };
+    results[d] = { text: out, warn: dedupe(w.map(function(x){return x.replace(/^‼WILD‼/,"");})) };
   }
   return { results: results, parseWarn: dedupe(parsed.warn), ast: parsed.ast, mismatch: mismatch, strippedRoots: RENDER_OPTS.strippedRoots.slice() };
 }

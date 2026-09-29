@@ -289,6 +289,26 @@
           <span style="color:var(--mut);font-size:12px;flex-basis:100%"><span data-zh>適用 SR 於（高敏感度／文章數量多）；若欲臨床實證使用，建議在資料庫使用內建 Limits／Filters。</span><span data-en>Suited for systematic reviews (high sensitivity / large result volume); for clinical / evidence-based use, prefer the database’s built-in Limits / Filters.</span></span>
           <span style="color:var(--mut);font-size:12px;flex-basis:100%"><span data-zh>尚未整理部份資料庫（平台）語法者，將於檢索策略標示「請自行確認 Filters」</span><span data-en>Databases (platforms) whose filter syntax isn’t compiled yet are flagged “please verify Filters yourself” in the strategy.</span></span>
         </div>
+        <div id="dateOpt" style="margin-top:12px;display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap;font-size:13px">
+          <span class="fld" style="margin:0" title="限定出版日期：以「年」為主，月/日可留空。多數資料庫僅支援到年（自動改用年並加註）；PubMed 可精確到年月日。留空＝不限定。"><span data-zh>出版日期（限定）：</span><span data-en>Publication date (limit):</span></span>
+          <span style="display:inline-flex;align-items:center;gap:2px">
+            <input type="number" id="pubY1" min="1800" max="2100" placeholder="YYYY" style="width:62px;font-size:12px;padding:4px 5px;border:1px solid var(--line);border-radius:6px">
+            <span style="color:var(--mut)">/</span>
+            <input type="number" id="pubM1" min="1" max="12" placeholder="MM" style="width:46px;font-size:12px;padding:4px 5px;border:1px solid var(--line);border-radius:6px">
+            <span style="color:var(--mut)">/</span>
+            <input type="number" id="pubD1" min="1" max="31" placeholder="DD" style="width:46px;font-size:12px;padding:4px 5px;border:1px solid var(--line);border-radius:6px">
+          </span>
+          <span style="color:var(--mut)"><span data-zh>～</span><span data-en>to</span></span>
+          <span style="display:inline-flex;align-items:center;gap:2px">
+            <input type="number" id="pubY2" min="1800" max="2100" placeholder="YYYY" style="width:62px;font-size:12px;padding:4px 5px;border:1px solid var(--line);border-radius:6px">
+            <span style="color:var(--mut)">/</span>
+            <input type="number" id="pubM2" min="1" max="12" placeholder="MM" style="width:46px;font-size:12px;padding:4px 5px;border:1px solid var(--line);border-radius:6px">
+            <span style="color:var(--mut)">/</span>
+            <input type="number" id="pubD2" min="1" max="31" placeholder="DD" style="width:46px;font-size:12px;padding:4px 5px;border:1px solid var(--line);border-radius:6px">
+          </span>
+          <button class="btn ghost" id="pubClear" type="button" style="font-size:11px;padding:2px 8px"><span data-zh>清除</span><span data-en>Clear</span></button>
+          <span style="color:var(--mut);font-size:12px;flex-basis:100%"><span data-zh>以「年」為主，月／日可留空；多數資料庫僅支援到「年」（自動改用年範圍並加註），僅 PubMed 可精確到年月日。留空＝不限定。限定會接在最後合併行之後。</span><span data-en>Year-based; month/day optional. Most databases support year only (auto-fallback to year with a note); only PubMed takes full dates. Empty = no limit. Appended after the final combined line.</span></span>
+        </div>
       </div>
     </div>
   </div>
@@ -1154,7 +1174,7 @@ function encodeTrunc(value, dst, warn) {
   }
   return value.replace(/[*?#]/g, function (ch) {
     if (ch in enc) {
-      if (enc[ch] === null) { warn.push(DB_LABEL[dst] + "：不支援「" + (ch === "*" ? "多字元" : ch === "?" ? "0/1字元" : "單字元") + "」截字，已移除 · truncation removed"); return ""; }
+      if (enc[ch] === null) { var _kd=(ch==="*"?(_EN()?"multi-character (*)":"多字元(*)"):ch==="?"?(_EN()?"0/1-character (?)":"0或1字元(?)"):(_EN()?"single-character (#)":"單字元(#)")); warn.push("‼WILD‼"+DB_LABEL[dst]+(_EN()?"：‼IMPORTANT‼ the "+_kd+" wildcard is NOT supported here — kept AS-IS (not converted); this term will likely fail or error. Rewrite it manually, e.g. list full forms: woman OR women":"：‼強烈提醒‼ 不支援「"+_kd+"」萬用字元，已保留原樣、未轉換 —— 此詞在該資料庫很可能無法檢索或報錯，請務必手動改寫（例如改列完整字形：woman OR women）")); return ch; }
       return enc[ch];
     }
     return ch;
@@ -1280,7 +1300,7 @@ function convert(input, src, dsts, opts) {
     var d = dsts[idx], w = [], out;
     try { out = render(parsed.ast, d, w, { scoped: false }); }
     catch (e) { out = "[convert error " + e.message + "]"; w.push(String(e.message)); }
-    results[d] = { text: out, warn: dedupe(w) };
+    results[d] = { text: out, warn: dedupe(w.map(function(x){return x.replace(/^‼WILD‼/,"");})) };
   }
   return { results: results, parseWarn: dedupe(parsed.warn), ast: parsed.ast, mismatch: mismatch, strippedRoots: RENDER_OPTS.strippedRoots.slice() };
 }
@@ -1532,7 +1552,7 @@ if (typeof module !== "undefined" && module.exports) {
   var DRAFT_KEY="sr_pico_draft", SNAP_KEY="sr_pico_snapshot";
   function serializeState(){
     var rows=[]; Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr){ if(tr._get) rows.push(tr._get()); });
-    return { src:srcSel.value, combo:(customCombo?customCombo.value:""), rows:rows };
+    return { src:srcSel.value, combo:(customCombo?customCombo.value:""), rows:rows, pub:readPubDate() };
   }
   function stateNonEmpty(st){ return !!(st && st.rows && st.rows.some(function(r){ return (r.zh||r.ft||r.mesh||r.emtree||r.cinahl); })); }
   function applyState(st){
@@ -1542,11 +1562,66 @@ if (typeof module !== "undefined" && module.exports) {
     picoBody.innerHTML="";
     st.rows.forEach(function(r){ addRow(r.label||"", r.zh||"", r.ft||"", r.mesh||"", r.emtree||"", r.cinahl||"", undefined, r.level); });
     if(!picoBody.querySelector("tr")) seedEmpty();
+    applyPubDate(st.pub||null);
     return true;
   }
   var _saveT=null;
   function saveDraft(){ try{ sessionStorage.setItem(DRAFT_KEY, JSON.stringify(serializeState())); }catch(e){} }
   function saveDraftDebounced(){ if(_saveT) clearTimeout(_saveT); _saveT=setTimeout(saveDraft, 400); }
+
+  // ---- 出版日期限定（接在最後合併行之後）----
+  function _pad2(n){ return (n<10?"0":"")+n; }
+  function _pint(id){ var el=$("#"+id); var v=((el&&el.value)||"").trim(); return /^\d+$/.test(v)?parseInt(v,10):null; }
+  function readPubDate(){
+    var y1=_pint("pubY1"),m1=_pint("pubM1"),d1=_pint("pubD1"),y2=_pint("pubY2"),m2=_pint("pubM2"),d2=_pint("pubD2");
+    if(y1===null && y2===null) return null;                 // 未填年 → 不限定
+    return { y1:y1,m1:m1,d1:d1, y2:y2,m2:m2,d2:d2 };
+  }
+  function _pmDate(y,m,d){ var s=String(y); if(m){ s+="/"+_pad2(m); if(d) s+="/"+_pad2(d); } return s; }
+  // 依引擎產生「出版日期」限定並接在最後一行之後；年為主，僅 PubMed 支援年月日，其餘用年並加註
+  function appendPubDate(allRows, eng, pd, andTok, reminders, tgLabel){
+    if(!pd) return allRows;
+    var y1=pd.y1, y2=pd.y2, CUR=new Date().getFullYear();
+    var mdGiven=!!(pd.m1||pd.d1||pd.m2||pd.d2), noteMd=mdGiven;
+    var syntax=null, isLimit=false;
+    if(eng==="pubmed"){
+      var a=(y1!==null)?('"'+_pmDate(y1,pd.m1,pd.d1)+'"[dp]'):'"1800"[dp]';
+      var b=(y2!==null)?('"'+_pmDate(y2,pd.m2,pd.d2)+'"[dp]'):'"3000"[dp]';
+      syntax="("+a+" : "+b+")"; noteMd=false;
+    } else if(eng==="ovid"){
+      syntax='yr="'+(y1!==null?y1:1800)+'-'+(y2!==null?y2:CUR)+'"'; isLimit=true;
+    } else if(eng==="embase"){
+      syntax="["+(y1!==null?y1:1800)+"-"+(y2!==null?y2:CUR)+"]/py";
+    } else if(eng==="ebsco"){
+      syntax="PY "+(y1!==null?y1:1800)+"-"+(y2!==null?y2:CUR);
+    } else if(eng==="wos"){
+      syntax="PY=("+(y1!==null?y1:1800)+"-"+(y2!==null?y2:CUR)+")";
+    } else if(eng==="scopus"){
+      var ps=[]; if(y1!==null) ps.push("PUBYEAR > "+(y1-1)); if(y2!==null) ps.push("PUBYEAR < "+(y2+1)); syntax=ps.join(" AND ");
+    } else if(eng==="cochrane"){
+      reminders.push(isEn()
+        ? (tgLabel+": set the publication year via the Limits panel (Original publication year → Between "+(y1!==null?y1:"YYYY")+" and "+(y2!==null?y2:"YYYY")+"); no inline syntax was added.")
+        : (tgLabel+"：出版年請用資料庫的 Limits 介面設定（Original publication year → Between "+(y1!==null?y1:"YYYY")+" and "+(y2!==null?y2:"YYYY")+"）；未加入行內語法。"));
+      return allRows;
+    } else { return allRows; }   // airiti / ndltd 等：暫不處理
+    if(noteMd){ reminders.push(isEn()
+      ? (tgLabel+": publication date supports year only here — month/day were ignored and the year range was used.")
+      : (tgLabel+"：此資料庫的出版日期僅支援到「年」，已略過月／日、改用年範圍。")); }
+    var lastN=null, flat=null;
+    for(var i=0;i<allRows.length;i++){ if(allRows[i].n!=null) lastN=allRows[i].n; }
+    if(allRows.length===1 && allRows[0].n==null) flat=allRows[0];
+    if(flat){
+      if(isLimit){ flat.n=1; allRows.push({n:2, text:"limit #1 to "+syntax}); }
+      else flat.text="("+flat.text+") "+andTok+" "+syntax;
+    } else if(lastN!=null){
+      allRows.push({ n:lastN+1, text: isLimit ? ("limit #"+lastN+" to "+syntax) : ("#"+lastN+" "+andTok+" "+syntax) });
+    }
+    return allRows;
+  }
+  function _setPub(id,v){ var el=$("#"+id); if(el) el.value=(v!==null&&v!==undefined)?v:""; }
+  function applyPubDate(pd){ if(!pd){ ["pubY1","pubM1","pubD1","pubY2","pubM2","pubD2"].forEach(function(id){_setPub(id,"");}); return; } _setPub("pubY1",pd.y1);_setPub("pubM1",pd.m1);_setPub("pubD1",pd.d1);_setPub("pubY2",pd.y2);_setPub("pubM2",pd.m2);_setPub("pubD2",pd.d2); }
+  ["pubY1","pubM1","pubD1","pubY2","pubM2","pubD2"].forEach(function(id){ var el=$("#"+id); if(el) el.addEventListener("input", function(){ saveDraftDebounced(); autoRegenDebounced(); }); });
+  (function(){ var pc=$("#pubClear"); if(pc) pc.onclick=function(){ applyPubDate(null); saveDraft(); autoRegen(); }; })();
   function saveSnapshot(){ try{ var st=serializeState(); if(stateNonEmpty(st)) localStorage.setItem(SNAP_KEY, JSON.stringify(st)); }catch(e){} }
   function clearPersist(){ try{ sessionStorage.removeItem(DRAFT_KEY); }catch(e){} try{ localStorage.removeItem(SNAP_KEY); }catch(e){} }
   function snapshotState(){ try{ return JSON.parse(localStorage.getItem(SNAP_KEY)||"null"); }catch(e){ return null; } }
@@ -1994,7 +2069,7 @@ if (typeof module !== "undefined" && module.exports) {
     var node = { t:"field", field:level, child:parsed.ast };
     var warnArr=[];
     var out = render(node, db, warnArr, { scoped:false });
-    if(warnOut){ warnArr.forEach(function(w){ if(w.indexOf("⚠EMBCHAIN⚠")===0) warnOut.push(isEn() ? "This contains nested proximity (NEAR/NEXT) operators, which Embase.com does not support. Change the relationship between the phrase groups to parallel proximity, or split it into separate sets." : "此式含巢狀鄰近（NEAR／NEXT）運算，Embase.com 不支援，請將詞組間關係改為平行鄰近，或拆成多組處理"); }); }
+    if(warnOut){ warnArr.forEach(function(w){ if(w.indexOf("⚠EMBCHAIN⚠")===0) warnOut.push(isEn() ? "This contains nested proximity (NEAR/NEXT) operators, which Embase.com does not support. Change the relationship between the phrase groups to parallel proximity, or split it into separate sets." : "此式含巢狀鄰近（NEAR／NEXT）運算，Embase.com 不支援，請將詞組間關係改為平行鄰近，或拆成多組處理"); else if(w.indexOf("‼WILD‼")===0) warnOut.push(w.replace(/^‼WILD‼/,"")); }); }
     if(db==="ebsco"||db==="wos"||db==="scopus") out=stripOuterParen(out);  // 各行為獨立檢索，最外層括弧不需要
     return out;
   }
@@ -2302,6 +2377,7 @@ if (typeof module !== "undefined" && module.exports) {
     srCount('pico-generate','PICO-產生檢索策略');
     if(customCombo && customCombo.value.trim()) srCount('pico-custom-combo','PICO-使用自訂組合策略');
     var startDB=srcSel.value, level=levelSel.value;
+    var PUBDATE=readPubDate();   // 出版日期限定（接在最後合併行）
     var FILTER_SEL=Array.prototype.map.call(document.querySelectorAll('input[name=sdfilter]:checked'), function(c){return c.value;}).filter(Boolean);   // 研究設計篩選（可複選）
     var rows=[]; Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr){ rows.push(tr._get()); });  // 全部列（含空列，維持 C1/C2… 對位）
     outs.innerHTML=""; lastGen=null; if($("#wordBtn")) $("#wordBtn").disabled=true;
@@ -2310,8 +2386,12 @@ if (typeof module !== "undefined" && module.exports) {
     if(!checked.length){ outs.innerHTML='<div class="panel" style="color:var(--warn)">'+(isEn()?"Please tick at least one output database.":"請至少勾選一個輸出資料庫。")+'</div>'; return; }
     if(picoWarn){
       var msgs=[];
-      var ub=[]; rows.forEach(function(r){ if(r.ft && inputUnbalanced(r.ft)) ub.push(r.label); });
-      if(ub.length) msgs.push(isEn()?("Unbalanced parentheses in free-text: "+ub.join(", ")):("自由詞圓括弧無法成對："+ub.join("、")+" 概念，請檢查"));
+      var _cells=function(r){ return [r.ft,r.zh,r.emtree,r.mesh,r.cinahl]; };
+      var _unpairedQuote=function(cell){ if(!cell) return false; return String(cell).split(/\r?\n/).some(function(ln){ var n=(ln.replace(/[\u201c\u201d\u201e\u201f\u2033]/g,'"').match(/"/g)||[]).length; return (n%2)===1; }); };
+      var ub=[]; rows.forEach(function(r){ if(_cells(r).some(function(c){return c && inputUnbalanced(c);})) ub.push(r.label); });
+      if(ub.length) msgs.push(isEn()?("Unbalanced parentheses: "+ub.join(", ")+" — the number of ( and ) doesn't match."):("圓括弧無法成對："+ub.join("、")+" 概念，請檢查（左、右括號數量不一致）"));
+      var uq=[]; rows.forEach(function(r){ if(_cells(r).some(_unpairedQuote)) uq.push(r.label); });
+      if(uq.length) msgs.push(isEn()?("Unpaired double quote: "+uq.join(", ")+" — a line has a lone \" (missing its pair)."):("雙引號未成對："+uq.join("、")+" 概念，請檢查（某一行的 \" 只出現單邊、缺另一個）"));
       var lt=[]; rows.forEach(function(r){ if(r.ft && /(^|[\s("'])\*/.test(r.ft)) lt.push(r.label); });
       if(lt.length) msgs.push(isEn()?("Leading truncation (word-initial *) in: "+lt.join(", ")+" — only Cochrane / Scopus / Web of Science support it; the leading * is removed for other databases."):("字頭切截（詞首 *）出現在："+lt.join("、")+" 概念 —— 僅 Cochrane / Scopus / Web of Science 支援，其餘資料庫的詞首 * 已自動移除。"));
       if(msgs.length){ picoWarn.innerHTML="\u26A0 "+msgs.join("<br>\u26A0 "); picoWarn.style.display="block"; } else picoWarn.style.display="none";
@@ -2350,6 +2430,7 @@ if (typeof module !== "undefined" && module.exports) {
         allRows = baseRows;
       }
       allRows = _appendFilter(allRows, FILTER_SEL, tid);   // 研究設計篩選（可複選）
+      allRows = appendPubDate(allRows, tg.engine, PUBDATE, ((SYNTAX_MAP.boolean[tg.engine]&&SYNTAX_MAP.boolean[tg.engine].AND)||"AND"), b.reminders, tg.label);   // 出版日期限定
       var vfMiss=_designMiss(FILTER_SEL, tid);   // 尚未整理此資料庫語法的設計 → 標示「請自行確認 Filters」
       exportData.push({tid:tid, label:tg.label, engine:tg.engine, vocab:tg.vocab, isStart:(tid===startDB), rows:allRows, verify:vfMiss});
       var copyText = allRows.map(function(x){return _dispRefs(x.text, tg.engine);}).join("\n");
