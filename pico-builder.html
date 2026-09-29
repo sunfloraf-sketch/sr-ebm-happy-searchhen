@@ -2006,7 +2006,7 @@ if (typeof module !== "undefined" && module.exports) {
     if(sm){ term=sm[1].trim(); sub=sm[2]; }
     var tpl;
     if(sub && CV_SUB[eng]) tpl=CV_SUB[eng];
-    else if(noexp && CV_NOEXP[eng]) tpl=((level==="L3" && CV_NOEXP_MJ[eng]) ? CV_NOEXP_MJ[eng] : CV_NOEXP[eng]);
+    else if(noexp && CV_NOEXP[eng]) tpl=CV_NOEXP[eng];   // 使用者標示「不狹／不含狹義詞」→ 一律只「不含狹義詞」(noexp)，不再於 L3 升為主標目
     else { var t=CV_TPL[eng]; tpl = t ? (level==="L3"?t.mj:t.ex) : "%T"; }
     return { text: tpl.replace(/%T/g, term).replace(/%S/g, sub||""), sub:!!sub, noexp:!!noexp };
   }
