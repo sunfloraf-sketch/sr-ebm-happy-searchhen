@@ -50,6 +50,8 @@
   table.pico td.lab .ccode{text-align:center}
   table.pico td.lab .rowlvl{width:100%;min-width:0;box-sizing:border-box;-webkit-appearance:none;appearance:none;margin-top:4px;font-size:11px;font-weight:700;text-align:center;text-align-last:center;padding:1px 0;border:1px solid #cdd5da;border-radius:5px;background:#EEF1F3;color:#3f6f3f;cursor:pointer}
   #level{background:#4b5563;color:#fff;border-color:#374151}
+  #dateOpt input[type=number],#updOpt input[type=number]{-moz-appearance:textfield}
+  #dateOpt input[type=number]::-webkit-inner-spin-button,#dateOpt input[type=number]::-webkit-outer-spin-button,#updOpt input[type=number]::-webkit-inner-spin-button,#updOpt input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
   #level option, table.pico td.lab .rowlvl option{background:#fff;color:#2B2B2B}
   table.pico td.lab .rowlvl:focus{outline:1px solid var(--brand)}
   table.pico textarea{width:100%;min-height:116px;resize:vertical;border:1px solid #E1E6E9;border-radius:6px;padding:6px 7px;font-family:inherit;font-size:12.5px;line-height:1.45;color:var(--ink);background:#FFFFFF;box-shadow:inset 0 1px 2px rgba(20,28,34,.025)}
@@ -291,7 +293,7 @@
         <label class="fld"><span data-zh>輸出資料庫</span><span data-en>Output databases</span></label>
         <div class="dbchecks" id="dbchecks"></div>
         <div id="filterOpt" style="display:none">
-          <span class="fld" style="margin:0" title="Study-design Filter (multi-select): for each ticked design, a line「final set AND (filter syntax)」is appended per supported database; ticking more than one adds a union (OR) line. RCT=App.2-1, Quasi=2-2, Observational=2-3, Qualitative=2-4, SR=2-5, Guideline=2-6. Cochrane CENTRAL (RCTs only) needs no filter."><span data-zh>研究設計篩選：</span><span data-en>Study-design Filter:</span></span>
+          <span class="fld" style="margin:0" title="Study-design Filter (multi-select): for each ticked design, a line「final set AND (filter syntax)」is appended per supported database; ticking more than one adds a union (OR) line. RCT=App.2-1, Quasi=2-2, Observational=2-3, Qualitative=2-4, SR=2-5, Guideline=2-6. Cochrane CENTRAL (RCTs only) needs no filter."><span data-zh>研究設計篩選（適用 SR）：</span><span data-en>Study-design Filter (for SR):</span></span><span class="infotip" style="margin-bottom:2px">ⓘ<span class="tip"><span data-zh>適用 SR 於（高敏感度／文章數量多）；若欲臨床實證使用，建議在資料庫使用內建 Limits／Filters。<br>尚未整理部份資料庫（平台）語法者，將於檢索策略標示「請自行確認 Filters」。</span><span data-en>Suited for systematic reviews (high sensitivity / large result volume); for clinical / evidence-based use, prefer the database’s built-in Limits / Filters.<br>Databases (platforms) whose filter syntax isn’t compiled yet are flagged “please verify Filters yourself” in the strategy.</span></span></span>
           <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" name="sdfilter" value="rct"><span>RCT</span></label>
           <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" name="sdfilter" value="quasi"><span>Quasi-experimental</span></label>
           <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:not-allowed;opacity:.45"><input type="checkbox" name="sdfilter" value="cohort" disabled><span>Cohort</span></label>
@@ -300,36 +302,30 @@
           <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" name="sdfilter" value="qualitative"><span>Qualitative</span></label>
           <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" name="sdfilter" value="sr"><span>SR</span></label>
           <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" name="sdfilter" value="guideline"><span>Guideline</span></label>
-          <span style="color:var(--mut);font-size:12px;flex-basis:100%"><span data-zh>適用 SR 於（高敏感度／文章數量多）；若欲臨床實證使用，建議在資料庫使用內建 Limits／Filters。</span><span data-en>Suited for systematic reviews (high sensitivity / large result volume); for clinical / evidence-based use, prefer the database’s built-in Limits / Filters.</span></span>
-          <span style="color:var(--mut);font-size:12px;flex-basis:100%"><span data-zh>尚未整理部份資料庫（平台）語法者，將於檢索策略標示「請自行確認 Filters」</span><span data-en>Databases (platforms) whose filter syntax isn’t compiled yet are flagged “please verify Filters yourself” in the strategy.</span></span>
         </div>
         <div id="dateOpt" style="margin-top:12px;display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap;font-size:13px">
-          <span class="fld" style="margin:0" title="限定出版年：填起訖年，可只填一邊。留空＝不限定。限定會接在最後合併行之後。"><span data-zh>出版年（限定）：</span><span data-en>Publication year (limit):</span></span>
-          <input type="number" id="pubY1" min="1800" max="2100" placeholder="YYYY" style="width:72px;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
+          <span class="fld" style="margin:0" title="限定出版年：填起訖年，可只填一邊。留空＝不限定。限定會接在最後合併行之後。"><span data-zh>出版年：</span><span data-en>Publication year:</span></span><span class="infotip" style="margin-bottom:2px">ⓘ<span class="tip"><span data-zh>限定出版「年」；起始／結束可只填一邊。留空＝不限定。限定會接在最後合併行之後。IEEE／華藝／國圖請用資料庫介面的年份篩選。</span><span data-en>Limit by publication year; either the start or end may be left blank. Empty = no limit. Appended after the final combined line. For IEEE / Airiti / NDLTD, use the database's own year filter.</span></span></span>
+          <input type="number" id="pubY1" min="1800" max="2100" placeholder="YYYY" style="width:48px;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
           <span style="color:var(--mut)"><span data-zh>～</span><span data-en>to</span></span>
-          <input type="number" id="pubY2" min="1800" max="2100" placeholder="YYYY" style="width:72px;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
-          <button class="btn ghost" id="pubClear" type="button" style="font-size:11px;padding:2px 8px"><span data-zh>清除</span><span data-en>Clear</span></button>
-          <span style="color:var(--mut);font-size:12px;flex-basis:100%"><span data-zh>限定出版「年」；起始／結束可只填一邊。留空＝不限定。限定會接在最後合併行之後。IEEE／華藝／國圖請用資料庫介面的年份篩選。</span><span data-en>Limit by publication year; either the start or end may be left blank. Empty = no limit. Appended after the final combined line. For IEEE / Airiti / NDLTD, use the database's own year filter.</span></span>
+          <input type="number" id="pubY2" min="1800" max="2100" placeholder="YYYY" style="width:48px;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
         </div>
         <div id="updOpt" style="margin-top:10px;display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap;font-size:13px">
-          <span class="fld" style="margin:0" title="更新檢索：以『書目加入資料庫的日期』限定，抓上次檢索後新增的文章。填年月日；結束可留空＝取至最新。建議起始日填『上次檢索日往前一日』以免時差遺漏。"><span data-zh>加入資料庫日期（更新檢索）：</span><span data-en>Date added to database (update):</span></span>
+          <span class="fld" style="margin:0" title="更新檢索：以『書目加入資料庫的日期』限定，抓上次檢索後新增的文章。填年月日；結束可留空＝取至最新。建議起始日填『上次檢索日往前一日』以免時差遺漏。"><span data-zh>加入資料庫日期：</span><span data-en>Date added to database:</span></span><span class="infotip" style="margin-bottom:2px">ⓘ<span class="tip"><span data-zh>用於「更新檢索」：以書目加入資料庫的日期限定，抓上次檢索後的新文章。結束日留空＝取至最新；建議起始日填『上次檢索日往前一日』。目前支援 Web of Science、Scopus、EBSCOhost（ASC／BSC／ERIC）；IEEE／Compendex／PQDT／華藝／國圖等請用資料庫介面的日期篩選。</span><span data-en>For update searches: limit by the date records were added to the database. Leave the end blank for “up to now”; set the start one day before your last search. Inline support: Web of Science, Scopus, EBSCOhost (ASC/BSC/ERIC); for IEEE / Compendex / PQDT / Airiti / NDLTD, use the database's own date filter.</span></span></span>
           <span style="display:inline-flex;align-items:center;gap:2px">
-            <input type="number" id="updY1" min="1900" max="2100" placeholder="YYYY" style="width:66px;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
+            <input type="number" id="updY1" min="1900" max="2100" placeholder="YYYY" style="width:48px;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
             <span style="color:var(--mut)">/</span>
-            <input type="number" id="updM1" min="1" max="12" placeholder="MM" style="width:48px;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
+            <input type="number" id="updM1" min="1" max="12" placeholder="MM" style="width:34px;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
             <span style="color:var(--mut)">/</span>
-            <input type="number" id="updD1" min="1" max="31" placeholder="DD" style="width:48px;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
+            <input type="number" id="updD1" min="1" max="31" placeholder="DD" style="width:34px;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
           </span>
           <span style="color:var(--mut)"><span data-zh>～</span><span data-en>to</span></span>
           <span style="display:inline-flex;align-items:center;gap:2px">
-            <input type="number" id="updY2" min="1900" max="2100" placeholder="YYYY" style="width:66px;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
+            <input type="number" id="updY2" min="1900" max="2100" placeholder="YYYY" style="width:48px;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
             <span style="color:var(--mut)">/</span>
-            <input type="number" id="updM2" min="1" max="12" placeholder="MM" style="width:48px;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
+            <input type="number" id="updM2" min="1" max="12" placeholder="MM" style="width:34px;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
             <span style="color:var(--mut)">/</span>
-            <input type="number" id="updD2" min="1" max="31" placeholder="DD" style="width:48px;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
+            <input type="number" id="updD2" min="1" max="31" placeholder="DD" style="width:34px;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
           </span>
-          <button class="btn ghost" id="updClear" type="button" style="font-size:11px;padding:2px 8px"><span data-zh>清除</span><span data-en>Clear</span></button>
-          <span style="color:var(--mut);font-size:12px;flex-basis:100%"><span data-zh>用於「更新檢索」：以書目加入資料庫的日期限定，抓上次檢索後的新文章。結束日留空＝取至最新；建議起始日填『上次檢索日往前一日』。目前支援 Web of Science、Scopus、EBSCOhost（ASC／BSC／ERIC）；IEEE／Compendex／PQDT／華藝／國圖等請用資料庫介面的日期篩選。</span><span data-en>For update searches: limit by the date records were added to the database. Leave the end blank for “up to now”; set the start one day before your last search. Inline support: Web of Science, Scopus, EBSCOhost (ASC/BSC/ERIC); for IEEE / Compendex / PQDT / Airiti / NDLTD, use the database's own date filter.</span></span>
         </div>
       </div>
     </div>
