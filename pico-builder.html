@@ -289,6 +289,8 @@
           <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" name="sdfilter" value="sr"><span>SR</span></label>
           <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" name="sdfilter" value="guideline"><span>Guideline</span></label>
         </div>
+        <button type="button" id="dateToggle" style="margin-top:12px;background:none;border:none;color:var(--brand2,#0d6e6e);font-size:13px;font-weight:600;cursor:pointer;padding:2px 0;display:inline-flex;align-items:center;gap:6px"><span id="dateArrow">▸</span><span data-zh>日期限定（出版年、書目加入資料庫日期）</span><span data-en>Date limits (publication year, date added to database)</span></button>
+        <div id="dateAdv" style="display:none">
         <div id="dateOpt" style="margin-top:12px;display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap;font-size:13px">
           <span class="fld" style="margin:0" title="限定出版年：填起訖年，可只填一邊。留空＝不限定。限定會接在最後合併行之後。"><span data-zh>出版年：</span><span data-en>Publication year:</span></span><span class="infotip" style="margin-bottom:2px">ⓘ<span class="tip"><span data-zh>限定出版「年」；起始／結束可只填一邊。留空＝不限定。限定會接在最後合併行之後。</span><span data-en>Limit by publication year; either the start or end may be left blank. Empty = no limit. Appended after the final combined line.</span></span></span>
           <input type="number" id="pubY1" min="1800" max="2100" placeholder="YYYY" style="width:48px;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
@@ -296,7 +298,7 @@
           <input type="number" id="pubY2" min="1800" max="2100" placeholder="YYYY" style="width:48px;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
         </div>
         <div id="updOpt" style="margin-top:10px;display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap;font-size:13px">
-          <span class="fld" style="margin:0" title="更新檢索：以『書目加入資料庫的日期』限定，抓上次檢索後新增的文章。填年月日；結束可留空＝取至最新。建議起始日填『上次檢索日往前一日』以免時差遺漏。"><span data-zh>加入資料庫日期：</span><span data-en>Date added to database:</span></span><span class="infotip" style="margin-bottom:2px">ⓘ<span class="tip"><span data-zh>用於「更新檢索」：以書目加入資料庫的日期限定，抓上次檢索後的新文章。結束日留空＝取至最新；建議起始日填『上次檢索日往前一日』以免時差遺漏。Cochrane／IEEE／PQDT／華藝／國圖等請用資料庫介面的日期篩選。</span><span data-en>For update searches: limit by the date records were added to the database. Leave the end blank for “up to now”; set the start to one day before your last search to avoid time-zone gaps. For Cochrane / IEEE / PQDT / Airiti / NDLTD, use the database's own date filter.</span></span></span>
+          <span class="fld" style="margin:0" title="更新檢索：以『書目加入資料庫的日期』限定，抓上次檢索後新增的文章。填年月日；結束可留空＝取至最新。建議起始日填『上次檢索日往前一日』以免時差遺漏。"><span data-zh>書目加入資料庫日期：</span><span data-en>Date added to database:</span></span><span class="infotip" style="margin-bottom:2px">ⓘ<span class="tip"><span data-zh>用於「更新檢索」：以書目加入資料庫的日期限定，抓上次檢索後的新文章。結束日留空＝取至最新；建議起始日填『上次檢索日往前一日』以免時差遺漏。Cochrane／IEEE／PQDT／華藝／國圖等請用資料庫介面的日期篩選。</span><span data-en>For update searches: limit by the date records were added to the database. Leave the end blank for “up to now”; set the start to one day before your last search to avoid time-zone gaps. For Cochrane / IEEE / PQDT / Airiti / NDLTD, use the database's own date filter.</span></span></span>
           <span style="display:inline-flex;align-items:center;gap:2px">
             <input type="number" id="updY1" min="1900" max="2100" placeholder="YYYY" style="width:48px;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
             <span style="color:var(--mut)">/</span>
@@ -312,6 +314,7 @@
             <span style="color:var(--mut)">/</span>
             <input type="number" id="updD2" min="1" max="31" placeholder="DD" style="width:34px;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
           </span>
+        </div>
         </div>
       </div>
     </div>
@@ -1616,7 +1619,7 @@ if (typeof module !== "undefined" && module.exports) {
     return allRows;
   }
   function _setPub(id,v){ var el=$("#"+id); if(el) el.value=(v!==null&&v!==undefined)?v:""; }
-  function applyPubDate(pd){ if(!pd){ _setPub("pubY1","");_setPub("pubY2",""); return; } _setPub("pubY1",pd.y1);_setPub("pubY2",pd.y2); }
+  function applyPubDate(pd){ if(!pd){ _setPub("pubY1","");_setPub("pubY2",""); return; } _setPub("pubY1",pd.y1);_setPub("pubY2",pd.y2); _openDateAdv(); }
   ["pubY1","pubY2"].forEach(function(id){ var el=$("#"+id); if(el) el.addEventListener("input", function(){ saveDraftDebounced(); autoRegenDebounced(); }); });
   (function(){ var pc=$("#pubClear"); if(pc) pc.onclick=function(){ applyPubDate(null); saveDraft(); autoRegen(); }; })();
 
@@ -1668,9 +1671,11 @@ if (typeof module !== "undefined" && module.exports) {
     }
     return allRows;
   }
-  function applyEntryDate(ed){ ["updY1","updM1","updD1","updY2","updM2","updD2"].forEach(function(id){_setPub(id,"");}); if(!ed) return; _setPub("updY1",ed.y1);_setPub("updM1",ed.m1);_setPub("updD1",ed.d1);_setPub("updY2",ed.y2);_setPub("updM2",ed.m2);_setPub("updD2",ed.d2); }
+  function applyEntryDate(ed){ ["updY1","updM1","updD1","updY2","updM2","updD2"].forEach(function(id){_setPub(id,"");}); if(!ed) return; _setPub("updY1",ed.y1);_setPub("updM1",ed.m1);_setPub("updD1",ed.d1);_setPub("updY2",ed.y2);_setPub("updM2",ed.m2);_setPub("updD2",ed.d2); _openDateAdv(); }
   ["updY1","updM1","updD1","updY2","updM2","updD2"].forEach(function(id){ var el=$("#"+id); if(el) el.addEventListener("input", function(){ saveDraftDebounced(); autoRegenDebounced(); }); });
   (function(){ var uc=$("#updClear"); if(uc) uc.onclick=function(){ applyEntryDate(null); saveDraft(); autoRegen(); }; })();
+  function _openDateAdv(){ var adv=$("#dateAdv"), ar=$("#dateArrow"); if(adv){ adv.style.display=""; if(ar) ar.textContent="▾"; } }
+  (function(){ var t=$("#dateToggle"), adv=$("#dateAdv"), ar=$("#dateArrow"); if(!t||!adv) return; t.onclick=function(){ var open=(adv.style.display==="none"); adv.style.display=open?"":"none"; if(ar) ar.textContent=open?"▾":"▸"; }; }());
   function saveSnapshot(){ try{ var st=serializeState(); if(stateNonEmpty(st)) localStorage.setItem(SNAP_KEY, JSON.stringify(st)); }catch(e){} }
   function clearPersist(){ try{ sessionStorage.removeItem(DRAFT_KEY); }catch(e){} try{ localStorage.removeItem(SNAP_KEY); }catch(e){} }
   function snapshotState(){ try{ return JSON.parse(localStorage.getItem(SNAP_KEY)||"null"); }catch(e){ return null; } }
