@@ -280,27 +280,18 @@
       <div>
         <label class="fld"><span data-zh>輸出資料庫</span><span data-en>Output databases</span></label>
         <div class="dbchecks" id="dbchecks"></div>
-        <div id="filterOpt" style="margin-top:12px;display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;font-size:13px">
-          <span class="fld" style="margin:0" title="Study-design Filter (multi-select): for each ticked design, a line「final set AND (filter syntax)」is appended per supported database; ticking more than one adds a union (OR) line. RCT=App.2-1, Quasi=2-2, Observational=2-3, Qualitative=2-4, SR=2-5, Guideline=2-6. Cochrane CENTRAL (RCTs only) needs no filter."><span data-zh>研究設計篩選（適用 SR）：</span><span data-en>Study-design Filter (for SR):</span></span><span class="infotip" style="margin-bottom:2px;order:-1"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip"><span data-zh>適用 SR 於（高敏感度／文章數量多）；若欲臨床實證使用，建議在資料庫使用內建 Limits／Filters。<br>尚未整理部份資料庫（平台）語法者，將於檢索策略標示「請自行確認 Filters」。</span><span data-en>Suited for systematic reviews (high sensitivity / large result volume); for clinical / evidence-based use, prefer the database’s built-in Limits / Filters.<br>Databases (platforms) whose filter syntax isn’t compiled yet are flagged “please verify Filters yourself” in the strategy.</span></span></span>
-          <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" name="sdfilter" value="rct"><span>RCT</span></label>
-          <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" name="sdfilter" value="quasi"><span>Quasi-experimental</span></label>
-          <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:not-allowed;opacity:.45"><input type="checkbox" name="sdfilter" value="cohort" disabled><span>Cohort</span></label>
-          <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:not-allowed;opacity:.45"><input type="checkbox" name="sdfilter" value="casecontrol" disabled><span>Case-control</span></label>
-          <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:not-allowed;opacity:.45"><input type="checkbox" name="sdfilter" value="crosssectional" disabled><span>Cross-sectional</span></label>
-          <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" name="sdfilter" value="qualitative"><span>Qualitative</span></label>
-          <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" name="sdfilter" value="sr"><span>SR</span></label>
-          <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" name="sdfilter" value="guideline"><span>Guideline</span></label>
-        </div>
-        <button type="button" id="dateToggle" style="margin-top:12px;background:none;border:none;color:var(--brand2,#0d6e6e);font-size:13px;font-weight:600;cursor:pointer;padding:2px 0;display:inline-flex;align-items:center;gap:6px"><span id="dateArrow">▸</span><span data-zh>日期限定（出版年、書目加入資料庫日期）</span><span data-en>Date limits (publication year, date added to database)</span></button>
+        <button type="button" id="moreDbToggle" style="margin-top:10px;background:none;border:none;color:var(--brand2,#0d6e6e);font-size:13px;font-weight:600;cursor:pointer;padding:2px 0;display:flex;width:fit-content;align-items:center;gap:6px"><span id="moreDbArrow">▸</span><span data-zh>更多資料庫（中文 / 博碩論文 / 跨學科）</span><span data-en>More databases (Chinese / theses / cross-disciplinary)</span></button>
+        <div class="dbchecks" id="dbchecksMore" style="display:none;margin-top:8px"></div>
+        <button type="button" id="dateToggle" style="margin-top:12px;background:none;border:none;color:var(--brand2,#0d6e6e);font-size:13px;font-weight:600;cursor:pointer;padding:2px 0;display:flex;width:fit-content;align-items:center;gap:6px"><span id="dateArrow">▸</span><span data-zh>日期限定（出版年、書目加入資料庫日期）</span><span data-en>Date limits (publication year, date added to database)</span></button>
         <div id="dateAdv" style="display:none">
         <div id="dateOpt" style="margin-top:12px;display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap;font-size:13px">
-          <span class="fld" style="margin:0" title="限定出版年：填起訖年，可只填一邊。留空＝不限定。限定會接在最後合併行之後。"><span data-zh>出版年：</span><span data-en>Publication year:</span></span><span class="infotip" style="margin-bottom:2px;order:-1"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip"><span data-zh>限定出版「年」；起始／結束可只填一邊。留空＝不限定。限定會接在最後合併行之後。</span><span data-en>Limit by publication year; either the start or end may be left blank. Empty = no limit. Appended after the final combined line.</span></span></span>
+          <span class="fld" style="margin:0 0 0 -6px" title="限定出版年：填起訖年，可只填一邊。留空＝不限定。限定會接在最後合併行之後。"><span data-zh>出版年：</span><span data-en>Publication year:</span></span><span class="infotip" style="margin-bottom:2px;order:-1"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip"><span data-zh>限定出版「年」；起始／結束可只填一邊。留空＝不限定。限定會接在最後合併行之後。</span><span data-en>Limit by publication year; either the start or end may be left blank. Empty = no limit. Appended after the final combined line.</span></span></span>
           <input type="number" id="pubY1" min="1800" max="2100" placeholder="YYYY" style="width:48px;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
           <span style="color:var(--mut)"><span data-zh>～</span><span data-en>to</span></span>
           <input type="number" id="pubY2" min="1800" max="2100" placeholder="YYYY" style="width:48px;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
         </div>
         <div id="updOpt" style="margin-top:10px;display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap;font-size:13px">
-          <span class="fld" style="margin:0" title="更新檢索：以『書目加入資料庫的日期』限定，抓上次檢索後新增的文章。填年月日；結束可留空＝取至最新。建議起始日填『上次檢索日往前一日』以免時差遺漏。"><span data-zh>書目加入資料庫日期：</span><span data-en>Date added to database:</span></span><span class="infotip" style="margin-bottom:2px;order:-1"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip"><span data-zh>用於「更新檢索」：以書目加入資料庫的日期限定，抓上次檢索後的新文章。結束日留空＝取至最新；建議起始日填『上次檢索日往前一日』以免時差遺漏。Cochrane／IEEE／PQDT／華藝／國圖等請用資料庫介面的日期篩選。</span><span data-en>For update searches: limit by the date records were added to the database. Leave the end blank for “up to now”; set the start to one day before your last search to avoid time-zone gaps. For Cochrane / IEEE / PQDT / Airiti / NDLTD, use the database's own date filter.</span></span></span>
+          <span class="fld" style="margin:0 0 0 -6px" title="更新檢索：以『書目加入資料庫的日期』限定，抓上次檢索後新增的文章。填年月日；結束可留空＝取至最新。建議起始日填『上次檢索日往前一日』以免時差遺漏。"><span data-zh>書目加入資料庫日期：</span><span data-en>Date added to database:</span></span><span class="infotip" style="margin-bottom:2px;order:-1"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip"><span data-zh>用於「更新檢索」：以書目加入資料庫的日期限定，抓上次檢索後的新文章。結束日留空＝取至最新；建議起始日填『上次檢索日往前一日』以免時差遺漏。Cochrane／IEEE／PQDT／華藝／國圖等請用資料庫介面的日期篩選。</span><span data-en>For update searches: limit by the date records were added to the database. Leave the end blank for “up to now”; set the start to one day before your last search to avoid time-zone gaps. For Cochrane / IEEE / PQDT / Airiti / NDLTD, use the database's own date filter.</span></span></span>
           <span style="display:inline-flex;align-items:center;gap:2px">
             <input type="number" id="updY1" min="1900" max="2100" placeholder="YYYY" style="width:48px;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
             <span style="color:var(--mut)">/</span>
@@ -317,6 +308,17 @@
             <input type="number" id="updD2" min="1" max="31" placeholder="DD" style="width:34px;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
           </span>
         </div>
+        </div>
+        <div id="filterOpt" style="margin-top:12px;display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;font-size:13px">
+          <span class="fld" style="margin:0 0 0 -10px" title="Study-design Filter (multi-select): for each ticked design, a line「final set AND (filter syntax)」is appended per supported database; ticking more than one adds a union (OR) line. RCT=App.2-1, Quasi=2-2, Observational=2-3, Qualitative=2-4, SR=2-5, Guideline=2-6. Cochrane CENTRAL (RCTs only) needs no filter."><span data-zh>研究設計篩選（適用 SR）：</span><span data-en>Study-design Filter (for SR):</span></span><span class="infotip" style="margin-bottom:2px;order:-1"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip"><span data-zh>適用 SR 於（高敏感度／文章數量多）；若欲臨床實證使用，建議在資料庫使用內建 Limits／Filters。<br>尚未整理部份資料庫（平台）語法者，將於檢索策略標示「請自行確認 Filters」。</span><span data-en>Suited for systematic reviews (high sensitivity / large result volume); for clinical / evidence-based use, prefer the database’s built-in Limits / Filters.<br>Databases (platforms) whose filter syntax isn’t compiled yet are flagged “please verify Filters yourself” in the strategy.</span></span></span>
+          <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" name="sdfilter" value="rct"><span>RCT</span></label>
+          <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" name="sdfilter" value="quasi"><span>Quasi-experimental</span></label>
+          <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:not-allowed;opacity:.45"><input type="checkbox" name="sdfilter" value="cohort" disabled><span>Cohort</span></label>
+          <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:not-allowed;opacity:.45"><input type="checkbox" name="sdfilter" value="casecontrol" disabled><span>Case-control</span></label>
+          <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:not-allowed;opacity:.45"><input type="checkbox" name="sdfilter" value="crosssectional" disabled><span>Cross-sectional</span></label>
+          <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" name="sdfilter" value="qualitative"><span>Qualitative</span></label>
+          <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" name="sdfilter" value="sr"><span>SR</span></label>
+          <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" name="sdfilter" value="guideline"><span>Guideline</span></label>
         </div>
       </div>
     </div>
@@ -500,6 +502,10 @@ var DB_LABEL = {
   scopus:   "Scopus",
   airiti:   "華藝線上圖書館",
   ndltd:    "臺灣博碩士論文（國圖）",
+  pqdt:     "PQDT (ProQuest)",
+  ieee:     "IEEE Xplore",
+  cnki:     "CNKI 中國知網",
+  wanfang:  "萬方數據庫",
 };
 
 // 9 種「資料庫 × 平台」目標：語法看 engine(7 個渲染引擎之一)，控制詞彙看 vocab(mesh/emtree/cinahl/null)
@@ -517,6 +523,10 @@ var TARGETS = [
   { id:"ndltd",         label:"臺灣博碩士論文（國圖）", engine:"ndltd",    vocab:null, outputOnly:true },
   { id:"ageline",       label:"AgeLine (EBSCOhost)", engine:"ebsco",    vocab:null, pasteCV:true, outputOnly:true },
   { id:"eric",          label:"ERIC (EBSCOhost)",    engine:"ebsco",    vocab:null, pasteCV:true, outputOnly:true },
+  { id:"pqdt",          label:"PQDT (ProQuest)",     engine:"pqdt",     vocab:null, pasteCV:true, outputOnly:true },
+  { id:"ieee",          label:"IEEE Xplore",         engine:"ieee",     vocab:null, pasteCV:true, outputOnly:true },
+  { id:"cnki",          label:"CNKI 中國知網",        engine:null,       vocab:null, outputOnly:true, disabled:true },
+  { id:"wanfang",       label:"萬方數據庫",            engine:null,       vocab:null, outputOnly:true, disabled:true },
 ];
 var TARGET_BY_ID = {}; TARGETS.forEach(function(t){ TARGET_BY_ID[t.id]=t; });
 
@@ -534,6 +544,8 @@ var SYNTAX_MAP = {
     scopus:   { AND: "AND", OR: "OR", NOT: "AND NOT" },
     airiti:   { AND: "AND", OR: "OR", NOT: "NOT" },
     ndltd:    { AND: "and", OR: "or", NOT: "not" },
+    pqdt:     { AND: "and", OR: "or", NOT: "not" },
+    ieee:     { AND: "AND", OR: "OR", NOT: "NOT" },
   },
 
   // canonical truncation marks: '*'=multi, '?'=0-or-1, '#'=exactly-1
@@ -547,6 +559,8 @@ var SYNTAX_MAP = {
     scopus:   { decode: { "*": "*", "?": "#" },                     encode: { "*": "*", "?": null, "#": "?" } },
     airiti:   { decode: { "*": "*" },                               encode: { "*": null, "?": null, "#": null } },
     ndltd:    { decode: { "*": "*" },                               encode: { "*": "*", "?": null, "#": null } },
+    pqdt:     { decode: { "*": "*", "?": "#" },                     encode: { "*": "*", "?": null, "#": "?" } },
+    ieee:     { decode: { "*": "*", "?": "#" },                     encode: { "*": "*", "?": null, "#": "?" } },
   },
 
   // 自由詞彙欄位. canonical: all, tiabkw, tiab, ti, ab; 三級 L1/L2/L3 (PICO工具用).  style: suffix|prefix|func
@@ -562,6 +576,8 @@ var SYNTAX_MAP = {
     // 台灣資料庫走 buildTaiwanLine 專屬路徑，這裡僅保留占位避免查表為 undefined
     airiti:   { style: "prefix", eq: true, map: { all: "[ALL3]", tiabkw: "[ALL3]", tiab: "[ALL3]", ti: "[TI]", tio: "[TI]", ab: "[ALL3]", kw: "[KW]", L1: "[ALL3]", L2: "[TI]+[KW]", L3: "[TI]" } },
     ndltd:    { style: "suffix", groupSuffix: false, map: { all: ".ti,ab,kw", tiabkw: ".ti,ab,kw", tiab: ".ti,ab", ti: ".ti", tio: ".ti", ab: ".ab", kw: ".kw", L1: ".ti,ab,kw", L2: ".ti,kw", L3: ".ti" } },
+    pqdt:     { style: "func", nospace: true, lower: true, map: { all: "noft", tiabkw: "noft", tiab: "ti+abs", ti: "ti", ab: "abs", L1: "noft", L2: "ti+abs", L3: "ti" } },
+    ieee:     { style: "ieee", map: { all: "All Metadata", tiabkw: "Document Title+Abstract+Author Keywords", tiab: "Document Title+Abstract", ti: "Document Title", ab: "Abstract", L1: "All Metadata", L2: "Document Title+Abstract+Author Keywords", L3: "Document Title" } },
   },
 
   // 鄰近. canonical {ordered, dist}. 模板 %A %B=運算元(已渲染) %N=距離 %F=欄位(PubMed)
@@ -575,12 +591,14 @@ var SYNTAX_MAP = {
     scopus:   { unordered: "%A W/%N %B",      ordered: "%A PRE/%N %B" },
     airiti:   { unordered: null, ordered: null },
     ndltd:    { unordered: null, ordered: null },
+    pqdt:     { unordered: "%A near/%N %B",    ordered: "%A pre/%N %B" },
+    ieee:     { unordered: "%A NEAR/%N %B",    ordered: "%A ONEAR/%N %B" },
   },
 
   // 鄰近距離校正：相同「語意距離」在各庫要用不同數字。
   // 欲表達「間隔 n 個字以內」，Ovid/Embase/Cochrane 需 n+1，其他維持 n。
   // 解析: canonical = 輸入距離 - offset[來源]；輸出: 顯示距離 = canonical + offset[目標]。
-  proximityOffset: { pubmed: 0, ovid: 1, embase: 1, cochrane: 1, ebsco: 0, wos: 0, scopus: 0, airiti: 0, ndltd: 0 },
+  proximityOffset: { pubmed: 0, ovid: 1, embase: 1, cochrane: 1, ebsco: 0, wos: 0, scopus: 0, airiti: 0, ndltd: 0, pqdt: 0, ieee: 0 },
 
   // 控制詞彙. canonical {explode, major}. keys: ee/en/me/mn. %T=詞
   mesh: {
@@ -980,6 +998,79 @@ function flattenOr(node) {
   }
   return null;
 }
+// IEEE／Compendex 鄰近字展開：把「A NEAR/n B」的 OR 群組拆成個別詞對（IEEE 保留切截、Compendex 移除切截）
+function expandProxCV(node, warn, stripTrunc){
+  if(stripTrunc===undefined) stripTrunc=true;   // Compendex 需移除切截；IEEE 傳 false 保留
+  if(!node || typeof node!=="object") return node;
+  if(node.t==="field"){ node.child = expandProxCV(node.child, warn, stripTrunc); return node; }
+  if(node.t==="bool"){
+    var kids2=[];
+    node.kids.forEach(function(k){
+      var e=expandProxCV(k, warn, stripTrunc);
+      if(node.op==="OR" && e && e.t==="bool" && e.op==="OR" && e._fromProx){ kids2=kids2.concat(e.kids); }
+      else kids2.push(e);
+    });
+    node.kids=kids2; return node;
+  }
+  if(node.t==="prox"){
+    var la=flattenOr(node.a), lb=flattenOr(node.b);
+    if(la && lb){
+      var pairs=[], stripped=false;
+      for(var i=0;i<la.length;i++) for(var j=0;j<lb.length;j++){
+        var av=la[i], bv=lb[j];
+        if(stripTrunc){
+          if(/[*?#$]/.test(av)){ av=av.replace(/[*?#$]/g,""); stripped=true; }
+          if(/[*?#$]/.test(bv)){ bv=bv.replace(/[*?#$]/g,""); stripped=true; }
+        }
+        pairs.push({t:"prox", dist:node.dist, ordered:node.ordered, a:{t:"term",value:av}, b:{t:"term",value:bv}});
+      }
+      if(stripped && warn && warn.indexOf("⚠CVTRUNC⚠")<0) warn.push("⚠CVTRUNC⚠");
+      if(pairs.length===1) return pairs[0];
+      return {t:"bool", op:"OR", kids:pairs, _fromProx:true};
+    }
+    node.a=expandProxCV(node.a, warn, stripTrunc); node.b=expandProxCV(node.b, warn, stripTrunc);
+    return node;
+  }
+  return node;
+}
+// IEEE：去除單一詞多餘外層括號（只脫最外層完整成對括號）
+function _stripParen1(s){ s=String(s||"").trim(); if(s.charAt(0)!=="("||s.charAt(s.length-1)!==")") return s; var d=0; for(var i=0;i<s.length;i++){ if(s[i]==="(")d++; else if(s[i]===")"){ d--; if(d===0) return (i===s.length-1)? s.slice(1,-1).trim() : s; } } return s; }
+// IEEE：把「A NEAR/n B」的運算式，於每個運算元前重複欄位（"F":A NEAR/n "F":B）
+function _ieeeScopeProx(expr, field){
+  var toks=[], depth=0, q="", cur="";
+  for(var i=0;i<expr.length;i++){ var c=expr[i];
+    if(q){ cur+=c; if(c===q)q=""; continue; }
+    if(c==='"'||c==="'"){ q=c; cur+=c; continue; }
+    if(c==="("){ depth++; cur+=c; continue; }
+    if(c===")"){ depth--; cur+=c; continue; }
+    if(c===" " && depth===0){ if(cur)toks.push(cur); cur=""; continue; }
+    cur+=c;
+  }
+  if(cur) toks.push(cur);
+  var out=toks.map(function(t){
+    if(/^(?:O?NEAR)\/\d+$/i.test(t) || /^(?:AND|OR|NOT)$/i.test(t)) return t;   // 運算子原樣
+    return '"'+field+'":'+t;                                                    // 運算元加欄位
+  });
+  return "("+out.join(" ")+")";
+}
+// 頂層 OR 拆分（忽略括號／引號內的 OR）
+function _splitTopOr(s){
+  s = String(s||"").trim();
+  var out=[], depth=0, q="", start=0;
+  for(var i=0;i<s.length;i++){
+    var c=s[i];
+    if(q){ if(c===q) q=""; continue; }
+    if(c==='"'||c==="'"){ q=c; continue; }
+    if(c==="(") depth++;
+    else if(c===")") depth--;
+    else if(depth===0 && /^\s+OR\s+/i.test(s.slice(i))){
+      var m=s.slice(i).match(/^\s+OR\s+/i)[0];
+      out.push(s.slice(start,i)); i+=m.length-1; start=i+1;
+    }
+  }
+  out.push(s.slice(start));
+  return out.map(function(x){return x.trim();}).filter(Boolean);
+}
 function stripTruncPM(v, warn) {
   var had = /[*?#]/.test(v);
   if (had) warn.push("PubMed：鄰近字語法不支援切截，已移除 * ，請自行補齊字尾變化 · proximity does not support truncation");
@@ -1165,10 +1256,32 @@ function wrapField(inner, field, dst, paren, codes) {
     return code + p + "(" + inner + ")";
   }
   if (f.style === "func") {
+    var _jo = f.lower ? " or " : " OR ";
+    var _sp = f.nospace ? "" : " ";
     if (code.indexOf("+") >= 0) {
-      return "(" + code.split("+").map(function (cc) { return cc + " (" + inner + ")"; }).join(" OR ") + ")";
+      return "(" + code.split("+").map(function (cc) { return cc + _sp + "(" + inner + ")"; }).join(_jo) + ")";
     }
-    return code + " (" + inner + ")";
+    return code + _sp + "(" + inner + ")";
+  }
+  if (f.style === "ieee") {   // IEEE：每個頂層 OR 子句前重複欄位名（"Field":A OR "Field":B）
+    var _terms = _splitTopOr(inner);
+    var _out = [];
+    code.split("+").forEach(function (cc) {
+      _terms.forEach(function (tm) {
+        tm = tm.trim(); if (!tm) return;
+        var _bare = _stripParen1(tm);
+        if (/\s(?:O?NEAR)\/\d+\s/i.test(_bare)) {   // 鄰近字運算式 → 每個運算元各自重複欄位（IEEE 不可在單一欄位括號內放 OR）
+          _out.push(_ieeeScopeProx(_bare, cc));
+          return;
+        }
+        // IEEE：單一詞不加括號（"All Metadata":school，非 "All Metadata":(school)）；引號片語原樣帶入
+        var _single = /^"[^"]*"$/.test(tm) || /^'[^']*'$/.test(tm) || !/\s/.test(tm);
+        var _grouped = /^\(.*\)$/.test(tm);
+        var _tt = (_single || _grouped) ? tm : "(" + tm + ")";
+        _out.push('"' + cc + '":' + _tt);
+      });
+    });
+    return _out.length > 1 ? "(" + _out.join(" OR ") + ")" : (_out[0] || "");
   }
   return inner;
 }
@@ -1422,22 +1535,38 @@ if (typeof module !== "undefined" && module.exports) {
   TARGETS.forEach(function(tg){ if(tg.outputOnly) return; var o=document.createElement("option"); o.value=tg.id; o.textContent=tg.label; srcSel.appendChild(o); });
   srcSel.value = "embase_com";
 
-  // 輸出資料庫勾選（依家族分列：Embase／MEDLINE／其他／台灣）
+  // 輸出資料庫勾選（依家族分列：Embase／MEDLINE／其他）；「更多資料庫」（跨學科、中文、博碩論文）預設縮起
   var DB_LAYOUT = [
     ["embase_com","embase_ovid",null,null],
     ["medline_ovid","pubmed","medline_ebsco",null],
-    ["cochrane","cinahl_ebsco","wos","scopus"],
-    ["airiti","ndltd","ageline","eric"]
+    ["cochrane","cinahl_ebsco","wos","scopus"]
   ];
-  var DB_UNCHECKED = { embase_ovid:1, medline_ebsco:1, airiti:1, ndltd:1, ageline:1, eric:1 };  // 預設不勾（避免重複搜同一資料庫；中文資料庫、AgeLine／ERIC 預設不勾）。PubMed 預設打勾。
-  DB_LAYOUT.forEach(function(row){ row.forEach(function(id){
-    if(!id){ dbchecks.appendChild(document.createElement("span")); return; }
+  var DB_LAYOUT_MORE = [
+    ["ageline","eric","pqdt","ieee"],
+    ["airiti","ndltd","cnki","wanfang"]
+  ];
+  var DB_UNCHECKED = { embase_ovid:1, medline_ebsco:1, airiti:1, ndltd:1, ageline:1, eric:1, pqdt:1, ieee:1, cnki:1, wanfang:1 };  // 預設不勾（避免重複搜同一資料庫；中文／博碩論文／跨學科等預設不勾）。PubMed 預設打勾。
+  function _renderDbRows(layout, host){ layout.forEach(function(row){ row.forEach(function(id){
+    if(!id){ host.appendChild(document.createElement("span")); return; }
     var tg=TARGET_BY_ID[id];
     var lb=document.createElement("label");
-    var cb=document.createElement("input"); cb.type="checkbox"; cb.value=tg.id; cb.checked=!DB_UNCHECKED[tg.id];
+    var cb=document.createElement("input"); cb.type="checkbox"; cb.value=tg.id;
     var sp=document.createElement("span"); sp.textContent=tg.label;
-    lb.appendChild(cb); lb.appendChild(sp); dbchecks.appendChild(lb);
-  }); });
+    if(tg.disabled){   // 開發中：灰底、不可勾選
+      cb.disabled=true; cb.checked=false;
+      lb.style.opacity=".45"; lb.style.cursor="not-allowed";
+      lb.title = isEn()? "Under development" : "開發中";
+      var dev=document.createElement("span"); dev.textContent = isEn()? " (dev)" : "（開發中）"; dev.style.fontSize="11px"; dev.style.color="var(--mut)"; sp.appendChild(dev);
+    } else {
+      cb.checked=!DB_UNCHECKED[tg.id];
+    }
+    lb.appendChild(cb); lb.appendChild(sp); host.appendChild(lb);
+  }); }); }
+  _renderDbRows(DB_LAYOUT, dbchecks);
+  var dbchecksMore=$("#dbchecksMore");
+  _renderDbRows(DB_LAYOUT_MORE, dbchecksMore);
+  var moreDbToggle=$("#moreDbToggle"), moreDbArrow=$("#moreDbArrow");
+  if(moreDbToggle){ moreDbToggle.onclick=function(){ var open=dbchecksMore.style.display!=="none"; dbchecksMore.style.display=open?"none":"grid"; if(moreDbArrow) moreDbArrow.textContent=open?"▸":"▾"; }; }
 
   function refreshLvlNote(){ lvlnote.textContent = LVL_NOTE[isEn()?"en":"zh"][levelSel.value]; }
   function setLevelLabels(){ var m=LEVEL_LABELS[isEn()?"en":"zh"]; Array.prototype.forEach.call(levelSel.options, function(o){ o.textContent=m[o.value]||o.value; }); }
@@ -2089,7 +2218,7 @@ if (typeof module !== "undefined" && module.exports) {
   // ---- 核心：自由詞欄位範圍化（重用引擎的 field 節點；PubMed 逐詞展開） ----
   function stripOuterParen(s){ s=(s||"").trim(); if(s[0]!=="("||s[s.length-1]!==")") return s; var depth=0; for(var i=0;i<s.length;i++){ if(s[i]==="(")depth++; else if(s[i]===")"){ depth--; if(depth===0 && i<s.length-1) return s; } } return s.slice(1,-1).trim(); }
   var PM_EXPAND=false, PM_VARIANTS=null;   // PubMed 卡片「使用鄰近字語法（展開群組配對）」狀態
-  var EMBASE_LIM=true, AIRITI_INC=false;   // Embase.com 去重行、華藝納入英文片語與切截：改由各自資料庫卡片的勾選控制
+  var EMBASE_EXCL="medline", AIRITI_INC=false;   // Embase.com 排除設定（none／medline／embaseonly）、華藝納入英文片語與切截：改由各自資料庫卡片的勾選控制
   function scopeFreetext(freetext, startDB, db, level, warnOut){
     RENDER_OPTS.expand = (db==="pubmed" && !!PM_EXPAND);
     RENDER_OPTS.variants = (db==="pubmed" ? (PM_VARIANTS||null) : null);
@@ -2125,8 +2254,9 @@ if (typeof module !== "undefined" && module.exports) {
     var parsed = parseQuery(_joined, startDB);
     var node = { t:"field", field:level, child:parsed.ast };
     var warnArr=[];
+    if(db==="ieee") node = expandProxCV(node, warnArr, false);   // IEEE：鄰近字拆成個別詞對（保留切截，欄位於各運算元重複）
     var out = render(node, db, warnArr, { scoped:false });
-    if(warnOut){ warnArr.forEach(function(w){ if(w.indexOf("⚠EMBCHAIN⚠")===0) warnOut.push(isEn() ? "This contains nested proximity (NEAR/NEXT) operators, which Embase.com does not support. Change the relationship between the phrase groups to parallel proximity, or split it into separate sets." : "此式含巢狀鄰近（NEAR／NEXT）運算，Embase.com 不支援，請將詞組間關係改為平行鄰近，或拆成多組處理"); else if(w.indexOf("‼WILD‼")===0) warnOut.push(w.replace(/^‼WILD‼/,"")); }); }
+    if(warnOut){ warnArr.forEach(function(w){ if(w.indexOf("⚠EMBCHAIN⚠")===0) warnOut.push(isEn() ? "This contains nested proximity (NEAR/NEXT) operators, which Embase.com does not support. Change the relationship between the phrase groups to parallel proximity, or split it into separate sets." : "此式含巢狀鄰近（NEAR／NEXT）運算，Embase.com 不支援，請將詞組間關係改為平行鄰近，或拆成多組處理"); else if(w.indexOf("⚠CVTRUNC⚠")===0) warnOut.push(isEn() ? "IEEE: proximity (NEAR) cannot contain truncation inside a single field group; terms were repeated per operand — verify the expanded proximity expression." : "IEEE：鄰近字已於各運算元重複欄位；請確認展開後的鄰近運算式是否正確。"); else if(w.indexOf("‼WILD‼")===0) warnOut.push(w.replace(/^‼WILD‼/,"")); }); }
     if(db==="ebsco"||db==="wos"||db==="scopus") out=stripOuterParen(out);  // 各行為獨立檢索，最外層括弧不需要
     return out;
   }
@@ -2440,7 +2570,8 @@ if (typeof module !== "undefined" && module.exports) {
     var rows=[]; Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr){ rows.push(tr._get()); });  // 全部列（含空列，維持 C1/C2… 對位）
     outs.innerHTML=""; lastGen=null; if($("#wordBtn")) $("#wordBtn").disabled=true;
     if(!rows.some(function(r){return r.ft||r.zh||r.mesh||r.emtree||r.cinahl;})){ outs.innerHTML='<div class="panel" style="color:var(--warn)">'+(isEn()?"Please fill at least one concept.":"請至少填入一個概念的詞彙。")+'</div>'; return; }
-    var checked = Array.prototype.filter.call(dbchecks.querySelectorAll("input"), function(c){return c.checked;}).map(function(c){return c.value;});
+    var _dbInputs = Array.prototype.slice.call(dbchecks.querySelectorAll("input")).concat(Array.prototype.slice.call((dbchecksMore?dbchecksMore.querySelectorAll("input"):[])));
+    var checked = _dbInputs.filter(function(c){return c.checked && !c.disabled;}).map(function(c){return c.value;});
     if(!checked.length){ outs.innerHTML='<div class="panel" style="color:var(--warn)">'+(isEn()?"Please tick at least one output database.":"請至少勾選一個輸出資料庫。")+'</div>'; return; }
     if(picoWarn){
       var msgs=[];
@@ -2471,10 +2602,10 @@ if (typeof module !== "undefined" && module.exports) {
       // 尾端：有自訂組合就用自訂（C1/L1 展開），否則用預設組合行
       var combos = (customCombo && customCombo.value.trim()) ? buildCombos(customCombo.value, b.conceptRefs, b.lastNum) : null;
       var tail = (combos && combos.length) ? combos : (b.finalRow ? [b.finalRow] : []);
-      // Embase.com 去重行：若最後一行為組合式，末尾加 NOT ([medline]/lim NOT [embase]/lim)
-      if(tg.engine==="embase" && EMBASE_LIM && tail.length){
+      // Embase.com 排除設定：若最後一行為組合式，於末尾加對應限制行
+      if(tg.engine==="embase" && EMBASE_EXCL!=="none" && tail.length){
         var _lt=tail[tail.length-1];
-        if(/(#\d|\bAND\b|\bOR\b|\bNOT\b)/.test(_lt.text)) _lt.text = _lt.text + " NOT ([medline]/lim NOT [embase]/lim)";
+        if(/(#\d|\bAND\b|\bOR\b|\bNOT\b)/.test(_lt.text)) _lt.text = _lt.text + (EMBASE_EXCL==="embaseonly" ? " AND [embase]/lim" : " NOT ([medline]/lim NOT [embase]/lim)");
       }
       var baseRows = b.qlines.concat(tail);
       var allRows;
@@ -2538,14 +2669,23 @@ if (typeof module !== "undefined" && module.exports) {
       h.appendChild(nm); h.appendChild(hr); card.appendChild(h);
       if(b.reminders.length){ var rem=document.createElement("div"); rem.className="rem"; var _lblRe=new RegExp("^"+String(tg.label).replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\s*[：:]?\\s*"); b.reminders.forEach(function(m){ var d=document.createElement("div"); d.textContent="⚠ "+String(m).replace(_lblRe,""); rem.appendChild(d); }); card.appendChild(rem); }
       if(vfMiss.length){ var vrem=document.createElement("div"); vrem.className="rem"; var vrd=document.createElement("div"); vrd.textContent=_verifyNote(vfMiss); vrem.appendChild(vrd); card.appendChild(vrem); }   // 尚未整理語法的資料庫：提示統一放在資料庫名稱下方（與其他 ⚠ 提示並列）
-      // Embase.com：排除「純 MEDLINE 收錄」（去重行）—— 移到該庫卡片
+      // Embase.com：排除設定（三選一）—— 移到該庫卡片；標籤不加括弧語法說明
       if(tg.engine==="embase"){
-        var eopt=document.createElement("label"); eopt.className="pmopt";
-        var ecb=document.createElement("input"); ecb.type="checkbox"; ecb.checked=EMBASE_LIM;
-        var esp=document.createElement("span"); esp.textContent=isEn()?"Exclude MEDLINE-only records (adds NOT ([medline]/lim NOT [embase]/lim))":"排除「純 MEDLINE 收錄」（末尾加 NOT ([medline]/lim NOT [embase]/lim)）";
-        eopt.title=isEn()?"When the last line is a combination, append the de-dup limit; useful when also searching MEDLINE separately.":"若最後一行為組合式，於末尾加去重限制行；與另外搜 MEDLINE 時避免重複。";
-        eopt.appendChild(ecb); eopt.appendChild(esp); card.appendChild(eopt);
-        ecb.onchange=function(){ EMBASE_LIM=ecb.checked; $("#genBtn").click(); };
+        var ewrap=document.createElement("div"); ewrap.className="pmopt"; ewrap.style.display="block";
+        var ehd=document.createElement("div"); ehd.textContent=isEn()?"Exclude / de-duplicate:":"排除設定："; ehd.style.marginBottom="4px"; ehd.style.fontWeight="600"; ewrap.appendChild(ehd);
+        var _eopts=[
+          {v:"none",       zh:"不排除",                                          en:"None"},
+          {v:"medline",    zh:"排除「純MEDLINE 收錄」",                            en:"Exclude MEDLINE-only records"},
+          {v:"embaseonly", zh:"排除「純MEDLINE 收錄 + ClinicalTrials.gov + Preprints」", en:"Exclude MEDLINE-only + ClinicalTrials.gov + Preprints"}
+        ];
+        _eopts.forEach(function(o){
+          var lb=document.createElement("label"); lb.style.display="flex"; lb.style.alignItems="center"; lb.style.gap="6px"; lb.style.cursor="pointer"; lb.style.marginTop="2px";
+          var rb=document.createElement("input"); rb.type="radio"; rb.name="embaseExcl_"+tid; rb.value=o.v; rb.checked=(EMBASE_EXCL===o.v);
+          var sp=document.createElement("span"); sp.textContent=isEn()?o.en:o.zh;
+          lb.appendChild(rb); lb.appendChild(sp); ewrap.appendChild(lb);
+          rb.onchange=function(){ if(rb.checked){ EMBASE_EXCL=o.v; $("#genBtn").click(); } };
+        });
+        card.appendChild(ewrap);
       }
       // 華藝：納入英文片語與切截 —— 移到該庫卡片
       if(tg.engine==="airiti"){
@@ -2600,15 +2740,15 @@ if (typeof module !== "undefined" && module.exports) {
         var cvw=document.createElement("div"); cvw.className="cvpaste";
         var chd=document.createElement("div"); chd.className="cvpaste-hd";
         chd.textContent=isEn()
-          ? 'Paste this database’s controlled-vocabulary expression per concept — used verbatim (syntax unchanged), then OR-combined with the free-text line above.'
-          : '貼上此資料庫的控制詞彙檢索式（逐概念，例如 DE "…" OR DE "…"）：原樣帶入、不改語法，並與上方自由詞自動以 OR 組合。';
+          ? 'Controlled vocabulary (optional): paste this database’s controlled-vocabulary expression yourself; the tool leaves the syntax unchanged and brings it in verbatim, auto-combined with the free-text terms using OR.'
+          : '控制詞彙（選填）：自行貼上此資料庫的控制詞彙檢索式，工具不改語法，直接原樣帶入與自由詞彙自動以 OR 組合。';
         cvw.appendChild(chd);
         rows.forEach(function(r,_ri){
           if(!(r.ft||r.zh||r.mesh||r.emtree||r.cinahl)) return;   // 空概念不顯示
           var rw=document.createElement("div"); rw.className="cvpaste-row";
           var lb=document.createElement("span"); lb.className="cvpaste-lb"; lb.textContent="C"+(_ri+1)+(r.label?(" "+r.label):"");
           var ta=document.createElement("textarea"); ta.className="cvpaste-ta"; ta.spellcheck=false; ta.rows=2;
-          ta.placeholder='DE "…" OR DE "…"'; ta.value=(PASTE_CV[tid][_ri]||"");
+          ta.placeholder=(tg.engine==="pqdt")?'SU("…") OR SU("…")':(tg.engine==="ieee")?'"IEEE Terms":… OR "IEEE Terms":…':'DE "…" OR DE "…"'; ta.value=(PASTE_CV[tid][_ri]||"");
           ta.onchange=function(){ PASTE_CV[tid][_ri]=ta.value; $("#genBtn").click(); };
           rw.appendChild(lb); rw.appendChild(ta); cvw.appendChild(rw);
         });
@@ -2665,59 +2805,77 @@ if (typeof module !== "undefined" && module.exports) {
       }
       outs.appendChild(card);
     });
-    lastGen={data:exportData, level:lvlLabel, filters:FILTER_SEL};
+    lastGen={data:exportData, level:lvlLabel, filters:FILTER_SEL, terms:rows};
     if($("#wordBtn")) $("#wordBtn").disabled = !exportData.length;
     if(typeof updateRecordBtn==="function") updateRecordBtn();
   };
-  $("#wordBtn").onclick=function(){
+  $("#wordBtn").onclick=async function(){
     if(!lastGen || !lastGen.data.length){ outs.scrollIntoView&&outs.scrollIntoView(); return; }
     var en=isEn();
-    var wesc=function(x){ return String(x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); };
-    var sem=cbColor&&cbColor.checked, brk=cbBracket&&cbBracket.checked, colorOn=sem||brk;
-    var msoF="font-family:Consolas,'Microsoft JhengHei',monospace;mso-ascii-font-family:Consolas;mso-hansi-font-family:Consolas;mso-bidi-font-family:Consolas;mso-fareast-font-family:'Microsoft JhengHei'";
-    var fspan=function(s){ return "<span style=\""+msoF+"\">"+s+"</span>"; };
-    var HLC={fld:"#0a8f4f",cv:"#d32029",px:"#0f83d6",bk0:"#7c3aed",bk1:"#ea580c",bk2:"#a16207",bk3:"#64748b",bk4:"#c026d3",bk5:"#0d9488"};
-    var linksOn=cbLinks&&cbLinks.checked;
-    function synCell(text, eng, vocab){
-      if((!colorOn && !linksOn) || !text) return fspan(wesc(text||""));
-      var h=hlHighlight(text, eng, sem, brk, vocab, linksOn).html.replace(/<span class="hl-(\w+)">/g, function(m,cl){var bd=/^(fld|cv|px)$/.test(cl)?";font-weight:bold":"";return "<span style=\"color:"+(HLC[cl]||"inherit")+bd+";"+msoF+"\">";});
-      h=h.replace(/<a class="cvlink"/g, '<a style="color:#248D88;text-decoration:underline"');
-      return fspan(h);
-    }
-    var tdb="border:1px solid #999;padding:0.1cm 0.2cm;font-weight:bold;white-space:nowrap;vertical-align:top;font-size:11pt";
-    var tnum="border:1px solid #999;padding:0.1cm 0.2cm;vertical-align:top;color:#6d28d9;font-weight:bold;white-space:nowrap;text-align:center;font-size:11pt";
-    var tsyn="border:1px solid #999;padding:0.1cm 0.2cm;vertical-align:top;font-size:11pt";
-    var th="border:1px solid #999;padding:0.1cm 0.2cm;background:#5b21b6;color:#fff;font-weight:bold;font-size:11pt";
-    var rows="";
+    // 產生真正的 .docx（OOXML）：搜尋語法依畫面勾選上色、控制詞彙內嵌查證超連結、檢索詞換行為 Enter 段落
+    var skel='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="'+_WNS+'"><w:body></w:body></w:document>';
+    var doc=new DOMParser().parseFromString(skel,"application/xml");
+    var body=doc.getElementsByTagNameNS(_WNS,"body")[0];
+    function heading(txt){ return _mkP(doc,[{text:txt,bold:true,sz:28}]); }
+    function synTc(runs, w){ var tc=doc.createElementNS(_WNS,"w:tc"); var tcPr=doc.createElementNS(_WNS,"w:tcPr"); var ww=doc.createElementNS(_WNS,"w:tcW"); ww.setAttributeNS(_WNS,"w:w",String(w)); ww.setAttributeNS(_WNS,"w:type","dxa"); tcPr.appendChild(ww); tc.appendChild(tcPr); tc.appendChild(_mkPRuns(doc, runs)); return tc; }
+    var _ct=_conceptTermsTable(doc);
+    if(_ct){ body.appendChild(_ct.head); body.appendChild(_ct.tbl); body.appendChild(_ct.wnote); body.appendChild(_mkP(doc,[{text:""}])); }
+    body.appendChild(heading(en?"PICO Search Strategy":"PICO 檢索策略"));
+    body.appendChild(_mkP(doc,[{text:(en?"Field level: ":"欄位完整度：")+((lastGen&&lastGen.level)||""), sz:18, color:"555555"}]));
+    body.appendChild(_mkP(doc,[{text:(en?"⚠ Reminder: assess the suitability of synonyms and controlled vocabulary yourself, and especially verify the controlled terms — the tool only links to the thesauri and does not verify them.":"⚠ 提醒您！請自行評估同義詞與控制詞彙的適用性，尤其確實查核控制詞彙，工具僅提供詞表超連結，並未進行查驗。"), color:"C00000", sz:18}]));
+    var tbl=doc.createElementNS(_WNS,"w:tbl"), pr=doc.createElementNS(_WNS,"w:tblPr");
+    var tw=doc.createElementNS(_WNS,"w:tblW"); tw.setAttributeNS(_WNS,"w:w","0"); tw.setAttributeNS(_WNS,"w:type","auto"); pr.appendChild(tw);
+    var bd=doc.createElementNS(_WNS,"w:tblBorders");
+    ["top","left","bottom","right","insideH","insideV"].forEach(function(e){ var el=doc.createElementNS(_WNS,"w:"+e); el.setAttributeNS(_WNS,"w:val","single"); el.setAttributeNS(_WNS,"w:sz","4"); el.setAttributeNS(_WNS,"w:space","0"); el.setAttributeNS(_WNS,"w:color","999999"); bd.appendChild(el); });
+    pr.appendChild(bd); tbl.appendChild(pr);
+    var grid=doc.createElementNS(_WNS,"w:tblGrid"); [1500,600,7200].forEach(function(gw){ var gc=doc.createElementNS(_WNS,"w:gridCol"); gc.setAttributeNS(_WNS,"w:w",String(gw)); grid.appendChild(gc); }); tbl.appendChild(grid);
+    var htr=doc.createElementNS(_WNS,"w:tr");
+    htr.appendChild(_mkTc(doc,[{text:(en?"Database":"資料庫 Database"),bold:true,color:"FFFFFF"}],{shd:"5B21B6",w:1500}));
+    htr.appendChild(_mkTc(doc,[{text:"#",bold:true,color:"FFFFFF"}],{shd:"5B21B6",w:600}));
+    htr.appendChild(_mkTc(doc,[{text:(en?"Search syntax":"搜尋語法 Search syntax"),bold:true,color:"FFFFFF"}],{shd:"5B21B6",w:7200}));
+    tbl.appendChild(htr);
     lastGen.data.forEach(function(c){
-      var lab=wesc(c.label)+(c.isStart?(en?" (start)":"（起始）"):"");
-      var vf=(c.verify||[]), span=c.rows.length+(vf.length?1:0);
-      c.rows.forEach(function(x,i){
-        rows+="<tr>"+(i===0?("<td rowspan='"+span+"' style='"+tdb+"'>"+fspan(lab)+"</td>"):"")+"<td style='"+tnum+"'>"+fspan(x.n!=null?(_refPrefix(c.engine)+x.n):"")+"</td><td style='"+tsyn+"'>"+synCell(_dispRefs(x.text,c.engine), c.engine, c.vocab)+"</td></tr>";
+      var rws=c.rows||[]; if(!rws.length) return;
+      var vf=(c.verify||[]);
+      var lab=c.label+(c.isStart?(en?" (start)":"（起始）"):"");
+      rws.forEach(function(x,idx){
+        var tr=doc.createElementNS(_WNS,"w:tr");
+        tr.appendChild(_mkTc(doc,[{text:(idx===0?lab:""),bold:true}],{vmerge:(idx===0?"restart":"cont"),w:1500}));
+        tr.appendChild(_mkTc(doc,[{text:(x.n!=null?(_refPrefix(c.engine)+x.n):""),color:"6D28D9",bold:true}],{w:600}));
+        tr.appendChild(synTc(_hlRuns(_dispRefs(x.text,c.engine), c.engine, c.vocab), 7200));
+        tbl.appendChild(tr);
       });
-      if(vf.length){ rows+="<tr><td style='"+tnum+"'></td><td style='"+tsyn+";color:#b45309'>"+fspan(wesc(_verifyNote(vf)))+"</td></tr>"; }   // 尚未整理語法的資料庫：標示「請自行確認 Filters」
+      if(vf.length){
+        var vtr=doc.createElementNS(_WNS,"w:tr");
+        vtr.appendChild(_mkTc(doc,[{text:""}],{vmerge:"cont",w:1500}));
+        vtr.appendChild(_mkTc(doc,[{text:""}],{w:600}));
+        vtr.appendChild(_mkTc(doc,[{text:_verifyNote(vf),color:"B45309"}],{w:7200}));
+        tbl.appendChild(vtr);
+      }
     });
-    var title=en?"PICO Search Strategy":"PICO 檢索策略";
-    var subline=(en?"Field level: ":"欄位完整度：")+wesc(lastGen.level);
-    var cite=(en?"Cite this tool: ":"工具引用：")+"Fang CJ (2026). SR / EBM Search Toolkit: PICO Strategy Builder, Search Syntax Converter, and Proximity Builder. Zenodo. https://doi.org/10.5281/zenodo.21960702";
-    // 研究設計篩選語法出處：依已套用的設計×資料庫列出（相同出處合併）
-    var srcHtml="";
+    body.appendChild(tbl);
     if(lastGen.filters && lastGen.filters.length){
       var DL={rct:"RCT",quasi:(en?"Quasi-experimental":"類實驗 Quasi"),cohort:"Cohort",casecontrol:"Case-control",crosssectional:"Cross-sectional",qualitative:(en?"Qualitative":"質性 Qualitative"),sr:"SR",guideline:(en?"Guideline":"指引 Guideline")};
-      var blocks=[];
-      lastGen.filters.forEach(function(dz){
-        if(!STUDY_FILTER_SRC[dz]) return;
-        var g={}, ord=[];
-        lastGen.data.forEach(function(c){ var s=STUDY_FILTER_SRC[dz][c.tid]; if(s){ if(!g[s]){g[s]=[]; ord.push(s);} g[s].push(c.label); } });
-        if(!ord.length) return;
-        var parts=ord.map(function(s){ return wesc(g[s].join("、")+" — "+s); });
-        blocks.push("<li>"+fspan("<b>"+wesc(DL[dz]||dz)+"</b>："+parts.join("；"))+"</li>");
+      var srcPs=[];
+      lastGen.filters.forEach(function(dz){ if(!STUDY_FILTER_SRC[dz]) return; var g={},ord=[];
+        lastGen.data.forEach(function(c){ var s=STUDY_FILTER_SRC[dz][c.tid]; if(s){ if(!g[s]){g[s]=[];ord.push(s);} g[s].push(c.label); } });
+        if(!ord.length) return; var parts=ord.map(function(s){ return g[s].join("、")+" — "+s; });
+        srcPs.push(_mkP(doc,[{text:(DL[dz]||dz)+"："+parts.join("；"), sz:18, color:"444444"}]));
       });
-      if(blocks.length) srcHtml="<p style='margin-top:14px;font-size:10pt'>"+fspan("<b>"+(en?"Study-design filter sources":"研究設計篩選語法出處")+"</b>")+"</p><ul style='font-size:9pt;color:#444;margin-top:2px'>"+blocks.join("")+"</ul>";
+      if(srcPs.length){ body.appendChild(_mkP(doc,[{text:(en?"Study-design filter sources":"研究設計篩選語法出處"),bold:true,sz:18}])); srcPs.forEach(function(p){ body.appendChild(p); }); }
     }
-    var html="<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'></head><body style=\""+msoF+"\"><h2>"+fspan(title)+"</h2><p>"+fspan(subline)+"</p><p style='margin:6px 0 10px;font-size:10pt;color:#C00000;font-weight:bold'>"+fspan(wesc(en?"⚠ Reminder: assess the suitability of synonyms and controlled vocabulary yourself, and especially verify the controlled terms — the tool only links to the thesauri and does not verify them.":"⚠ 提醒您！請自行評估同義詞與控制詞彙的適用性，尤其確實查核控制詞彙，工具僅提供詞表超連結，並未進行查驗。"))+"</p><table border='1' cellspacing='0' style='border-collapse:collapse;width:100%;border:1px solid #999;mso-padding-alt:0.1cm 0.2cm 0.1cm 0.2cm'><tr><td style='"+th+"'>"+fspan(en?"Database":"資料庫 Database")+"</td><td style='"+th+";text-align:center'>"+fspan("#")+"</td><td style='"+th+"'>"+fspan(en?"Search syntax":"搜尋語法 Search syntax")+"</td></tr>"+rows+"</table>"+srcHtml+"<p style='margin-top:14px;font-size:9pt;color:#555'>"+fspan(wesc(cite))+"</p></body></html>";
-    var blob=new Blob(["\ufeff"+html],{type:"application/msword"});
-    var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="pico_strategy.doc"; document.body.appendChild(a); a.click(); a.remove();
+    body.appendChild(_mkP(doc,[{text:(en?"Cite this tool: ":"工具引用：")+"Fang CJ (2026). SR / EBM Search Toolkit: PICO Strategy Builder, Search Syntax Converter, and Proximity Builder. Zenodo. https://doi.org/10.5281/zenodo.21960702", sz:18, color:"555555"}]));
+    var sect=doc.createElementNS(_WNS,"w:sectPr"); var pgSz=doc.createElementNS(_WNS,"w:pgSz"); pgSz.setAttributeNS(_WNS,"w:w","11906"); pgSz.setAttributeNS(_WNS,"w:h","16838"); sect.appendChild(pgSz); var pgMar=doc.createElementNS(_WNS,"w:pgMar"); pgMar.setAttributeNS(_WNS,"w:top","1440"); pgMar.setAttributeNS(_WNS,"w:right","1440"); pgMar.setAttributeNS(_WNS,"w:bottom","1440"); pgMar.setAttributeNS(_WNS,"w:left","1440"); sect.appendChild(pgMar); body.appendChild(sect);
+    var docXml=new XMLSerializer().serializeToString(doc);
+    if(!/^\s*<\?xml/i.test(docXml)) docXml='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n'+docXml;
+    var ctypes='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>';
+    var rels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>';
+    var files=[["[Content_Types].xml",ctypes],["_rels/.rels",rels],["word/document.xml",docXml]];
+    var enc=new TextEncoder(), entries=[];
+    for(var k=0;k<files.length;k++){ var bytes=enc.encode(files[k][1]); var crc=_crc32(bytes); var comp=null; try{ comp=await _deflateRaw(bytes); }catch(_e){ comp=null; } var de={name:files[k][0], crc:crc, usize:bytes.length}; if(comp){ de.method=8; de.data=comp; de.csize=comp.length; } else { de.method=0; de.data=bytes; de.csize=bytes.length; } entries.push(de); }
+    var outBuf=_zipBuild(entries);
+    var blob=new Blob([outBuf],{type:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
+    var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="pico_strategy.docx"; document.body.appendChild(a); a.click(); a.remove();
   };
 
   // ===== \u56de\u586b\u6aa2\u7d22\u7d00\u9304\u8868\uff1a\u628a\u751f\u6210\u7684\u6aa2\u7d22\u7b56\u7565\u5beb\u56de\u4f7f\u7528\u8005\u4e0a\u50b3\u7684 Word\uff08\u5c31\u5730\u7de8\u8f2f word/document.xml\uff0c\u539f\u751f zip \u8b80\u5beb\uff0c\u53ef\u96e2\u7dda\uff09 =====
@@ -2841,10 +2999,10 @@ if (typeof module !== "undefined" && module.exports) {
       else if(cur){ cur.rows.push(trs[ri]); }
     }
     // \u6bcf\u500b\u8cc7\u6599\u5eab\u5728\u5de5\u5177\u751f\u6210\u7684\u6574\u4efd\u6aa2\u7d22\u5f0f\uff08\u542b\u6982\u5ff5\u884c\u3001\u7d44\u5408\u884c\u3001Filter \u884c\uff09\uff0c\u8207\u756b\u9762\u986f\u793a\u76f8\u540c
-    var LINES={}, VERIFY={}, ENG={}; ((lastGen&&lastGen.data)||[]).forEach(function(c){ if(c&&c.tid){ LINES[c.tid]=c.rows; VERIFY[c.tid]=(c.verify||[]); ENG[c.tid]=c.engine; } });
+    var LINES={}, VERIFY={}, ENG={}, VOC={}; ((lastGen&&lastGen.data)||[]).forEach(function(c){ if(c&&c.tid){ LINES[c.tid]=c.rows; VERIFY[c.tid]=(c.verify||[]); ENG[c.tid]=c.engine; VOC[c.tid]=c.vocab; } });
     blocks.forEach(function(bk){
       var baseLines=LINES[bk.tid]; if(!bk.tid || !baseLines || !baseLines.length) return;
-      var _eng=ENG[bk.tid], _vf=VERIFY[bk.tid]||[];
+      var _eng=ENG[bk.tid], _voc=VOC[bk.tid], _vf=VERIFY[bk.tid]||[];
       var lines=_vf.length ? baseLines.concat([{n:null, text:_verifyNote(_vf)}]) : baseLines;   // 尚未整理語法的資料庫：多填一列「請自行確認 Filters」
       // \u4fdd\u7559\u64cd\u4f5c\u8aaa\u660e\u5217\uff1b\u5176\u9918\uff08\u6982\u5ff5\u63d0\u793a\u3001\u7d44\u5408\u3001Filter \u6a23\u677f\u683c\uff09\uff1d\u53ef\u586b\u5217\uff0c\u4f9d\u756b\u9762\u9806\u5e8f\uff08#\u8207\u8a9e\u6cd5\uff09\u9010\u5217\u9ed1\u5b57\u586b\u5165
       var fillable=[];
@@ -2856,13 +3014,14 @@ if (typeof module !== "undefined" && module.exports) {
         else { var anc=lastPlaced||(fillable.length?fillable[fillable.length-1]:bk.rows[bk.rows.length-1]); tr=_cloneRowCont(doc, anc); anc.parentNode.insertBefore(tr, anc.nextSibling); }
         var tcs=_dchild(tr,"tc"); if(tcs.length<3){ lastPlaced=tr; continue; }
         _cellSetText(doc, tcs[1], lines[i].n!=null?(_refPrefix(_eng)+lines[i].n):"");
-        _cellSetText(doc, tcs[2], _dispRefs(lines[i].text, _eng));
+        if(_vf.length && i===M-1) _cellSetText(doc, tcs[2], lines[i].text);   // 「請自行確認 Filters」提示列：純文字
+        else _cellSetRuns(doc, tcs[2], _dispRefs(lines[i].text, _eng), _eng, _voc);   // 搜尋語法：仿照畫面上色＋控制詞彙查核超連結
         lastPlaced=tr; filled++;
       }
       for(var j=fillable.length-1;j>=M;j--){ fillable[j].parentNode.removeChild(fillable[j]); }   // \u79fb\u9664\u591a\u9918\u7684\u53ef\u586b\u6a23\u677f\u5217\uff08\u4fdd\u7559\u64cd\u4f5c\u8aaa\u660e\u5217\uff09
       dbHit[bk.tid]=1;
     });
-    _insertConceptNote(doc); _insertCVVerifyNote(doc);
+    _insertConceptTerms(doc); _insertCVVerifyNote(doc);
     var out=new XMLSerializer().serializeToString(doc);
     if(!/^\s*<\?xml/i.test(out)) out='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n'+out;
     return {ok:true, filled:filled, dbs:Object.keys(dbHit).length, xml:out};
@@ -2887,6 +3046,135 @@ if (typeof module !== "undefined" && module.exports) {
     if(o.shd){ var s=doc.createElementNS(_WNS,"w:shd"); s.setAttributeNS(_WNS,"w:val","clear"); s.setAttributeNS(_WNS,"w:color","auto"); s.setAttributeNS(_WNS,"w:fill",o.shd); tcPr.appendChild(s); }
     if(o.vmerge){ var vm=doc.createElementNS(_WNS,"w:vMerge"); if(o.vmerge==="restart") vm.setAttributeNS(_WNS,"w:val","restart"); tcPr.appendChild(vm); }
     tc.appendChild(tcPr); tc.appendChild(_mkP(doc, runs)); return tc;
+  }
+  function _mkTcML(doc, text, o){ o=o||{};
+    var tc=doc.createElementNS(_WNS,"w:tc"), tcPr=doc.createElementNS(_WNS,"w:tcPr");
+    if(o.w){ var w=doc.createElementNS(_WNS,"w:tcW"); w.setAttributeNS(_WNS,"w:w",String(o.w)); w.setAttributeNS(_WNS,"w:type","dxa"); tcPr.appendChild(w); }
+    if(o.shd){ var s=doc.createElementNS(_WNS,"w:shd"); s.setAttributeNS(_WNS,"w:val","clear"); s.setAttributeNS(_WNS,"w:color","auto"); s.setAttributeNS(_WNS,"w:fill",o.shd); tcPr.appendChild(s); }
+    tc.appendChild(tcPr);
+    var lines=String(text==null?"":text).split(/\r?\n/); if(!lines.length) lines=[""];
+    lines.forEach(function(ln){ tc.appendChild(_mkP(doc,[{text:ln, bold:o.bold, color:o.color}])); });
+    return tc;
+  }
+  // 段落內嵌超連結（用 HYPERLINK 功能變數，免動 document.xml.rels）；url 為空則純文字
+  function _mkHlP(doc, text, url){
+    var p=doc.createElementNS(_WNS,"w:p");
+    if(!url){ var r0=doc.createElementNS(_WNS,"w:r"); var t0=doc.createElementNS(_WNS,"w:t"); t0.setAttributeNS(_XMLNS,"xml:space","preserve"); t0.textContent=(text==null?"":text); r0.appendChild(t0); p.appendChild(r0); return p; }
+    function fld(type){ var r=doc.createElementNS(_WNS,"w:r"); var fc=doc.createElementNS(_WNS,"w:fldChar"); fc.setAttributeNS(_WNS,"w:fldCharType",type); r.appendChild(fc); return r; }
+    p.appendChild(fld("begin"));
+    var ri=doc.createElementNS(_WNS,"w:r"); var it=doc.createElementNS(_WNS,"w:instrText"); it.setAttributeNS(_XMLNS,"xml:space","preserve"); it.textContent=' HYPERLINK "'+String(url).replace(/"/g,"%22")+'" '; ri.appendChild(it); p.appendChild(ri);
+    p.appendChild(fld("separate"));
+    var rr=doc.createElementNS(_WNS,"w:r"); var rpr=doc.createElementNS(_WNS,"w:rPr");
+    var col=doc.createElementNS(_WNS,"w:color"); col.setAttributeNS(_WNS,"w:val","0563C1"); rpr.appendChild(col);
+    var u=doc.createElementNS(_WNS,"w:u"); u.setAttributeNS(_WNS,"w:val","single"); rpr.appendChild(u);
+    rr.appendChild(rpr); var t=doc.createElementNS(_WNS,"w:t"); t.setAttributeNS(_XMLNS,"xml:space","preserve"); t.textContent=(text==null?"":text); rr.appendChild(t); p.appendChild(rr);
+    p.appendChild(fld("end"));
+    return p;
+  }
+  // 控制詞彙儲存格：逐行加詞表查證超連結（cvUrl 依 vocab 產生；無連結則純文字）
+  function _mkTcCV(doc, text, vocab, o){ o=o||{};
+    var tc=doc.createElementNS(_WNS,"w:tc"), tcPr=doc.createElementNS(_WNS,"w:tcPr");
+    if(o.w){ var w=doc.createElementNS(_WNS,"w:tcW"); w.setAttributeNS(_WNS,"w:w",String(o.w)); w.setAttributeNS(_WNS,"w:type","dxa"); tcPr.appendChild(w); }
+    tc.appendChild(tcPr);
+    var lines=String(text==null?"":text).split(/\r?\n/); if(!lines.length) lines=[""];
+    lines.forEach(function(ln){ var u = ln.trim() ? cvUrl(ln, vocab) : null; tc.appendChild(_mkHlP(doc, ln, u)); });
+    return tc;
+  }
+  // 語法字串 → 帶顏色／超連結的 run 陣列（依畫面勾選：語法顏色、成對括弧、查核連結）；供 .docx 下載與回填共用
+  function _hlRuns(text, engine, vocab){
+    var sem=cbColor&&cbColor.checked, brk=cbBracket&&cbBracket.checked, linksOn=cbLinks&&cbLinks.checked;
+    var plain=[{text:(text==null?"":String(text))}];
+    if(!sem && !brk && !linksOn) return plain;
+    var html; try{ html=hlHighlight(text, engine, sem, brk, vocab, linksOn).html; }catch(e){ return plain; }
+    var HLC={fld:"0a8f4f",cv:"d32029",px:"0f83d6",bk0:"7c3aed",bk1:"ea580c",bk2:"a16207",bk3:"64748b",bk4:"c026d3",bk5:"0d9488"};
+    function decode(s){ return s.replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&amp;/g,"&"); }
+    var runs=[], stack=[], href=null;
+    var re=/<a\b[^>]*?href="([^"]*)"[^>]*>|<\/a>|<span class="hl-(\w+)">|<\/span>|([^<]+)/g, m;
+    while((m=re.exec(html))){
+      if(m[1]!==undefined){ href=m[1]; }
+      else if(m[0]==="</a>"){ href=null; }
+      else if(m[2]!==undefined){ var cls=m[2]; stack.push({color:HLC[cls]||null, bold:/^(fld|cv|px)$/.test(cls)}); }
+      else if(m[0]==="</span>"){ stack.pop(); }
+      else if(m[3]!==undefined){ var txt=decode(m[3]); if(!txt) continue; var top=stack.length?stack[stack.length-1]:{}; runs.push({text:txt, color:top.color, bold:top.bold, url:href}); }
+    }
+    return runs.length?runs:plain;
+  }
+  // run 陣列 → w:p（相同 url 的連續 run 併為一個 HYPERLINK 功能變數）
+  function _mkPRuns(doc, runs){
+    var p=doc.createElementNS(_WNS,"w:p");
+    function plainRun(rn){
+      var r=doc.createElementNS(_WNS,"w:r"), rpr=doc.createElementNS(_WNS,"w:rPr");
+      if(rn.bold) rpr.appendChild(doc.createElementNS(_WNS,"w:b"));
+      var col=doc.createElementNS(_WNS,"w:color"); col.setAttributeNS(_WNS,"w:val", rn.url?(rn.color||"248D88"):(rn.color||"000000")); rpr.appendChild(col);
+      if(rn.url){ var u=doc.createElementNS(_WNS,"w:u"); u.setAttributeNS(_WNS,"w:val","single"); rpr.appendChild(u); }
+      if(rn.sz){ var s=doc.createElementNS(_WNS,"w:sz"); s.setAttributeNS(_WNS,"w:val",String(rn.sz)); rpr.appendChild(s); }
+      r.appendChild(rpr);
+      var t=doc.createElementNS(_WNS,"w:t"); t.setAttributeNS(_XMLNS,"xml:space","preserve"); t.textContent=(rn.text==null?"":rn.text); r.appendChild(t);
+      return r;
+    }
+    function fld(type){ var r=doc.createElementNS(_WNS,"w:r"); var fc=doc.createElementNS(_WNS,"w:fldChar"); fc.setAttributeNS(_WNS,"w:fldCharType",type); r.appendChild(fc); return r; }
+    var i=0;
+    while(i<runs.length){
+      if(runs[i].url){
+        var url=runs[i].url, group=[];
+        while(i<runs.length && runs[i].url===url){ group.push(runs[i]); i++; }
+        p.appendChild(fld("begin"));
+        var ri=doc.createElementNS(_WNS,"w:r"); var it=doc.createElementNS(_WNS,"w:instrText"); it.setAttributeNS(_XMLNS,"xml:space","preserve"); it.textContent=' HYPERLINK "'+String(url).replace(/"/g,"%22")+'" '; ri.appendChild(it); p.appendChild(ri);
+        p.appendChild(fld("separate"));
+        group.forEach(function(g){ p.appendChild(plainRun({text:g.text, bold:g.bold, color:g.color, url:true, sz:g.sz})); });
+        p.appendChild(fld("end"));
+      } else { p.appendChild(plainRun(runs[i])); i++; }
+    }
+    if(!runs.length){ var r0=doc.createElementNS(_WNS,"w:r"); var t0=doc.createElementNS(_WNS,"w:t"); t0.setAttributeNS(_XMLNS,"xml:space","preserve"); t0.textContent=""; r0.appendChild(t0); p.appendChild(r0); }
+    return p;
+  }
+  // 表格儲存格：以帶顏色／超連結的語法填入（清掉原段落）；供回填的「搜尋語法」欄仿照畫面上色
+  function _cellSetRuns(doc, tc, text, eng, vocab){
+    var ps=_dchild(tc,"p"); for(var i=0;i<ps.length;i++) tc.removeChild(ps[i]);
+    tc.appendChild(_mkPRuns(doc, _hlRuns(text, eng, vocab)));
+  }
+  // 建「工具整理的檢索詞（概念表原貌）」：回傳 {head, tbl, wnote}；無詞則 null。控制詞彙欄內嵌查證超連結、換行為 Enter 段落。
+  function _conceptTermsTable(doc){
+    var en=isEn();
+    var terms=((lastGen&&lastGen.terms)||[]).filter(function(r){return r.zh||r.ft||r.mesh||r.emtree||r.cinahl;});
+    if(!terms.length) return null;
+    var head=_mkP(doc,[{text:(en?"※ Search terms tidied in the tool (concept table):":"※ 工具整理的檢索詞（概念表）："), color:"0F766E", sz:18, bold:true}]);
+    var tbl=doc.createElementNS(_WNS,"w:tbl"), pr=doc.createElementNS(_WNS,"w:tblPr");
+    var tw=doc.createElementNS(_WNS,"w:tblW"); tw.setAttributeNS(_WNS,"w:w","0"); tw.setAttributeNS(_WNS,"w:type","auto"); pr.appendChild(tw);
+    var bd=doc.createElementNS(_WNS,"w:tblBorders");
+    ["top","left","bottom","right","insideH","insideV"].forEach(function(e){ var el=doc.createElementNS(_WNS,"w:"+e); el.setAttributeNS(_WNS,"w:val","single"); el.setAttributeNS(_WNS,"w:sz","4"); el.setAttributeNS(_WNS,"w:space","0"); el.setAttributeNS(_WNS,"w:color","999999"); bd.appendChild(el); });
+    pr.appendChild(bd); tbl.appendChild(pr);
+    var grid=doc.createElementNS(_WNS,"w:tblGrid"); [1200,1600,2600,1700,1700,1700].forEach(function(gw){ var gc=doc.createElementNS(_WNS,"w:gridCol"); gc.setAttributeNS(_WNS,"w:w",String(gw)); grid.appendChild(gc); }); tbl.appendChild(grid);
+    var hdr=[[(en?"Concept":"概念"),1200],[(en?"Chinese terms":"中文詞"),1600],[(en?"Free-text (EN)":"英文自由詞"),2600],["Emtree",1700],["MeSH",1700],["CINAHL",1700]];
+    var htr=doc.createElementNS(_WNS,"w:tr"); hdr.forEach(function(h){ htr.appendChild(_mkTc(doc,[{text:h[0],bold:true,color:"FFFFFF"}],{shd:"0F766E",w:h[1]})); }); tbl.appendChild(htr);
+    terms.forEach(function(r){
+      var tr=doc.createElementNS(_WNS,"w:tr");
+      tr.appendChild(_mkTcML(doc, r.label||"", {w:1200, bold:true}));
+      tr.appendChild(_mkTcML(doc, r.zh||"", {w:1600}));
+      tr.appendChild(_mkTcML(doc, r.ft||"", {w:2600}));
+      tr.appendChild(_mkTcCV(doc, r.emtree||"", "emtree", {w:1700}));
+      tr.appendChild(_mkTcCV(doc, r.mesh||"", "mesh", {w:1700}));
+      tr.appendChild(_mkTcCV(doc, r.cinahl||"", "cinahl", {w:1700}));
+      tbl.appendChild(tr);
+    });
+    var wnote=_mkP(doc,[{text:(en?"⚠ Reminder: assess the suitability of synonyms and controlled vocabulary yourself, and especially verify the controlled terms — the tool only links to the thesauri and does not verify them.":"⚠ 提醒您！請自行評估同義詞與控制詞彙的適用性，尤其確實查核控制詞彙，工具僅提供詞表超連結，並未進行查驗。"), color:"C00000", sz:18}]);
+    return {head:head, tbl:tbl, wnote:wnote};
+  }
+  // 回填：把工具整理的「檢索詞（概念表原貌）」附加在原有檢索詞表格「下方」，不覆蓋原表；具冪等性
+  function _insertConceptTerms(doc){
+    var _ct=_conceptTermsTable(doc); if(!_ct) return;
+    var ts=doc.getElementsByTagNameNS(_WNS,"t");
+    for(var i=0;i<ts.length;i++){ var tx=ts[i].textContent||""; if(tx.indexOf("工具整理的檢索詞")>=0 || tx.indexOf("tidied in the tool")>=0) return; }
+    // 找出紀錄表中「原有的檢索詞（概念）表」：含主題概念／自由詞／控制詞彙欄，且非「搜尋語法」策略表
+    var tbls=doc.getElementsByTagNameNS(_WNS,"tbl"), ctbl=null;
+    for(var j=0;j<tbls.length;j++){ var txt=_recCellText(tbls[j]); if(!/搜尋語法|Search syntax/.test(txt) && (/主題概念/.test(txt)||/自由詞/.test(txt)||/控制詞彙|Controlled\s*Vocabulary/i.test(txt)||(/emtree/i.test(txt)&&/mesh/i.test(txt)&&/cinahl/i.test(txt)))){ ctbl=tbls[j]; break; } }
+    var head=_ct.head, tbl=_ct.tbl, wnote=_ct.wnote;
+    // 附加時標題註明「附加於原表下方」
+    var htext=(isEn()?"※ Search terms tidied in the tool (appended below your original table; not overwriting it):":"※ 工具整理的檢索詞（附加於原檢索詞表下方，未覆蓋原表）：");
+    var ht=head.getElementsByTagNameNS(_WNS,"t"); if(ht.length) ht[0].textContent=htext;
+    var spacer=_mkP(doc,[{text:""}]);
+    if(ctbl && ctbl.parentNode){ var ref=ctbl.nextSibling; ctbl.parentNode.insertBefore(head, ref); ctbl.parentNode.insertBefore(tbl, ref); ctbl.parentNode.insertBefore(wnote, ref); ctbl.parentNode.insertBefore(spacer, ref); }
+    else { var body=doc.getElementsByTagNameNS(_WNS,"body")[0]; if(body){ body.insertBefore(spacer, body.firstChild); body.insertBefore(wnote, body.firstChild); body.insertBefore(tbl, body.firstChild); body.insertBefore(head, body.firstChild); } }
   }
   // 在概念表下方加註：檢索詞未由工具自動回填（避免與策略表誤會為同步）；具冪等性，不重覆加。
   function _insertConceptNote(doc){
@@ -2963,7 +3251,7 @@ if (typeof module !== "undefined" && module.exports) {
     var nodes=[head, lvl, tbl].concat(srcPs.length?[_mkP(doc,[{text:(en?"Study-design filter sources":"研究設計篩選語法出處"),bold:true,sz:18}])].concat(srcPs):[]).concat([tail]);
     var sect=null, kids=body.childNodes; for(var i=kids.length-1;i>=0;i--){ if(kids[i].localName==="sectPr" && kids[i].namespaceURI===_WNS){ sect=kids[i]; break; } }
     nodes.forEach(function(nd){ if(sect) body.insertBefore(nd, sect); else body.appendChild(nd); });
-    _insertConceptNote(doc); _insertCVVerifyNote(doc);
+    _insertConceptTerms(doc); _insertCVVerifyNote(doc);
     var out=new XMLSerializer().serializeToString(doc);
     if(!/^\s*<\?xml/i.test(out)) out='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n'+out;
     return {ok:true, filled:cnt, xml:out, appended:true};

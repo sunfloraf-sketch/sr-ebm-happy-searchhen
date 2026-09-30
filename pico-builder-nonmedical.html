@@ -3034,7 +3034,7 @@ if (typeof module !== "undefined" && module.exports) {
       }
       outs.appendChild(card);
     });
-    lastGen={data:exportData, level:lvlLabel, filters:FILTER_SEL};
+    lastGen={data:exportData, level:lvlLabel, filters:FILTER_SEL, terms:rows};
     if($("#wordBtn")) $("#wordBtn").disabled = !exportData.length;
     if(typeof updateRecordBtn==="function") updateRecordBtn();
   };
@@ -3066,6 +3066,30 @@ if (typeof module !== "undefined" && module.exports) {
       });
       if(vf.length){ rows+="<tr><td style='"+tnum+"'></td><td style='"+tsyn+";color:#b45309'>"+fspan(wesc(_verifyNote(vf)))+"</td></tr>"; }   // 尚未整理語法的資料庫：標示「請自行確認 Filters」
     });
+    // 檢索詞（概念表原貌）：放在檢索策略之前（欄：概念｜中文詞｜英文自由詞｜各有內容的控制詞彙欄）
+    var termsHtml="";
+    (function(){
+      var T=(lastGen.terms||[]).filter(function(r){ return r.zh||r.ft||(r.cv && Object.keys(r.cv).some(function(k){return r.cv[k];})); });
+      if(!T.length) return;
+      var cvKeys=[];
+      CV_DBS.forEach(function(k){ if(T.some(function(r){return r.cv&&r.cv[k];})) cvKeys.push(k); });
+      T.forEach(function(r){ if(r.cv) Object.keys(r.cv).forEach(function(k){ if(r.cv[k] && cvKeys.indexOf(k)<0) cvKeys.push(k); }); });
+      var cvLabel=function(k){ return (typeof CV_COL!=="undefined" && CV_COL[k] && CV_COL[k].label)||k; };
+      var tth="border:1px solid #999;padding:0.1cm 0.2cm;background:#0f766e;color:#fff;font-weight:bold;font-size:11pt";
+      var tcS="border:1px solid #999;padding:0.1cm 0.2cm;vertical-align:top;font-size:11pt";
+      var tlab="border:1px solid #999;padding:0.1cm 0.2cm;vertical-align:top;font-weight:bold;white-space:nowrap;font-size:11pt";
+      var br=function(s){ return wesc(s||"").replace(/\n/g,"<br>"); };
+      var hdr="<tr><td style='"+tth+"'>"+fspan(en?"Concept":"概念")+"</td><td style='"+tth+"'>"+fspan(en?"Chinese terms":"中文詞")+"</td><td style='"+tth+"'>"+fspan(en?"Free-text (EN)":"英文自由詞")+"</td>";
+      cvKeys.forEach(function(k){ hdr+="<td style='"+tth+"'>"+fspan(wesc(cvLabel(k)))+"</td>"; });
+      hdr+="</tr>";
+      var trs="";
+      T.forEach(function(r){
+        trs+="<tr><td style='"+tlab+"'>"+fspan(wesc(r.label||""))+"</td><td style='"+tcS+"'>"+fspan(br(r.zh))+"</td><td style='"+tcS+"'>"+fspan(br(r.ft))+"</td>";
+        cvKeys.forEach(function(k){ trs+="<td style='"+tcS+"'>"+fspan(br(r.cv&&r.cv[k]))+"</td>"; });
+        trs+="</tr>";
+      });
+      termsHtml="<h2>"+fspan(en?"Search terms (PICO concept table)":"檢索詞（PICO 概念表）")+"</h2><table border='1' cellspacing='0' style='border-collapse:collapse;width:100%;border:1px solid #999;mso-padding-alt:0.1cm 0.2cm 0.1cm 0.2cm'>"+hdr+trs+"</table><p style='margin:14px 0 0'></p>";
+    })();
     var title=en?"PICO Search Strategy":"PICO 檢索策略";
     var subline=(en?"Field level: ":"欄位完整度：")+wesc(lastGen.level);
     var cite=(en?"Cite this tool: ":"工具引用：")+"Fang CJ (2026). SR / EBM Search Toolkit: PICO Strategy Builder, Search Syntax Converter, and Proximity Builder. Zenodo. https://doi.org/10.5281/zenodo.21960702";
@@ -3084,7 +3108,7 @@ if (typeof module !== "undefined" && module.exports) {
       });
       if(blocks.length) srcHtml="<p style='margin-top:14px;font-size:10pt'>"+fspan("<b>"+(en?"Study-design filter sources":"研究設計篩選語法出處")+"</b>")+"</p><ul style='font-size:9pt;color:#444;margin-top:2px'>"+blocks.join("")+"</ul>";
     }
-    var html="<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'></head><body style=\""+msoF+"\"><h2>"+fspan(title)+"</h2><p>"+fspan(subline)+"</p><p style='margin:6px 0 10px;font-size:10pt;color:#C00000;font-weight:bold'>"+fspan(wesc(en?"⚠ Reminder: assess the suitability of synonyms and controlled vocabulary yourself, and especially verify the controlled terms — the tool only links to the thesauri and does not verify them.":"⚠ 提醒您！請自行評估同義詞與控制詞彙的適用性，尤其確實查核控制詞彙，工具僅提供詞表超連結，並未進行查驗。"))+"</p><table border='1' cellspacing='0' style='border-collapse:collapse;width:100%;border:1px solid #999;mso-padding-alt:0.1cm 0.2cm 0.1cm 0.2cm'><tr><td style='"+th+"'>"+fspan(en?"Database":"資料庫 Database")+"</td><td style='"+th+";text-align:center'>"+fspan("#")+"</td><td style='"+th+"'>"+fspan(en?"Search syntax":"搜尋語法 Search syntax")+"</td></tr>"+rows+"</table>"+srcHtml+"<p style='margin-top:14px;font-size:9pt;color:#555'>"+fspan(wesc(cite))+"</p></body></html>";
+    var html="<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'></head><body style=\""+msoF+"\">"+termsHtml+"<h2>"+fspan(title)+"</h2><p>"+fspan(subline)+"</p><p style='margin:6px 0 10px;font-size:10pt;color:#C00000;font-weight:bold'>"+fspan(wesc(en?"⚠ Reminder: assess the suitability of synonyms and controlled vocabulary yourself, and especially verify the controlled terms — the tool only links to the thesauri and does not verify them.":"⚠ 提醒您！請自行評估同義詞與控制詞彙的適用性，尤其確實查核控制詞彙，工具僅提供詞表超連結，並未進行查驗。"))+"</p><table border='1' cellspacing='0' style='border-collapse:collapse;width:100%;border:1px solid #999;mso-padding-alt:0.1cm 0.2cm 0.1cm 0.2cm'><tr><td style='"+th+"'>"+fspan(en?"Database":"資料庫 Database")+"</td><td style='"+th+";text-align:center'>"+fspan("#")+"</td><td style='"+th+"'>"+fspan(en?"Search syntax":"搜尋語法 Search syntax")+"</td></tr>"+rows+"</table>"+srcHtml+"<p style='margin-top:14px;font-size:9pt;color:#555'>"+fspan(wesc(cite))+"</p></body></html>";
     var blob=new Blob(["\ufeff"+html],{type:"application/msword"});
     var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="pico_strategy.doc"; document.body.appendChild(a); a.click(); a.remove();
   };
@@ -3231,7 +3255,7 @@ if (typeof module !== "undefined" && module.exports) {
       for(var j=fillable.length-1;j>=M;j--){ fillable[j].parentNode.removeChild(fillable[j]); }   // \u79fb\u9664\u591a\u9918\u7684\u53ef\u586b\u6a23\u677f\u5217\uff08\u4fdd\u7559\u64cd\u4f5c\u8aaa\u660e\u5217\uff09
       dbHit[bk.tid]=1;
     });
-    _insertConceptNote(doc); _insertCVVerifyNote(doc);
+    _insertConceptTerms(doc); _insertCVVerifyNote(doc);
     var out=new XMLSerializer().serializeToString(doc);
     if(!/^\s*<\?xml/i.test(out)) out='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n'+out;
     return {ok:true, filled:filled, dbs:Object.keys(dbHit).length, xml:out};
@@ -3256,6 +3280,52 @@ if (typeof module !== "undefined" && module.exports) {
     if(o.shd){ var s=doc.createElementNS(_WNS,"w:shd"); s.setAttributeNS(_WNS,"w:val","clear"); s.setAttributeNS(_WNS,"w:color","auto"); s.setAttributeNS(_WNS,"w:fill",o.shd); tcPr.appendChild(s); }
     if(o.vmerge){ var vm=doc.createElementNS(_WNS,"w:vMerge"); if(o.vmerge==="restart") vm.setAttributeNS(_WNS,"w:val","restart"); tcPr.appendChild(vm); }
     tc.appendChild(tcPr); tc.appendChild(_mkP(doc, runs)); return tc;
+  }
+  function _mkTcML(doc, text, o){ o=o||{};
+    var tc=doc.createElementNS(_WNS,"w:tc"), tcPr=doc.createElementNS(_WNS,"w:tcPr");
+    if(o.w){ var w=doc.createElementNS(_WNS,"w:tcW"); w.setAttributeNS(_WNS,"w:w",String(o.w)); w.setAttributeNS(_WNS,"w:type","dxa"); tcPr.appendChild(w); }
+    if(o.shd){ var s=doc.createElementNS(_WNS,"w:shd"); s.setAttributeNS(_WNS,"w:val","clear"); s.setAttributeNS(_WNS,"w:color","auto"); s.setAttributeNS(_WNS,"w:fill",o.shd); tcPr.appendChild(s); }
+    tc.appendChild(tcPr);
+    var lines=String(text==null?"":text).split(/\r?\n/); if(!lines.length) lines=[""];
+    lines.forEach(function(ln){ tc.appendChild(_mkP(doc,[{text:ln, bold:o.bold, color:o.color}])); });
+    return tc;
+  }
+  // 回填：把工具整理的「檢索詞（概念表原貌）」附加在原有檢索詞表格「下方」，不覆蓋原表；具冪等性
+  function _insertConceptTerms(doc){
+    var en=isEn();
+    var terms=((lastGen&&lastGen.terms)||[]).filter(function(r){ return r.zh||r.ft||(r.cv && Object.keys(r.cv).some(function(k){return r.cv[k];})); });
+    if(!terms.length) return;
+    var ts=doc.getElementsByTagNameNS(_WNS,"t");
+    for(var i=0;i<ts.length;i++){ var tx=ts[i].textContent||""; if(tx.indexOf("工具整理的檢索詞")>=0 || tx.indexOf("tidied in the tool")>=0) return; }
+    // 有內容的控制詞彙欄（依 CV_DBS 排序，其餘自訂欄接在後）
+    var cvKeys=[];
+    if(typeof CV_DBS!=="undefined") CV_DBS.forEach(function(k){ if(terms.some(function(r){return r.cv&&r.cv[k];})) cvKeys.push(k); });
+    terms.forEach(function(r){ if(r.cv) Object.keys(r.cv).forEach(function(k){ if(r.cv[k] && cvKeys.indexOf(k)<0) cvKeys.push(k); }); });
+    var cvLabel=function(k){ return (typeof CV_COL!=="undefined" && CV_COL[k] && CV_COL[k].label)||k; };
+    // 找出紀錄表中「原有的檢索詞（概念）表」：含主題概念／自由詞／控制詞彙欄，且非「搜尋語法」策略表
+    var tbls=doc.getElementsByTagNameNS(_WNS,"tbl"), ct=null;
+    for(var j=0;j<tbls.length;j++){ var txt=_recCellText(tbls[j]); if(!/搜尋語法|Search syntax/.test(txt) && (/主題概念/.test(txt)||/自由詞/.test(txt)||/控制詞彙|Controlled\s*Vocabulary/i.test(txt))){ ct=tbls[j]; break; } }
+    var head=_mkP(doc,[{text:(en?"※ Search terms tidied in the tool (appended below your original table; not overwriting it):":"※ 工具整理的檢索詞（附加於原檢索詞表下方，未覆蓋原表）："), color:"0F766E", sz:18, bold:true}]);
+    var tbl=doc.createElementNS(_WNS,"w:tbl"), pr=doc.createElementNS(_WNS,"w:tblPr");
+    var tw=doc.createElementNS(_WNS,"w:tblW"); tw.setAttributeNS(_WNS,"w:w","0"); tw.setAttributeNS(_WNS,"w:type","auto"); pr.appendChild(tw);
+    var bd=doc.createElementNS(_WNS,"w:tblBorders");
+    ["top","left","bottom","right","insideH","insideV"].forEach(function(e){ var el=doc.createElementNS(_WNS,"w:"+e); el.setAttributeNS(_WNS,"w:val","single"); el.setAttributeNS(_WNS,"w:sz","4"); el.setAttributeNS(_WNS,"w:space","0"); el.setAttributeNS(_WNS,"w:color","999999"); bd.appendChild(el); });
+    pr.appendChild(bd); tbl.appendChild(pr);
+    var cols=[[(en?"Concept":"概念"),1200],[(en?"Chinese terms":"中文詞"),1600],[(en?"Free-text (EN)":"英文自由詞"),2600]];
+    cvKeys.forEach(function(k){ cols.push([cvLabel(k),1700]); });
+    var grid=doc.createElementNS(_WNS,"w:tblGrid"); cols.forEach(function(c){ var gc=doc.createElementNS(_WNS,"w:gridCol"); gc.setAttributeNS(_WNS,"w:w",String(c[1])); grid.appendChild(gc); }); tbl.appendChild(grid);
+    var htr=doc.createElementNS(_WNS,"w:tr"); cols.forEach(function(c){ htr.appendChild(_mkTc(doc,[{text:c[0],bold:true,color:"FFFFFF"}],{shd:"0F766E",w:c[1]})); }); tbl.appendChild(htr);
+    terms.forEach(function(r){
+      var tr=doc.createElementNS(_WNS,"w:tr");
+      tr.appendChild(_mkTcML(doc, r.label||"", {w:1200, bold:true}));
+      tr.appendChild(_mkTcML(doc, r.zh||"", {w:1600}));
+      tr.appendChild(_mkTcML(doc, r.ft||"", {w:2600}));
+      cvKeys.forEach(function(k){ tr.appendChild(_mkTcML(doc, (r.cv&&r.cv[k])||"", {w:1700})); });
+      tbl.appendChild(tr);
+    });
+    var spacer=_mkP(doc,[{text:""}]);
+    if(ct && ct.parentNode){ var ref=ct.nextSibling; ct.parentNode.insertBefore(head, ref); ct.parentNode.insertBefore(tbl, ref); ct.parentNode.insertBefore(spacer, ref); }
+    else { var body=doc.getElementsByTagNameNS(_WNS,"body")[0]; if(body){ body.insertBefore(spacer, body.firstChild); body.insertBefore(tbl, body.firstChild); body.insertBefore(head, body.firstChild); } }
   }
   // 在概念表下方加註：檢索詞未由工具自動回填（避免與策略表誤會為同步）；具冪等性，不重覆加。
   function _insertConceptNote(doc){
@@ -3332,7 +3402,7 @@ if (typeof module !== "undefined" && module.exports) {
     var nodes=[head, lvl, tbl].concat(srcPs.length?[_mkP(doc,[{text:(en?"Study-design filter sources":"研究設計篩選語法出處"),bold:true,sz:18}])].concat(srcPs):[]).concat([tail]);
     var sect=null, kids=body.childNodes; for(var i=kids.length-1;i>=0;i--){ if(kids[i].localName==="sectPr" && kids[i].namespaceURI===_WNS){ sect=kids[i]; break; } }
     nodes.forEach(function(nd){ if(sect) body.insertBefore(nd, sect); else body.appendChild(nd); });
-    _insertConceptNote(doc); _insertCVVerifyNote(doc);
+    _insertConceptTerms(doc); _insertCVVerifyNote(doc);
     var out=new XMLSerializer().serializeToString(doc);
     if(!/^\s*<\?xml/i.test(out)) out='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n'+out;
     return {ok:true, filled:cnt, xml:out, appended:true};
