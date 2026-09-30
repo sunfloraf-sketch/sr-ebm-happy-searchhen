@@ -471,8 +471,8 @@ Optical Imaging)</pre>
   <div class="foot">
     <span data-zh>此工具為純網頁程式，未使用 AI。資料預設只在瀏覽器本機執行與暫存；只有按下「PubMed 估算文章數」時，對應檢索式才會傳送至 NCBI E-utilities。產出的檢索策略請人工覆核並於資料庫實測後再使用。</span>
     <span data-en>A pure web-based tool with no AI. Data stays in your browser by default; only when you click “Estimate PubMed counts” are the relevant queries sent to NCBI E-utilities. Please human-check and test the generated strategy before use.</span><br>
-    <span data-zh>引用建議: 方靜如（2026）。SR / EBM 搜尋工具包: PICO 檢索策略產生器、資料庫檢索語法轉換器、鄰近字組合器。Zenodo. <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">https://doi.org/10.5281/zenodo.21960702</a><br></span>
-    <span>Cite as: Fang CJ (2026). <i>SR / EBM Search Toolkit: PICO Strategy Builder, Search Syntax Converter, and Proximity Builder</i>. Zenodo. <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">https://doi.org/10.5281/zenodo.21960702</a></span><br>
+    <span data-zh>工具引用：方靜如，SR x EBM SearchHen 搜尋策略生成雞。 doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>。<a href="https://sunfloraf-sketch.github.io/sr-search-toolkit/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-search-toolkit/</a><br>Fang CJ, SR x EBM SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-search-toolkit/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-search-toolkit/</a><br></span>
+    <span data-en>Cite this tool: Fang CJ, SR x EBM SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-search-toolkit/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-search-toolkit/</a></span><br>
     © 2026 Ching-Ju Fang <a href="https://orcid.org/0000-0002-7892-8840" target="_blank" rel="noopener" title="ORCID iD" style="text-decoration:none;white-space:nowrap;color:inherit" onclick="try{if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:'author-orcid',title:'作者-ORCID',event:true})}catch(e){}"><svg width="13" height="13" viewBox="0 0 256 256" style="vertical-align:-2px;margin-right:3px" aria-hidden="true"><circle cx="128" cy="128" r="128" fill="#A6CE39"/><g fill="#fff"><path d="M86.3 186.2H70.9V79.1h15.4v107.1z"/><path d="M108.9 79.1h41.6c39.6 0 57 28.3 57 53.6 0 27.5-21.5 53.6-56.8 53.6h-41.8V79.1zm15.4 93.3h24.5c34.9 0 42.9-26.5 42.9-39.7 0-21.5-13.7-39.7-43.7-39.7h-23.7v79.4z"/><circle cx="78.6" cy="56.8" r="10.1"/></g></svg>https://orcid.org/0000-0002-7892-8840</a> · All rights reserved · v2.4.0
   </div>
 </main>
@@ -1674,8 +1674,14 @@ if (typeof module !== "undefined" && module.exports) {
     labTd.appendChild(lvlSel);
     var c0=mkCell("ref",phs.zh), c1=mkCell("free",phs.ft), c2=mkCell("cv",phs.mesh), c3=mkCell("cv",phs.emtree), c4=mkCell("cv",phs.cinahl);
     c0.ta.value=zh||""; c1.ta.value=ft||""; c2.ta.value=mesh||""; c3.ta.value=emtree||""; c4.ta.value=cinahl||"";
-    var rmTd=document.createElement("td"); var rm=document.createElement("button"); rm.className="rmrow"; rm.textContent="✕";
-    rm.onclick=function(){ tr.remove(); }; rmTd.appendChild(rm);
+    var rmTd=document.createElement("td");
+    var mv=document.createElement("div"); mv.style.cssText="display:flex;gap:2px;align-items:center;justify-content:center";
+    var up=document.createElement("button"); up.className="rmrow"; up.textContent="↑"; up.title=isEn()?"Move up":"上移（與上一列對調）";
+    var dn=document.createElement("button"); dn.className="rmrow"; dn.textContent="↓"; dn.title=isEn()?"Move down":"下移（與下一列對調）";
+    up.onclick=function(){ var prev=tr.previousElementSibling; if(prev){ picoBody.insertBefore(tr, prev); updateCodes(); if(typeof saveDraftDebounced==="function") saveDraftDebounced(); autoRegen(); } };
+    dn.onclick=function(){ var next=tr.nextElementSibling; if(next){ picoBody.insertBefore(next, tr); updateCodes(); if(typeof saveDraftDebounced==="function") saveDraftDebounced(); autoRegen(); } };
+    var rm=document.createElement("button"); rm.className="rmrow"; rm.textContent="✕";
+    mv.appendChild(up); mv.appendChild(dn); mv.appendChild(rm); rmTd.appendChild(mv);
     tr.appendChild(labTd); tr.appendChild(c0.td); tr.appendChild(c1.td); tr.appendChild(c3.td); tr.appendChild(c2.td); tr.appendChild(c4.td); tr.appendChild(rmTd);
     tr._get=function(){ return { label:labIn.value.trim()||"?", zh:c0.ta.value.trim(), ft:c1.ta.value.trim(), mesh:c2.ta.value.trim(), emtree:c3.ta.value.trim(), cinahl:c4.ta.value.trim(), level:lvlSel.value }; };
     tr._setLevel=function(v){ if(/^L[123]$/.test(v)){ lvlSel.value=v; lvlSel.title=LVL_NOTE[isEn()?"en":"zh"][v]; } };
@@ -2573,6 +2579,7 @@ if (typeof module !== "undefined" && module.exports) {
     var _dbInputs = Array.prototype.slice.call(dbchecks.querySelectorAll("input")).concat(Array.prototype.slice.call((dbchecksMore?dbchecksMore.querySelectorAll("input"):[])));
     var checked = _dbInputs.filter(function(c){return c.checked && !c.disabled;}).map(function(c){return c.value;});
     if(!checked.length){ outs.innerHTML='<div class="panel" style="color:var(--warn)">'+(isEn()?"Please tick at least one output database.":"請至少勾選一個輸出資料庫。")+'</div>'; return; }
+    var _stratWarn=document.createElement("div"); _stratWarn.style.cssText="color:#c0392b;font-size:13px;line-height:1.6;margin:2px 0 10px"; _stratWarn.textContent=_noteStrat(); outs.appendChild(_stratWarn);   // 檢索策略表上方提醒（三點）
     if(picoWarn){
       var msgs=[];
       var _cells=function(r){ return [r.ft,r.zh,r.emtree,r.mesh,r.cinahl]; };
@@ -2704,7 +2711,7 @@ if (typeof module !== "undefined" && module.exports) {
         var sendBtnG=document.createElement("button"); sendBtnG.className="btn ghost"; sendBtnG.type="button"; sendBtnG.textContent=isEn()?"Run final strategy in PubMed ↗":"執行 PubMed 最終檢索 ↗";
         var sendBtn=document.createElement("button"); sendBtn.className="btn ghost"; sendBtn.type="button"; sendBtn.textContent=isEn()?"Run final strategy in PubMed (NCKU) ↗":"執行 PubMed 最終檢索（成大）↗";
         var st=document.createElement("span"); st.className="pmstatus";
-        var nt=document.createElement("div"); nt.className="pmestimate-note"; nt.textContent=isEn()?"Queries are sent one at a time to NCBI ESearch (no API key; ≤3 requests/second). Counts reflect PubMed at query time and may change. “Run final strategy in PubMed” uses the standard PubMed URL; the “(NCKU)” button uses the NCKU LinkOut URL (adds the NCKU full-text icon; anyone can still use it).":"逐筆送至 NCBI ESearch（未使用 API key，每秒不超過 3 次）。數量以查詢當下的 PubMed 為準，之後可能變動。「執行 PubMed 最終檢索」採 PubMed 通用網址；「（成大）」按鈕採成大 LinkOut 網址（多了成大全文連結圖示，非成大使用者亦可使用）。";
+        var nt=makeInfoTip(isEn()?"Queries are sent one at a time to NCBI ESearch (no API key; ≤3 requests/second). Counts reflect PubMed at query time and may change. “Run final strategy in PubMed” uses the standard PubMed URL; the “(NCKU)” button uses the NCKU LinkOut URL (adds the NCKU full-text icon; anyone can still use it).":"逐筆送至 NCBI ESearch（未使用 API key，每秒不超過 3 次）。數量以查詢當下的 PubMed 為準，之後可能變動。「執行 PubMed 最終檢索」採 PubMed 通用網址；「（成大）」按鈕採成大 LinkOut 網址（多了成大全文連結圖示，非成大使用者亦可使用）。");
         est.appendChild(estBtn);est.appendChild(sendBtnG);est.appendChild(sendBtn);est.appendChild(st);est.appendChild(nt);card.appendChild(est);
         function _pmRun(urlBase, evName, evTitle){
           try{
@@ -2819,10 +2826,10 @@ if (typeof module !== "undefined" && module.exports) {
     function heading(txt){ return _mkP(doc,[{text:txt,bold:true,sz:28}]); }
     function synTc(runs, w){ var tc=doc.createElementNS(_WNS,"w:tc"); var tcPr=doc.createElementNS(_WNS,"w:tcPr"); var ww=doc.createElementNS(_WNS,"w:tcW"); ww.setAttributeNS(_WNS,"w:w",String(w)); ww.setAttributeNS(_WNS,"w:type","dxa"); tcPr.appendChild(ww); tc.appendChild(tcPr); tc.appendChild(_mkPRuns(doc, runs)); return tc; }
     var _ct=_conceptTermsTable(doc);
-    if(_ct){ body.appendChild(_ct.head); body.appendChild(_ct.tbl); body.appendChild(_ct.wnote); body.appendChild(_mkP(doc,[{text:""}])); }
+    if(_ct){ body.appendChild(_ct.head); body.appendChild(_ct.note); body.appendChild(_ct.tbl); body.appendChild(_mkP(doc,[{text:""}])); }
     body.appendChild(heading(en?"PICO Search Strategy":"PICO 檢索策略"));
     body.appendChild(_mkP(doc,[{text:(en?"Field level: ":"欄位完整度：")+((lastGen&&lastGen.level)||""), sz:18, color:"555555"}]));
-    body.appendChild(_mkP(doc,[{text:(en?"⚠ Reminder: assess the suitability of synonyms and controlled vocabulary yourself, and especially verify the controlled terms — the tool only links to the thesauri and does not verify them.":"⚠ 提醒您！請自行評估同義詞與控制詞彙的適用性，尤其確實查核控制詞彙，工具僅提供詞表超連結，並未進行查驗。"), color:"C00000", sz:18}]));
+    body.appendChild(_mkP(doc,[{text:_noteStrat(), color:"C00000", sz:18}]));   // 策略表提醒（三點）
     var tbl=doc.createElementNS(_WNS,"w:tbl"), pr=doc.createElementNS(_WNS,"w:tblPr");
     var tw=doc.createElementNS(_WNS,"w:tblW"); tw.setAttributeNS(_WNS,"w:w","0"); tw.setAttributeNS(_WNS,"w:type","auto"); pr.appendChild(tw);
     var bd=doc.createElementNS(_WNS,"w:tblBorders");
@@ -2864,7 +2871,8 @@ if (typeof module !== "undefined" && module.exports) {
       });
       if(srcPs.length){ body.appendChild(_mkP(doc,[{text:(en?"Study-design filter sources":"研究設計篩選語法出處"),bold:true,sz:18}])); srcPs.forEach(function(p){ body.appendChild(p); }); }
     }
-    body.appendChild(_mkP(doc,[{text:(en?"Cite this tool: ":"工具引用：")+"Fang CJ (2026). SR / EBM Search Toolkit: PICO Strategy Builder, Search Syntax Converter, and Proximity Builder. Zenodo. https://doi.org/10.5281/zenodo.21960702", sz:18, color:"555555"}]));
+    body.appendChild(_mkP(doc,[{text:(en?"Cite this tool: ":"工具引用："), sz:18, color:"555555", bold:true}]));
+    _citeLines().forEach(function(ln){ body.appendChild(_mkP(doc,[{text:ln, sz:18, color:"555555"}])); });
     var sect=doc.createElementNS(_WNS,"w:sectPr"); var pgSz=doc.createElementNS(_WNS,"w:pgSz"); pgSz.setAttributeNS(_WNS,"w:w","11906"); pgSz.setAttributeNS(_WNS,"w:h","16838"); sect.appendChild(pgSz); var pgMar=doc.createElementNS(_WNS,"w:pgMar"); pgMar.setAttributeNS(_WNS,"w:top","1440"); pgMar.setAttributeNS(_WNS,"w:right","1440"); pgMar.setAttributeNS(_WNS,"w:bottom","1440"); pgMar.setAttributeNS(_WNS,"w:left","1440"); sect.appendChild(pgMar); body.appendChild(sect);
     var docXml=new XMLSerializer().serializeToString(doc);
     if(!/^\s*<\?xml/i.test(docXml)) docXml='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n'+docXml;
@@ -3021,7 +3029,7 @@ if (typeof module !== "undefined" && module.exports) {
       for(var j=fillable.length-1;j>=M;j--){ fillable[j].parentNode.removeChild(fillable[j]); }   // \u79fb\u9664\u591a\u9918\u7684\u53ef\u586b\u6a23\u677f\u5217\uff08\u4fdd\u7559\u64cd\u4f5c\u8aaa\u660e\u5217\uff09
       dbHit[bk.tid]=1;
     });
-    _insertConceptTerms(doc); _insertCVVerifyNote(doc);
+    _insertConceptTerms(doc); _insertCVVerifyNote(doc); _insertCite(doc);
     var out=new XMLSerializer().serializeToString(doc);
     if(!/^\s*<\?xml/i.test(out)) out='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n'+out;
     return {ok:true, filled:filled, dbs:Object.keys(dbHit).length, xml:out};
@@ -3133,12 +3141,23 @@ if (typeof module !== "undefined" && module.exports) {
     var ps=_dchild(tc,"p"); for(var i=0;i<ps.length;i++) tc.removeChild(ps[i]);
     tc.appendChild(_mkPRuns(doc, _hlRuns(text, eng, vocab)));
   }
-  // 建「工具整理的檢索詞（概念表原貌）」：回傳 {head, tbl, wnote}；無詞則 null。控制詞彙欄內嵌查證超連結、換行為 Enter 段落。
+  // 共用說明文字（概念表提醒／策略表提醒／工具引用）——網頁與兩個 Word 一致
+  function _noteTerms(){ return isEn()
+    ? "⚠ Reminder: assess the suitability of synonyms and controlled vocabulary yourself, and especially verify the controlled terms — the tool only links to the thesauri and does not verify them."
+    : "⚠ 提醒您！請自行評估同義詞與控制詞彙的適用性，尤其確實查核控制詞彙，工具僅提供詞表超連結，並未進行查驗。"; }
+  function _noteStrat(){ return isEn()
+    ? "⚠ Reminder: 1. Verify the controlled vocabulary yourself (the tool only links to the thesauri and does not verify them). 2. Review the search strategy manually and test/evaluate it in the databases before use. 3. SR × EBM SearchHen assumes no warranty or liability."
+    : "⚠ 提醒您！1. 請確實查核控制詞彙（工具僅提供詞表超連結，並未進行查驗）。2. 請人工覆核檢索策略，並於資料庫實測與評估後使用。3. SR x EBM SearchHen 不負保證責任。"; }
+  var _CITE_ZH="方靜如，SR x EBM SearchHen 搜尋策略生成雞。 doi: 10.5281/zenodo.21960702。https://sunfloraf-sketch.github.io/sr-search-toolkit/";
+  var _CITE_EN="Fang CJ, SR x EBM SearchHen. doi: 10.5281/zenodo.21960702. https://sunfloraf-sketch.github.io/sr-search-toolkit/";
+  function _citeLines(){ return isEn()? [_CITE_EN] : [_CITE_ZH, _CITE_EN]; }   // 中文版中英並列、英文版只放英文
+  // 建「工具整理的檢索詞（概念表原貌）」：回傳 {head, note, tbl}；無詞則 null。說明在表格上方、控制詞彙欄內嵌查證超連結、換行為 Enter 段落。
   function _conceptTermsTable(doc){
     var en=isEn();
     var terms=((lastGen&&lastGen.terms)||[]).filter(function(r){return r.zh||r.ft||r.mesh||r.emtree||r.cinahl;});
     if(!terms.length) return null;
     var head=_mkP(doc,[{text:(en?"※ Search terms tidied in the tool (concept table):":"※ 工具整理的檢索詞（概念表）："), color:"0F766E", sz:18, bold:true}]);
+    var note=_mkP(doc,[{text:_noteTerms(), color:"C00000", sz:18}]);   // 概念表提醒：放在表格「上方」
     var tbl=doc.createElementNS(_WNS,"w:tbl"), pr=doc.createElementNS(_WNS,"w:tblPr");
     var tw=doc.createElementNS(_WNS,"w:tblW"); tw.setAttributeNS(_WNS,"w:w","0"); tw.setAttributeNS(_WNS,"w:type","auto"); pr.appendChild(tw);
     var bd=doc.createElementNS(_WNS,"w:tblBorders");
@@ -3157,8 +3176,7 @@ if (typeof module !== "undefined" && module.exports) {
       tr.appendChild(_mkTcCV(doc, r.cinahl||"", "cinahl", {w:1700}));
       tbl.appendChild(tr);
     });
-    var wnote=_mkP(doc,[{text:(en?"⚠ Reminder: assess the suitability of synonyms and controlled vocabulary yourself, and especially verify the controlled terms — the tool only links to the thesauri and does not verify them.":"⚠ 提醒您！請自行評估同義詞與控制詞彙的適用性，尤其確實查核控制詞彙，工具僅提供詞表超連結，並未進行查驗。"), color:"C00000", sz:18}]);
-    return {head:head, tbl:tbl, wnote:wnote};
+    return {head:head, note:note, tbl:tbl};
   }
   // 回填：把工具整理的「檢索詞（概念表原貌）」附加在原有檢索詞表格「下方」，不覆蓋原表；具冪等性
   function _insertConceptTerms(doc){
@@ -3168,37 +3186,36 @@ if (typeof module !== "undefined" && module.exports) {
     // 找出紀錄表中「原有的檢索詞（概念）表」：含主題概念／自由詞／控制詞彙欄，且非「搜尋語法」策略表
     var tbls=doc.getElementsByTagNameNS(_WNS,"tbl"), ctbl=null;
     for(var j=0;j<tbls.length;j++){ var txt=_recCellText(tbls[j]); if(!/搜尋語法|Search syntax/.test(txt) && (/主題概念/.test(txt)||/自由詞/.test(txt)||/控制詞彙|Controlled\s*Vocabulary/i.test(txt)||(/emtree/i.test(txt)&&/mesh/i.test(txt)&&/cinahl/i.test(txt)))){ ctbl=tbls[j]; break; } }
-    var head=_ct.head, tbl=_ct.tbl, wnote=_ct.wnote;
+    var head=_ct.head, note=_ct.note, tbl=_ct.tbl;
     // 附加時標題註明「附加於原表下方」
     var htext=(isEn()?"※ Search terms tidied in the tool (appended below your original table; not overwriting it):":"※ 工具整理的檢索詞（附加於原檢索詞表下方，未覆蓋原表）：");
     var ht=head.getElementsByTagNameNS(_WNS,"t"); if(ht.length) ht[0].textContent=htext;
     var spacer=_mkP(doc,[{text:""}]);
-    if(ctbl && ctbl.parentNode){ var ref=ctbl.nextSibling; ctbl.parentNode.insertBefore(head, ref); ctbl.parentNode.insertBefore(tbl, ref); ctbl.parentNode.insertBefore(wnote, ref); ctbl.parentNode.insertBefore(spacer, ref); }
-    else { var body=doc.getElementsByTagNameNS(_WNS,"body")[0]; if(body){ body.insertBefore(spacer, body.firstChild); body.insertBefore(wnote, body.firstChild); body.insertBefore(tbl, body.firstChild); body.insertBefore(head, body.firstChild); } }
+    if(ctbl && ctbl.parentNode){ var ref=ctbl.nextSibling; ctbl.parentNode.insertBefore(head, ref); ctbl.parentNode.insertBefore(note, ref); ctbl.parentNode.insertBefore(tbl, ref); ctbl.parentNode.insertBefore(spacer, ref); }
+    else { var body=doc.getElementsByTagNameNS(_WNS,"body")[0]; if(body){ body.insertBefore(spacer, body.firstChild); body.insertBefore(tbl, body.firstChild); body.insertBefore(note, body.firstChild); body.insertBefore(head, body.firstChild); } }
   }
-  // 在概念表下方加註：檢索詞未由工具自動回填（避免與策略表誤會為同步）；具冪等性，不重覆加。
-  function _insertConceptNote(doc){
-    var en=isEn();
-    var ts=doc.getElementsByTagNameNS(_WNS,"t");
-    for(var i=0;i<ts.length;i++){ var tx=ts[i].textContent||""; if(tx.indexOf("未由工具自動回填")>=0 || tx.indexOf("not auto-filled")>=0) return; }   // 已加過就跳過
-    var tbls=doc.getElementsByTagNameNS(_WNS,"tbl"), ct=null;
-    for(var j=0;j<tbls.length;j++){ var txt=_recCellText(tbls[j]); if(/emtree/i.test(txt)&&/mesh/i.test(txt)&&/cinahl/i.test(txt)&&!/搜尋語法|Search syntax/.test(txt)){ ct=tbls[j]; break; } }
-    var note=_mkP(doc,[{text:(en?"※ Search terms (concept table) are NOT auto-filled by the tool — the version above is your own; please verify manually if you edited terms in the tool.":"※ 檢索詞（概念表）未由工具自動回填，上方為您自行整理的版本；若曾於工具內修改，請自行核對。"), color:"C00000", sz:18}]);
-    if(ct && ct.parentNode){ ct.parentNode.insertBefore(note, ct.nextSibling); }
-    else { var body=doc.getElementsByTagNameNS(_WNS,"body")[0]; if(body) body.insertBefore(note, body.firstChild); }
-  }
-  // 在檢索策略表下方加紅字提醒：請確實查核控制詞彙（工具僅提供詞表超連結、未查驗）；具冪等性。
+  // 在檢索策略表上方加紅字提醒（三點）：具冪等性。
   function _insertCVVerifyNote(doc){
     var en=isEn();
     var ts=doc.getElementsByTagNameNS(_WNS,"t");
-    for(var i=0;i<ts.length;i++){ var tx=ts[i].textContent||""; if(tx.indexOf("確實查核控制詞彙")>=0 || tx.indexOf("verify the controlled vocabulary")>=0) return; }   // 已加過就跳過
-    var note=_mkP(doc,[{text:(en?"⚠ Reminder: assess the suitability of synonyms and controlled vocabulary yourself, and especially verify the controlled terms — the tool only links to the thesauri and does not verify them.":"⚠ 提醒您！請自行評估同義詞與控制詞彙的適用性，尤其確實查核控制詞彙，工具僅提供詞表超連結，並未進行查驗。"), color:"C00000", sz:18}]);
+    for(var i=0;i<ts.length;i++){ var tx=ts[i].textContent||""; if(tx.indexOf("請人工覆核檢索策略")>=0 || tx.indexOf("Review the search strategy manually")>=0) return; }   // 已加過就跳過
+    var note=_mkP(doc,[{text:_noteStrat(), color:"C00000", sz:18}]);
     var tbls=doc.getElementsByTagNameNS(_WNS,"tbl"), st=null;
     for(var j=0;j<tbls.length;j++){ var tr0=_wtag(tbls[j],"tr")[0]; if(tr0 && /搜尋語法|Search syntax/.test(_recCellText(tr0))){ st=tbls[j]; break; } }   // 取第一個策略表（提示放其上方）
     if(st && st.parentNode){ st.parentNode.insertBefore(note, st); return; }   // 移到策略表「上方」
     var body=doc.getElementsByTagNameNS(_WNS,"body")[0]; if(!body) return;
     var sect=null, kids=body.childNodes; for(var k=kids.length-1;k>=0;k--){ if(kids[k].localName==="sectPr"&&kids[k].namespaceURI===_WNS){ sect=kids[k]; break; } }
     if(sect) body.insertBefore(note, sect); else body.appendChild(note);
+  }
+  // 在文件末（sectPr 之前）附上工具引用；具冪等性
+  function _insertCite(doc){
+    var ts=doc.getElementsByTagNameNS(_WNS,"t");
+    for(var i=0;i<ts.length;i++){ var tx=ts[i].textContent||""; if(tx.indexOf("SearchHen")>=0 && (tx.indexOf("zenodo")>=0||tx.indexOf("doi")>=0)) return; }   // 已有引用就跳過
+    var body=doc.getElementsByTagNameNS(_WNS,"body")[0]; if(!body) return;
+    var sect=null, kids=body.childNodes; for(var k=kids.length-1;k>=0;k--){ if(kids[k].localName==="sectPr"&&kids[k].namespaceURI===_WNS){ sect=kids[k]; break; } }
+    var nodes=[_mkP(doc,[{text:(isEn()?"Cite this tool: ":"工具引用："), sz:18, color:"555555", bold:true}])];
+    _citeLines().forEach(function(ln){ nodes.push(_mkP(doc,[{text:ln, sz:18, color:"555555"}])); });
+    nodes.forEach(function(nd){ if(sect) body.insertBefore(nd, sect); else body.appendChild(nd); });
   }
   function appendStrategyToDoc(xml){
     var doc=new DOMParser().parseFromString(xml,"application/xml");
@@ -3251,7 +3268,7 @@ if (typeof module !== "undefined" && module.exports) {
     var nodes=[head, lvl, tbl].concat(srcPs.length?[_mkP(doc,[{text:(en?"Study-design filter sources":"研究設計篩選語法出處"),bold:true,sz:18}])].concat(srcPs):[]).concat([tail]);
     var sect=null, kids=body.childNodes; for(var i=kids.length-1;i>=0;i--){ if(kids[i].localName==="sectPr" && kids[i].namespaceURI===_WNS){ sect=kids[i]; break; } }
     nodes.forEach(function(nd){ if(sect) body.insertBefore(nd, sect); else body.appendChild(nd); });
-    _insertConceptTerms(doc); _insertCVVerifyNote(doc);
+    _insertConceptTerms(doc); _insertCVVerifyNote(doc); _insertCite(doc);
     var out=new XMLSerializer().serializeToString(doc);
     if(!/^\s*<\?xml/i.test(out)) out='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n'+out;
     return {ok:true, filled:cnt, xml:out, appended:true};

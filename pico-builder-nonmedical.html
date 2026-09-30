@@ -475,8 +475,8 @@ City blocks)</pre>
   <div class="foot">
     <span data-zh>此工具為純網頁程式，未使用 AI。資料預設只在瀏覽器本機執行與暫存；只有按下「PubMed 估算文章數」時，對應檢索式才會傳送至 NCBI E-utilities。產出的檢索策略請人工覆核並於資料庫實測後再使用。</span>
     <span data-en>A pure web-based tool with no AI. Data stays in your browser by default; only when you click “Estimate PubMed counts” are the relevant queries sent to NCBI E-utilities. Please human-check and test the generated strategy before use.</span><br>
-    <span data-zh>引用建議: 方靜如（2026）。SR / EBM 搜尋工具包: PICO 檢索策略產生器、資料庫檢索語法轉換器、鄰近字組合器。Zenodo. <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">https://doi.org/10.5281/zenodo.21960702</a><br></span>
-    <span>Cite as: Fang CJ (2026). <i>SR / EBM Search Toolkit: PICO Strategy Builder, Search Syntax Converter, and Proximity Builder</i>. Zenodo. <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">https://doi.org/10.5281/zenodo.21960702</a></span><br>
+    <span data-zh>工具引用：方靜如，SR x EBM SearchHen 搜尋策略生成雞。 doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>。<a href="https://sunfloraf-sketch.github.io/sr-search-toolkit/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-search-toolkit/</a><br>Fang CJ, SR x EBM SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-search-toolkit/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-search-toolkit/</a><br></span>
+    <span data-en>Cite this tool: Fang CJ, SR x EBM SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-search-toolkit/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-search-toolkit/</a></span><br>
     © 2026 Ching-Ju Fang <a href="https://orcid.org/0000-0002-7892-8840" target="_blank" rel="noopener" title="ORCID iD" style="text-decoration:none;white-space:nowrap;color:inherit" onclick="try{if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:'author-orcid',title:'作者-ORCID',event:true})}catch(e){}"><svg width="13" height="13" viewBox="0 0 256 256" style="vertical-align:-2px;margin-right:3px" aria-hidden="true"><circle cx="128" cy="128" r="128" fill="#A6CE39"/><g fill="#fff"><path d="M86.3 186.2H70.9V79.1h15.4v107.1z"/><path d="M108.9 79.1h41.6c39.6 0 57 28.3 57 53.6 0 27.5-21.5 53.6-56.8 53.6h-41.8V79.1zm15.4 93.3h24.5c34.9 0 42.9-26.5 42.9-39.7 0-21.5-13.7-39.7-43.7-39.7h-23.7v79.4z"/><circle cx="78.6" cy="56.8" r="10.1"/></g></svg>https://orcid.org/0000-0002-7892-8840</a> · All rights reserved · v2.4.0
   </div>
 </main>
@@ -2798,6 +2798,7 @@ if (typeof module !== "undefined" && module.exports) {
     }
     var lvlLabel = level+"　"+(isEn()?({L1:"Comprehensive",L2:"Balanced",L3:"Precise"}[level]):({L1:"完整",L2:"平衡",L3:"精準"}[level]));
     var exportData=[]; RECORD_FILL={};
+    var _stratWarn=document.createElement("div"); _stratWarn.style.cssText="color:#c0392b;font-size:13px;line-height:1.6;margin:2px 0 10px"; _stratWarn.textContent=_noteStrat(); outs.appendChild(_stratWarn);   // 檢索策略表上方提醒（三點）
     renderIds.forEach(function(tid){
       var b=buildForTarget(rows, startDB, tid, level);
       var tg=TARGET_BY_ID[tid];
@@ -3038,79 +3039,73 @@ if (typeof module !== "undefined" && module.exports) {
     if($("#wordBtn")) $("#wordBtn").disabled = !exportData.length;
     if(typeof updateRecordBtn==="function") updateRecordBtn();
   };
-  $("#wordBtn").onclick=function(){
+  $("#wordBtn").onclick=async function(){
     if(!lastGen || !lastGen.data.length){ outs.scrollIntoView&&outs.scrollIntoView(); return; }
     var en=isEn();
-    var wesc=function(x){ return String(x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); };
-    var sem=cbColor&&cbColor.checked, brk=cbBracket&&cbBracket.checked, colorOn=sem||brk;
-    var msoF="font-family:Consolas,'Microsoft JhengHei',monospace;mso-ascii-font-family:Consolas;mso-hansi-font-family:Consolas;mso-bidi-font-family:Consolas;mso-fareast-font-family:'Microsoft JhengHei'";
-    var fspan=function(s){ return "<span style=\""+msoF+"\">"+s+"</span>"; };
-    var HLC={fld:"#0a8f4f",cv:"#d32029",px:"#0f83d6",bk0:"#7c3aed",bk1:"#ea580c",bk2:"#a16207",bk3:"#64748b",bk4:"#c026d3",bk5:"#0d9488"};
-    var linksOn=cbLinks&&cbLinks.checked;
-    function synCell(text, eng, vocab){
-      if((!colorOn && !linksOn) || !text) return fspan(wesc(text||""));
-      var h=hlHighlight(text, eng, sem, brk, vocab, linksOn).html.replace(/<span class="hl-(\w+)">/g, function(m,cl){var bd=/^(fld|cv|px)$/.test(cl)?";font-weight:bold":"";return "<span style=\"color:"+(HLC[cl]||"inherit")+bd+";"+msoF+"\">";});
-      h=h.replace(/<a class="cvlink"/g, '<a style="color:#248D88;text-decoration:underline"');
-      return fspan(h);
-    }
-    var tdb="border:1px solid #999;padding:0.1cm 0.2cm;font-weight:bold;white-space:nowrap;vertical-align:top;font-size:11pt";
-    var tnum="border:1px solid #999;padding:0.1cm 0.2cm;vertical-align:top;color:#6d28d9;font-weight:bold;white-space:nowrap;text-align:center;font-size:11pt";
-    var tsyn="border:1px solid #999;padding:0.1cm 0.2cm;vertical-align:top;font-size:11pt";
-    var th="border:1px solid #999;padding:0.1cm 0.2cm;background:#5b21b6;color:#fff;font-weight:bold;font-size:11pt";
-    var rows="";
+    // 產生真正的 .docx（OOXML）：搜尋語法依畫面勾選上色、控制詞彙內嵌查證超連結、檢索詞換行為 Enter 段落
+    var skel='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="'+_WNS+'"><w:body></w:body></w:document>';
+    var doc=new DOMParser().parseFromString(skel,"application/xml");
+    var body=doc.getElementsByTagNameNS(_WNS,"body")[0];
+    function heading(txt){ return _mkP(doc,[{text:txt,bold:true,sz:28}]); }
+    var _ct=_conceptTermsTable(doc);
+    if(_ct){ body.appendChild(_ct.head); body.appendChild(_ct.note); body.appendChild(_ct.tbl); body.appendChild(_mkP(doc,[{text:""}])); }
+    body.appendChild(heading(en?"PICO Search Strategy":"PICO 檢索策略"));
+    body.appendChild(_mkP(doc,[{text:(en?"Field level: ":"欄位完整度：")+((lastGen&&lastGen.level)||""), sz:18, color:"555555"}]));
+    body.appendChild(_mkP(doc,[{text:_noteStrat(), color:"C00000", sz:18}]));
+    var tbl=doc.createElementNS(_WNS,"w:tbl"), pr=doc.createElementNS(_WNS,"w:tblPr");
+    var tw=doc.createElementNS(_WNS,"w:tblW"); tw.setAttributeNS(_WNS,"w:w","0"); tw.setAttributeNS(_WNS,"w:type","auto"); pr.appendChild(tw);
+    var bd=doc.createElementNS(_WNS,"w:tblBorders");
+    ["top","left","bottom","right","insideH","insideV"].forEach(function(e){ var el=doc.createElementNS(_WNS,"w:"+e); el.setAttributeNS(_WNS,"w:val","single"); el.setAttributeNS(_WNS,"w:sz","4"); el.setAttributeNS(_WNS,"w:space","0"); el.setAttributeNS(_WNS,"w:color","999999"); bd.appendChild(el); });
+    pr.appendChild(bd); tbl.appendChild(pr);
+    var grid=doc.createElementNS(_WNS,"w:tblGrid"); [1500,600,7200].forEach(function(gw){ var gc=doc.createElementNS(_WNS,"w:gridCol"); gc.setAttributeNS(_WNS,"w:w",String(gw)); grid.appendChild(gc); }); tbl.appendChild(grid);
+    var htr=doc.createElementNS(_WNS,"w:tr");
+    htr.appendChild(_mkTc(doc,[{text:(en?"Database":"資料庫 Database"),bold:true,color:"FFFFFF"}],{shd:"5B21B6",w:1500}));
+    htr.appendChild(_mkTc(doc,[{text:"#",bold:true,color:"FFFFFF"}],{shd:"5B21B6",w:600}));
+    htr.appendChild(_mkTc(doc,[{text:(en?"Search syntax":"搜尋語法 Search syntax"),bold:true,color:"FFFFFF"}],{shd:"5B21B6",w:7200}));
+    tbl.appendChild(htr);
     lastGen.data.forEach(function(c){
-      var lab=wesc(c.label)+(c.isStart?(en?" (start)":"（起始）"):"");
-      var vf=(c.verify||[]), span=c.rows.length+(vf.length?1:0);
-      c.rows.forEach(function(x,i){
-        rows+="<tr>"+(i===0?("<td rowspan='"+span+"' style='"+tdb+"'>"+fspan(lab)+"</td>"):"")+"<td style='"+tnum+"'>"+fspan(x.n!=null?(_refPrefix(c.engine)+x.n):"")+"</td><td style='"+tsyn+"'>"+synCell(_dispRefs(x.text,c.engine), c.engine, c.vocab)+"</td></tr>";
+      var rws=c.rows||[]; if(!rws.length) return;
+      var vf=(c.verify||[]);
+      var lab=c.label+(c.isStart?(en?" (start)":"（起始）"):"");
+      rws.forEach(function(x,idx){
+        var tr=doc.createElementNS(_WNS,"w:tr");
+        tr.appendChild(_mkTc(doc,[{text:(idx===0?lab:""),bold:true}],{vmerge:(idx===0?"restart":"cont"),w:1500}));
+        tr.appendChild(_mkTc(doc,[{text:(x.n!=null?(_refPrefix(c.engine)+x.n):""),color:"6D28D9",bold:true}],{w:600}));
+        var _sc=doc.createElementNS(_WNS,"w:tc"), _scp=doc.createElementNS(_WNS,"w:tcPr"); var _sw=doc.createElementNS(_WNS,"w:tcW"); _sw.setAttributeNS(_WNS,"w:w","7200"); _sw.setAttributeNS(_WNS,"w:type","dxa"); _scp.appendChild(_sw); _sc.appendChild(_scp); _sc.appendChild(_mkPRuns(doc,_hlRuns(_dispRefs(x.text,c.engine), c.engine, c.vocab))); tr.appendChild(_sc);
+        tbl.appendChild(tr);
       });
-      if(vf.length){ rows+="<tr><td style='"+tnum+"'></td><td style='"+tsyn+";color:#b45309'>"+fspan(wesc(_verifyNote(vf)))+"</td></tr>"; }   // 尚未整理語法的資料庫：標示「請自行確認 Filters」
+      if(vf.length){
+        var vtr=doc.createElementNS(_WNS,"w:tr");
+        vtr.appendChild(_mkTc(doc,[{text:""}],{vmerge:"cont",w:1500}));
+        vtr.appendChild(_mkTc(doc,[{text:""}],{w:600}));
+        vtr.appendChild(_mkTc(doc,[{text:_verifyNote(vf),color:"B45309"}],{w:7200}));
+        tbl.appendChild(vtr);
+      }
     });
-    // 檢索詞（概念表原貌）：放在檢索策略之前（欄：概念｜中文詞｜英文自由詞｜各有內容的控制詞彙欄）
-    var termsHtml="";
-    (function(){
-      var T=(lastGen.terms||[]).filter(function(r){ return r.zh||r.ft||(r.cv && Object.keys(r.cv).some(function(k){return r.cv[k];})); });
-      if(!T.length) return;
-      var cvKeys=[];
-      CV_DBS.forEach(function(k){ if(T.some(function(r){return r.cv&&r.cv[k];})) cvKeys.push(k); });
-      T.forEach(function(r){ if(r.cv) Object.keys(r.cv).forEach(function(k){ if(r.cv[k] && cvKeys.indexOf(k)<0) cvKeys.push(k); }); });
-      var cvLabel=function(k){ return (typeof CV_COL!=="undefined" && CV_COL[k] && CV_COL[k].label)||k; };
-      var tth="border:1px solid #999;padding:0.1cm 0.2cm;background:#0f766e;color:#fff;font-weight:bold;font-size:11pt";
-      var tcS="border:1px solid #999;padding:0.1cm 0.2cm;vertical-align:top;font-size:11pt";
-      var tlab="border:1px solid #999;padding:0.1cm 0.2cm;vertical-align:top;font-weight:bold;white-space:nowrap;font-size:11pt";
-      var br=function(s){ return wesc(s||"").replace(/\n/g,"<br>"); };
-      var hdr="<tr><td style='"+tth+"'>"+fspan(en?"Concept":"概念")+"</td><td style='"+tth+"'>"+fspan(en?"Chinese terms":"中文詞")+"</td><td style='"+tth+"'>"+fspan(en?"Free-text (EN)":"英文自由詞")+"</td>";
-      cvKeys.forEach(function(k){ hdr+="<td style='"+tth+"'>"+fspan(wesc(cvLabel(k)))+"</td>"; });
-      hdr+="</tr>";
-      var trs="";
-      T.forEach(function(r){
-        trs+="<tr><td style='"+tlab+"'>"+fspan(wesc(r.label||""))+"</td><td style='"+tcS+"'>"+fspan(br(r.zh))+"</td><td style='"+tcS+"'>"+fspan(br(r.ft))+"</td>";
-        cvKeys.forEach(function(k){ trs+="<td style='"+tcS+"'>"+fspan(br(r.cv&&r.cv[k]))+"</td>"; });
-        trs+="</tr>";
-      });
-      termsHtml="<h2>"+fspan(en?"Search terms (PICO concept table)":"檢索詞（PICO 概念表）")+"</h2><table border='1' cellspacing='0' style='border-collapse:collapse;width:100%;border:1px solid #999;mso-padding-alt:0.1cm 0.2cm 0.1cm 0.2cm'>"+hdr+trs+"</table><p style='margin:14px 0 0'></p>";
-    })();
-    var title=en?"PICO Search Strategy":"PICO 檢索策略";
-    var subline=(en?"Field level: ":"欄位完整度：")+wesc(lastGen.level);
-    var cite=(en?"Cite this tool: ":"工具引用：")+"Fang CJ (2026). SR / EBM Search Toolkit: PICO Strategy Builder, Search Syntax Converter, and Proximity Builder. Zenodo. https://doi.org/10.5281/zenodo.21960702";
-    // 研究設計篩選語法出處：依已套用的設計×資料庫列出（相同出處合併）
-    var srcHtml="";
+    body.appendChild(tbl);
     if(lastGen.filters && lastGen.filters.length){
       var DL={rct:"RCT",quasi:(en?"Quasi-experimental":"類實驗 Quasi"),cohort:"Cohort",casecontrol:"Case-control",crosssectional:"Cross-sectional",qualitative:(en?"Qualitative":"質性 Qualitative"),sr:"SR",guideline:(en?"Guideline":"指引 Guideline")};
-      var blocks=[];
-      lastGen.filters.forEach(function(dz){
-        if(!STUDY_FILTER_SRC[dz]) return;
-        var g={}, ord=[];
-        lastGen.data.forEach(function(c){ var s=STUDY_FILTER_SRC[dz][c.tid]; if(s){ if(!g[s]){g[s]=[]; ord.push(s);} g[s].push(c.label); } });
-        if(!ord.length) return;
-        var parts=ord.map(function(s){ return wesc(g[s].join("、")+" — "+s); });
-        blocks.push("<li>"+fspan("<b>"+wesc(DL[dz]||dz)+"</b>："+parts.join("；"))+"</li>");
+      var srcPs=[];
+      lastGen.filters.forEach(function(dz){ if(!STUDY_FILTER_SRC[dz]) return; var g={},ord=[];
+        lastGen.data.forEach(function(c){ var s=STUDY_FILTER_SRC[dz][c.tid]; if(s){ if(!g[s]){g[s]=[];ord.push(s);} g[s].push(c.label); } });
+        if(!ord.length) return; var parts=ord.map(function(s){ return g[s].join("、")+" — "+s; });
+        srcPs.push(_mkP(doc,[{text:(DL[dz]||dz)+"："+parts.join("；"), sz:18, color:"444444"}]));
       });
-      if(blocks.length) srcHtml="<p style='margin-top:14px;font-size:10pt'>"+fspan("<b>"+(en?"Study-design filter sources":"研究設計篩選語法出處")+"</b>")+"</p><ul style='font-size:9pt;color:#444;margin-top:2px'>"+blocks.join("")+"</ul>";
+      if(srcPs.length){ body.appendChild(_mkP(doc,[{text:(en?"Study-design filter sources":"研究設計篩選語法出處"),bold:true,sz:18}])); srcPs.forEach(function(p){ body.appendChild(p); }); }
     }
-    var html="<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'></head><body style=\""+msoF+"\">"+termsHtml+"<h2>"+fspan(title)+"</h2><p>"+fspan(subline)+"</p><p style='margin:6px 0 10px;font-size:10pt;color:#C00000;font-weight:bold'>"+fspan(wesc(en?"⚠ Reminder: assess the suitability of synonyms and controlled vocabulary yourself, and especially verify the controlled terms — the tool only links to the thesauri and does not verify them.":"⚠ 提醒您！請自行評估同義詞與控制詞彙的適用性，尤其確實查核控制詞彙，工具僅提供詞表超連結，並未進行查驗。"))+"</p><table border='1' cellspacing='0' style='border-collapse:collapse;width:100%;border:1px solid #999;mso-padding-alt:0.1cm 0.2cm 0.1cm 0.2cm'><tr><td style='"+th+"'>"+fspan(en?"Database":"資料庫 Database")+"</td><td style='"+th+";text-align:center'>"+fspan("#")+"</td><td style='"+th+"'>"+fspan(en?"Search syntax":"搜尋語法 Search syntax")+"</td></tr>"+rows+"</table>"+srcHtml+"<p style='margin-top:14px;font-size:9pt;color:#555'>"+fspan(wesc(cite))+"</p></body></html>";
-    var blob=new Blob(["\ufeff"+html],{type:"application/msword"});
-    var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="pico_strategy.doc"; document.body.appendChild(a); a.click(); a.remove();
+    body.appendChild(_mkP(doc,[{text:(en?"Cite this tool: ":"工具引用："), sz:18, color:"555555", bold:true}]));
+    _citeLines().forEach(function(ln){ body.appendChild(_mkP(doc,[{text:ln, sz:18, color:"555555"}])); });
+    var sect=doc.createElementNS(_WNS,"w:sectPr"); var pgSz=doc.createElementNS(_WNS,"w:pgSz"); pgSz.setAttributeNS(_WNS,"w:w","11906"); pgSz.setAttributeNS(_WNS,"w:h","16838"); sect.appendChild(pgSz); var pgMar=doc.createElementNS(_WNS,"w:pgMar"); pgMar.setAttributeNS(_WNS,"w:top","1440"); pgMar.setAttributeNS(_WNS,"w:right","1440"); pgMar.setAttributeNS(_WNS,"w:bottom","1440"); pgMar.setAttributeNS(_WNS,"w:left","1440"); sect.appendChild(pgMar); body.appendChild(sect);
+    var docXml=new XMLSerializer().serializeToString(doc);
+    if(!/^\s*<\?xml/i.test(docXml)) docXml='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n'+docXml;
+    var ctypes='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>';
+    var rels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>';
+    var files=[["[Content_Types].xml",ctypes],["_rels/.rels",rels],["word/document.xml",docXml]];
+    var enc=new TextEncoder(), entries=[];
+    for(var k=0;k<files.length;k++){ var bytes=enc.encode(files[k][1]); var crc=_crc32(bytes); var comp=null; try{ comp=await _deflateRaw(bytes); }catch(_e){ comp=null; } var de={name:files[k][0], crc:crc, usize:bytes.length}; if(comp){ de.method=8; de.data=comp; de.csize=comp.length; } else { de.method=0; de.data=bytes; de.csize=bytes.length; } entries.push(de); }
+    var outBuf=_zipBuild(entries);
+    var blob=new Blob([outBuf],{type:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
+    var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="pico_strategy.docx"; document.body.appendChild(a); a.click(); a.remove();
   };
 
   // ===== \u56de\u586b\u6aa2\u7d22\u7d00\u9304\u8868\uff1a\u628a\u751f\u6210\u7684\u6aa2\u7d22\u7b56\u7565\u5beb\u56de\u4f7f\u7528\u8005\u4e0a\u50b3\u7684 Word\uff08\u5c31\u5730\u7de8\u8f2f word/document.xml\uff0c\u539f\u751f zip \u8b80\u5beb\uff0c\u53ef\u96e2\u7dda\uff09 =====
@@ -3234,10 +3229,10 @@ if (typeof module !== "undefined" && module.exports) {
       else if(cur){ cur.rows.push(trs[ri]); }
     }
     // \u6bcf\u500b\u8cc7\u6599\u5eab\u5728\u5de5\u5177\u751f\u6210\u7684\u6574\u4efd\u6aa2\u7d22\u5f0f\uff08\u542b\u6982\u5ff5\u884c\u3001\u7d44\u5408\u884c\u3001Filter \u884c\uff09\uff0c\u8207\u756b\u9762\u986f\u793a\u76f8\u540c
-    var LINES={}, VERIFY={}, ENG={}; ((lastGen&&lastGen.data)||[]).forEach(function(c){ if(c&&c.tid){ LINES[c.tid]=c.rows; VERIFY[c.tid]=(c.verify||[]); ENG[c.tid]=c.engine; } });
+    var LINES={}, VERIFY={}, ENG={}, VOC={}; ((lastGen&&lastGen.data)||[]).forEach(function(c){ if(c&&c.tid){ LINES[c.tid]=c.rows; VERIFY[c.tid]=(c.verify||[]); ENG[c.tid]=c.engine; VOC[c.tid]=c.vocab; } });
     blocks.forEach(function(bk){
       var baseLines=LINES[bk.tid]; if(!bk.tid || !baseLines || !baseLines.length) return;
-      var _eng=ENG[bk.tid], _vf=VERIFY[bk.tid]||[];
+      var _eng=ENG[bk.tid], _voc=VOC[bk.tid], _vf=VERIFY[bk.tid]||[];
       var lines=_vf.length ? baseLines.concat([{n:null, text:_verifyNote(_vf)}]) : baseLines;   // 尚未整理語法的資料庫：多填一列「請自行確認 Filters」
       // \u4fdd\u7559\u64cd\u4f5c\u8aaa\u660e\u5217\uff1b\u5176\u9918\uff08\u6982\u5ff5\u63d0\u793a\u3001\u7d44\u5408\u3001Filter \u6a23\u677f\u683c\uff09\uff1d\u53ef\u586b\u5217\uff0c\u4f9d\u756b\u9762\u9806\u5e8f\uff08#\u8207\u8a9e\u6cd5\uff09\u9010\u5217\u9ed1\u5b57\u586b\u5165
       var fillable=[];
@@ -3249,13 +3244,14 @@ if (typeof module !== "undefined" && module.exports) {
         else { var anc=lastPlaced||(fillable.length?fillable[fillable.length-1]:bk.rows[bk.rows.length-1]); tr=_cloneRowCont(doc, anc); anc.parentNode.insertBefore(tr, anc.nextSibling); }
         var tcs=_dchild(tr,"tc"); if(tcs.length<3){ lastPlaced=tr; continue; }
         _cellSetText(doc, tcs[1], lines[i].n!=null?(_refPrefix(_eng)+lines[i].n):"");
-        _cellSetText(doc, tcs[2], _dispRefs(lines[i].text, _eng));
+        if(_vf.length && i===M-1) _cellSetText(doc, tcs[2], lines[i].text);   // 「請自行確認 Filters」提示列：純文字
+        else _cellSetRuns(doc, tcs[2], _dispRefs(lines[i].text, _eng), _eng, _voc);   // 搜尋語法：仿照畫面上色＋控制詞彙查核超連結
         lastPlaced=tr; filled++;
       }
       for(var j=fillable.length-1;j>=M;j--){ fillable[j].parentNode.removeChild(fillable[j]); }   // \u79fb\u9664\u591a\u9918\u7684\u53ef\u586b\u6a23\u677f\u5217\uff08\u4fdd\u7559\u64cd\u4f5c\u8aaa\u660e\u5217\uff09
       dbHit[bk.tid]=1;
     });
-    _insertConceptTerms(doc); _insertCVVerifyNote(doc);
+    _insertConceptTerms(doc); _insertCVVerifyNote(doc); _insertCite(doc);
     var out=new XMLSerializer().serializeToString(doc);
     if(!/^\s*<\?xml/i.test(out)) out='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n'+out;
     return {ok:true, filled:filled, dbs:Object.keys(dbHit).length, xml:out};
@@ -3290,22 +3286,111 @@ if (typeof module !== "undefined" && module.exports) {
     lines.forEach(function(ln){ tc.appendChild(_mkP(doc,[{text:ln, bold:o.bold, color:o.color}])); });
     return tc;
   }
-  // 回填：把工具整理的「檢索詞（概念表原貌）」附加在原有檢索詞表格「下方」，不覆蓋原表；具冪等性
-  function _insertConceptTerms(doc){
+  // 段落內嵌超連結（HYPERLINK 功能變數，免動 rels）；url 為空則純文字
+  function _mkHlP(doc, text, url){
+    var p=doc.createElementNS(_WNS,"w:p");
+    if(!url){ var r0=doc.createElementNS(_WNS,"w:r"); var t0=doc.createElementNS(_WNS,"w:t"); t0.setAttributeNS(_XMLNS,"xml:space","preserve"); t0.textContent=(text==null?"":text); r0.appendChild(t0); p.appendChild(r0); return p; }
+    function fld(type){ var r=doc.createElementNS(_WNS,"w:r"); var fc=doc.createElementNS(_WNS,"w:fldChar"); fc.setAttributeNS(_WNS,"w:fldCharType",type); r.appendChild(fc); return r; }
+    p.appendChild(fld("begin"));
+    var ri=doc.createElementNS(_WNS,"w:r"); var it=doc.createElementNS(_WNS,"w:instrText"); it.setAttributeNS(_XMLNS,"xml:space","preserve"); it.textContent=' HYPERLINK "'+String(url).replace(/"/g,"%22")+'" '; ri.appendChild(it); p.appendChild(ri);
+    p.appendChild(fld("separate"));
+    var rr=doc.createElementNS(_WNS,"w:r"); var rpr=doc.createElementNS(_WNS,"w:rPr");
+    var col=doc.createElementNS(_WNS,"w:color"); col.setAttributeNS(_WNS,"w:val","0563C1"); rpr.appendChild(col);
+    var u=doc.createElementNS(_WNS,"w:u"); u.setAttributeNS(_WNS,"w:val","single"); rpr.appendChild(u);
+    rr.appendChild(rpr); var t=doc.createElementNS(_WNS,"w:t"); t.setAttributeNS(_XMLNS,"xml:space","preserve"); t.textContent=(text==null?"":text); rr.appendChild(t); p.appendChild(rr);
+    p.appendChild(fld("end"));
+    return p;
+  }
+  // 控制詞彙儲存格：逐行加詞表查證超連結（cvUrl 依該庫 id 產生；無連結則純文字）
+  function _mkTcCV(doc, text, dbid, o){ o=o||{};
+    var tc=doc.createElementNS(_WNS,"w:tc"), tcPr=doc.createElementNS(_WNS,"w:tcPr");
+    if(o.w){ var w=doc.createElementNS(_WNS,"w:tcW"); w.setAttributeNS(_WNS,"w:w",String(o.w)); w.setAttributeNS(_WNS,"w:type","dxa"); tcPr.appendChild(w); }
+    tc.appendChild(tcPr);
+    var lines=String(text==null?"":text).split(/\r?\n/); if(!lines.length) lines=[""];
+    lines.forEach(function(ln){ var u=null; try{ u = ln.trim() ? cvUrl(ln, dbid) : null; }catch(e){ u=null; } tc.appendChild(_mkHlP(doc, ln, u)); });
+    return tc;
+  }
+  // 語法字串 → 帶顏色／超連結的 run 陣列（依畫面勾選：語法顏色、成對括弧、查核連結）
+  function _hlRuns(text, engine, vocab){
+    var sem=cbColor&&cbColor.checked, brk=cbBracket&&cbBracket.checked, linksOn=cbLinks&&cbLinks.checked;
+    var plain=[{text:(text==null?"":String(text))}];
+    if(!sem && !brk && !linksOn) return plain;
+    var html; try{ html=hlHighlight(text, engine, sem, brk, vocab, linksOn).html; }catch(e){ return plain; }
+    var HLC={fld:"0a8f4f",cv:"d32029",px:"0f83d6",bk0:"7c3aed",bk1:"ea580c",bk2:"a16207",bk3:"64748b",bk4:"c026d3",bk5:"0d9488"};
+    function decode(s){ return s.replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&amp;/g,"&"); }
+    var runs=[], stack=[], href=null;
+    var re=/<a\b[^>]*?href="([^"]*)"[^>]*>|<\/a>|<span class="hl-(\w+)">|<\/span>|([^<]+)/g, m;
+    while((m=re.exec(html))){
+      if(m[1]!==undefined){ href=m[1]; }
+      else if(m[0]==="</a>"){ href=null; }
+      else if(m[2]!==undefined){ var cls=m[2]; stack.push({color:HLC[cls]||null, bold:/^(fld|cv|px)$/.test(cls)}); }
+      else if(m[0]==="</span>"){ stack.pop(); }
+      else if(m[3]!==undefined){ var txt=decode(m[3]); if(!txt) continue; var top=stack.length?stack[stack.length-1]:{}; runs.push({text:txt, color:top.color, bold:top.bold, url:href}); }
+    }
+    return runs.length?runs:plain;
+  }
+  function _mkPRuns(doc, runs){
+    var p=doc.createElementNS(_WNS,"w:p");
+    function plainRun(rn){
+      var r=doc.createElementNS(_WNS,"w:r"), rpr=doc.createElementNS(_WNS,"w:rPr");
+      if(rn.bold) rpr.appendChild(doc.createElementNS(_WNS,"w:b"));
+      var col=doc.createElementNS(_WNS,"w:color"); col.setAttributeNS(_WNS,"w:val", rn.url?(rn.color||"248D88"):(rn.color||"000000")); rpr.appendChild(col);
+      if(rn.url){ var u=doc.createElementNS(_WNS,"w:u"); u.setAttributeNS(_WNS,"w:val","single"); rpr.appendChild(u); }
+      if(rn.sz){ var s=doc.createElementNS(_WNS,"w:sz"); s.setAttributeNS(_WNS,"w:val",String(rn.sz)); rpr.appendChild(s); }
+      r.appendChild(rpr);
+      var t=doc.createElementNS(_WNS,"w:t"); t.setAttributeNS(_XMLNS,"xml:space","preserve"); t.textContent=(rn.text==null?"":rn.text); r.appendChild(t);
+      return r;
+    }
+    function fld(type){ var r=doc.createElementNS(_WNS,"w:r"); var fc=doc.createElementNS(_WNS,"w:fldChar"); fc.setAttributeNS(_WNS,"w:fldCharType",type); r.appendChild(fc); return r; }
+    var i=0;
+    while(i<runs.length){
+      if(runs[i].url){
+        var url=runs[i].url, group=[];
+        while(i<runs.length && runs[i].url===url){ group.push(runs[i]); i++; }
+        p.appendChild(fld("begin"));
+        var ri=doc.createElementNS(_WNS,"w:r"); var it=doc.createElementNS(_WNS,"w:instrText"); it.setAttributeNS(_XMLNS,"xml:space","preserve"); it.textContent=' HYPERLINK "'+String(url).replace(/"/g,"%22")+'" '; ri.appendChild(it); p.appendChild(ri);
+        p.appendChild(fld("separate"));
+        group.forEach(function(g){ p.appendChild(plainRun({text:g.text, bold:g.bold, color:g.color, url:true, sz:g.sz})); });
+        p.appendChild(fld("end"));
+      } else { p.appendChild(plainRun(runs[i])); i++; }
+    }
+    if(!runs.length){ var r0=doc.createElementNS(_WNS,"w:r"); var t0=doc.createElementNS(_WNS,"w:t"); t0.setAttributeNS(_XMLNS,"xml:space","preserve"); t0.textContent=""; r0.appendChild(t0); p.appendChild(r0); }
+    return p;
+  }
+  function _cellSetRuns(doc, tc, text, eng, vocab){
+    var ps=_dchild(tc,"p"); for(var i=0;i<ps.length;i++) tc.removeChild(ps[i]);
+    tc.appendChild(_mkPRuns(doc, _hlRuns(text, eng, vocab)));
+  }
+  // 共用說明文字（概念表提醒／策略表提醒／工具引用）——網頁與兩個 Word 一致
+  function _noteTerms(){ return isEn()
+    ? "⚠ Reminder: assess the suitability of synonyms and controlled vocabulary yourself, and especially verify the controlled terms — the tool only links to the thesauri and does not verify them."
+    : "⚠ 提醒您！請自行評估同義詞與控制詞彙的適用性，尤其確實查核控制詞彙，工具僅提供詞表超連結，並未進行查驗。"; }
+  function _noteStrat(){ return isEn()
+    ? "⚠ Reminder: 1. Verify the controlled vocabulary yourself (the tool only links to the thesauri and does not verify them). 2. Review the search strategy manually and test/evaluate it in the databases before use. 3. SR × EBM SearchHen assumes no warranty or liability."
+    : "⚠ 提醒您！1. 請確實查核控制詞彙（工具僅提供詞表超連結，並未進行查驗）。2. 請人工覆核檢索策略，並於資料庫實測與評估後使用。3. SR x EBM SearchHen 不負保證責任。"; }
+  var _CITE_ZH="方靜如，SR x EBM SearchHen 搜尋策略生成雞。 doi: 10.5281/zenodo.21960702。https://sunfloraf-sketch.github.io/sr-search-toolkit/";
+  var _CITE_EN="Fang CJ, SR x EBM SearchHen. doi: 10.5281/zenodo.21960702. https://sunfloraf-sketch.github.io/sr-search-toolkit/";
+  function _citeLines(){ return isEn()? [_CITE_EN] : [_CITE_ZH, _CITE_EN]; }
+  function _insertCite(doc){
+    var ts=doc.getElementsByTagNameNS(_WNS,"t");
+    for(var i=0;i<ts.length;i++){ var tx=ts[i].textContent||""; if(tx.indexOf("SearchHen")>=0 && (tx.indexOf("zenodo")>=0||tx.indexOf("doi")>=0)) return; }
+    var body=doc.getElementsByTagNameNS(_WNS,"body")[0]; if(!body) return;
+    var sect=null, kids=body.childNodes; for(var k=kids.length-1;k>=0;k--){ if(kids[k].localName==="sectPr"&&kids[k].namespaceURI===_WNS){ sect=kids[k]; break; } }
+    var nodes=[_mkP(doc,[{text:(isEn()?"Cite this tool: ":"工具引用："), sz:18, color:"555555", bold:true}])];
+    _citeLines().forEach(function(ln){ nodes.push(_mkP(doc,[{text:ln, sz:18, color:"555555"}])); });
+    nodes.forEach(function(nd){ if(sect) body.insertBefore(nd, sect); else body.appendChild(nd); });
+  }
+  // 建「工具整理的檢索詞（概念表原貌）」：回傳 {head, note, tbl}；無詞則 null。控制詞彙欄內嵌查證超連結、換行為 Enter 段落。
+  function _conceptTermsTable(doc){
     var en=isEn();
     var terms=((lastGen&&lastGen.terms)||[]).filter(function(r){ return r.zh||r.ft||(r.cv && Object.keys(r.cv).some(function(k){return r.cv[k];})); });
-    if(!terms.length) return;
-    var ts=doc.getElementsByTagNameNS(_WNS,"t");
-    for(var i=0;i<ts.length;i++){ var tx=ts[i].textContent||""; if(tx.indexOf("工具整理的檢索詞")>=0 || tx.indexOf("tidied in the tool")>=0) return; }
-    // 有內容的控制詞彙欄（依 CV_DBS 排序，其餘自訂欄接在後）
+    if(!terms.length) return null;
     var cvKeys=[];
     if(typeof CV_DBS!=="undefined") CV_DBS.forEach(function(k){ if(terms.some(function(r){return r.cv&&r.cv[k];})) cvKeys.push(k); });
     terms.forEach(function(r){ if(r.cv) Object.keys(r.cv).forEach(function(k){ if(r.cv[k] && cvKeys.indexOf(k)<0) cvKeys.push(k); }); });
     var cvLabel=function(k){ return (typeof CV_COL!=="undefined" && CV_COL[k] && CV_COL[k].label)||k; };
-    // 找出紀錄表中「原有的檢索詞（概念）表」：含主題概念／自由詞／控制詞彙欄，且非「搜尋語法」策略表
-    var tbls=doc.getElementsByTagNameNS(_WNS,"tbl"), ct=null;
-    for(var j=0;j<tbls.length;j++){ var txt=_recCellText(tbls[j]); if(!/搜尋語法|Search syntax/.test(txt) && (/主題概念/.test(txt)||/自由詞/.test(txt)||/控制詞彙|Controlled\s*Vocabulary/i.test(txt))){ ct=tbls[j]; break; } }
-    var head=_mkP(doc,[{text:(en?"※ Search terms tidied in the tool (appended below your original table; not overwriting it):":"※ 工具整理的檢索詞（附加於原檢索詞表下方，未覆蓋原表）："), color:"0F766E", sz:18, bold:true}]);
+    var head=_mkP(doc,[{text:(en?"※ Search terms tidied in the tool (concept table):":"※ 工具整理的檢索詞（概念表）："), color:"0F766E", sz:18, bold:true}]);
+    var note=_mkP(doc,[{text:_noteTerms(), color:"C00000", sz:18}]);
     var tbl=doc.createElementNS(_WNS,"w:tbl"), pr=doc.createElementNS(_WNS,"w:tblPr");
     var tw=doc.createElementNS(_WNS,"w:tblW"); tw.setAttributeNS(_WNS,"w:w","0"); tw.setAttributeNS(_WNS,"w:type","auto"); pr.appendChild(tw);
     var bd=doc.createElementNS(_WNS,"w:tblBorders");
@@ -3320,12 +3405,24 @@ if (typeof module !== "undefined" && module.exports) {
       tr.appendChild(_mkTcML(doc, r.label||"", {w:1200, bold:true}));
       tr.appendChild(_mkTcML(doc, r.zh||"", {w:1600}));
       tr.appendChild(_mkTcML(doc, r.ft||"", {w:2600}));
-      cvKeys.forEach(function(k){ tr.appendChild(_mkTcML(doc, (r.cv&&r.cv[k])||"", {w:1700})); });
+      cvKeys.forEach(function(k){ tr.appendChild(_mkTcCV(doc, (r.cv&&r.cv[k])||"", k, {w:1700})); });
       tbl.appendChild(tr);
     });
+    return {head:head, note:note, tbl:tbl};
+  }
+  // 回填：把工具整理的「檢索詞（概念表原貌）」附加在原有檢索詞表格「下方」，不覆蓋原表；具冪等性
+  function _insertConceptTerms(doc){
+    var _ct=_conceptTermsTable(doc); if(!_ct) return;
+    var ts=doc.getElementsByTagNameNS(_WNS,"t");
+    for(var i=0;i<ts.length;i++){ var tx=ts[i].textContent||""; if(tx.indexOf("工具整理的檢索詞")>=0 || tx.indexOf("tidied in the tool")>=0) return; }
+    var tbls=doc.getElementsByTagNameNS(_WNS,"tbl"), ctbl=null;
+    for(var j=0;j<tbls.length;j++){ var txt=_recCellText(tbls[j]); if(!/搜尋語法|Search syntax/.test(txt) && (/主題概念/.test(txt)||/自由詞/.test(txt)||/控制詞彙|Controlled\s*Vocabulary/i.test(txt))){ ctbl=tbls[j]; break; } }
+    var head=_ct.head, note=_ct.note, tbl=_ct.tbl;
+    var htext=(isEn()?"※ Search terms tidied in the tool (appended below your original table; not overwriting it):":"※ 工具整理的檢索詞（附加於原檢索詞表下方，未覆蓋原表）：");
+    var ht=head.getElementsByTagNameNS(_WNS,"t"); if(ht.length) ht[0].textContent=htext;
     var spacer=_mkP(doc,[{text:""}]);
-    if(ct && ct.parentNode){ var ref=ct.nextSibling; ct.parentNode.insertBefore(head, ref); ct.parentNode.insertBefore(tbl, ref); ct.parentNode.insertBefore(spacer, ref); }
-    else { var body=doc.getElementsByTagNameNS(_WNS,"body")[0]; if(body){ body.insertBefore(spacer, body.firstChild); body.insertBefore(tbl, body.firstChild); body.insertBefore(head, body.firstChild); } }
+    if(ctbl && ctbl.parentNode){ var ref=ctbl.nextSibling; ctbl.parentNode.insertBefore(head, ref); ctbl.parentNode.insertBefore(note, ref); ctbl.parentNode.insertBefore(tbl, ref); ctbl.parentNode.insertBefore(spacer, ref); }
+    else { var body=doc.getElementsByTagNameNS(_WNS,"body")[0]; if(body){ body.insertBefore(spacer, body.firstChild); body.insertBefore(tbl, body.firstChild); body.insertBefore(note, body.firstChild); body.insertBefore(head, body.firstChild); } }
   }
   // 在概念表下方加註：檢索詞未由工具自動回填（避免與策略表誤會為同步）；具冪等性，不重覆加。
   function _insertConceptNote(doc){
@@ -3340,10 +3437,9 @@ if (typeof module !== "undefined" && module.exports) {
   }
   // 在檢索策略表下方加紅字提醒：請確實查核控制詞彙（工具僅提供詞表超連結、未查驗）；具冪等性。
   function _insertCVVerifyNote(doc){
-    var en=isEn();
     var ts=doc.getElementsByTagNameNS(_WNS,"t");
-    for(var i=0;i<ts.length;i++){ var tx=ts[i].textContent||""; if(tx.indexOf("確實查核控制詞彙")>=0 || tx.indexOf("verify the controlled vocabulary")>=0) return; }   // 已加過就跳過
-    var note=_mkP(doc,[{text:(en?"⚠ Reminder: assess the suitability of synonyms and controlled vocabulary yourself, and especially verify the controlled terms — the tool only links to the thesauri and does not verify them.":"⚠ 提醒您！請自行評估同義詞與控制詞彙的適用性，尤其確實查核控制詞彙，工具僅提供詞表超連結，並未進行查驗。"), color:"C00000", sz:18}]);
+    for(var i=0;i<ts.length;i++){ var tx=ts[i].textContent||""; if(tx.indexOf("請人工覆核檢索策略")>=0 || tx.indexOf("Review the search strategy manually")>=0) return; }   // 已加過就跳過
+    var note=_mkP(doc,[{text:_noteStrat(), color:"C00000", sz:18}]);   // 檢索策略表上方提醒（三點）
     var tbls=doc.getElementsByTagNameNS(_WNS,"tbl"), st=null;
     for(var j=0;j<tbls.length;j++){ var tr0=_wtag(tbls[j],"tr")[0]; if(tr0 && /搜尋語法|Search syntax/.test(_recCellText(tr0))){ st=tbls[j]; break; } }   // 取第一個策略表（提示放其上方）
     if(st && st.parentNode){ st.parentNode.insertBefore(note, st); return; }   // 移到策略表「上方」
@@ -3375,7 +3471,7 @@ if (typeof module !== "undefined" && module.exports) {
         var tr=doc.createElementNS(_WNS,"w:tr");
         tr.appendChild(_mkTc(doc,[{text:(idx===0?(c.label+(c.isStart?(en?" (start)":"（起始）"):"")):""),bold:true}],{vmerge:(idx===0?"restart":"cont"),w:1500}));
         tr.appendChild(_mkTc(doc,[{text:(x.n!=null?(_refPrefix(c.engine)+x.n):"")}],{w:600}));
-        tr.appendChild(_mkTc(doc,[{text:_dispRefs(x.text,c.engine)}],{w:7200}));
+        var _sc=doc.createElementNS(_WNS,"w:tc"), _scp=doc.createElementNS(_WNS,"w:tcPr"); var _sw=doc.createElementNS(_WNS,"w:tcW"); _sw.setAttributeNS(_WNS,"w:w","7200"); _sw.setAttributeNS(_WNS,"w:type","dxa"); _scp.appendChild(_sw); _sc.appendChild(_scp); _sc.appendChild(_mkPRuns(doc,_hlRuns(_dispRefs(x.text,c.engine), c.engine, c.vocab))); tr.appendChild(_sc);   // 搜尋語法：上色＋控制詞彙查核超連結
         tbl.appendChild(tr); cnt++;
       });
       if(vf.length){   // 尚未整理語法的資料庫：多加一列「請自行確認 Filters」
@@ -3402,7 +3498,7 @@ if (typeof module !== "undefined" && module.exports) {
     var nodes=[head, lvl, tbl].concat(srcPs.length?[_mkP(doc,[{text:(en?"Study-design filter sources":"研究設計篩選語法出處"),bold:true,sz:18}])].concat(srcPs):[]).concat([tail]);
     var sect=null, kids=body.childNodes; for(var i=kids.length-1;i>=0;i--){ if(kids[i].localName==="sectPr" && kids[i].namespaceURI===_WNS){ sect=kids[i]; break; } }
     nodes.forEach(function(nd){ if(sect) body.insertBefore(nd, sect); else body.appendChild(nd); });
-    _insertConceptTerms(doc); _insertCVVerifyNote(doc);
+    _insertConceptTerms(doc); _insertCVVerifyNote(doc); _insertCite(doc);
     var out=new XMLSerializer().serializeToString(doc);
     if(!/^\s*<\?xml/i.test(out)) out='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n'+out;
     return {ok:true, filled:cnt, xml:out, appended:true};
