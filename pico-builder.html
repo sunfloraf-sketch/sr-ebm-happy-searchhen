@@ -259,7 +259,7 @@
 <body>
 <header>
   <div class="hbar">
-    <a class="brand" href="index.html"><h1><span data-zh>SR / EBM 搜尋工具包</span><span data-en>SR / EBM Search Toolkit</span></h1></a>
+    <a class="brand" href="index.html"><h1><span data-zh>SR × EBM Happy SearchHen 搜尋策略生成雞</span><span data-en>SR × EBM Happy SearchHen</span></h1></a>
     <nav class="toolnav">
       <a class="toolbtn active" href="pico-builder.html" aria-current="page"><span data-zh>PICO 檢索策略產生器</span><span data-en>PICO Strategy Builder</span></a>
       <a class="toolbtn" href="syntax-converter.html"><span data-zh>資料庫檢索語法轉換器</span><span data-en>Search Syntax Converter</span></a>
@@ -1674,8 +1674,8 @@ if (typeof module !== "undefined" && module.exports) {
     labTd.appendChild(lvlSel);
     var c0=mkCell("ref",phs.zh), c1=mkCell("free",phs.ft), c2=mkCell("cv",phs.mesh), c3=mkCell("cv",phs.emtree), c4=mkCell("cv",phs.cinahl);
     c0.ta.value=zh||""; c1.ta.value=ft||""; c2.ta.value=mesh||""; c3.ta.value=emtree||""; c4.ta.value=cinahl||"";
-    var rmTd=document.createElement("td");
-    var mv=document.createElement("div"); mv.style.cssText="display:flex;flex-direction:column;gap:3px;align-items:center;justify-content:center";
+    var rmTd=document.createElement("td"); rmTd.style.verticalAlign="middle";   // 功能鍵垂直置中
+    var mv=document.createElement("div"); mv.style.cssText="display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center";   // 雙箭頭與 ✕ 之間留間隔
     var mvRow=document.createElement("div"); mvRow.style.cssText="display:flex;gap:2px;align-items:center;justify-content:center";   // 雙向移動箭頭（上移／下移）同一行
     var up=document.createElement("button"); up.className="rmrow"; up.textContent="↑"; up.title=isEn()?"Move up":"上移（與上一列對調）";
     var dn=document.createElement("button"); dn.className="rmrow"; dn.textContent="↓"; dn.title=isEn()?"Move down":"下移（與下一列對調）";
