@@ -236,7 +236,7 @@
   }
   #genBtn:hover::before{ transform:translateX(135%); }
   /* ---- 下載 Word（成品啟用時的深綠描金；只套用 #wordBtn，停用時仍走 .btn:disabled 灰底） ---- */
-  #wordBtn:not(:disabled){
+  #wordBtn:not(:disabled),#recordBtn:not(:disabled){
     background:linear-gradient(180deg,#6F8578 0%,#4F6658 45%,#35483C 100%);
     color:#F5F3EA;
     border:1px solid #9A8A58;
@@ -247,19 +247,19 @@
     position:relative;
     overflow:hidden;
   }
-  #wordBtn:not(:disabled):hover{
+  #wordBtn:not(:disabled):hover,#recordBtn:not(:disabled):hover{
     background:linear-gradient(180deg,#7B9183 0%,#5B7162 45%,#3E5144 100%);
     border-color:#B09A55;
     color:#FFFDF6;
     box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.16),0 5px 12px rgba(35,49,40,.26),0 0 10px rgba(176,154,85,.12);
     transform:translateY(-1px);
   }
-  #wordBtn:not(:disabled):active{
+  #wordBtn:not(:disabled):active,#recordBtn:not(:disabled):active{
     transform:translateY(1px);
     background:linear-gradient(180deg,#5F7467 0%,#465B4E 50%,#314138 100%);
     box-shadow:inset 0 2px 5px rgba(0,0,0,.22),0 1px 4px rgba(35,49,40,.16);
   }
-  #wordBtn:not(:disabled)::before{
+  #wordBtn:not(:disabled)::before,#recordBtn:not(:disabled)::before{
     content:"";
     position:absolute;
     inset:1px;
@@ -269,7 +269,7 @@
     transition:transform .75s ease;
     pointer-events:none;
   }
-  #wordBtn:not(:disabled):hover::before{ transform:translateX(140%); }
+  #wordBtn:not(:disabled):hover::before,#recordBtn:not(:disabled):hover::before{ transform:translateX(140%); }
 </style>
 </head>
 <body>
@@ -463,13 +463,12 @@ City blocks)</pre>
       <label title="以顏色標出成對圓括弧"><input type="checkbox" id="cbBracket"><span data-zh>成對括弧顏色</span><span data-en>Bracket pairs</span></label>
       <label title="把最後一行的 #行號組合展開，串成一條可直接貼入單一檢索框的長檢索式"><input type="checkbox" id="cbFlat"><span data-zh>整併為單一長式</span><span data-en>One combined query</span></label>
       <label title="在檢索策略裡，把控制詞彙(ASC/BSC/ERIC/Ei Compendex 等)加上可點的詞表查核連結，方便向館員諮詢時快速複查。連結只供核對，複製的檢索式仍為純文字。"><input type="checkbox" id="cbLinks" checked><span data-zh>控制詞彙查核連結</span><span data-en>Vocab verify links</span></label>
-      <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--mut)" title="EBSCOhost（ASC／BSC／ERIC）詞表查核連結的機構碼。預設為成大各庫代碼（ASC=xti3bi、BSC=j7dc2x、ERIC=shmie4，各庫不同）。其他機構請貼上貴機構 EBSCOhost 任一頁網址（research.ebsco.com/c/XXXX/…），系統會擷取機構碼 XXXX，套用到 ASC／BSC／ERIC 的查核連結。只存在你的瀏覽器本機。"><span data-zh>EBSCOhost 機構碼</span><span data-en>EBSCOhost inst.</span><input type="text" id="ebscoInst" placeholder="成大預設；其他機構貼網址" style="width:190px;font-size:12px;padding:6px 8px;border:1px solid var(--line);border-radius:6px"><span data-zh title="預設為成大各庫代碼（ASC／BSC／ERIC 各不同）。其他機構：貼上貴機構 EBSCOhost 任一頁網址，系統會自動擷取 research.ebsco.com/c/XXXX/ 的機構碼 XXXX，並套用到三個庫的查核連結。" style="cursor:help;color:var(--brand2);font-weight:700">ⓘ</span><span data-en title="Defaults to NCKU per-database codes (ASC/BSC/ERIC differ). Other institutions: paste any EBSCOhost page URL; the tool extracts the code XXXX from research.ebsco.com/c/XXXX/ and applies it to the ASC/BSC/ERIC verify links." style="cursor:help;color:var(--brand2);font-weight:700">ⓘ</span></span>
       <span style="display:inline-flex;align-items:center;gap:8px"><label title="英文同義詞裡的多字片語：預設加引號當片語（如 &quot;gestational diabetes&quot;）；勾選則改用鄰近字（如 gestational NEAR/2 diabetes）。鄰近距離可在右方數字框設定（預設 2）。強烈建議先用「鄰近字組合器」把同義詞分堆整理乾淨再貼入。" style="display:inline-flex;align-items:center;gap:5px"><input type="checkbox" id="cbNearPhrase"><span data-zh>片語改用鄰近字</span><span data-en>Phrases as proximity</span></label><span style="display:inline-flex;align-items:center;gap:3px;color:var(--mut)"><span data-zh>鄰</span><span data-en>within&nbsp;</span><input type="number" id="nearN" min="0" max="20" value="2" title="鄰近距離：幾個單字內（預設 2）" style="width:34px;font-size:12px;padding:4px 5px;text-align:center;border:1px solid var(--line);border-radius:6px"><span data-zh>單字</span><span data-en>&nbsp;words</span></span></span>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-left:auto">
       <button class="btn primary" id="genBtn"><span data-zh>▶ 生成檢索策略</span><span data-en>▶ Generate strategies</span></button>
       <button class="btn ghost" id="wordBtn" disabled title="請先按「生成檢索策略」" data-tip-zh="請先按「生成檢索策略」" data-tip-en="Generate strategies first"><span data-zh>⬇ 下載 Word</span><span data-en>⬇ Download Word</span></button>
-      <button class="btn ghost" id="recordBtn" style="display:none" title="把生成的檢索策略回填到您上傳的紀錄表，下載完整 Word" data-tip-zh="把生成的檢索策略回填到您上傳的紀錄表，下載完整 Word" data-tip-en="Fill the generated strategies back into your uploaded record form and download the full Word"><span data-zh>⬇ 回填檢索紀錄表</span><span data-en>⬇ Fill in record form</span></button>
+      <button class="btn ghost" id="recordBtn" disabled title="把生成的檢索策略回填到您上傳的紀錄表，下載完整 Word" data-tip-zh="把生成的檢索策略回填到您上傳的紀錄表，下載完整 Word" data-tip-en="Fill the generated strategies back into your uploaded record form and download the full Word"><span data-zh>⬇ 回填檢索紀錄表</span><span data-en>⬇ Fill in record form</span></button>
     </div>
   </div>
   <div class="inwarn" id="picoWarn" style="display:none"></div>
@@ -1497,7 +1496,10 @@ if (typeof module !== "undefined" && module.exports) {
   var FIELD_RE={pubmed:/\[(?:tiab|ti|tw|ab)\]/gi,ovid:/\.(?:ti|ab|kf|kw|mp|tw|nm|pt|sh|fs|xm|lg)(?:,(?:ti|ab|kf|kw|mp|tw|nm|pt|sh|fs|xm|lg))*\./gi,embase:/:(?:ti|ab|kw|de)(?:,(?:ti|ab|kw|de))*(?![a-z])/gi,cochrane:/:(?:ti|ab|kw|de)(?:,(?:ti|ab|kw|de))*(?![a-z])/gi,ebsco:/\b(?:TI|AB|KW|TX|XB)\b(?=\s*\()/gi,wos:/\b(?:TI|AB|AK|TS)=/gi,scopus:/\b(?:TITLE-ABS-KEY|TITLE-ABS|TITLE|ABS|AUTHKEY|KEY)\b(?=\s*\()/gi};
   // 控制詞彙查核連結：由標目文字 + 詞表類型 組出詞表查詢網址
   var _EBDEF={asc:"xti3bi",bsc:"j7dc2x",eric:"shmie4"};   // 成大各庫 EBSCOhost 機構碼（各庫不同）＝預設
-  function _ebCode(dbid){ var el=document.getElementById("ebscoInst"); var ov=el?String(el.value||"").trim():""; var m=ov.match(/\/c\/([A-Za-z0-9_-]+)/); if(m) ov=m[1]; return ov||_EBDEF[dbid]; }   // 其他機構填了就覆蓋三庫；留空＝用成大各庫預設
+  var _EBOV={};   // 其他機構：各庫（asc／bsc／eric）各自的覆蓋碼
+  try{ ["asc","bsc","eric"].forEach(function(k){ var v=localStorage.getItem("sr_ebsco_"+k); if(v) _EBOV[k]=v; }); }catch(e){}
+  function _ebCode(dbid){ return ((_EBOV[dbid]||"").trim()) || _EBDEF[dbid]; }   // 該庫填了覆蓋就用、否則用成大預設
+  function _ebSet(dbid, val){ var v=String(val||"").trim(); var m=v.match(/\/c\/([A-Za-z0-9_-]+)/); if(m) v=m[1]; _EBOV[dbid]=v; try{ if(v) localStorage.setItem("sr_ebsco_"+dbid, v); else localStorage.removeItem("sr_ebsco_"+dbid); }catch(e){} return v; }
   function cvUrl(term, dbid){
     var t=String(term||"").replace(/^["']+|["']+$/g,"").replace(/[+*]+$/,"").replace(/\s+/g," ").trim();
     if(!t) return null;
@@ -1652,7 +1654,16 @@ if (typeof module !== "undefined" && module.exports) {
       panel.appendChild(row);
     });
     if(!any){ var e0=document.createElement("div"); e0.className="cvvhint"; e0.textContent=en?("(no term entered)"):("（尚未輸入詞彙）"); panel.appendChild(e0); }
-    if((vocab==="asc"||vocab==="bsc"||vocab==="eric")){ var h=document.createElement("div"); h.className="cvvhint"; h.textContent=en?"Links open the NCKU EBSCOhost subjects lookup.":"連結開啟成大 EBSCOhost 詞表查詢（僅適用於成大）。"; panel.appendChild(h); }
+    if((vocab==="asc"||vocab==="bsc"||vocab==="eric")){
+      var ib=document.createElement("div"); ib.className="cvvhint"; ib.style.marginTop="8px"; ib.onclick=function(e){ e.stopPropagation(); }; ib.onmousedown=function(e){ e.stopPropagation(); };
+      var lab2=document.createElement("div"); lab2.textContent=en?("Your institution's "+lbl+" URL / code (default: NCKU):"):("貴機構 "+lbl+" 機構網址／碼（預設：成大）："); lab2.style.marginBottom="3px"; ib.appendChild(lab2);
+      var inp=document.createElement("input"); inp.type="text"; inp.value=(_EBOV[vocab]||""); inp.placeholder=en?("default "+_EBDEF[vocab]+"; paste your URL"):("成大預設 "+_EBDEF[vocab]+"；貼上貴機構網址"); inp.style.cssText="width:100%;font-size:12px;padding:5px 7px;border:1px solid var(--line);border-radius:6px;box-sizing:border-box";
+      inp.onclick=function(e){ e.stopPropagation(); }; inp.onmousedown=function(e){ e.stopPropagation(); };
+      inp.onchange=function(){ _ebSet(vocab, inp.value); buildColumnVerify(vocab); if(outs.children.length && (!cbLinks||cbLinks.checked)) $("#genBtn").click(); };
+      ib.appendChild(inp);
+      var hint2=document.createElement("div"); hint2.textContent=en?("Current code: "+_ebCode(vocab)+". Paste research.ebsco.com/c/XXXX/… and the code XXXX is extracted; leave blank to use NCKU default."):("目前機構碼："+_ebCode(vocab)+"。貼上 research.ebsco.com/c/XXXX/… 會自動擷取 XXXX；留空＝用成大預設。"); hint2.style.cssText="margin-top:4px;color:#64748b"; ib.appendChild(hint2);
+      panel.appendChild(ib);
+    }
     if(allUrls.length>1){
       var all=document.createElement("button"); all.type="button"; all.className="cvvall";
       all.textContent=en?("Open all ("+allUrls.length+")"):("全部開啟 ("+allUrls.length+")");
@@ -3121,7 +3132,7 @@ if (typeof module !== "undefined" && module.exports) {
   };
 
   // ===== \u56de\u586b\u6aa2\u7d22\u7d00\u9304\u8868\uff1a\u628a\u751f\u6210\u7684\u6aa2\u7d22\u7b56\u7565\u5beb\u56de\u4f7f\u7528\u8005\u4e0a\u50b3\u7684 Word\uff08\u5c31\u5730\u7de8\u8f2f word/document.xml\uff0c\u539f\u751f zip \u8b80\u5beb\uff0c\u53ef\u96e2\u7dda\uff09 =====
-  function updateRecordBtn(){ var b=$("#recordBtn"); if(!b) return; b.style.display=(recordDocx && lastGen && lastGen.data && lastGen.data.length)?"":"none"; }
+  function updateRecordBtn(){ var b=$("#recordBtn"); if(!b) return; b.style.display=""; b.disabled=!(lastGen && lastGen.data && lastGen.data.length); }
   // 研究設計篩選（可複選）：每個選到且該庫有語法的設計＝獨立一行「最終組合 AND (篩選)」；
   // 選超過一個時，再加一行聯集 = 各篩選行以 OR 合併（例：#6、#7、#8 → #9 = #6 OR #7 OR #8）。尚未整理語法的資料庫另以「請自行確認 Filters」標示（見 _designMiss／_verifyNote）。
   // 尚未整理研究設計篩選語法的資料庫（此設計在 STUDY_FILTERS 無對應）→ 回傳這些設計 key，供標示「請自行確認 Filters」
@@ -3516,7 +3527,8 @@ if (typeof module !== "undefined" && module.exports) {
     return {ok:true, filled:cnt, xml:out, appended:true};
   }
   if($("#recordBtn")) $("#recordBtn").onclick=async function(){
-    if(!recordDocx || !lastGen || !lastGen.data.length){ return; }
+    if(!lastGen || !lastGen.data.length){ return; }
+    if(!recordDocx){ alert(isEn()?"Please upload your search-record form first (the \u201cUpload Word\u201d button in the PICO concept table), then fill back.":"\u8acb\u5148\u5728 PICO \u6982\u5ff5\u8868\u7684\u300c\u4e0a\u50b3 Word\u300d\u4e0a\u50b3\u60a8\u7684\u641c\u5c0b\u7d00\u9304\u8868\uff0c\u518d\u56de\u586b\u3002"); return; }
     var en=isEn(), btn=$("#recordBtn"), old=btn.innerHTML;
     try{
       btn.disabled=true;
@@ -3565,12 +3577,7 @@ if (typeof module !== "undefined" && module.exports) {
   if(cbLinks) cbLinks.addEventListener("change", function(){ if(outs.children.length) $("#genBtn").click(); });
   if(cbNearPhrase) cbNearPhrase.addEventListener("change", function(){ if(outs.children.length) $("#genBtn").click(); });
   if(nearN) nearN.addEventListener("change", function(){ if(outs.children.length && cbNearPhrase && cbNearPhrase.checked) $("#genBtn").click(); });
-  // EBSCOhost 機構碼（ASC／BSC／ERIC 查核連結用）：預設留空＝用成大各庫碼；填網址自動擷取機構碼；本機記憶、變更後重生
-  var ebscoInst=$("#ebscoInst");
-  if(ebscoInst){ try{ ebscoInst.value=localStorage.getItem("sr_ebsco_inst")||""; }catch(e){}
-    var _ebNorm=function(){ var v=String(ebscoInst.value||"").trim(); var m=v.match(/\/c\/([A-Za-z0-9_-]+)/); if(m) ebscoInst.value=m[1]; try{ localStorage.setItem("sr_ebsco_inst", ebscoInst.value.trim()); }catch(e){} };
-    ebscoInst.addEventListener("input", _ebNorm);
-    ebscoInst.addEventListener("change", function(){ _ebNorm(); if(outs.children.length && (!cbLinks||cbLinks.checked)) $("#genBtn").click(); }); }
+  // EBSCOhost 機構碼（ASC／BSC／ERIC）改由各欄表頭下拉面板內逐庫輸入（見 buildColumnVerify）
   // CINAHL 機構碼：本機記憶，變更後重生（讓 CINAHL 連結生效）
   if(cinahlInst){ try{ cinahlInst.value=localStorage.getItem("sr_cinahl_inst")||""; }catch(e){}
     cinahlInst.addEventListener("input", function(){ try{ localStorage.setItem("sr_cinahl_inst", cinahlInst.value.trim()); }catch(e){} });
