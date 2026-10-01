@@ -453,6 +453,7 @@ Optical Imaging)</pre>
       <label class="fld" style="margin:0;white-space:nowrap;padding-top:9px;display:inline-flex;align-items:center;gap:4px"><span><span data-zh>欄位完整度</span><span data-en>Field level</span></span><span class="infotip"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip"><span data-zh>此區選項將套用到全部列；亦可於 PICO 概念表代號下方，調整各列的欄位完整度。</span><span data-en>These options apply to all rows; you can also set each row’s field level under its code in the PICO concept table.</span></span></span></label>
       <div>
         <select id="level">
+          <option value="L0"></option>
           <option value="L1"></option>
           <option value="L2"></option>
           <option value="L3"></option>
@@ -513,6 +514,7 @@ var DB_LABEL = {
   ndltd:    "臺灣博碩士論文（國圖）",
   pqdt:     "PQDT (ProQuest)",
   ieee:     "IEEE Xplore",
+  jbi:      "JBI Best Practice (Ovid)",
   cnki:     "CNKI 中國知網",
   wanfang:  "萬方數據庫",
 };
@@ -521,6 +523,7 @@ var DB_LABEL = {
 var TARGETS = [
   { id:"embase_com",    label:"Embase.com",          engine:"embase",   vocab:"emtree" },
   { id:"embase_ovid",   label:"Embase (Ovid)",       engine:"ovid",     vocab:"emtree" },
+  { id:"jbi",           label:"JBI Best Practice (Ovid)", engine:"jbi", vocab:"mesh", outputOnly:true },
   { id:"medline_ovid",  label:"MEDLINE (Ovid)",      engine:"ovid",     vocab:"mesh"   },
   { id:"pubmed",        label:"PubMed",              engine:"pubmed",   vocab:"mesh"   },
   { id:"medline_ebsco", label:"MEDLINE (EBSCOhost)", engine:"ebsco",    vocab:"mesh"   },
@@ -546,6 +549,7 @@ var SYNTAX_MAP = {
   boolean: {
     pubmed:   { AND: "AND", OR: "OR", NOT: "NOT" },
     ovid:     { AND: "AND", OR: "OR", NOT: "NOT" },
+    jbi:      { AND: "AND", OR: "OR", NOT: "NOT" },
     embase:   { AND: "AND", OR: "OR", NOT: "NOT" },
     cochrane: { AND: "AND", OR: "OR", NOT: "NOT" },
     ebsco:    { AND: "AND", OR: "OR", NOT: "NOT" },
@@ -561,6 +565,7 @@ var SYNTAX_MAP = {
   truncation: {
     pubmed:   { decode: { "*": "*" },                               encode: { "*": "*", "?": null, "#": null } },
     ovid:     { decode: { "*": "*", "$": "*", "?": "?", "#": "#" }, encode: { "*": "*", "?": "?", "#": "#" } },
+    jbi:      { decode: { "*": "*", "$": "*", "?": "?", "#": "#" }, encode: { "*": "*", "?": "?", "#": "#" } },
     embase:   { decode: { "*": "*", "$": "?", "?": "#" },           encode: { "*": "*", "?": "$", "#": "?" } },
     cochrane: { decode: { "*": "*", "?": "?" },                     encode: { "*": "*", "?": "?", "#": null } },
     ebsco:    { decode: { "*": "*", "#": "?", "?": "#" },           encode: { "*": "*", "?": "#", "#": "?" } },
@@ -575,24 +580,26 @@ var SYNTAX_MAP = {
   // 自由詞彙欄位. canonical: all, tiabkw, tiab, ti, ab; 三級 L1/L2/L3 (PICO工具用).  style: suffix|prefix|func
   // prefix/func 的多欄以 "+" 分隔，渲染時展開成 (TI (x) OR AB (x) OR KW (x))
   fields: {
-    pubmed:   { style: "suffix", groupSuffix: false, map: { all: "[tw]", tiabkw: "[tiab]", tiab: "[tiab]", ti: "[ti]", tio: "[ti]", ab: "[ab]", L1: "[tiab]", L2: "[ti]", L3: "[ti]" } },
-    ovid:     { style: "suffix", groupSuffix: true, combinable: true, map: { all: ".mp.", tiabkw: ".ti,ab,kf.", tiab: ".ti,ab.", ti: ".ti,kf.", tio: ".ti.", ab: ".ab.", L1: ".ti,ab,kf.", L2: ".ti,kf.", L3: ".ti." } },
-    embase:   { style: "suffix", groupSuffix: true, combinable: true, map: { all: ":ti,ab,kw,de", tiabkw: ":ti,ab,kw", tiab: ":ti,ab", ti: ":ti,kw", tio: ":ti", ab: ":ab", L1: ":ti,ab,kw", L2: ":ti,kw", L3: ":ti" } },
-    cochrane: { style: "suffix", groupSuffix: true, combinable: true, map: { all: ":ti,ab,kw", tiabkw: ":ti,ab,kw", tiab: ":ti,ab", ti: ":ti,kw", tio: ":ti", ab: ":ab", L1: ":ti,ab,kw", L2: ":ti,kw", L3: ":ti" } },
-    ebsco:    { style: "prefix", map: { all: "TX",  tiabkw: "XB", tiab: "TI+AB", ti: "TI", ab: "AB", L1: "TI+AB+KW", L2: "TI+KW", L3: "TI" } },
-    wos:      { style: "prefix", eq: true, map: { all: "TS", tiabkw: "TS", tiab: "TI+AB", ti: "TI", ab: "AB", L1: "TI+AB+AK", L2: "TI+AK", L3: "TI" } },
-    scopus:   { style: "func", map: { all: "TITLE-ABS-KEY", tiabkw: "TITLE-ABS-KEY", tiab: "TITLE-ABS", ti: "TITLE", ab: "ABS", L1: "TITLE-ABS+AUTHKEY", L2: "TITLE+AUTHKEY", L3: "TITLE" } },
+    pubmed:   { style: "suffix", groupSuffix: false, map: { all: "[tw]", tiabkw: "[tiab]", tiab: "[tiab]", ti: "[ti]", tio: "[ti]", ab: "[ab]", L0: "[all]", L1: "[tiab]", L2: "[ti]", L3: "[ti]" } },
+    ovid:     { style: "suffix", groupSuffix: true, combinable: true, map: { all: ".mp.", tiabkw: ".ti,ab,kf.", tiab: ".ti,ab.", ti: ".ti,kf.", tio: ".ti.", ab: ".ab.", L0: ".af.", L1: ".ti,ab,kf.", L2: ".ti,kf.", L3: ".ti." } },
+    jbi:      { style: "suffix", groupSuffix: true, combinable: true, map: { all: ".mp.", tiabkw: ".ti,ab,kw.", tiab: ".ti,ab.", ti: ".ti,kw.", tio: ".ti.", ab: ".ab.", L0: ".af.", L1: ".ti,ab,kw.", L2: ".ti,kw.", L3: ".ti." } },
+    embase:   { style: "suffix", groupSuffix: true, combinable: true, map: { all: ":ti,ab,kw,de", tiabkw: ":ti,ab,kw", tiab: ":ti,ab", ti: ":ti,kw", tio: ":ti", ab: ":ab", L0: "", L1: ":ti,ab,kw", L2: ":ti,kw", L3: ":ti" } },
+    cochrane: { style: "suffix", groupSuffix: true, combinable: true, map: { all: ":ti,ab,kw", tiabkw: ":ti,ab,kw", tiab: ":ti,ab", ti: ":ti,kw", tio: ":ti", ab: ":ab", L0: ":ti,ab,kw", L1: ":ti,ab,kw", L2: ":ti,kw", L3: ":ti" } },
+    ebsco:    { style: "prefix", map: { all: "TX",  tiabkw: "XB", tiab: "TI+AB", ti: "TI", ab: "AB", L0: "", L1: "TI+AB+KW", L2: "TI+KW", L3: "TI" } },
+    wos:      { style: "prefix", eq: true, map: { all: "TS", tiabkw: "TS", tiab: "TI+AB", ti: "TI", ab: "AB", L0: "ALL", L1: "TI+AB+AK", L2: "TI+AK", L3: "TI" } },
+    scopus:   { style: "func", map: { all: "TITLE-ABS-KEY", tiabkw: "TITLE-ABS-KEY", tiab: "TITLE-ABS", ti: "TITLE", ab: "ABS", L0: "ALL", L1: "TITLE-ABS+AUTHKEY", L2: "TITLE+AUTHKEY", L3: "TITLE" } },
     // 台灣資料庫走 buildTaiwanLine 專屬路徑，這裡僅保留占位避免查表為 undefined
-    airiti:   { style: "prefix", eq: true, map: { all: "[ALL3]", tiabkw: "[ALL3]", tiab: "[ALL3]", ti: "[TI]", tio: "[TI]", ab: "[ALL3]", kw: "[KW]", L1: "[ALL3]", L2: "[TI]+[KW]", L3: "[TI]" } },
-    ndltd:    { style: "suffix", groupSuffix: false, map: { all: ".ti,ab,kw", tiabkw: ".ti,ab,kw", tiab: ".ti,ab", ti: ".ti", tio: ".ti", ab: ".ab", kw: ".kw", L1: ".ti,ab,kw", L2: ".ti,kw", L3: ".ti" } },
-    pqdt:     { style: "func", nospace: true, lower: true, map: { all: "noft", tiabkw: "noft", tiab: "ti+abs", ti: "ti", ab: "abs", L1: "noft", L2: "ti+abs", L3: "ti" } },
-    ieee:     { style: "ieee", map: { all: "All Metadata", tiabkw: "Document Title+Abstract+Author Keywords", tiab: "Document Title+Abstract", ti: "Document Title", ab: "Abstract", L1: "All Metadata", L2: "Document Title+Abstract+Author Keywords", L3: "Document Title" } },
+    airiti:   { style: "prefix", eq: true, map: { all: "[ALL3]", tiabkw: "[ALL3]", tiab: "[ALL3]", ti: "[TI]", tio: "[TI]", ab: "[ALL3]", kw: "[KW]", L0: "[ALL3]", L1: "[ALL3]", L2: "[TI]+[KW]", L3: "[TI]" } },
+    ndltd:    { style: "suffix", groupSuffix: false, map: { all: ".ti,ab,kw", tiabkw: ".ti,ab,kw", tiab: ".ti,ab", ti: ".ti", tio: ".ti", ab: ".ab", kw: ".kw", L0: "", L1: ".ti,ab,kw", L2: ".ti,kw", L3: ".ti" } },
+    pqdt:     { style: "func", nospace: true, lower: true, map: { all: "noft", tiabkw: "noft", tiab: "ti+abs", ti: "ti", ab: "abs", L0: "noft", L1: "noft", L2: "ti+abs", L3: "ti" } },
+    ieee:     { style: "ieee", map: { all: "All Metadata", tiabkw: "Document Title+Abstract+Author Keywords", tiab: "Document Title+Abstract", ti: "Document Title", ab: "Abstract", L0: "All Metadata", L1: "All Metadata", L2: "Document Title+Abstract+Author Keywords", L3: "Document Title" } },
   },
 
   // 鄰近. canonical {ordered, dist}. 模板 %A %B=運算元(已渲染) %N=距離 %F=欄位(PubMed)
   proximity: {
     pubmed:   { unordered: '"%A %B"[%F:~%N]', ordered: null },
     ovid:     { unordered: "%A ADJ%N %B",     ordered: null },
+    jbi:      { unordered: "%A ADJ%N %B",     ordered: null },
     embase:   { unordered: "%A NEAR/%N %B",   ordered: "%A NEXT/%N %B" },
     cochrane: { unordered: "%A NEAR/%N %B",   ordered: "%A NEXT/%N %B" },
     ebsco:    { unordered: "%A N%N %B",       ordered: "%A W%N %B" },
@@ -607,12 +614,13 @@ var SYNTAX_MAP = {
   // 鄰近距離校正：相同「語意距離」在各庫要用不同數字。
   // 欲表達「間隔 n 個字以內」，Ovid/Embase/Cochrane 需 n+1，其他維持 n。
   // 解析: canonical = 輸入距離 - offset[來源]；輸出: 顯示距離 = canonical + offset[目標]。
-  proximityOffset: { pubmed: 0, ovid: 1, embase: 1, cochrane: 1, ebsco: 0, wos: 0, scopus: 0, airiti: 0, ndltd: 0, pqdt: 0, ieee: 0 },
+  proximityOffset: { pubmed: 0, ovid: 1, jbi: 1, embase: 1, cochrane: 1, ebsco: 0, wos: 0, scopus: 0, airiti: 0, ndltd: 0, pqdt: 0, ieee: 0 },
 
   // 控制詞彙. canonical {explode, major}. keys: ee/en/me/mn. %T=詞
   mesh: {
     pubmed:   { ee: "%T[mh]",     en: "%T[mh:noexp]",  me: "%T[mj]",        mn: "%T[mj:noexp]" },
     ovid:     { ee: 'exp "%T"/',  en: '"%T"/',         me: 'exp *"%T"/',    mn: '*"%T"/' },
+    jbi:      { ee: 'exp "%T"/',  en: '"%T"/',         me: 'exp "%T"/',     mn: '"%T"/' },
     embase:   { ee: '"%T"/exp',   en: '"%T"/de',       me: '"%T"/exp/mj',   mn: '"%T"/mj' },
     cochrane: { ee: '[mh "%T"]',  en: '[mh ^"%T"]',    me: '[mh "%T"[mj]]', mn: '[mh ^"%T"[mj]]' },
     ebsco:    { ee: 'MH ("%T+")', en: 'MH ("%T")',     me: 'MM ("%T+")',    mn: 'MM ("%T")' },
@@ -625,6 +633,7 @@ var SYNTAX_MAP = {
   subheading: {
     pubmed:   { e: "%T[sh]", n: "%T[sh:noexp]" },
     ovid:     { e: "%T.xs.", n: "%T.fs." },
+    jbi:      { e: "%T.xs.", n: "%T.fs." },
     embase:   { e: null,     n: '"%T":lnk' },
     cochrane: { e: null,     n: "[mh /%T]" },
     ebsco:    { e: null,     n: 'MW "%T"' },
@@ -809,13 +818,14 @@ function buildComboSuffix(codes, dst) {
   if (codes.indexOf("all") >= 0) return SYNTAX_MAP.fields[dst].map.all;   // all/mp 不拆
   var mapc = {
     ovid:     { ti: "ti", ab: "ab", kw: "kf" },            // Ovid 無 de 自由欄位，略過
+    jbi:      { ti: "ti", ab: "ab", kw: "kw" },            // JBI (Ovid 平台)：關鍵字欄位為 kw
     embase:   { ti: "ti", ab: "ab", kw: "kw", de: "de" },
     cochrane: { ti: "ti", ab: "ab", kw: "kw", de: "de" },
   };
   var mm = mapc[dst] || mapc.embase;
   var parts = codes.map(function (c) { return mm[c]; }).filter(Boolean);
   if (!parts.length) return SYNTAX_MAP.fields[dst].map.tiabkw;
-  return (dst === "ovid" ? "." + parts.join(",") + "." : ":" + parts.join(","));
+  return ((dst === "ovid" || dst === "jbi") ? "." + parts.join(",") + "." : ":" + parts.join(","));
 }
 
 // WoS / Scopus「第一式」：把 title+abstract+keyword 拆成個別欄位以 OR 連接
@@ -1209,7 +1219,7 @@ function render(node, dst, warn, ctx) {
       });
       return acc.join("\n");
     }
-    case "line":  return (dst === "ebsco" ? "S" : dst === "ovid" ? "" : "#") + node.ref;
+    case "line":  return (dst === "ebsco" ? "S" : (dst === "ovid" || dst === "jbi") ? "" : "#") + node.ref;
     case "bool": {
       var opTok = SYNTAX_MAP.boolean[dst][node.op];
       var parts = node.kids.map(function (k) { return { k: k, s: render(k, dst, warn, ctx) }; })
@@ -1253,6 +1263,7 @@ function wrapField(inner, field, dst, paren, codes) {
     if (ex) return ex;
   }
   var code = (field in f.map) ? f.map[field] : f.map.tiabkw;
+  if (code === "") return paren ? "(" + inner + ")" : inner;   // L0「所有欄位」＝不指定欄位（Embase.com／EBSCOhost／國圖）：原樣帶出，不加欄位碼
   if (f.style === "suffix") {
     var body = paren ? "(" + inner + ")" : inner;
     return body + code;
@@ -1453,17 +1464,20 @@ if (typeof module !== "undefined" && module.exports) {
   var CV_TPL = {
     pubmed:   { ex:'"%T"[mh]',     mj:'"%T"[mj]'        },
     ovid:     { ex:'exp "%T"/',    mj:'exp *"%T"/'      },
+    jbi:      { ex:'exp "%T"/',    mj:'exp "%T"/'       },
     embase:   { ex:'"%T"/exp',     mj:'"%T"/exp/mj'     },
     cochrane: { ex:'[mh "%T"]',    mj:'[mh "%T"[mj]]'   },
     ebsco:    { ex:'MH ("%T+")',   mj:'MM ("%T+")'      },
   };
   var LVL_NOTE = {
     zh: {
+      L0:"自由詞彙 → 所有欄位\n控制詞彙 → 展開（含狹義詞）\n超廣需求（例：欲含作者、機構、地址等所有欄位）",
       L1:"自由詞彙 → 文章篇名＋摘要＋關鍵字\n控制詞彙 → 展開（含狹義詞）\n適合系統性文獻回顧",
       L2:"自由詞彙 → 文章篇名＋關鍵字\n控制詞彙 → 展開（含狹義詞）\n平衡，但較偏向精準度高",
       L3:"自由詞彙 → 僅文章篇名\n控制詞彙 → 含狹義詞 + 必為重點\n精準度最高，適快查、SR 題目探勘"
     },
     en: {
+      L0:"Free-text → all fields (incl. author, affiliation, address)\nControlled → exploded (incl. narrower)\nUltra-broad recall; for exhaustive searches",
       L1:"Free-text → title + abstract + keyword\nControlled → exploded (incl. narrower)\nBest for systematic reviews",
       L2:"Free-text → title + keyword\nControlled → exploded (incl. narrower)\nBalanced, leaning toward precision",
       L3:"Free-text → title only\nControlled → narrower terms + must be major\nHighest precision; for quick lookups & SR topic scoping"
@@ -1471,13 +1485,13 @@ if (typeof module !== "undefined" && module.exports) {
   };
 
   var LEVEL_LABELS = {
-    zh: { L1:"L1 完整（SR 適用）", L2:"L2 平衡（偏精準）", L3:"L3 精準" },
-    en: { L1:"L1 Comprehensive (SR)", L2:"L2 Balanced", L3:"L3 Precise" }
+    zh: { L0:"L0 所有欄位（最廣）", L1:"L1 完整（SR 適用）", L2:"L2 平衡（偏精準）", L3:"L3 精準" },
+    en: { L0:"L0 All fields (broadest)", L1:"L1 Comprehensive (SR)", L2:"L2 Balanced", L3:"L3 Precise" }
   };
-  // 每列（概念）完整度的精簡代號：廣=L1、較精=L2、精=L3
+  // 每列（概念）完整度的精簡代號：最廣=L0、廣=L1、較精=L2、精=L3
   var LEVEL_CODE = {
-    zh: { L1:"完整", L2:"平衡", L3:"精準" },
-    en: { L1:"L1", L2:"L2", L3:"L3" }
+    zh: { L0:"最廣", L1:"完整", L2:"平衡", L3:"精準" },
+    en: { L0:"L0", L1:"L1", L2:"L2", L3:"L3" }
   };
   var srcSel = $("#src"), levelSel = $("#level"), dbchecks = $("#dbchecks"),
       picoBody = $("#picoBody"), outs = $("#outs"), lvlnote = $("#lvlnote"),
@@ -1486,8 +1500,8 @@ if (typeof module !== "undefined" && module.exports) {
       cbLinks = $("#cbLinks"), cinahlInst = $("#cinahlInst"), cbNearPhrase = $("#cbNearPhrase"), nearN = $("#nearN");
   // ---- 語法顏色標記 highlighter（綠=自由詞欄位+外層括弧, 紅=控制詞彙, 藍=鄰近字）----
   var PROX_RE=/\b(?:ADJ\d+|NEAR\/\d+|NEXT\/\d+|NEXT|N\d+|W\/\d+|W\d+|PRE\/\d+)\b|:~\d+/g;
-  var CV_RE={pubmed:/(?:"[^"]*"|[A-Za-z][\w-]*)\s*\[(?:mh|mj|mesh)(?::noexp)?\]/gi,ovid:/(?:\bexp\s+)?\*?"[^"]*"\//gi,embase:/"[^"]*"\/(?:exp(?:\/mj)?|de|mj)\b/gi,cochrane:/\[mh\b[^\[\]]*(?:\[mj\])?\]/gi,ebsco:/\b(?:MH|MM)\s*\([^)]*\)|\bMW\s+"[^"]*"/gi,wos:null,scopus:null};
-  var FIELD_RE={pubmed:/\[(?:tiab|ti|tw|ab)\]/gi,ovid:/\.(?:ti|ab|kf|kw|mp|tw|nm|pt|sh|fs|xm|lg)(?:,(?:ti|ab|kf|kw|mp|tw|nm|pt|sh|fs|xm|lg))*\./gi,embase:/:(?:ti|ab|kw|de)(?:,(?:ti|ab|kw|de))*(?![a-z])/gi,cochrane:/:(?:ti|ab|kw|de)(?:,(?:ti|ab|kw|de))*(?![a-z])/gi,ebsco:/\b(?:TI|AB|KW|TX|XB)\b(?=\s*\()/gi,wos:/\b(?:TI|AB|AK|TS)=/gi,scopus:/\b(?:TITLE-ABS-KEY|TITLE-ABS|TITLE|ABS|AUTHKEY|KEY)\b(?=\s*\()/gi};
+  var CV_RE={pubmed:/(?:"[^"]*"|[A-Za-z][\w-]*)\s*\[(?:mh|mj|mesh)(?::noexp)?\]/gi,ovid:/(?:\bexp\s+)?\*?"[^"]*"\//gi,jbi:/(?:\bexp\s+)?\*?"[^"]*"\//gi,embase:/"[^"]*"\/(?:exp(?:\/mj)?|de|mj)\b/gi,cochrane:/\[mh\b[^\[\]]*(?:\[mj\])?\]/gi,ebsco:/\b(?:MH|MM)\s*\([^)]*\)|\bMW\s+"[^"]*"/gi,wos:null,scopus:null};
+  var FIELD_RE={pubmed:/\[(?:tiab|ti|tw|ab|all)\]/gi,ovid:/\.(?:ti|ab|kf|kw|mp|af|tw|nm|pt|sh|fs|xm|lg)(?:,(?:ti|ab|kf|kw|mp|af|tw|nm|pt|sh|fs|xm|lg))*\./gi,jbi:/\.(?:ti|ab|kf|kw|mp|af|tw|nm|pt|sh|fs|xm|lg)(?:,(?:ti|ab|kf|kw|mp|af|tw|nm|pt|sh|fs|xm|lg))*\./gi,embase:/:(?:ti|ab|kw|de)(?:,(?:ti|ab|kw|de))*(?![a-z])/gi,cochrane:/:(?:ti|ab|kw|de)(?:,(?:ti|ab|kw|de))*(?![a-z])/gi,ebsco:/\b(?:TI|AB|KW|TX|XB)\b(?=\s*\()/gi,wos:/\b(?:TI|AB|AK|TS|ALL)=/gi,scopus:/\b(?:TITLE-ABS-KEY|TITLE-ABS|TITLE|ABS|AUTHKEY|KEY|ALL)\b(?=\s*\()/gi};
   // 控制詞彙查核連結：由標目文字 + 詞表類型 組出詞表查詢網址
   function cvUrl(term, vocab){
     var t=String(term||"").replace(/^["']+|["']+$/g,"").replace(/\/(?:exp|de|fs|dg|mj|noexp)\b.*$/i,"").replace(/[+*]+$/,"").replace(/\s+/g," ").trim();
@@ -1517,7 +1531,7 @@ if (typeof module !== "undefined" && module.exports) {
       PROX_RE.lastIndex=0; while((m=PROX_RE.exec(text))) mk(m.index,m.index+m[0].length,"px");
       var FR=FIELD_RE[engine];
       if(FR){ FR.lastIndex=0; while((m=FR.exec(text))){ var s=m.index,e=s+m[0].length; mk(s,e,"fld");
-        if(engine==="embase"||engine==="ovid"||engine==="cochrane"||engine==="pubmed"){ var j=s-1; while(j>=0&&text[j]===" ")j--; if(text[j]===")"&&closeOf[j]!==undefined){cls[j]="fld";cls[closeOf[j]]="fld";} }
+        if(engine==="embase"||engine==="ovid"||engine==="jbi"||engine==="cochrane"||engine==="pubmed"){ var j=s-1; while(j>=0&&text[j]===" ")j--; if(text[j]===")"&&closeOf[j]!==undefined){cls[j]="fld";cls[closeOf[j]]="fld";} }
         else { var k2=e; while(k2<n&&text[k2]===" ")k2++; if(text[k2]==="("&&openOf[k2]!==undefined){cls[k2]="fld";cls[openOf[k2]]="fld";} }
       } }
     }
@@ -1549,7 +1563,7 @@ if (typeof module !== "undefined" && module.exports) {
 
   // 輸出資料庫勾選（依家族分列：Embase／MEDLINE／其他）；「更多資料庫」（跨學科、中文、博碩論文）預設縮起
   var DB_LAYOUT = [
-    ["embase_com","embase_ovid",null,null],
+    ["embase_com","embase_ovid","jbi",null],
     ["medline_ovid","pubmed","medline_ebsco",null],
     ["cochrane","cinahl_ebsco","wos","scopus"]
   ];
@@ -1557,7 +1571,7 @@ if (typeof module !== "undefined" && module.exports) {
     ["ageline","eric","pqdt","ieee"],
     ["airiti","ndltd","cnki","wanfang"]
   ];
-  var DB_UNCHECKED = { embase_ovid:1, medline_ebsco:1, airiti:1, ndltd:1, ageline:1, eric:1, pqdt:1, ieee:1, cnki:1, wanfang:1 };  // 預設不勾（避免重複搜同一資料庫；中文／博碩論文／跨學科等預設不勾）。PubMed 預設打勾。
+  var DB_UNCHECKED = { embase_ovid:1, jbi:1, medline_ebsco:1, airiti:1, ndltd:1, ageline:1, eric:1, pqdt:1, ieee:1, cnki:1, wanfang:1 };  // 預設不勾（避免重複搜同一資料庫；中文／博碩論文／跨學科等預設不勾）。PubMed 預設打勾。
   function _renderDbRows(layout, host){ layout.forEach(function(row){ row.forEach(function(id){
     if(!id){ host.appendChild(document.createElement("span")); return; }
     var tg=TARGET_BY_ID[id];
@@ -1681,8 +1695,8 @@ if (typeof module !== "undefined" && module.exports) {
     var ccode=document.createElement("div"); ccode.className="ccode"; ccode.style.cssText="font-size:11px;color:#3f6f3f;font-weight:700;margin-top:3px"; labTd.appendChild(ccode);
     // 每列完整度選單（廣／較精／精＝L1／L2／L3）；預設沿用上方全域值
     var lvlSel=document.createElement("select"); lvlSel.className="rowlvl";
-    ["L1","L2","L3"].forEach(function(v){ var o=document.createElement("option"); o.value=v; o.textContent=LEVEL_CODE[isEn()?"en":"zh"][v]; lvlSel.appendChild(o); });
-    lvlSel.value=(lvl && /^L[123]$/.test(lvl)) ? lvl : ((levelSel&&levelSel.value)||"L1");
+    ["L0","L1","L2","L3"].forEach(function(v){ var o=document.createElement("option"); o.value=v; o.textContent=LEVEL_CODE[isEn()?"en":"zh"][v]; lvlSel.appendChild(o); });
+    lvlSel.value=(lvl && /^L[0123]$/.test(lvl)) ? lvl : ((levelSel&&levelSel.value)||"L1");
     lvlSel.title=LVL_NOTE[isEn()?"en":"zh"][lvlSel.value];
     lvlSel.onchange=function(){ lvlSel.title=LVL_NOTE[isEn()?"en":"zh"][lvlSel.value]; if(typeof saveDraftDebounced==="function") saveDraftDebounced(); if(typeof autoRegen==="function") autoRegen(); };
     labTd.appendChild(lvlSel);
@@ -1707,7 +1721,7 @@ if (typeof module !== "undefined" && module.exports) {
     tr.addEventListener("drop", function(e){ if(!_dragTr||_dragTr===tr) return; e.preventDefault(); var r=tr.getBoundingClientRect(); var after=(e.clientY-r.top)>r.height/2; picoBody.insertBefore(_dragTr, after?tr.nextElementSibling:tr); _clearDrop(); updateCodes(); if(typeof saveDraftDebounced==="function") saveDraftDebounced(); autoRegen(); });
     tr.appendChild(labTd); tr.appendChild(c0.td); tr.appendChild(c1.td); tr.appendChild(c3.td); tr.appendChild(c2.td); tr.appendChild(c4.td); tr.appendChild(rmTd);
     tr._get=function(){ return { label:labIn.value.trim()||"?", zh:c0.ta.value.trim(), ft:c1.ta.value.trim(), mesh:c2.ta.value.trim(), emtree:c3.ta.value.trim(), cinahl:c4.ta.value.trim(), level:lvlSel.value }; };
-    tr._setLevel=function(v){ if(/^L[123]$/.test(v)){ lvlSel.value=v; lvlSel.title=LVL_NOTE[isEn()?"en":"zh"][v]; } };
+    tr._setLevel=function(v){ if(/^L[0123]$/.test(v)){ lvlSel.value=v; lvlSel.title=LVL_NOTE[isEn()?"en":"zh"][v]; } };
     tr._refreshLvlLabel=function(){ var m=LEVEL_CODE[isEn()?"en":"zh"]; Array.prototype.forEach.call(lvlSel.options,function(o){o.textContent=m[o.value]||o.value;}); lvlSel.title=LVL_NOTE[isEn()?"en":"zh"][lvlSel.value]; };
     rm.onclick=function(){ tr.remove(); updateCodes(); if(typeof saveDraftDebounced==="function") saveDraftDebounced(); autoRegen(); };
     picoBody.appendChild(tr);
@@ -1756,7 +1770,7 @@ if (typeof module !== "undefined" && module.exports) {
       var a=(y1!==null)?('"'+y1+'"[dp]'):'"1800"[dp]';
       var b=(y2!==null)?('"'+y2+'"[dp]'):'"3000"[dp]';
       syntax="("+a+" : "+b+")";
-    } else if(eng==="ovid"){ syntax='yr="'+Y1+'-'+Y2+'"'; isLimit=true; }
+    } else if(eng==="ovid"||eng==="jbi"){ syntax='yr="'+Y1+'-'+Y2+'"'; isLimit=true; }
     else if(eng==="embase"){ syntax="["+Y1+"-"+Y2+"]/py"; }
     else if(eng==="ebsco"){ syntax="PY "+Y1+"-"+Y2; }
     else if(eng==="wos"){ syntax="PY=("+Y1+"-"+Y2+")"; }
@@ -1802,7 +1816,7 @@ if (typeof module !== "undefined" && module.exports) {
     if(eng==="embase"){
       var _eb; if(hasEnd){ _eb=shift(y2,m2,d2,1); }   // /sd NOT [結束日+1]，讓結束日本身被納入（比照更新指引）
       syntax="["+_pad2(d1)+"-"+_pad2(m1)+"-"+y1+"]/sd" + (hasEnd?(" NOT ["+_pad2(_eb[2])+"-"+_pad2(_eb[1])+"-"+_eb[0]+"]/sd"):"");
-    } else if(eng==="ovid"){
+    } else if(eng==="ovid"||eng==="jbi"){
       syntax="dt="+e8(y1,m1,d1)+"-"+(hasEnd?e8(y2,m2,d2):e8(TY,TM,TD)); isLimit=true;
     } else if(eng==="ebsco"){
       syntax=(_EBENTRY[tid]||"EM")+" "+e8(y1,m1,d1)+"-"+(hasEnd?e8(y2,m2,d2):"");
@@ -2305,10 +2319,10 @@ if (typeof module !== "undefined" && module.exports) {
   function splitTerms(cell){ return (cell||"").split(/\n/).map(function(x){return x.replace(/^[,;]+|[,;]+$/g,"").trim();}).filter(Boolean); }
   function cvRender(db, term, level){ var t=CV_TPL[db]; if(!t) return null; var tpl=t[level==="L3"?"mj":"ex"]; return tpl.replace(/%T/g, term); }
   // 次標目 subheading（%T=主標目, %S=次標目代碼，原樣帶過；各庫代碼不同，需人工核對）
-  var CV_SUB = { pubmed:'"%T/%S"[mh]', ovid:'exp "%T"/%S', embase:'"%T"/%S', cochrane:'[mh "%T"/%S]', ebsco:'(MH "%T/%S")' };
+  var CV_SUB = { pubmed:'"%T/%S"[mh]', ovid:'exp "%T"/%S', jbi:'exp "%T"/%S', embase:'"%T"/%S', cochrane:'[mh "%T"/%S]', ebsco:'(MH "%T/%S")' };
   // 不展開（不含下位／狹義詞）
-  var CV_NOEXP = { pubmed:'"%T"[mh:noexp]', ovid:'"%T"/', embase:'"%T"/de', cochrane:'[mh ^"%T"]', ebsco:'MH ("%T")' };
-  var CV_NOEXP_MJ = { pubmed:'"%T"[majr:noexp]', ovid:'*"%T"/', embase:'"%T"/mj', cochrane:'[mh ^"%T"[mj]]', ebsco:'MM ("%T")' };   // L3 精準：不展開但取主要焦點（PubMed majr:noexp、Ovid *、Embase /mj、Cochrane ^…[mj]、CINAHL MM）
+  var CV_NOEXP = { pubmed:'"%T"[mh:noexp]', ovid:'"%T"/', jbi:'"%T"/', embase:'"%T"/de', cochrane:'[mh ^"%T"]', ebsco:'MH ("%T")' };
+  var CV_NOEXP_MJ = { pubmed:'"%T"[majr:noexp]', ovid:'*"%T"/', jbi:'"%T"/', embase:'"%T"/mj', cochrane:'[mh ^"%T"[mj]]', ebsco:'MM ("%T")' };   // L3 精準：不展開但取主要焦點（PubMed majr:noexp、Ovid *、Embase /mj、Cochrane ^…[mj]、CINAHL MM）
   var CV_NOEXP_RE=/[（(]\s*(?:不含[^)）]{0,12}|不狹[義詞]{0,2}|no[\s-]?exp\w*)\s*[)）]|(?:^|\s)no[\s-]?exp(?=\s|$)/i;  // (不含狹義詞)/(不含下位詞)/(不狹)/(noexp)/(no exp) 或行末 noexp、no exp
   function cvTermRender(term, eng, level, noexp){
     term=String(term).replace(/^[,;]+|[,;]+$/g,"").trim();
@@ -2388,7 +2402,7 @@ if (typeof module !== "undefined" && module.exports) {
       return (line && line.trim()) ? line.trim() : null;
     }
     // ndltd 國圖：中文加雙引號＋欄位；英文交給共用引擎（逐詞加欄位、鄰近字→and、保留 OR 分組、可片語可切截），最後以小寫 or 串接
-    var suf = (level==="L3") ? ".ti" : (level==="L2" ? ".ti,kw" : ".ti,ab,kw");
+    var suf = (level==="L3") ? ".ti" : (level==="L2" ? ".ti,kw" : (level==="L0" ? "" : ".ti,ab,kw"));
     var parts=[];
     zh.forEach(function(t){ parts.push('"'+t+'"'+suf); });
     if(ftCell && String(ftCell).trim()){
@@ -2406,7 +2420,7 @@ if (typeof module !== "undefined" && module.exports) {
     var lineNum=1, qlines=[], finalParts=[], reminders=[], conceptRefs=[];
     rows.forEach(function(r, _ri){
       var refs=[];
-      var _lv=(r.level&&/^L[123]$/.test(r.level))?r.level:level;   // 每列完整度（未指定則沿用全域）
+      var _lv=(r.level&&/^L[0123]$/.test(r.level))?r.level:level;   // 每列完整度（未指定則沿用全域）
       if(eng==="airiti"||eng==="ndltd"){
         var twLine = buildTaiwanLine(r.zh, r.ft, eng, _lv, reminders, tg.label, startEng);
         if(twLine){ qlines.push({n:lineNum, text:twLine}); refs.push("#"+lineNum); lineNum++; }
@@ -2457,8 +2471,8 @@ if (typeof module !== "undefined" && module.exports) {
   }
 
   // 各介面的檢索集（set）前綴：EBSCOhost=S1、Ovid=1（無前綴）、其餘=#1。內部一律以 #n 保存（供整併展開／PubMed 使用），僅在輸出（畫面／複製／Word／回填）時依資料庫換成正確前綴。
-  function _refPrefix(eng){ return eng==="ebsco"?"S":eng==="ovid"?"":"#"; }
-  function _dispRefs(text, eng){ var s=(text==null?"":String(text)); if(eng==="ebsco") return s.replace(/#(\d+)/g,"S$1"); if(eng==="ovid") return s.replace(/#(\d+)/g,"$1"); return s; }
+  function _refPrefix(eng){ return eng==="ebsco"?"S":(eng==="ovid"||eng==="jbi")?"":"#"; }
+  function _dispRefs(text, eng){ var s=(text==null?"":String(text)); if(eng==="ebsco") return s.replace(/#(\d+)/g,"S$1"); if(eng==="ovid"||eng==="jbi") return s.replace(/#(\d+)/g,"$1"); return s; }
   // 自訂組合：每行一條；C1/C2… → 對應概念的行號群組（依各庫），L1/L2… → 上方已寫的組合行
   function buildCombos(text, conceptRefs, lastNum){
     var lines=String(text).split(/\r?\n/).map(function(s){return s.trim();}).filter(Boolean);
@@ -2630,7 +2644,7 @@ if (typeof module !== "undefined" && module.exports) {
       if(lt.length) msgs.push(isEn()?("Leading truncation (word-initial *) in: "+lt.join(", ")+" — only Cochrane / Scopus / Web of Science support it; the leading * is removed for other databases."):("字頭切截（詞首 *）出現在："+lt.join("、")+" 概念 —— 僅 Cochrane / Scopus / Web of Science 支援，其餘資料庫的詞首 * 已自動移除。"));
       if(msgs.length){ picoWarn.innerHTML="\u26A0 "+msgs.join("<br>\u26A0 "); picoWarn.style.display="block"; } else picoWarn.style.display="none";
     }
-    var lvlLabel = level+"　"+(isEn()?({L1:"Comprehensive",L2:"Balanced",L3:"Precise"}[level]):({L1:"完整",L2:"平衡",L3:"精準"}[level]));
+    var lvlLabel = level+"　"+(isEn()?({L0:"All fields",L1:"Comprehensive",L2:"Balanced",L3:"Precise"}[level]):({L0:"所有欄位",L1:"完整",L2:"平衡",L3:"精準"}[level]));
     var exportData=[]; RECORD_FILL={};
     checked.forEach(function(tid){
       var b=buildForTarget(rows, startDB, tid, level);

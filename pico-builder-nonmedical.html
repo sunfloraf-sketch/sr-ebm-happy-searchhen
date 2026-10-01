@@ -582,19 +582,19 @@ var SYNTAX_MAP = {
   // 自由詞彙欄位. canonical: all, tiabkw, tiab, ti, ab; 三級 L1/L2/L3 (PICO工具用).  style: suffix|prefix|func
   // prefix/func 的多欄以 "+" 分隔，渲染時展開成 (TI (x) OR AB (x) OR KW (x))
   fields: {
-    pubmed:   { style: "suffix", groupSuffix: false, map: { all: "[tw]", tiabkw: "[tiab]", tiab: "[tiab]", ti: "[ti]", tio: "[ti]", ab: "[ab]", L0: "[tw]", L1: "[tiab]", L2: "[ti]", L3: "[ti]" } },
-    ovid:     { style: "suffix", groupSuffix: true, combinable: true, map: { all: ".mp.", tiabkw: ".ti,ab,kf.", tiab: ".ti,ab.", ti: ".ti,kf.", tio: ".ti.", ab: ".ab.", L0: ".mp.", L1: ".ti,ab,kf.", L2: ".ti,kf.", L3: ".ti." } },
-    embase:   { style: "suffix", groupSuffix: true, combinable: true, map: { all: ":ti,ab,kw,de", tiabkw: ":ti,ab,kw", tiab: ":ti,ab", ti: ":ti,kw", tio: ":ti", ab: ":ab", L0: ":ti,ab,kw,de", L1: ":ti,ab,kw", L2: ":ti,kw", L3: ":ti" } },
+    pubmed:   { style: "suffix", groupSuffix: false, map: { all: "[tw]", tiabkw: "[tiab]", tiab: "[tiab]", ti: "[ti]", tio: "[ti]", ab: "[ab]", L0: "[all]", L1: "[tiab]", L2: "[ti]", L3: "[ti]" } },
+    ovid:     { style: "suffix", groupSuffix: true, combinable: true, map: { all: ".mp.", tiabkw: ".ti,ab,kf.", tiab: ".ti,ab.", ti: ".ti,kf.", tio: ".ti.", ab: ".ab.", L0: ".af.", L1: ".ti,ab,kf.", L2: ".ti,kf.", L3: ".ti." } },
+    embase:   { style: "suffix", groupSuffix: true, combinable: true, map: { all: ":ti,ab,kw,de", tiabkw: ":ti,ab,kw", tiab: ":ti,ab", ti: ":ti,kw", tio: ":ti", ab: ":ab", L0: "", L1: ":ti,ab,kw", L2: ":ti,kw", L3: ":ti" } },
     cochrane: { style: "suffix", groupSuffix: true, combinable: true, map: { all: ":ti,ab,kw", tiabkw: ":ti,ab,kw", tiab: ":ti,ab", ti: ":ti,kw", tio: ":ti", ab: ":ab", L0: ":ti,ab,kw", L1: ":ti,ab,kw", L2: ":ti,kw", L3: ":ti" } },
-    ebsco:    { style: "prefix", map: { all: "TX",  tiabkw: "XB", tiab: "TI+AB", ti: "TI", ab: "AB", L0: "TX", L1: "TI+AB+KW", L2: "TI+KW", L3: "TI" } },
-    wos:      { style: "prefix", eq: true, map: { all: "TS", tiabkw: "TS", tiab: "TI+AB", ti: "TI", ab: "AB", L0: "TS", L1: "TI+AB+AK", L2: "TI+AK", L3: "TI" } },
-    scopus:   { style: "func", map: { all: "TITLE-ABS-KEY", tiabkw: "TITLE-ABS-KEY", tiab: "TITLE-ABS", ti: "TITLE", ab: "ABS", L0: "TITLE-ABS-KEY", L1: "TITLE-ABS+AUTHKEY", L2: "TITLE+AUTHKEY", L3: "TITLE" } },
+    ebsco:    { style: "prefix", map: { all: "TX",  tiabkw: "XB", tiab: "TI+AB", ti: "TI", ab: "AB", L0: "", L1: "TI+AB+KW", L2: "TI+KW", L3: "TI" } },
+    wos:      { style: "prefix", eq: true, map: { all: "TS", tiabkw: "TS", tiab: "TI+AB", ti: "TI", ab: "AB", L0: "ALL", L1: "TI+AB+AK", L2: "TI+AK", L3: "TI" } },
+    scopus:   { style: "func", map: { all: "TITLE-ABS-KEY", tiabkw: "TITLE-ABS-KEY", tiab: "TITLE-ABS", ti: "TITLE", ab: "ABS", L0: "ALL", L1: "TITLE-ABS+AUTHKEY", L2: "TITLE+AUTHKEY", L3: "TITLE" } },
     pqdt:     { style: "func", nospace: true, lower: true, map: { all: "noft", tiabkw: "noft", tiab: "ti+abs", ti: "ti", ab: "abs", L0: "noft", L1: "noft", L2: "ti+abs", L3: "ti" } },
-    compendex:{ style: "wn", map: { all: "KY", tiabkw: "KY", tiab: "TI+AB", ti: "TI", ab: "AB", L0: "KY", L1: "KY", L2: "TI+AB", L3: "TI" } },
+    compendex:{ style: "wn", map: { all: "KY", tiabkw: "KY", tiab: "TI+AB", ti: "TI", ab: "AB", L0: "ALL", L1: "KY", L2: "TI+AB", L3: "TI" } },
     ieee:     { style: "ieee", map: { all: "All Metadata", tiabkw: "Document Title+Abstract+Author Keywords", tiab: "Document Title+Abstract", ti: "Document Title", ab: "Abstract", L0: "All Metadata", L1: "All Metadata", L2: "Document Title+Abstract+Author Keywords", L3: "Document Title" } },
     // 台灣資料庫走 buildTaiwanLine 專屬路徑，這裡僅保留占位避免查表為 undefined
     airiti:   { style: "prefix", eq: true, map: { all: "[ALL3]", tiabkw: "[ALL3]", tiab: "[ALL3]", ti: "[TI]", tio: "[TI]", ab: "[ALL3]", kw: "[KW]", L0: "[ALL3]", L1: "[ALL3]", L2: "[TI]+[KW]", L3: "[TI]" } },
-    ndltd:    { style: "suffix", groupSuffix: false, map: { all: ".ti,ab,kw", tiabkw: ".ti,ab,kw", tiab: ".ti,ab", ti: ".ti", tio: ".ti", ab: ".ab", kw: ".kw", L0: ".ti,ab,kw", L1: ".ti,ab,kw", L2: ".ti,kw", L3: ".ti" } },
+    ndltd:    { style: "suffix", groupSuffix: false, map: { all: ".ti,ab,kw", tiabkw: ".ti,ab,kw", tiab: ".ti,ab", ti: ".ti", tio: ".ti", ab: ".ab", kw: ".kw", L0: "", L1: ".ti,ab,kw", L2: ".ti,kw", L3: ".ti" } },
   },
 
   // 鄰近. canonical {ordered, dist}. 模板 %A %B=運算元(已渲染) %N=距離 %F=欄位(PubMed)
@@ -1246,6 +1246,7 @@ function wrapField(inner, field, dst, paren, codes) {
     if (ex) return ex;
   }
   var code = (field in f.map) ? f.map[field] : f.map.tiabkw;
+  if (code === "") return paren ? "(" + inner + ")" : inner;   // L0「所有欄位」＝不指定欄位（Embase.com／EBSCOhost／國圖）：原樣帶出，不加欄位碼
   if (f.style === "suffix") {
     var body = paren ? "(" + inner + ")" : inner;
     return body + code;
@@ -1476,13 +1477,13 @@ if (typeof module !== "undefined" && module.exports) {
   };
   var LVL_NOTE = {
     zh: {
-      L0:"自由詞彙 → 所有欄位\n控制詞彙 → 展開（含狹義詞）\n召回率最高、最廣，適合不遺漏的全面檢索",
+      L0:"自由詞彙 → 所有欄位\n控制詞彙 → 展開（含狹義詞）\n超廣需求（例：欲含作者、機構、地址等所有欄位）",
       L1:"自由詞彙 → 文章篇名＋摘要＋關鍵字\n控制詞彙 → 展開（含狹義詞）\n適合系統性文獻回顧",
       L2:"自由詞彙 → 文章篇名＋關鍵字\n控制詞彙 → 展開（含狹義詞）\n平衡，但較偏向精準度高",
       L3:"自由詞彙 → 僅文章篇名\n控制詞彙 → 含狹義詞 + 必為重點\n精準度最高，適快查、SR 題目探勘"
     },
     en: {
-      L0:"Free-text → all fields\nControlled → exploded (incl. narrower)\nHighest recall / broadest; for exhaustive searches",
+      L0:"Free-text → all fields (incl. author, affiliation, address)\nControlled → exploded (incl. narrower)\nUltra-broad recall; for exhaustive searches",
       L1:"Free-text → title + abstract + keyword\nControlled → exploded (incl. narrower)\nBest for systematic reviews",
       L2:"Free-text → title + keyword\nControlled → exploded (incl. narrower)\nBalanced, leaning toward precision",
       L3:"Free-text → title only\nControlled → narrower terms + must be major\nHighest precision; for quick lookups & SR topic scoping"
@@ -1506,7 +1507,7 @@ if (typeof module !== "undefined" && module.exports) {
   // ---- 語法顏色標記 highlighter（綠=自由詞欄位+外層括弧, 紅=控制詞彙, 藍=鄰近字）----
   var PROX_RE=/\b(?:ADJ\d+|NEAR\/\d+|NEXT\/\d+|NEXT|N\d+|W\/\d+|W\d+|PRE\/\d+)\b|:~\d+/g;
   var CV_RE={pubmed:/(?:"[^"]*"|[A-Za-z][\w-]*)\s*\[(?:mh|mj|mesh)(?::noexp)?\]/gi,ovid:/(?:\bexp\s+)?\*?"[^"]*"\//gi,embase:/"[^"]*"\/(?:exp(?:\/mj)?|de|mj)\b/gi,cochrane:/\[mh\b[^\[\]]*(?:\[mj\])?\]/gi,ebsco:/\b(?:MH|MM)\s*\([^)]*\)|\bMW\s+"[^"]*"/gi,wos:null,scopus:null};
-  var FIELD_RE={pubmed:/\[(?:tiab|ti|tw|ab)\]/gi,ovid:/\.(?:ti|ab|kf|kw|mp|tw|nm|pt|sh|fs|xm|lg)(?:,(?:ti|ab|kf|kw|mp|tw|nm|pt|sh|fs|xm|lg))*\./gi,embase:/:(?:ti|ab|kw|de)(?:,(?:ti|ab|kw|de))*(?![a-z])/gi,cochrane:/:(?:ti|ab|kw|de)(?:,(?:ti|ab|kw|de))*(?![a-z])/gi,ebsco:/\b(?:TI|AB|KW|TX|XB)\b(?=\s*\()/gi,wos:/\b(?:TI|AB|AK|TS)=/gi,scopus:/\b(?:TITLE-ABS-KEY|TITLE-ABS|TITLE|ABS|AUTHKEY|KEY)\b(?=\s*\()/gi};
+  var FIELD_RE={pubmed:/\[(?:tiab|ti|tw|ab|all)\]/gi,ovid:/\.(?:ti|ab|kf|kw|mp|af|tw|nm|pt|sh|fs|xm|lg)(?:,(?:ti|ab|kf|kw|mp|af|tw|nm|pt|sh|fs|xm|lg))*\./gi,embase:/:(?:ti|ab|kw|de)(?:,(?:ti|ab|kw|de))*(?![a-z])/gi,cochrane:/:(?:ti|ab|kw|de)(?:,(?:ti|ab|kw|de))*(?![a-z])/gi,ebsco:/\b(?:TI|AB|KW|TX|XB)\b(?=\s*\()/gi,wos:/\b(?:TI|AB|AK|TS|ALL)=/gi,scopus:/\b(?:TITLE-ABS-KEY|TITLE-ABS|TITLE|ABS|AUTHKEY|KEY|ALL)\b(?=\s*\()/gi};
   // 控制詞彙查核連結：由標目文字 + 詞表類型 組出詞表查詢網址
   var _EBDEF={asc:"xti3bi",bsc:"j7dc2x",eric:"shmie4"};   // 成大各庫 EBSCOhost 機構碼（各庫不同）＝預設
   var _EBOV={};   // 其他機構：各庫（asc／bsc／eric）各自的覆蓋碼
@@ -2577,7 +2578,7 @@ if (typeof module !== "undefined" && module.exports) {
       return (line && line.trim()) ? line.trim() : null;
     }
     // ndltd 國圖：中文加雙引號＋欄位；英文交給共用引擎（逐詞加欄位、鄰近字→and、保留 OR 分組、可片語可切截），最後以小寫 or 串接
-    var suf = (level==="L3") ? ".ti" : (level==="L2" ? ".ti,kw" : ".ti,ab,kw");
+    var suf = (level==="L3") ? ".ti" : (level==="L2" ? ".ti,kw" : (level==="L0" ? "" : ".ti,ab,kw"));
     var parts=[];
     zh.forEach(function(t){ parts.push('"'+t+'"'+suf); });
     if(ftCell && String(ftCell).trim()){
