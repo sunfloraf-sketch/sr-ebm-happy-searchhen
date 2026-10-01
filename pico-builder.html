@@ -1471,13 +1471,13 @@ if (typeof module !== "undefined" && module.exports) {
   };
   var LVL_NOTE = {
     zh: {
-      L0:"自由詞彙 → 所有欄位\n控制詞彙 → 展開（含狹義詞）\n超廣需求（例：欲含作者、機構、地址等所有欄位）",
+      L0:"自由詞彙 → 所有欄位\n控制詞彙 → 展開（含狹義詞）\n超廣需求\n例：欲含作者機構地址等",
       L1:"自由詞彙 → 文章篇名＋摘要＋關鍵字\n控制詞彙 → 展開（含狹義詞）\n適合系統性文獻回顧",
       L2:"自由詞彙 → 文章篇名＋關鍵字\n控制詞彙 → 展開（含狹義詞）\n平衡，但較偏向精準度高",
       L3:"自由詞彙 → 僅文章篇名\n控制詞彙 → 含狹義詞 + 必為重點\n精準度最高，適快查、SR 題目探勘"
     },
     en: {
-      L0:"Free-text → all fields (incl. author, affiliation, address)\nControlled → exploded (incl. narrower)\nUltra-broad recall; for exhaustive searches",
+      L0:"Free-text → all fields\nControlled → exploded (incl. narrower)\nUltra-broad recall\ne.g. to include author, affiliation, address",
       L1:"Free-text → title + abstract + keyword\nControlled → exploded (incl. narrower)\nBest for systematic reviews",
       L2:"Free-text → title + keyword\nControlled → exploded (incl. narrower)\nBalanced, leaning toward precision",
       L3:"Free-text → title only\nControlled → narrower terms + must be major\nHighest precision; for quick lookups & SR topic scoping"
@@ -2683,7 +2683,10 @@ if (typeof module !== "undefined" && module.exports) {
       var vfMiss=_designMiss(FILTER_SEL, tid);   // 尚未整理此資料庫語法的設計 → 標示「請自行確認 Filters」
       exportData.push({tid:tid, label:tg.label, engine:tg.engine, vocab:tg.vocab, isStart:(tid===startDB), rows:allRows, verify:vfMiss});
       var copyText = allRows.map(function(x){return _dispRefs(x.text, tg.engine);}).join("\n");
-      cp.onclick=function(){ navigator.clipboard.writeText(copyText); cp.textContent="✓"; cp.classList.add("done"); setTimeout(function(){cp.innerHTML=COPYSVG;cp.classList.remove("done");},1400); };
+      var flatCopy = copyText;   // 複製圖示：整串單一長式（把最後一行的 #n 行號全部展開，串成一條完整檢索式）
+      try{ var _fr=allRows[allRows.length-1]; if(_fr){ flatCopy=_dispRefs(expandNumberedQuery(_fr, allRows), tg.engine); } }catch(_e){ flatCopy=copyText; }
+      cp.title=isEn()?"Copy as one combined query (line refs expanded into a single string)":"複製為單一長式（展開 #n 行號，整串可直接貼入單一檢索框）";
+      cp.onclick=function(){ navigator.clipboard.writeText(flatCopy); cp.textContent="✓"; cp.classList.add("done"); setTimeout(function(){cp.innerHTML=COPYSVG;cp.classList.remove("done");},1400); };
       // 右側按鈕群：複製圖示 ＋（非 PubMed）「複製最終策略並開啟資料庫」——移到複製圖示右側
       var hr=document.createElement("span"); hr.style.cssText="display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end";
       hr.appendChild(cp);
