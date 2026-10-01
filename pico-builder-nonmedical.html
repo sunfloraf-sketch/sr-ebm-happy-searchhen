@@ -448,7 +448,7 @@ City blocks)</pre>
   <hr style="border:none;border-top:1px solid var(--line);margin:6px 0 16px">
   <div class="genbar" style="align-items:flex-start">
     <div style="display:flex;align-items:flex-start;gap:8px">
-      <label class="fld" style="margin:0;white-space:nowrap;padding-top:9px"><span data-zh>欄位完整度<br><span style="font-weight:400;font-size:11px;color:var(--mut)">（套用到全部列）</span></span><span data-en>Field level<br><span style="font-weight:400;font-size:11px;color:var(--mut)">(apply to all rows)</span></span></label>
+      <label class="fld" style="margin:0;white-space:nowrap;padding-top:9px;display:inline-flex;align-items:center;gap:4px"><span><span data-zh>欄位完整度</span><span data-en>Field level</span></span><span class="infotip"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip"><span data-zh>此區選項將套用到全部列；亦可於 PICO 概念表代號下方，調整各列的欄位完整度。</span><span data-en>These options apply to all rows; you can also set each row’s field level under its code in the PICO concept table.</span></span></span></label>
       <div>
         <select id="level">
           <option value="L1"></option>
@@ -456,7 +456,6 @@ City blocks)</pre>
           <option value="L3"></option>
         </select>
         <div class="lvlnote" id="lvlnote"></div>
-        <div class="lvlnote" style="margin-top:4px;color:var(--brand2)"><span data-zh>每列可各自調整欄位完整度（概念代號下方）：<br>完整＝L1、平衡＝L2、精準＝L3</span><span data-en>Each row can be set individually (under the concept code): L1 comprehensive, L2 balanced, L3 precise</span></div>
       </div>
     </div>
     <div class="hlopts">
