@@ -460,10 +460,11 @@ City blocks)</pre>
       <label title="自由詞欄位＋外層括弧=綠、控制詞彙=紅、鄰近字=藍"><input type="checkbox" id="cbColor" checked><span data-zh>語法顏色標記</span><span data-en>Syntax colors</span></label>
       <label title="以顏色標出成對圓括弧"><input type="checkbox" id="cbBracket"><span data-zh>成對括弧顏色</span><span data-en>Bracket pairs</span></label>
       <label title="把最後一行的 #行號組合展開，串成一條可直接貼入單一檢索框的長檢索式"><input type="checkbox" id="cbFlat"><span data-zh>整併為單一長式</span><span data-en>One combined query</span></label>
-      <label title="在檢索策略裡，把控制詞彙(ASC/BSC/ERIC/Ei Compendex 等)加上可點的詞表查核連結，方便向館員諮詢時快速複查。連結只供核對，複製的檢索式仍為純文字。（超連結亦僅適用於成大）"><input type="checkbox" id="cbLinks" checked><span data-zh>控制詞彙查核連結</span><span data-en>Vocab verify links</span></label>
+      <label title="在檢索策略裡，把控制詞彙(ASC/BSC/ERIC/Ei Compendex 等)加上可點的詞表查核連結，方便向館員諮詢時快速複查。連結只供核對，複製的檢索式仍為純文字。"><input type="checkbox" id="cbLinks" checked><span data-zh>控制詞彙查核連結</span><span data-en>Vocab verify links</span></label>
+      <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--mut)" title="EBSCOhost（ASC／BSC／ERIC）詞表查核連結的機構碼。預設為成大各庫代碼（ASC=xti3bi、BSC=j7dc2x、ERIC=shmie4，各庫不同）。其他機構請貼上貴機構 EBSCOhost 任一頁網址（research.ebsco.com/c/XXXX/…），系統會擷取機構碼 XXXX，套用到 ASC／BSC／ERIC 的查核連結。只存在你的瀏覽器本機。"><span data-zh>EBSCOhost 機構碼</span><span data-en>EBSCOhost inst.</span><input type="text" id="ebscoInst" placeholder="成大預設；其他機構貼網址" style="width:190px;font-size:12px;padding:6px 8px;border:1px solid var(--line);border-radius:6px"><span data-zh title="預設為成大各庫代碼（ASC／BSC／ERIC 各不同）。其他機構：貼上貴機構 EBSCOhost 任一頁網址，系統會自動擷取 research.ebsco.com/c/XXXX/ 的機構碼 XXXX，並套用到三個庫的查核連結。" style="cursor:help;color:var(--brand2);font-weight:700">ⓘ</span><span data-en title="Defaults to NCKU per-database codes (ASC/BSC/ERIC differ). Other institutions: paste any EBSCOhost page URL; the tool extracts the code XXXX from research.ebsco.com/c/XXXX/ and applies it to the ASC/BSC/ERIC verify links." style="cursor:help;color:var(--brand2);font-weight:700">ⓘ</span></span>
       <span style="display:inline-flex;align-items:center;gap:8px"><label title="英文同義詞裡的多字片語：預設加引號當片語（如 &quot;gestational diabetes&quot;）；勾選則改用鄰近字（如 gestational NEAR/2 diabetes）。鄰近距離可在右方數字框設定（預設 2）。強烈建議先用「鄰近字組合器」把同義詞分堆整理乾淨再貼入。" style="display:inline-flex;align-items:center;gap:5px"><input type="checkbox" id="cbNearPhrase"><span data-zh>片語改用鄰近字</span><span data-en>Phrases as proximity</span></label><span style="display:inline-flex;align-items:center;gap:3px;color:var(--mut)"><span data-zh>鄰</span><span data-en>within&nbsp;</span><input type="number" id="nearN" min="0" max="20" value="2" title="鄰近距離：幾個單字內（預設 2）" style="width:46px;font-size:12px;padding:4px 5px;border:1px solid var(--line);border-radius:6px"><span data-zh>單字</span><span data-en>&nbsp;words</span></span><span style="font-size:11px;color:var(--mut)"><span data-zh>（再依起始資料庫改語法）</span><span data-en>(operator adapts to the starting database)</span></span></span>
     </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-left:auto">
       <button class="btn primary" id="genBtn"><span data-zh>▶ 生成檢索策略</span><span data-en>▶ Generate strategies</span></button>
       <button class="btn ghost" id="wordBtn" disabled title="請先按「生成檢索策略」" data-tip-zh="請先按「生成檢索策略」" data-tip-en="Generate strategies first"><span data-zh>⬇ 下載 Word</span><span data-en>⬇ Download Word</span></button>
       <button class="btn ghost" id="recordBtn" style="display:none" title="把生成的檢索策略回填到您上傳的紀錄表，下載完整 Word" data-tip-zh="把生成的檢索策略回填到您上傳的紀錄表，下載完整 Word" data-tip-en="Fill the generated strategies back into your uploaded record form and download the full Word"><span data-zh>⬇ 回填檢索紀錄表</span><span data-en>⬇ Fill in record form</span></button>
@@ -475,8 +476,8 @@ City blocks)</pre>
   <div class="foot">
     <span data-zh>此工具為純網頁程式，未使用 AI。資料預設只在瀏覽器本機執行與暫存；只有按下「PubMed 估算文章數」時，對應檢索式才會傳送至 NCBI E-utilities。產出的檢索策略請人工覆核並於資料庫實測後再使用。</span>
     <span data-en>A pure web-based tool with no AI. Data stays in your browser by default; only when you click “Estimate PubMed counts” are the relevant queries sent to NCBI E-utilities. Please human-check and test the generated strategy before use.</span><br>
-    <span data-zh>工具引用：方靜如，SR x EBM SearchHen 搜尋策略生成雞。 doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>。<a href="https://sunfloraf-sketch.github.io/sr-search-toolkit/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-search-toolkit/</a><br>Fang CJ, SR x EBM SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-search-toolkit/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-search-toolkit/</a><br></span>
-    <span data-en>Cite this tool: Fang CJ, SR x EBM SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-search-toolkit/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-search-toolkit/</a></span><br>
+    <span data-zh>工具引用：方靜如，SR x EBM Happy SearchHen 搜尋策略生成雞。 doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>。<a href="https://sunfloraf-sketch.github.io/sr-search-toolkit/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-search-toolkit/</a><br>Fang CJ, SR x EBM Happy SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-search-toolkit/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-search-toolkit/</a><br></span>
+    <span data-en>Cite this tool: Fang CJ, SR x EBM Happy SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-search-toolkit/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-search-toolkit/</a></span><br>
     © 2026 Ching-Ju Fang <a href="https://orcid.org/0000-0002-7892-8840" target="_blank" rel="noopener" title="ORCID iD" style="text-decoration:none;white-space:nowrap;color:inherit" onclick="try{if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:'author-orcid',title:'作者-ORCID',event:true})}catch(e){}"><svg width="13" height="13" viewBox="0 0 256 256" style="vertical-align:-2px;margin-right:3px" aria-hidden="true"><circle cx="128" cy="128" r="128" fill="#A6CE39"/><g fill="#fff"><path d="M86.3 186.2H70.9V79.1h15.4v107.1z"/><path d="M108.9 79.1h41.6c39.6 0 57 28.3 57 53.6 0 27.5-21.5 53.6-56.8 53.6h-41.8V79.1zm15.4 93.3h24.5c34.9 0 42.9-26.5 42.9-39.7 0-21.5-13.7-39.7-43.7-39.7h-23.7v79.4z"/><circle cx="78.6" cy="56.8" r="10.1"/></g></svg>https://orcid.org/0000-0002-7892-8840</a> · All rights reserved · v2.4.0
   </div>
 </main>
@@ -1493,13 +1494,15 @@ if (typeof module !== "undefined" && module.exports) {
   var CV_RE={pubmed:/(?:"[^"]*"|[A-Za-z][\w-]*)\s*\[(?:mh|mj|mesh)(?::noexp)?\]/gi,ovid:/(?:\bexp\s+)?\*?"[^"]*"\//gi,embase:/"[^"]*"\/(?:exp(?:\/mj)?|de|mj)\b/gi,cochrane:/\[mh\b[^\[\]]*(?:\[mj\])?\]/gi,ebsco:/\b(?:MH|MM)\s*\([^)]*\)|\bMW\s+"[^"]*"/gi,wos:null,scopus:null};
   var FIELD_RE={pubmed:/\[(?:tiab|ti|tw|ab)\]/gi,ovid:/\.(?:ti|ab|kf|kw|mp|tw|nm|pt|sh|fs|xm|lg)(?:,(?:ti|ab|kf|kw|mp|tw|nm|pt|sh|fs|xm|lg))*\./gi,embase:/:(?:ti|ab|kw|de)(?:,(?:ti|ab|kw|de))*(?![a-z])/gi,cochrane:/:(?:ti|ab|kw|de)(?:,(?:ti|ab|kw|de))*(?![a-z])/gi,ebsco:/\b(?:TI|AB|KW|TX|XB)\b(?=\s*\()/gi,wos:/\b(?:TI|AB|AK|TS)=/gi,scopus:/\b(?:TITLE-ABS-KEY|TITLE-ABS|TITLE|ABS|AUTHKEY|KEY)\b(?=\s*\()/gi};
   // 控制詞彙查核連結：由標目文字 + 詞表類型 組出詞表查詢網址
+  var _EBDEF={asc:"xti3bi",bsc:"j7dc2x",eric:"shmie4"};   // 成大各庫 EBSCOhost 機構碼（各庫不同）＝預設
+  function _ebCode(dbid){ var el=document.getElementById("ebscoInst"); var ov=el?String(el.value||"").trim():""; var m=ov.match(/\/c\/([A-Za-z0-9_-]+)/); if(m) ov=m[1]; return ov||_EBDEF[dbid]; }   // 其他機構填了就覆蓋三庫；留空＝用成大各庫預設
   function cvUrl(term, dbid){
     var t=String(term||"").replace(/^["']+|["']+$/g,"").replace(/[+*]+$/,"").replace(/\s+/g," ").trim();
     if(!t) return null;
     var q=encodeURIComponent(t);
-    if(dbid==="asc")  return "https://research.ebsco.com/c/xti3bi/search/advanced/subjects?autocorrect=y&searchTerm="+q+"&selectedDb=a9hthes";   // 成大 ASC
-    if(dbid==="bsc")  return "https://research.ebsco.com/c/j7dc2x/search/advanced/subjects?autocorrect=y&searchTerm="+q+"&selectedDb=bthes";     // 成大 BSC
-    if(dbid==="eric") return "https://research.ebsco.com/c/shmie4/search/advanced/subjects?autocorrect=y&selectedDb=ericde&searchTerm="+q;       // 成大 ERIC
+    if(dbid==="asc")  return "https://research.ebsco.com/c/"+_ebCode("asc")+"/search/advanced/subjects?autocorrect=y&searchTerm="+q+"&selectedDb=a9hthes";   // ASC
+    if(dbid==="bsc")  return "https://research.ebsco.com/c/"+_ebCode("bsc")+"/search/advanced/subjects?autocorrect=y&searchTerm="+q+"&selectedDb=bthes";     // BSC
+    if(dbid==="eric") return "https://research.ebsco.com/c/"+_ebCode("eric")+"/search/advanced/subjects?autocorrect=y&selectedDb=ericde&searchTerm="+q;       // ERIC
     if(dbid==="compendex") return "https://www.engineeringvillage.com/search/thesaurus.url?query="+q+"&database=1&type=browse";  // Ei Compendex（非成大專屬）
     if(dbid==="ieee") return "https://www.ieee.org/publications/services/thesaurus-thank-you";   // IEEE Thesaurus（單一頁，非逐詞）
     return null;   // PQDT／自訂庫：無對應查核網址
@@ -3366,10 +3369,10 @@ if (typeof module !== "undefined" && module.exports) {
     ? "⚠ Reminder: assess the suitability of synonyms and controlled vocabulary yourself, and especially verify the controlled terms — the tool only links to the thesauri and does not verify them."
     : "⚠ 提醒您！請自行評估同義詞與控制詞彙的適用性，尤其確實查核控制詞彙，工具僅提供詞表超連結，並未進行查驗。"; }
   function _noteStrat(){ return isEn()
-    ? "⚠ Reminder: 1. Verify the controlled vocabulary yourself (the tool only links to the thesauri and does not verify them). 2. Review the search strategy manually and test/evaluate it in the databases before use. 3. SR × EBM SearchHen assumes no warranty or liability."
-    : "⚠ 提醒您！1. 請確實查核控制詞彙（工具僅提供詞表超連結，並未進行查驗）。2. 請人工覆核檢索策略，並於資料庫實測與評估後使用。3. SR x EBM SearchHen 不負保證責任。"; }
-  var _CITE_ZH="方靜如，SR x EBM SearchHen 搜尋策略生成雞。 doi: 10.5281/zenodo.21960702。https://sunfloraf-sketch.github.io/sr-search-toolkit/";
-  var _CITE_EN="Fang CJ, SR x EBM SearchHen. doi: 10.5281/zenodo.21960702. https://sunfloraf-sketch.github.io/sr-search-toolkit/";
+    ? "⚠ Reminder: 1. Verify the controlled vocabulary yourself (the tool only links to the thesauri and does not verify them). 2. Review the search strategy manually and test/evaluate it in the databases before use. 3. SR × EBM Happy SearchHen assumes no warranty or liability."
+    : "⚠ 提醒您！1. 請確實查核控制詞彙（工具僅提供詞表超連結，並未進行查驗）。2. 請人工覆核檢索策略，並於資料庫實測與評估後使用。3. SR x EBM Happy SearchHen 不負保證責任。"; }
+  var _CITE_ZH="方靜如，SR x EBM Happy SearchHen 搜尋策略生成雞。 doi: 10.5281/zenodo.21960702。https://sunfloraf-sketch.github.io/sr-search-toolkit/";
+  var _CITE_EN="Fang CJ, SR x EBM Happy SearchHen. doi: 10.5281/zenodo.21960702. https://sunfloraf-sketch.github.io/sr-search-toolkit/";
   function _citeLines(){ return isEn()? [_CITE_EN] : [_CITE_ZH, _CITE_EN]; }
   function _insertCite(doc){
     var ts=doc.getElementsByTagNameNS(_WNS,"t");
@@ -3553,6 +3556,12 @@ if (typeof module !== "undefined" && module.exports) {
   if(cbLinks) cbLinks.addEventListener("change", function(){ if(outs.children.length) $("#genBtn").click(); });
   if(cbNearPhrase) cbNearPhrase.addEventListener("change", function(){ if(outs.children.length) $("#genBtn").click(); });
   if(nearN) nearN.addEventListener("change", function(){ if(outs.children.length && cbNearPhrase && cbNearPhrase.checked) $("#genBtn").click(); });
+  // EBSCOhost 機構碼（ASC／BSC／ERIC 查核連結用）：預設留空＝用成大各庫碼；填網址自動擷取機構碼；本機記憶、變更後重生
+  var ebscoInst=$("#ebscoInst");
+  if(ebscoInst){ try{ ebscoInst.value=localStorage.getItem("sr_ebsco_inst")||""; }catch(e){}
+    var _ebNorm=function(){ var v=String(ebscoInst.value||"").trim(); var m=v.match(/\/c\/([A-Za-z0-9_-]+)/); if(m) ebscoInst.value=m[1]; try{ localStorage.setItem("sr_ebsco_inst", ebscoInst.value.trim()); }catch(e){} };
+    ebscoInst.addEventListener("input", _ebNorm);
+    ebscoInst.addEventListener("change", function(){ _ebNorm(); if(outs.children.length && (!cbLinks||cbLinks.checked)) $("#genBtn").click(); }); }
   // CINAHL 機構碼：本機記憶，變更後重生（讓 CINAHL 連結生效）
   if(cinahlInst){ try{ cinahlInst.value=localStorage.getItem("sr_cinahl_inst")||""; }catch(e){}
     cinahlInst.addEventListener("input", function(){ try{ localStorage.setItem("sr_cinahl_inst", cinahlInst.value.trim()); }catch(e){} });
