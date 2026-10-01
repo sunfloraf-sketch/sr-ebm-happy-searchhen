@@ -424,7 +424,8 @@ Optical Imaging)</pre>
       </thead>
       <tbody id="picoBody"></tbody>
     </table>
-    <div style="display:flex;justify-content:flex-end;margin-top:8px">
+    <div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:8px">
+      <button class="btn ghost" id="tallRows" title="一次把已填文字的儲存格高度拉高為兩倍；再按一次還原" style="font-size:12px;font-weight:600;padding:6px 12px"><span data-zh>⇕ 拉高已填格</span><span data-en>⇕ Taller cells</span></button>
       <button class="btn ghost" id="addRow" title="新增概念 / Add concept" style="font-size:18px;font-weight:700;line-height:1;padding:5px 15px">＋</button>
     </div>
     <div id="cvVerifyPanel" style="display:none"></div>
@@ -1438,6 +1439,9 @@ if (typeof module !== "undefined" && module.exports) {
 /* ================= PICO STRATEGY BUILDER APP ================= */
 (function(){
   var $ = function(s){ return document.querySelector(s); };
+  var _BRAND="SR × EBM Happy SearchHen";
+  function srAlert(m){ return window.alert(_BRAND+"\n\n"+m); }
+  function srConfirm(m){ return window.confirm(_BRAND+"\n\n"+m); }
   var VOCAB_LABEL = { mesh:"MeSH", emtree:"Emtree", cinahl:"CINAHL Headings" };
   // 控制詞彙模板（一律雙引號）；ex=展開(L1/L2)，mj=主標目(L3)
   var CV_TPL = {
@@ -1830,6 +1834,18 @@ if (typeof module !== "undefined" && module.exports) {
   if(restoreBtn) restoreBtn.onclick=function(){ var s=snapshotState(); if(stateNonEmpty(s)){ applyState(s); saveDraft(); restoreBtn.style.display="none"; } };
 
   $("#addRow").onclick=function(){ addRow(""); saveDraftDebounced(); };
+  // 一次拉高已填文字的儲存格到 2 倍高（再按一次還原）；只影響有輸入內容的 textarea
+  var _tallOn=false;
+  if($("#tallRows")) $("#tallRows").onclick=function(){
+    _tallOn=!_tallOn;
+    Array.prototype.forEach.call(picoBody.querySelectorAll("textarea"), function(ta){
+      if(_tallOn){ if(ta.value.trim()) ta.style.minHeight="232px"; }
+      else { ta.style.minHeight=""; }
+    });
+    var z=$("#tallRows").querySelector("[data-zh]"), e=$("#tallRows").querySelector("[data-en]");
+    if(z) z.textContent=_tallOn?"⇕ 還原高度":"⇕ 拉高已填格";
+    if(e) e.textContent=_tallOn?"⇕ Reset height":"⇕ Taller cells";
+  };
 
   // ===== 貼上 AI 表格：解析剪貼簿的 HTML 表格（或 Tab 分隔文字），依標題自動對欄填入 =====
   var pasteZone=$("#pasteZone"), pasteMsg=$("#pasteMsg");
@@ -2040,7 +2056,7 @@ if (typeof module !== "undefined" && module.exports) {
     });
     if(diagCopy) diagCopy.onclick=function(){ try{ navigator.clipboard.writeText(diagOut.value); }catch(e){ try{ diagOut.select(); document.execCommand&&document.execCommand("copy"); }catch(_e){} } if(diagMsg){ diagMsg.style.color="#166534"; diagMsg.textContent=isEn()?"Copied.":"已複製診斷結果。"; } };
   }
-  $("#clearBtn").onclick=function(){ if(!confirm(isEn()?"This can't be undone. Clear the whole table?":"動作無法復原，確認徹底清空嗎？")) return; picoBody.innerHTML=""; ["P","I","C","O"].forEach(function(l){ addRow(l); }); outs.innerHTML=""; if(picoWarn)picoWarn.style.display="none"; lastGen=null; if($("#wordBtn")) $("#wordBtn").disabled=true; try{ localStorage.removeItem("sr_pico_inbox"); }catch(e){} clearPersist(); if(restoreBtn) restoreBtn.style.display="none"; if(typeof updateRecordBtn==="function") updateRecordBtn(); };
+  $("#clearBtn").onclick=function(){ if(!srConfirm(isEn()?"This can't be undone. Clear the whole table?":"動作無法復原，確認徹底清空嗎？")) return; picoBody.innerHTML=""; ["P","I","C","O"].forEach(function(l){ addRow(l); }); outs.innerHTML=""; if(picoWarn)picoWarn.style.display="none"; lastGen=null; if($("#wordBtn")) $("#wordBtn").disabled=true; try{ localStorage.removeItem("sr_pico_inbox"); }catch(e){} clearPersist(); if(restoreBtn) restoreBtn.style.display="none"; if(typeof updateRecordBtn==="function") updateRecordBtn(); };
 
   // ---- 上傳 Word 讀取檢索詞（純瀏覽器解析 .docx，使用原生 DecompressionStream，可離線）----
   var wordFile=$("#wordFile"), uploadBtn=$("#uploadBtn");
@@ -2154,7 +2170,7 @@ if (typeof module !== "undefined" && module.exports) {
         var xml=await _extractXml(buf);
         // 檔案前後可含其他表格／項目：解析所有表格，挑出檢索詞表（同一索引用於 raw 與 clean）
         var tablesRaw=_allTables(xml,true), tablesClean=_allTables(xml,false);
-        if(!tablesRaw.length){ alert(isEn()?"No table found in the file.":"檔案中找不到表格。"); ev.target.value=""; return; }
+        if(!tablesRaw.length){ srAlert(isEn()?"No table found in the file.":"檔案中找不到表格。"); ev.target.value=""; return; }
         var _ti=_pickSearchTable(tablesRaw); if(_ti<0) _ti=0;
         var rowsRaw=tablesRaw[_ti];           // 表頭偵測用：保留灰字，避免表頭被誤刪
         var rows=tablesClean[_ti]||rowsRaw;   // 資料匯入用：灰字（提示/備註）略過
@@ -2181,7 +2197,7 @@ if (typeof module !== "undefined" && module.exports) {
         }
         var data=[];
         for(var k2=(hi>=0?hi+1:0); k2<rows.length; k2++){ var r=rows[k2], lab=(r[ci.concept]||"").replace(/\s+/g," ").trim(); if(!lab || _SKIP.test(lab)) continue; data.push(k2); }
-        if(!data.length){ alert(isEn()?"No term rows found — please check the file uses the term template.":"找不到可匯入的檢索詞列 —— 請確認檔案為檢索詞樣板格式。"); ev.target.value=""; return; }
+        if(!data.length){ srAlert(isEn()?"No term rows found — please check the file uses the term template.":"找不到可匯入的檢索詞列 —— 請確認檔案為檢索詞樣板格式。"); ev.target.value=""; return; }
         // 判斷控制詞彙是「顏色分類單欄（舊版）」還是「分列三欄」：三欄→依欄位；單欄且有目標色→依顏色分流
         var tcRows=_nthTableTc(xml, _ti);
         var cvIdx=[ci.emtree,ci.mesh,ci.cinahl].filter(function(x){return x>=0;});
@@ -2207,14 +2223,14 @@ if (typeof module !== "undefined" && module.exports) {
         recordDocx={ buf:buf, name:(f.name||"SR檢索紀錄表.docx") };   // 保留原檔，供回填下載
         if(typeof updateRecordBtn==="function") updateRecordBtn();
         if(picoWarn) picoWarn.style.display="none";
-      }catch(e){ alert((isEn()?"Read failed: ":"讀取失敗：")+e.message); }
+      }catch(e){ srAlert((isEn()?"Read failed: ":"讀取失敗：")+e.message); }
       ev.target.value="";
     };
   }
 
   $("#exBtn").onclick=function(){
     var hasContent = Array.prototype.some.call(picoBody.querySelectorAll("tr"), function(tr){ var r=tr._get&&tr._get(); return r && (r.zh||r.ft||r.mesh||r.emtree||r.cinahl); });
-    if(hasContent && !confirm(isEn()?"Loading the example will replace the current table. Continue?":"載入範例會覆蓋目前表格內容，確認載入嗎？")) return;
+    if(hasContent && !srConfirm(isEn()?"Loading the example will replace the current table. Continue?":"載入範例會覆蓋目前表格內容，確認載入嗎？")) return;
     srCount('pico-example','PICO-載入範例');
     srcSel.value="embase_com"; levelSel.value="L1"; refreshLvlNote();
     picoBody.innerHTML="";
@@ -3279,7 +3295,7 @@ if (typeof module !== "undefined" && module.exports) {
   }
   if($("#recordBtn")) $("#recordBtn").onclick=async function(){
     if(!lastGen || !lastGen.data.length){ return; }
-    if(!recordDocx){ alert(isEn()?"You must first use \u201cUpload record form (Word)\u201d in the PICO concept table before you can fill back.":"\u9808\u5148\u4f7f\u7528 PICO \u6982\u5ff5\u8868\u7684\u300c\u4e0a\u50b3\u641c\u5c0b\u7d00\u9304\u8868(Word)\u300d\uff0c\u624d\u80fd\u56de\u586b\u3002"); return; }
+    if(!recordDocx){ srAlert(isEn()?"You must first use \u201cUpload record form (Word)\u201d in the PICO concept table before you can fill back.":"\u9808\u5148\u4f7f\u7528 PICO \u6982\u5ff5\u8868\u7684\u300c\u4e0a\u50b3\u641c\u5c0b\u7d00\u9304\u8868(Word)\u300d\uff0c\u624d\u80fd\u56de\u586b\u3002"); return; }
     var en=isEn(), btn=$("#recordBtn"), old=btn.innerHTML;
     try{
       btn.disabled=true;
@@ -3289,9 +3305,9 @@ if (typeof module !== "undefined" && module.exports) {
       var xml = de.method===0 ? new TextDecoder().decode(de.data) : new TextDecoder().decode(await _inflateRaw(de.data));
       var res=fillRecordForm(xml);
       if(!res.ok && res.reason==="noTable"){ res=appendStrategyToDoc(xml); }   // \u6a94\u6848\u7121\u641c\u5c0b\u7b56\u7565\u8868 \u2192 \u6539\u9644\u52a0\u300c\u4e0b\u8f09 Word\u300d\u7684\u7b56\u7565\u8868\uff08\u5176\u9918\u5167\u5bb9\u4fdd\u7559\uff09
-      if(!res.ok){ alert(en?"Could not build the strategy for this file.":"\u7121\u6cd5\u70ba\u6b64\u6a94\u6848\u7522\u751f\u6aa2\u7d22\u7b56\u7565\u5167\u5bb9\u3002"); btn.disabled=false; return; }
-      if(!res.filled){ alert(en?"No matching rows were filled \u2014 check that the databases you generated match those listed in the form.":"\u6c92\u6709\u53ef\u5c0d\u61c9\u56de\u586b\u7684\u5217 \u2014\u2014 \u8acb\u78ba\u8a8d\u751f\u6210\u7684\u8cc7\u6599\u5eab\u8207\u7d00\u9304\u8868\u4e2d\u5217\u51fa\u7684\u8cc7\u6599\u5eab\u4e00\u81f4\u3002"); btn.disabled=false; return; }
-      if(!res.filled){ alert(en?"No matching rows were filled \u2014 check that the databases you generated match those listed in the form.":"\u6c92\u6709\u53ef\u5c0d\u61c9\u56de\u586b\u7684\u5217 \u2014\u2014 \u8acb\u78ba\u8a8d\u751f\u6210\u7684\u8cc7\u6599\u5eab\u8207\u7d00\u9304\u8868\u4e2d\u5217\u51fa\u7684\u8cc7\u6599\u5eab\u4e00\u81f4\u3002"); btn.disabled=false; return; }
+      if(!res.ok){ srAlert(en?"Could not build the strategy for this file.":"\u7121\u6cd5\u70ba\u6b64\u6a94\u6848\u7522\u751f\u6aa2\u7d22\u7b56\u7565\u5167\u5bb9\u3002"); btn.disabled=false; return; }
+      if(!res.filled){ srAlert(en?"No matching rows were filled \u2014 check that the databases you generated match those listed in the form.":"\u6c92\u6709\u53ef\u5c0d\u61c9\u56de\u586b\u7684\u5217 \u2014\u2014 \u8acb\u78ba\u8a8d\u751f\u6210\u7684\u8cc7\u6599\u5eab\u8207\u7d00\u9304\u8868\u4e2d\u5217\u51fa\u7684\u8cc7\u6599\u5eab\u4e00\u81f4\u3002"); btn.disabled=false; return; }
+      if(!res.filled){ srAlert(en?"No matching rows were filled \u2014 check that the databases you generated match those listed in the form.":"\u6c92\u6709\u53ef\u5c0d\u61c9\u56de\u586b\u7684\u5217 \u2014\u2014 \u8acb\u78ba\u8a8d\u751f\u6210\u7684\u8cc7\u6599\u5eab\u8207\u7d00\u9304\u8868\u4e2d\u5217\u51fa\u7684\u8cc7\u6599\u5eab\u4e00\u81f4\u3002"); btn.disabled=false; return; }
       var bytes=new TextEncoder().encode(res.xml);
       var crc=_crc32(bytes), comp;
       try{ comp=await _deflateRaw(bytes); }catch(_e){ comp=null; }
@@ -3303,7 +3319,7 @@ if (typeof module !== "undefined" && module.exports) {
       var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=nm; document.body.appendChild(a); a.click(); setTimeout(function(){URL.revokeObjectURL(a.href); a.remove();},1500);
       srCount('pico-record-fill','PICO-\u56de\u586b\u7d00\u9304\u8868');
       btn.innerHTML=en?"\u2713 Downloaded":"\u2713 \u5df2\u4e0b\u8f09"; setTimeout(function(){btn.innerHTML=old; btn.disabled=false;},1600);
-    }catch(e){ alert((en?"Fill failed: ":"\u56de\u586b\u5931\u6557\uff1a")+(e&&e.message||e)); btn.disabled=false; }
+    }catch(e){ srAlert((en?"Fill failed: ":"\u56de\u586b\u5931\u6557\uff1a")+(e&&e.message||e)); btn.disabled=false; }
   };
 
   function setLangPlaceholders(){ if(pasteZone) pasteZone.placeholder = isEn() ? "Press Ctrl+V here" : "在此按 Ctrl+V 貼上表格"; if(diagZone) diagZone.placeholder = isEn() ? "Press Ctrl+V here (diagnostics only; won’t fill in)" : "在此按 Ctrl+V 貼上表格（僅診斷，不會填入）"; }
