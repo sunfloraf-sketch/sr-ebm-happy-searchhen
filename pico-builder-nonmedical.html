@@ -458,6 +458,7 @@ City blocks)</pre>
       <label class="fld" style="margin:0;white-space:nowrap;padding-top:9px;display:inline-flex;align-items:center;gap:4px"><span><span data-zh>欄位完整度</span><span data-en>Field level</span></span><span class="infotip"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip"><span data-zh>此區選項將套用到全部列；亦可於 PICO 概念表代號下方，調整各列的欄位完整度。</span><span data-en>These options apply to all rows; you can also set each row’s field level under its code in the PICO concept table.</span></span></span></label>
       <div>
         <select id="level">
+          <option value="L0"></option>
           <option value="L1"></option>
           <option value="L2"></option>
           <option value="L3"></option>
@@ -581,19 +582,19 @@ var SYNTAX_MAP = {
   // 自由詞彙欄位. canonical: all, tiabkw, tiab, ti, ab; 三級 L1/L2/L3 (PICO工具用).  style: suffix|prefix|func
   // prefix/func 的多欄以 "+" 分隔，渲染時展開成 (TI (x) OR AB (x) OR KW (x))
   fields: {
-    pubmed:   { style: "suffix", groupSuffix: false, map: { all: "[tw]", tiabkw: "[tiab]", tiab: "[tiab]", ti: "[ti]", tio: "[ti]", ab: "[ab]", L1: "[tiab]", L2: "[ti]", L3: "[ti]" } },
-    ovid:     { style: "suffix", groupSuffix: true, combinable: true, map: { all: ".mp.", tiabkw: ".ti,ab,kf.", tiab: ".ti,ab.", ti: ".ti,kf.", tio: ".ti.", ab: ".ab.", L1: ".ti,ab,kf.", L2: ".ti,kf.", L3: ".ti." } },
-    embase:   { style: "suffix", groupSuffix: true, combinable: true, map: { all: ":ti,ab,kw,de", tiabkw: ":ti,ab,kw", tiab: ":ti,ab", ti: ":ti,kw", tio: ":ti", ab: ":ab", L1: ":ti,ab,kw", L2: ":ti,kw", L3: ":ti" } },
-    cochrane: { style: "suffix", groupSuffix: true, combinable: true, map: { all: ":ti,ab,kw", tiabkw: ":ti,ab,kw", tiab: ":ti,ab", ti: ":ti,kw", tio: ":ti", ab: ":ab", L1: ":ti,ab,kw", L2: ":ti,kw", L3: ":ti" } },
-    ebsco:    { style: "prefix", map: { all: "TX",  tiabkw: "XB", tiab: "TI+AB", ti: "TI", ab: "AB", L1: "TI+AB+KW", L2: "TI+KW", L3: "TI" } },
-    wos:      { style: "prefix", eq: true, map: { all: "TS", tiabkw: "TS", tiab: "TI+AB", ti: "TI", ab: "AB", L1: "TI+AB+AK", L2: "TI+AK", L3: "TI" } },
-    scopus:   { style: "func", map: { all: "TITLE-ABS-KEY", tiabkw: "TITLE-ABS-KEY", tiab: "TITLE-ABS", ti: "TITLE", ab: "ABS", L1: "TITLE-ABS+AUTHKEY", L2: "TITLE+AUTHKEY", L3: "TITLE" } },
-    pqdt:     { style: "func", nospace: true, lower: true, map: { all: "noft", tiabkw: "noft", tiab: "ti+abs", ti: "ti", ab: "abs", L1: "noft", L2: "ti+abs", L3: "ti" } },
-    compendex:{ style: "wn", map: { all: "KY", tiabkw: "KY", tiab: "TI+AB", ti: "TI", ab: "AB", L1: "KY", L2: "TI+AB", L3: "TI" } },
-    ieee:     { style: "ieee", map: { all: "All Metadata", tiabkw: "Document Title+Abstract+Author Keywords", tiab: "Document Title+Abstract", ti: "Document Title", ab: "Abstract", L1: "All Metadata", L2: "Document Title+Abstract+Author Keywords", L3: "Document Title" } },
+    pubmed:   { style: "suffix", groupSuffix: false, map: { all: "[tw]", tiabkw: "[tiab]", tiab: "[tiab]", ti: "[ti]", tio: "[ti]", ab: "[ab]", L0: "[tw]", L1: "[tiab]", L2: "[ti]", L3: "[ti]" } },
+    ovid:     { style: "suffix", groupSuffix: true, combinable: true, map: { all: ".mp.", tiabkw: ".ti,ab,kf.", tiab: ".ti,ab.", ti: ".ti,kf.", tio: ".ti.", ab: ".ab.", L0: ".mp.", L1: ".ti,ab,kf.", L2: ".ti,kf.", L3: ".ti." } },
+    embase:   { style: "suffix", groupSuffix: true, combinable: true, map: { all: ":ti,ab,kw,de", tiabkw: ":ti,ab,kw", tiab: ":ti,ab", ti: ":ti,kw", tio: ":ti", ab: ":ab", L0: ":ti,ab,kw,de", L1: ":ti,ab,kw", L2: ":ti,kw", L3: ":ti" } },
+    cochrane: { style: "suffix", groupSuffix: true, combinable: true, map: { all: ":ti,ab,kw", tiabkw: ":ti,ab,kw", tiab: ":ti,ab", ti: ":ti,kw", tio: ":ti", ab: ":ab", L0: ":ti,ab,kw", L1: ":ti,ab,kw", L2: ":ti,kw", L3: ":ti" } },
+    ebsco:    { style: "prefix", map: { all: "TX",  tiabkw: "XB", tiab: "TI+AB", ti: "TI", ab: "AB", L0: "TX", L1: "TI+AB+KW", L2: "TI+KW", L3: "TI" } },
+    wos:      { style: "prefix", eq: true, map: { all: "TS", tiabkw: "TS", tiab: "TI+AB", ti: "TI", ab: "AB", L0: "TS", L1: "TI+AB+AK", L2: "TI+AK", L3: "TI" } },
+    scopus:   { style: "func", map: { all: "TITLE-ABS-KEY", tiabkw: "TITLE-ABS-KEY", tiab: "TITLE-ABS", ti: "TITLE", ab: "ABS", L0: "TITLE-ABS-KEY", L1: "TITLE-ABS+AUTHKEY", L2: "TITLE+AUTHKEY", L3: "TITLE" } },
+    pqdt:     { style: "func", nospace: true, lower: true, map: { all: "noft", tiabkw: "noft", tiab: "ti+abs", ti: "ti", ab: "abs", L0: "noft", L1: "noft", L2: "ti+abs", L3: "ti" } },
+    compendex:{ style: "wn", map: { all: "KY", tiabkw: "KY", tiab: "TI+AB", ti: "TI", ab: "AB", L0: "KY", L1: "KY", L2: "TI+AB", L3: "TI" } },
+    ieee:     { style: "ieee", map: { all: "All Metadata", tiabkw: "Document Title+Abstract+Author Keywords", tiab: "Document Title+Abstract", ti: "Document Title", ab: "Abstract", L0: "All Metadata", L1: "All Metadata", L2: "Document Title+Abstract+Author Keywords", L3: "Document Title" } },
     // 台灣資料庫走 buildTaiwanLine 專屬路徑，這裡僅保留占位避免查表為 undefined
-    airiti:   { style: "prefix", eq: true, map: { all: "[ALL3]", tiabkw: "[ALL3]", tiab: "[ALL3]", ti: "[TI]", tio: "[TI]", ab: "[ALL3]", kw: "[KW]", L1: "[ALL3]", L2: "[TI]+[KW]", L3: "[TI]" } },
-    ndltd:    { style: "suffix", groupSuffix: false, map: { all: ".ti,ab,kw", tiabkw: ".ti,ab,kw", tiab: ".ti,ab", ti: ".ti", tio: ".ti", ab: ".ab", kw: ".kw", L1: ".ti,ab,kw", L2: ".ti,kw", L3: ".ti" } },
+    airiti:   { style: "prefix", eq: true, map: { all: "[ALL3]", tiabkw: "[ALL3]", tiab: "[ALL3]", ti: "[TI]", tio: "[TI]", ab: "[ALL3]", kw: "[KW]", L0: "[ALL3]", L1: "[ALL3]", L2: "[TI]+[KW]", L3: "[TI]" } },
+    ndltd:    { style: "suffix", groupSuffix: false, map: { all: ".ti,ab,kw", tiabkw: ".ti,ab,kw", tiab: ".ti,ab", ti: ".ti", tio: ".ti", ab: ".ab", kw: ".kw", L0: ".ti,ab,kw", L1: ".ti,ab,kw", L2: ".ti,kw", L3: ".ti" } },
   },
 
   // 鄰近. canonical {ordered, dist}. 模板 %A %B=運算元(已渲染) %N=距離 %F=欄位(PubMed)
@@ -1475,11 +1476,13 @@ if (typeof module !== "undefined" && module.exports) {
   };
   var LVL_NOTE = {
     zh: {
+      L0:"自由詞彙 → 所有欄位\n控制詞彙 → 展開（含狹義詞）\n召回率最高、最廣，適合不遺漏的全面檢索",
       L1:"自由詞彙 → 文章篇名＋摘要＋關鍵字\n控制詞彙 → 展開（含狹義詞）\n適合系統性文獻回顧",
       L2:"自由詞彙 → 文章篇名＋關鍵字\n控制詞彙 → 展開（含狹義詞）\n平衡，但較偏向精準度高",
       L3:"自由詞彙 → 僅文章篇名\n控制詞彙 → 含狹義詞 + 必為重點\n精準度最高，適快查、SR 題目探勘"
     },
     en: {
+      L0:"Free-text → all fields\nControlled → exploded (incl. narrower)\nHighest recall / broadest; for exhaustive searches",
       L1:"Free-text → title + abstract + keyword\nControlled → exploded (incl. narrower)\nBest for systematic reviews",
       L2:"Free-text → title + keyword\nControlled → exploded (incl. narrower)\nBalanced, leaning toward precision",
       L3:"Free-text → title only\nControlled → narrower terms + must be major\nHighest precision; for quick lookups & SR topic scoping"
@@ -1487,13 +1490,13 @@ if (typeof module !== "undefined" && module.exports) {
   };
 
   var LEVEL_LABELS = {
-    zh: { L1:"L1 完整（SR 適用）", L2:"L2 平衡（偏精準）", L3:"L3 精準" },
-    en: { L1:"L1 Comprehensive (SR)", L2:"L2 Balanced", L3:"L3 Precise" }
+    zh: { L0:"L0 所有欄位（最廣）", L1:"L1 完整（SR 適用）", L2:"L2 平衡（偏精準）", L3:"L3 精準" },
+    en: { L0:"L0 All fields (broadest)", L1:"L1 Comprehensive (SR)", L2:"L2 Balanced", L3:"L3 Precise" }
   };
-  // 每列（概念）完整度的精簡代號：廣=L1、較精=L2、精=L3
+  // 每列（概念）完整度的精簡代號：最廣=L0、廣=L1、較精=L2、精=L3
   var LEVEL_CODE = {
-    zh: { L1:"完整", L2:"平衡", L3:"精準" },
-    en: { L1:"L1", L2:"L2", L3:"L3" }
+    zh: { L0:"最廣", L1:"完整", L2:"平衡", L3:"精準" },
+    en: { L0:"L0", L1:"L1", L2:"L2", L3:"L3" }
   };
   var srcSel = $("#src"), levelSel = $("#level"), dbchecks = $("#dbchecks"),
       picoBody = $("#picoBody"), outs = $("#outs"), lvlnote = $("#lvlnote"),
@@ -1727,8 +1730,8 @@ if (typeof module !== "undefined" && module.exports) {
     var ccode=document.createElement("div"); ccode.className="ccode"; ccode.style.cssText="font-size:11px;color:#3f6f3f;font-weight:700;margin-top:3px"; labTd.appendChild(ccode);
     // 每列完整度選單（廣／較精／精＝L1／L2／L3）；預設沿用上方全域值
     var lvlSel=document.createElement("select"); lvlSel.className="rowlvl";
-    ["L1","L2","L3"].forEach(function(v){ var o=document.createElement("option"); o.value=v; o.textContent=LEVEL_CODE[isEn()?"en":"zh"][v]; lvlSel.appendChild(o); });
-    lvlSel.value=(lvl && /^L[123]$/.test(lvl)) ? lvl : ((levelSel&&levelSel.value)||"L1");
+    ["L0","L1","L2","L3"].forEach(function(v){ var o=document.createElement("option"); o.value=v; o.textContent=LEVEL_CODE[isEn()?"en":"zh"][v]; lvlSel.appendChild(o); });
+    lvlSel.value=(lvl && /^L[0123]$/.test(lvl)) ? lvl : ((levelSel&&levelSel.value)||"L1");
     lvlSel.title=LVL_NOTE[isEn()?"en":"zh"][lvlSel.value];
     lvlSel.onchange=function(){ lvlSel.title=LVL_NOTE[isEn()?"en":"zh"][lvlSel.value]; if(typeof saveDraftDebounced==="function") saveDraftDebounced(); if(typeof autoRegen==="function") autoRegen(); };
     labTd.appendChild(lvlSel);
@@ -1757,7 +1760,7 @@ if (typeof module !== "undefined" && module.exports) {
     tr.appendChild(rmTd);
     tr._cvCustom=[];
     tr._get=function(){ var cvo={}; CV_DBS.forEach(function(id){ cvo[id]=cvCells[id].ta.value.trim(); }); (tr._cvCustom||[]).forEach(function(c,i){ cvo['ebc'+i]=c.ta.value.trim(); }); return { label:labIn.value.trim()||"?", zh:c0.ta.value.trim(), ft:c1.ta.value.trim(), cv:cvo, level:lvlSel.value }; };
-    tr._setLevel=function(v){ if(/^L[123]$/.test(v)){ lvlSel.value=v; lvlSel.title=LVL_NOTE[isEn()?"en":"zh"][v]; } };
+    tr._setLevel=function(v){ if(/^L[0123]$/.test(v)){ lvlSel.value=v; lvlSel.title=LVL_NOTE[isEn()?"en":"zh"][v]; } };
     tr._refreshLvlLabel=function(){ var m=LEVEL_CODE[isEn()?"en":"zh"]; Array.prototype.forEach.call(lvlSel.options,function(o){o.textContent=m[o.value]||o.value;}); lvlSel.title=LVL_NOTE[isEn()?"en":"zh"][lvlSel.value]; };
     rm.onclick=function(){ tr.remove(); updateCodes(); if(typeof saveDraftDebounced==="function") saveDraftDebounced(); autoRegen(); };
     picoBody.appendChild(tr);
@@ -2592,7 +2595,7 @@ if (typeof module !== "undefined" && module.exports) {
     var lineNum=1, qlines=[], finalParts=[], reminders=[], conceptRefs=[];
     rows.forEach(function(r, _ri){
       var refs=[];
-      var _lv=(r.level&&/^L[123]$/.test(r.level))?r.level:level;   // 每列完整度（未指定則沿用全域）
+      var _lv=(r.level&&/^L[0123]$/.test(r.level))?r.level:level;   // 每列完整度（未指定則沿用全域）
       if(eng==="airiti"||eng==="ndltd"){
         var twLine = buildTaiwanLine(r.zh, r.ft, eng, _lv, reminders, tg.label, startEng);
         if(twLine){ qlines.push({n:lineNum, text:twLine}); refs.push("#"+lineNum); lineNum++; }
@@ -2852,7 +2855,7 @@ if (typeof module !== "undefined" && module.exports) {
       if(lt.length) msgs.push(isEn()?("Leading truncation (word-initial *) in: "+lt.join(", ")+" — only Cochrane / Scopus / Web of Science support it; the leading * is removed for other databases."):("字頭切截（詞首 *）出現在："+lt.join("、")+" 概念 —— 僅 Cochrane / Scopus / Web of Science 支援，其餘資料庫的詞首 * 已自動移除。"));
       if(msgs.length){ picoWarn.innerHTML="\u26A0 "+msgs.join("<br>\u26A0 "); picoWarn.style.display="block"; } else picoWarn.style.display="none";
     }
-    var lvlLabel = level+"　"+(isEn()?({L1:"Comprehensive",L2:"Balanced",L3:"Precise"}[level]):({L1:"完整",L2:"平衡",L3:"精準"}[level]));
+    var lvlLabel = level+"　"+(isEn()?({L0:"All fields",L1:"Comprehensive",L2:"Balanced",L3:"Precise"}[level]):({L0:"所有欄位",L1:"完整",L2:"平衡",L3:"精準"}[level]));
     var exportData=[]; RECORD_FILL={};
     var _stratWarn=document.createElement("div"); _stratWarn.style.cssText="color:#c0392b;font-size:13px;line-height:1.6;margin:2px 0 10px"; _stratWarn.textContent=_noteStrat(); outs.appendChild(_stratWarn);   // 檢索策略表上方提醒（三點）
     renderIds.forEach(function(tid){
