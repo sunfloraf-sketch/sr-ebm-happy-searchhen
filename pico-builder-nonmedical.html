@@ -57,6 +57,11 @@
   #level option, table.pico td.lab .rowlvl option{background:#fff;color:#2B2B2B}
   table.pico td.lab .rowlvl:focus{outline:1px solid var(--brand)}
   table.pico textarea{width:100%;min-height:116px;resize:vertical;border:1px solid #E1E6E9;border-radius:6px;padding:6px 7px;font-family:inherit;font-size:12.5px;line-height:1.45;color:var(--ink);background:#FFFFFF;box-shadow:inset 0 1px 2px rgba(20,28,34,.025)}
+  .rowgrip{cursor:grab;user-select:none;color:#b0b8c4;font-size:15px;line-height:1}
+  .rowgrip:hover{color:#0d6e6e}
+  #picoBody tr.dragging{opacity:.45}
+  #picoBody tr.drop-before td{box-shadow:inset 0 3px 0 var(--brand2,#0d6e6e)}
+  #picoBody tr.drop-after td{box-shadow:inset 0 -3px 0 var(--brand2,#0d6e6e)}
   table.pico td.free textarea{min-height:116px;font-family:"SF Mono","Cascadia Code",Consolas,monospace;font-size:12px}
   /* 控制詞彙欄：一詞一行、不自動斷詞（過長改水平捲動，避免單一詞彙被折成兩行看似兩詞） */
   table.pico td.cv textarea{white-space:pre;overflow-x:auto;overflow-wrap:normal}
@@ -1711,6 +1716,8 @@ if (typeof module !== "undefined" && module.exports) {
   // 點浮動選單以外處 / 按 Esc 關閉
   document.addEventListener("click", function(e){ var panel=$("#cvVerifyPanel"); if(panel.style.display==="none") return; if(panel.contains(e.target)) return; if(e.target.closest && e.target.closest("th.cvhead")) return; closeCvPanel(); });
   document.addEventListener("keydown", function(e){ if(e.key==="Escape") closeCvPanel(); });
+  var _dragTr=null;   // 桌機拖曳排序：目前被拖的列
+  function _clearDrop(){ Array.prototype.forEach.call(picoBody.querySelectorAll("tr.drop-before,tr.drop-after"),function(x){x.classList.remove("drop-before","drop-after");}); }
   function addRow(label, zh, ft, cv, phs, lvl){
     phs = phs || {}; cv = cv || {}; var pcv = phs.cv || {};
     var tr=document.createElement("tr");
@@ -1735,7 +1742,15 @@ if (typeof module !== "undefined" && module.exports) {
     up.onclick=function(){ var prev=tr.previousElementSibling; if(prev){ picoBody.insertBefore(tr, prev); updateCodes(); if(typeof saveDraftDebounced==="function") saveDraftDebounced(); autoRegen(); } };
     dn.onclick=function(){ var next=tr.nextElementSibling; if(next){ picoBody.insertBefore(next, tr); updateCodes(); if(typeof saveDraftDebounced==="function") saveDraftDebounced(); autoRegen(); } };
     var rm=document.createElement("button"); rm.className="rmrow"; rm.textContent="✕"; rm.title=isEn()?"Delete row":"刪除此列"; rm.style.marginTop="6px";
-    mv.appendChild(up); mv.appendChild(dn); mv.appendChild(rm); rmTd.appendChild(mv);
+    var grip=document.createElement("span"); grip.className="rowgrip"; grip.textContent="⠿"; grip.title=isEn()?"Drag to reorder (desktop)":"拖曳排序（桌機）";
+    grip.addEventListener("mousedown", function(){ tr.setAttribute("draggable","true"); });
+    grip.addEventListener("mouseup", function(){ tr.removeAttribute("draggable"); });
+    mv.appendChild(grip); mv.appendChild(up); mv.appendChild(dn); mv.appendChild(rm); rmTd.appendChild(mv);
+    tr.addEventListener("dragstart", function(e){ _dragTr=tr; tr.classList.add("dragging"); try{ e.dataTransfer.effectAllowed="move"; e.dataTransfer.setData("text/plain","row"); }catch(_){} });
+    tr.addEventListener("dragend", function(){ _dragTr=null; tr.classList.remove("dragging"); tr.removeAttribute("draggable"); _clearDrop(); });
+    tr.addEventListener("dragover", function(e){ if(!_dragTr||_dragTr===tr) return; e.preventDefault(); try{e.dataTransfer.dropEffect="move";}catch(_){} var r=tr.getBoundingClientRect(); var after=(e.clientY-r.top)>r.height/2; _clearDrop(); tr.classList.add(after?"drop-after":"drop-before"); });
+    tr.addEventListener("dragleave", function(){ tr.classList.remove("drop-before","drop-after"); });
+    tr.addEventListener("drop", function(e){ if(!_dragTr||_dragTr===tr) return; e.preventDefault(); var r=tr.getBoundingClientRect(); var after=(e.clientY-r.top)>r.height/2; picoBody.insertBefore(_dragTr, after?tr.nextElementSibling:tr); _clearDrop(); updateCodes(); if(typeof saveDraftDebounced==="function") saveDraftDebounced(); autoRegen(); });
     tr.appendChild(labTd); tr.appendChild(c0.td); tr.appendChild(c1.td);
     CV_DBS.forEach(function(id){ tr.appendChild(cvCells[id].td); });
     tr.appendChild(rmTd);
