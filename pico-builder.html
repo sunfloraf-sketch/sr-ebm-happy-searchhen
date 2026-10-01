@@ -79,7 +79,7 @@
   .btn.primary:hover{background:linear-gradient(180deg,#F7F9FA,#CDD6DC);color:#202428}
   .ex{font-size:12px;background:linear-gradient(180deg,#FBFCFC,#EAF0F2);color:#25292D;border:1px solid #D1D9DF;border-radius:16px;padding:5px 12px;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.85)}
   .ex:hover{background:linear-gradient(180deg,#FFFFFF,#E3E9ED)}
-  .genbar{display:grid;grid-template-columns:auto 1fr auto;align-items:start;gap:10px 24px;margin-bottom:14px}
+  .genbar{display:grid;grid-template-columns:auto 1fr auto;align-items:start;gap:10px 16px;margin-bottom:14px}
   .genbar>*{min-width:0}
   @media (max-width:860px){ .genbar{grid-template-columns:1fr} }
   .out{background:linear-gradient(180deg,#FFFFFF 0%, #FCFDFD 100%);border:1px solid var(--line);border-radius:11px;overflow:hidden;margin-bottom:22px}
@@ -119,8 +119,9 @@
   .chip{font-size:12px;border:1px solid var(--line);border-radius:14px;padding:2px 10px;cursor:pointer;background:#fff;color:#94a3b8;user-select:none}
   .chip.on{background:var(--accent);border-color:#C6CFD5;color:#25292D;font-weight:600}
   .pmvaradd{width:84px;font-size:12px;border:1px dashed #C6CFD5;border-radius:12px;padding:2px 8px}
-  .hlopts{display:grid;grid-template-columns:auto auto;gap:10px 32px;align-items:center;font-size:12.5px;color:var(--mut)}
-  .hlopts label{display:flex;align-items:center;gap:5px;cursor:pointer}
+  .hlopts{display:grid;grid-template-columns:auto auto;gap:10px 20px;align-items:center;font-size:12.5px;color:var(--mut)}
+  .hlopts label{display:flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap}
+  .hlopts>span{white-space:nowrap}
   .hlopts input{cursor:pointer;width:15px;height:15px}
   .inwarn{color:#c0392b;font-size:12.5px;font-weight:600;margin:0 0 10px}
   .out pre .hl-fld{color:#0a8f4f;font-weight:600}
@@ -333,7 +334,7 @@
         <button class="btn ghost" id="exBtn"><span data-zh>載入範例</span><span data-en>Load example</span></button>
         <a class="btn ghost" data-zh href="pico_template_zh.docx" download style="text-decoration:none">⬇ 下載樣板</a>
         <a class="btn ghost" data-en href="pico_template_en.docx" download style="text-decoration:none">⬇ Download template</a>
-        <button class="btn ghost" id="uploadBtn"><span data-zh>⬆ 上傳 Word</span><span data-en>⬆ Upload Word</span></button>
+        <button class="btn ghost" id="uploadBtn"><span data-zh>⬆ 上傳搜尋紀錄表(Word)</span><span data-en>⬆ Upload record form (Word)</span></button>
         <input type="file" id="wordFile" accept=".docx" style="display:none">
         <button class="btn ghost" id="restoreBtn" style="display:none;border-color:#7c9a7c;color:#3f6f3f">↩ <span data-zh>載入上次暫存</span><span data-en>Load last save</span></button>
         <button class="btn ghost" id="clearBtn"><span data-zh>清空</span><span data-en>Clear</span></button>
@@ -464,7 +465,7 @@ Optical Imaging)</pre>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-left:auto">
       <button class="btn primary" id="genBtn"><span data-zh>▶ 生成檢索策略</span><span data-en>▶ Generate strategies</span></button>
       <button class="btn ghost" id="wordBtn" disabled title="請先按「生成檢索策略」" data-tip-zh="請先按「生成檢索策略」" data-tip-en="Generate strategies first"><span data-zh>⬇ 下載 Word</span><span data-en>⬇ Download Word</span></button>
-      <button class="btn ghost" id="recordBtn" disabled title="把生成的檢索策略回填到您上傳的紀錄表，下載完整 Word" data-tip-zh="把生成的檢索策略回填到您上傳的紀錄表，下載完整 Word" data-tip-en="Fill the generated strategies back into your uploaded record form and download the full Word"><span data-zh>⬇ 回填檢索紀錄表</span><span data-en>⬇ Fill in record form</span></button>
+      <button class="btn ghost" id="recordBtn" disabled title="把生成的檢索策略回填到您上傳的紀錄表，下載完整 Word" data-tip-zh="把生成的檢索策略回填到您上傳的紀錄表，下載完整 Word" data-tip-en="Fill the generated strategies back into your uploaded record form and download the full Word"><span data-zh>⬇ 回填搜尋紀錄表</span><span data-en>⬇ Fill in record form</span></button>
     </div>
   </div>
   <div class="inwarn" id="picoWarn" style="display:none"></div>
@@ -3279,7 +3280,7 @@ if (typeof module !== "undefined" && module.exports) {
   }
   if($("#recordBtn")) $("#recordBtn").onclick=async function(){
     if(!lastGen || !lastGen.data.length){ return; }
-    if(!recordDocx){ alert(isEn()?"Please upload your search-record form first (the \u201cUpload Word\u201d button in the PICO concept table), then fill back.":"\u8acb\u5148\u5728 PICO \u6982\u5ff5\u8868\u7684\u300c\u4e0a\u50b3 Word\u300d\u4e0a\u50b3\u60a8\u7684\u641c\u5c0b\u7d00\u9304\u8868\uff0c\u518d\u56de\u586b\u3002"); return; }
+    if(!recordDocx){ alert(isEn()?"You must first use \u201cUpload record form (Word)\u201d in the PICO concept table before you can fill back.":"\u9808\u5148\u4f7f\u7528 PICO \u6982\u5ff5\u8868\u7684\u300c\u4e0a\u50b3\u641c\u5c0b\u7d00\u9304\u8868(Word)\u300d\uff0c\u624d\u80fd\u56de\u586b\u3002"); return; }
     var en=isEn(), btn=$("#recordBtn"), old=btn.innerHTML;
     try{
       btn.disabled=true;
