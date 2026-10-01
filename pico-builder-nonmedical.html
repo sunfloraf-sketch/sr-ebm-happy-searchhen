@@ -405,8 +405,8 @@ City blocks)</pre>
         </div>
       </div>
     </details>
-    <div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
-      <span style="flex:1 1 auto;min-width:0;text-align:right;font-size:13px;line-height:1.5;color:#c0392b">
+    <div style="display:flex;justify-content:flex-start;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+      <span style="flex:0 1 auto;min-width:0;text-align:left;font-size:13px;line-height:1.5;color:#c0392b">
         <span data-zh>⚠ 提醒您！請自行評估同義詞與控制詞彙的適用性，尤其確實查核控制詞彙，工具僅提供詞表超連結，並未進行查驗。（超連結亦僅適用於成大）</span>
         <span data-en>⚠ Reminder: please assess the suitability of the synonyms and controlled vocabulary yourself, and be sure to verify the controlled terms — the tool only links to the thesauri and does not verify them. (Links apply to NCKU only.)</span>
       </span>
@@ -1916,9 +1916,10 @@ if (typeof module !== "undefined" && module.exports) {
   var _tallOn=false;
   if($("#tallRows")) $("#tallRows").onclick=function(){
     _tallOn=!_tallOn;
-    Array.prototype.forEach.call(picoBody.querySelectorAll("textarea"), function(ta){
-      if(_tallOn){ if(ta.value.trim()) ta.style.minHeight="232px"; }
-      else { ta.style.minHeight=""; }
+    Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr){
+      var tas=tr.querySelectorAll("textarea");
+      var hasText=Array.prototype.some.call(tas, function(t){return t.value.trim();});
+      Array.prototype.forEach.call(tas, function(t){ t.style.minHeight=(_tallOn && hasText)?"232px":""; });   // 同一列只要有文字，整列一起拉高／還原
     });
     var z=$("#tallRows").querySelector("[data-zh]"), e=$("#tallRows").querySelector("[data-en]");
     if(z) z.textContent=_tallOn?"⇕ 還原高度":"⇕ 拉高已填格";
