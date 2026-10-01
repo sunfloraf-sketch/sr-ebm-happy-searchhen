@@ -472,7 +472,7 @@ City blocks)</pre>
     <div class="hlopts">
       <label title="自由詞欄位＋外層括弧=綠、控制詞彙=紅、鄰近字=藍"><input type="checkbox" id="cbColor" checked><span data-zh>語法顏色標記</span><span data-en>Syntax colors</span></label>
       <label title="以顏色標出成對圓括弧"><input type="checkbox" id="cbBracket"><span data-zh>成對括弧顏色</span><span data-en>Bracket pairs</span></label>
-      <label title="把最後一行的 #行號組合展開，串成一條可直接貼入單一檢索框的長檢索式"><input type="checkbox" id="cbFlat"><span data-zh>整併為單一長式</span><span data-en>One combined query</span></label>
+      <label title="把最後一行的 #行號組合展開，串成一條可直接貼入單一檢索框的長檢索式"><input type="checkbox" id="cbFlat"><span data-zh>合併為一串檢索語法</span><span data-en>One combined query</span></label>
       <label title="在檢索策略裡，把控制詞彙(ASC/BSC/ERIC/Ei Compendex 等)加上可點的詞表查核連結，方便向館員諮詢時快速複查。連結只供核對，複製的檢索式仍為純文字。"><input type="checkbox" id="cbLinks" checked><span data-zh>控制詞彙查核連結</span><span data-en>Vocab verify links</span></label>
       <span style="display:inline-flex;align-items:center;gap:8px"><label title="英文同義詞裡的多字片語：預設加引號當片語（如 &quot;gestational diabetes&quot;）；勾選則改用鄰近字（如 gestational NEAR/2 diabetes）。鄰近距離可在右方數字框設定（預設 2）。強烈建議先用「鄰近字組合器」把同義詞分堆整理乾淨再貼入。" style="display:inline-flex;align-items:center;gap:5px"><input type="checkbox" id="cbNearPhrase"><span data-zh>片語改用鄰近字</span><span data-en>Phrases as proximity</span></label><span style="display:inline-flex;align-items:center;gap:3px;color:var(--mut)"><span data-zh>鄰</span><span data-en>within&nbsp;</span><input type="number" id="nearN" min="0" max="20" value="2" title="鄰近距離：幾個單字內（預設 2）" style="width:34px;height:28px;font-size:12px;padding:0 5px;text-align:center;border:1px solid var(--line);border-radius:6px"><span data-zh>單字</span><span data-en>&nbsp;words</span></span></span>
     </div>
@@ -2901,7 +2901,7 @@ if (typeof module !== "undefined" && module.exports) {
       var copyText = allRows.map(function(x){return _dispRefs(x.text, tg.engine);}).join("\n");
       var flatCopy = copyText;   // 複製圖示：整串單一長式（把最後一行的 #n 行號全部展開，串成一條完整檢索式）
       try{ var _fr=allRows[allRows.length-1]; if(_fr){ flatCopy=_dispRefs(expandNumberedQuery(_fr, allRows), tg.engine); } }catch(_e){ flatCopy=copyText; }
-      cp.title=isEn()?"Copy as one combined query (line refs expanded into a single string)":"複製為單一長式（展開 #n 行號，整串可直接貼入單一檢索框）";
+      cp.title=isEn()?"Copy the full combined search syntax — paste straight into the database":"複製整串檢索語法，可直接貼上資料庫檢索";
       cp.onclick=function(){ navigator.clipboard.writeText(flatCopy); cp.textContent="✓"; cp.classList.add("done"); setTimeout(function(){cp.innerHTML=COPYSVG;cp.classList.remove("done");},1400); };
       // 右側按鈕群：複製圖示 ＋（非 PubMed）「複製最終策略並開啟資料庫」——移到複製圖示右側
       var hr=document.createElement("span"); hr.style.cssText="display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end";
