@@ -99,6 +99,9 @@
            font-size:12.5px;color:var(--code);background:var(--codebg);line-height:1.7}
   .out pre .qline{display:flex;gap:12px;align-items:baseline}
   .out pre .qn{color:#69737C;user-select:none;-webkit-user-select:none;flex:0 0 auto;min-width:26px;text-align:right}
+  .out pre .qn.clk{cursor:pointer;border-radius:4px;transition:background .12s,color .12s}
+  .out pre .qn.clk:hover{background:#DCE3E7;color:#1B6FA8;text-decoration:underline}
+  .out pre .qn.copied{background:#CDEAD3;color:#166534;text-decoration:none}
   .out pre .qs{white-space:pre-wrap;word-break:break-word;flex:1 1 auto;min-width:0}
   .pmcount{flex:0 0 auto;min-width:86px;text-align:right;color:var(--mut);font-size:11.5px;white-space:nowrap}
   .pmcount.ok{color:#355E55;font-weight:700}.pmcount.err{color:#A33A32}
@@ -459,7 +462,7 @@ City blocks)</pre>
       <div>
         <select id="level">
           <option value="L0"></option>
-          <option value="L1"></option>
+          <option value="L1" selected></option>
           <option value="L2"></option>
           <option value="L3"></option>
         </select>
@@ -2964,7 +2967,7 @@ if (typeof module !== "undefined" && module.exports) {
         acb.onchange=function(){ AIRITI_INC=acb.checked; $("#genBtn").click(); };
       }
       var countEls=[];
-      var pre=document.createElement("pre"); allRows.forEach(function(x){ var ln=document.createElement("div"); ln.className="qline"; var gn=document.createElement("span"); gn.className="qn"; gn.textContent=(x.n!=null?_refPrefix(tg.engine)+x.n:""); var gs=document.createElement("span"); gs.className="qs"; var _tx=_dispRefs(x.text, tg.engine); if((cbColor&&cbColor.checked)||(cbBracket&&cbBracket.checked)||(cbLinks&&cbLinks.checked)){ gs.innerHTML=hlHighlight(_tx, tg.engine, cbColor&&cbColor.checked, cbBracket&&cbBracket.checked, tg.vocab, cbLinks&&cbLinks.checked).html; } else { gs.textContent=_tx; } ln.appendChild(gn); ln.appendChild(gs); if(tg.engine==="pubmed"){var ct=document.createElement("span");ct.className="pmcount";ct.textContent="—";ln.appendChild(ct);countEls.push(ct);} pre.appendChild(ln); }); card.appendChild(pre);
+      var pre=document.createElement("pre"); allRows.forEach(function(x){ var ln=document.createElement("div"); ln.className="qline"; var gn=document.createElement("span"); gn.className="qn"; var _gnLbl=(x.n!=null?_refPrefix(tg.engine)+x.n:""); gn.textContent=_gnLbl; if(x.n!=null){ gn.classList.add("clk"); gn.title=isEn()?"Click to copy this line":"點一下複製此行"; (function(_x,_lbl){ gn.onclick=function(){ try{ navigator.clipboard.writeText(_dispRefs(_x.text, tg.engine)); }catch(e){} gn.classList.add("copied"); gn.textContent="✓"; setTimeout(function(){ gn.textContent=_lbl; gn.classList.remove("copied"); },1000); }; })(x,_gnLbl); } var gs=document.createElement("span"); gs.className="qs"; var _tx=_dispRefs(x.text, tg.engine); if((cbColor&&cbColor.checked)||(cbBracket&&cbBracket.checked)||(cbLinks&&cbLinks.checked)){ gs.innerHTML=hlHighlight(_tx, tg.engine, cbColor&&cbColor.checked, cbBracket&&cbBracket.checked, tg.vocab, cbLinks&&cbLinks.checked).html; } else { gs.textContent=_tx; } ln.appendChild(gn); ln.appendChild(gs); if(tg.engine==="pubmed"){var ct=document.createElement("span");ct.className="pmcount";ct.textContent="—";ln.appendChild(ct);countEls.push(ct);} pre.appendChild(ln); }); card.appendChild(pre);
       if(tg.engine==="ieee"){   // IEEE 相容性檢查面板（檢查展開後的完整檢索式）
         var _iq=""; try{ _iq=expandNumberedQuery(allRows[allRows.length-1], allRows); }catch(_e){ _iq=allRows.map(function(r){return r.text;}).join(" AND "); }
         var dg=ieeeDiagnostics(_iq), en_=isEn();
