@@ -457,9 +457,9 @@ Optical Imaging)</pre>
       <label title="把最後一行的 #行號組合展開，串成一條可直接貼入單一檢索框的長檢索式"><input type="checkbox" id="cbFlat"><span data-zh>整併為單一長式</span><span data-en>One combined query</span></label>
       <span style="display:inline-flex;align-items:center;gap:8px"><label title="英文同義詞裡的多字片語：預設加引號當片語（如 &quot;gestational diabetes&quot;）；勾選則改用鄰近字（如 gestational NEAR/2 diabetes）。鄰近距離可在右方數字框設定（預設 2）。強烈建議先用「鄰近字組合器」把同義詞分堆整理乾淨再貼入。" style="display:inline-flex;align-items:center;gap:5px"><input type="checkbox" id="cbNearPhrase"><span data-zh>片語改用鄰近字</span><span data-en>Phrases as proximity</span></label><span style="display:inline-flex;align-items:center;gap:3px;color:var(--mut)"><span data-zh>鄰</span><span data-en>within&nbsp;</span><input type="number" id="nearN" min="0" max="20" value="2" title="鄰近距離：幾個單字內（預設 2）" style="width:46px;font-size:12px;padding:4px 5px;border:1px solid var(--line);border-radius:6px"><span data-zh>單字</span><span data-en>&nbsp;words</span></span><span style="font-size:11px;color:var(--mut)"><span data-zh>（再依起始資料庫改語法）</span><span data-en>(operator adapts to the starting database)</span></span></span>
       <label title="產出的控制詞彙(MeSH/Emtree/CINAHL)加上可點的詞表查核連結；Word 下載也內嵌超連結。連結只供核對，複製的檢索式仍為純文字。"><input type="checkbox" id="cbLinks" checked><span data-zh>控制詞彙查核連結</span><span data-en>Vocab verify links</span></label>
-      <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--mut)" title="你機構的 EBSCO 專屬代碼（research.ebsco.com/c/XXXX/ 中的 XXXX，如 shmie4）；填了 CINAHL 控制詞彙才會有查核連結。只存在你的瀏覽器本機。"><span data-zh>CINAHL 機構碼</span><span data-en>CINAHL inst.</span><input type="text" id="cinahlInst" placeholder="e.g. shmie4（成大專用）" style="width:150px;font-size:12px;padding:6px 8px;border:1px solid var(--line);border-radius:6px"><span data-zh title="您可自行連線貴機構 CINAHL，從網址來確認機構碼（目前不適用：非 Basic 版本、院外透過 Proxy 認證登入資料庫者）。" style="cursor:help;color:var(--brand2);font-weight:700">ⓘ</span><span data-en title="Log in to your institution’s CINAHL and read the code from the URL to confirm it. (Not applicable to: non-Basic versions, or off-campus users authenticating through a proxy.)" style="cursor:help;color:var(--brand2);font-weight:700">ⓘ</span></span>
+      <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--mut)" title="你機構的 EBSCO 專屬代碼（research.ebsco.com/c/XXXX/ 中的 XXXX，如 shmie4）；填了 CINAHL 控制詞彙才會有查核連結。只存在你的瀏覽器本機。"><span data-zh>CINAHL 機構碼</span><span data-en>CINAHL inst.</span><input type="text" id="cinahlInst" placeholder="shmie4，或貼上機構網址" style="width:170px;font-size:12px;padding:6px 8px;border:1px solid var(--line);border-radius:6px"><span data-zh title="預設為成大機構碼 shmie4。其他機構：直接貼上貴機構 CINAHL 進階檢索頁的網址（例如 research.ebsco.com/c/XXXX/… 或登入後任一頁），系統會自動擷取機構碼 XXXX。（目前不適用：非 Basic 版本、院外透過 Proxy 認證登入資料庫者。）只存在你的瀏覽器本機。" style="cursor:help;color:var(--brand2);font-weight:700">ⓘ</span><span data-en title="Defaults to NCKU’s code (shmie4). Other institutions: just paste your institution’s CINAHL advanced-search URL (e.g. research.ebsco.com/c/XXXX/… or any page after signing in) and the tool extracts the code XXXX. (Not applicable to: non-Basic versions, or off-campus proxy logins.) Stored only in your browser." style="cursor:help;color:var(--brand2);font-weight:700">ⓘ</span></span>
     </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-left:auto">
       <button class="btn primary" id="genBtn"><span data-zh>▶ 生成檢索策略</span><span data-en>▶ Generate strategies</span></button>
       <button class="btn ghost" id="wordBtn" disabled title="請先按「生成檢索策略」" data-tip-zh="請先按「生成檢索策略」" data-tip-en="Generate strategies first"><span data-zh>⬇ 下載 Word</span><span data-en>⬇ Download Word</span></button>
       <button class="btn ghost" id="recordBtn" style="display:none" title="把生成的檢索策略回填到您上傳的紀錄表，下載完整 Word" data-tip-zh="把生成的檢索策略回填到您上傳的紀錄表，下載完整 Word" data-tip-en="Fill the generated strategies back into your uploaded record form and download the full Word"><span data-zh>⬇ 回填檢索紀錄表</span><span data-en>⬇ Fill in record form</span></button>
@@ -1675,13 +1675,14 @@ if (typeof module !== "undefined" && module.exports) {
     var c0=mkCell("ref",phs.zh), c1=mkCell("free",phs.ft), c2=mkCell("cv",phs.mesh), c3=mkCell("cv",phs.emtree), c4=mkCell("cv",phs.cinahl);
     c0.ta.value=zh||""; c1.ta.value=ft||""; c2.ta.value=mesh||""; c3.ta.value=emtree||""; c4.ta.value=cinahl||"";
     var rmTd=document.createElement("td");
-    var mv=document.createElement("div"); mv.style.cssText="display:flex;gap:2px;align-items:center;justify-content:center";
+    var mv=document.createElement("div"); mv.style.cssText="display:flex;flex-direction:column;gap:3px;align-items:center;justify-content:center";
+    var mvRow=document.createElement("div"); mvRow.style.cssText="display:flex;gap:2px;align-items:center;justify-content:center";   // 雙向移動箭頭（上移／下移）同一行
     var up=document.createElement("button"); up.className="rmrow"; up.textContent="↑"; up.title=isEn()?"Move up":"上移（與上一列對調）";
     var dn=document.createElement("button"); dn.className="rmrow"; dn.textContent="↓"; dn.title=isEn()?"Move down":"下移（與下一列對調）";
     up.onclick=function(){ var prev=tr.previousElementSibling; if(prev){ picoBody.insertBefore(tr, prev); updateCodes(); if(typeof saveDraftDebounced==="function") saveDraftDebounced(); autoRegen(); } };
     dn.onclick=function(){ var next=tr.nextElementSibling; if(next){ picoBody.insertBefore(next, tr); updateCodes(); if(typeof saveDraftDebounced==="function") saveDraftDebounced(); autoRegen(); } };
-    var rm=document.createElement("button"); rm.className="rmrow"; rm.textContent="✕";
-    mv.appendChild(up); mv.appendChild(dn); mv.appendChild(rm); rmTd.appendChild(mv);
+    var rm=document.createElement("button"); rm.className="rmrow"; rm.textContent="✕"; rm.title=isEn()?"Delete row":"刪除此列";
+    mvRow.appendChild(up); mvRow.appendChild(dn); mv.appendChild(mvRow); mv.appendChild(rm); rmTd.appendChild(mv);   // ✕ 換到下一行
     tr.appendChild(labTd); tr.appendChild(c0.td); tr.appendChild(c1.td); tr.appendChild(c3.td); tr.appendChild(c2.td); tr.appendChild(c4.td); tr.appendChild(rmTd);
     tr._get=function(){ return { label:labIn.value.trim()||"?", zh:c0.ta.value.trim(), ft:c1.ta.value.trim(), mesh:c2.ta.value.trim(), emtree:c3.ta.value.trim(), cinahl:c4.ta.value.trim(), level:lvlSel.value }; };
     tr._setLevel=function(v){ if(/^L[123]$/.test(v)){ lvlSel.value=v; lvlSel.title=LVL_NOTE[isEn()?"en":"zh"][v]; } };
@@ -3323,9 +3324,11 @@ if (typeof module !== "undefined" && module.exports) {
   if(cbNearPhrase) cbNearPhrase.addEventListener("change", function(){ if(outs.children.length) $("#genBtn").click(); });
   if(nearN) nearN.addEventListener("change", function(){ if(outs.children.length && cbNearPhrase && cbNearPhrase.checked) $("#genBtn").click(); });
   // CINAHL 機構碼：本機記憶，變更後重生（讓 CINAHL 連結生效）
-  if(cinahlInst){ try{ cinahlInst.value=localStorage.getItem("sr_cinahl_inst")||""; }catch(e){}
-    cinahlInst.addEventListener("input", function(){ try{ localStorage.setItem("sr_cinahl_inst", cinahlInst.value.trim()); }catch(e){} });
-    cinahlInst.addEventListener("change", function(){ if(outs.children.length && (!cbLinks||cbLinks.checked)) $("#genBtn").click(); }); }
+  // 貼上機構網址時自動擷取機構碼：research.ebsco.com/c/XXXX/… → XXXX
+  function _cinahlCode(v){ var s=String(v||"").trim(); var m=s.match(/\/c\/([A-Za-z0-9_-]+)/); return m?m[1]:s; }
+  if(cinahlInst){ var _saved=""; try{ _saved=localStorage.getItem("sr_cinahl_inst"); }catch(e){} cinahlInst.value=(_saved!=null&&_saved!=="")?_saved:"shmie4";   // 預設載入成大機構碼
+    cinahlInst.addEventListener("input", function(){ var code=_cinahlCode(cinahlInst.value); if(code!==cinahlInst.value) cinahlInst.value=code; try{ localStorage.setItem("sr_cinahl_inst", cinahlInst.value.trim()); }catch(e){} });
+    cinahlInst.addEventListener("change", function(){ var code=_cinahlCode(cinahlInst.value); if(code!==cinahlInst.value) cinahlInst.value=code; try{ localStorage.setItem("sr_cinahl_inst", cinahlInst.value.trim()); }catch(e){} if(outs.children.length && (!cbLinks||cbLinks.checked)) $("#genBtn").click(); }); }
 
   // ---- 由「鄰近字組合器」帶入（localStorage 佇列，可累加多個概念）----
   function srCount(p,t){ try{ var _e=window.event; if(_e&&(_e.type==="click"||_e.type==="change")&&_e.target&&_e.target.closest){ var _b=_e.target.closest("button,[role=button],.btn,a,input,select,th,label"); if(_b) _b.__srExplicit=_e.timeStamp; } }catch(_x){} var c=function(o){ var n=0;(function f(){ try{ if(window.goatcounter&&window.goatcounter.count){ window.goatcounter.count(o); return; } }catch(e){ return; } if(n++<40) setTimeout(f,250); })(); }; c({path:p,title:t||p,event:true}); c({path:p+'-all',title:(t||p)+'（累計）',event:true,no_session:true}); }  /* 雙軌：p=去重(不重複使用階段)、p-all=no_session(每次都算) */
