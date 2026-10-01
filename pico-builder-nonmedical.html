@@ -79,7 +79,9 @@
   .btn.primary:hover{background:linear-gradient(180deg,#F7F9FA,#CDD6DC);color:#202428}
   .ex{font-size:12px;background:linear-gradient(180deg,#FBFCFC,#EAF0F2);color:#25292D;border:1px solid #D1D9DF;border-radius:16px;padding:5px 12px;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.85)}
   .ex:hover{background:linear-gradient(180deg,#FFFFFF,#E3E9ED)}
-  .genbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+  .genbar{display:grid;grid-template-columns:auto 1fr auto;align-items:start;gap:10px 24px;margin-bottom:14px}
+  .genbar>*{min-width:0}
+  @media (max-width:860px){ .genbar{grid-template-columns:1fr} }
   .out{background:linear-gradient(180deg,#FFFFFF 0%, #FCFDFD 100%);border:1px solid var(--line);border-radius:11px;overflow:hidden;margin-bottom:22px}
   .out h3{margin:0;padding:11px 14px;font-size:14px;background:linear-gradient(180deg,#F4F7F8,#E9EEF1);color:#32383D;
           border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
