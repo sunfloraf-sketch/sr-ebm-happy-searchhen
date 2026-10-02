@@ -430,7 +430,7 @@ Optical Imaging)</pre>
         <span data-en>⚠ Reminder: please assess the suitability of the synonyms and controlled vocabulary yourself, and be sure to verify the controlled terms — the tool only links to the thesauri and does not verify them.</span>
       </span>
       <span class="infotip"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip"><span data-zh>復原框內文字編輯：想還原剛才在某一格輸入框打的字，直接按 Ctrl+Z 即可。</span><span data-en>Undo in-cell text edits: to revert what you just typed in a cell, press Ctrl+Z. “Load last save” rolls the whole table back to its previous content.</span></span></span>
-      <label id="advToolsLbl" title="開啟後，點進詞格會在下方浮出標記小工具（例：不含狹義詞）；關閉則填寫時完全不干擾。偏好會記住。" style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#0f766e;cursor:pointer"><input type="checkbox" id="cbAdvTools" style="accent-color:#0f766e"><span data-zh>進階標記工具</span><span data-en>Advanced tools</span></label>
+      <label id="advToolsLbl" title="開啟後，點進詞格會在下方浮出標記小工具（例：不含狹義詞）；關閉則填寫時完全不干擾。偏好會記住。" style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#0f766e;cursor:pointer"><input type="checkbox" id="cbAdvTools" style="accent-color:#0f766e"><span data-zh>進階標記工具</span><span data-en>Advanced marking tools</span></label>
     </div>
     <table class="pico">
       <thead>
@@ -1756,6 +1756,7 @@ if (typeof module !== "undefined" && module.exports) {
   function _mkChip(label,on,fn){ var btn=document.createElement("button"); btn.type="button"; btn.className="cxbtn"+(on?" on":""); btn.textContent=label; btn.addEventListener("mousedown",function(e){ e.preventDefault(); }); btn.onclick=fn; return btn; }
   function _buildCtx(ta){ ctxbar.innerHTML=""; var td=ta.closest&&ta.closest("td"); if(!td) return false;
     if(td.classList.contains("cv")){
+      if(!(ta.value||"").trim()) return false;   // 控制詞彙欄為空 → 不浮出工具列
       var L=_lineAt(ta); var isOn=!!(L.text&&CV_NOEXP_RE.test(L.text));
       var lbl=document.createElement("span"); lbl.className="cxlbl"; lbl.textContent=isEn()?"This line:":"此行："; ctxbar.appendChild(lbl);
       ctxbar.appendChild(_mkChip(isEn()?"No narrower (noexp)":"不含狹義詞", isOn, function(){ _toggleNoexp(ta); _buildCtx(ta); }));
@@ -1769,8 +1770,9 @@ if (typeof module !== "undefined" && module.exports) {
   function _showCtx(ta){ if(_advTools && _buildCtx(ta)){ _posCtx(ta); ctxbar.style.display="flex"; } else { ctxbar.style.display="none"; } }
   picoBody.addEventListener("focusin", function(e){ var ta=e.target; if(ta&&ta.tagName==="TEXTAREA"){ _ctxTA=ta; if(_ctxHideTimer){clearTimeout(_ctxHideTimer);} _showCtx(ta); } });
   picoBody.addEventListener("focusout", function(){ if(_ctxHideTimer)clearTimeout(_ctxHideTimer); _ctxHideTimer=setTimeout(function(){ var ae=document.activeElement; if(ctxbar.contains(ae)) return; if(ae&&ae.tagName==="TEXTAREA"&&picoBody.contains(ae)) return; ctxbar.style.display="none"; _ctxTA=null; },150); });
-  picoBody.addEventListener("keyup", function(e){ if(e.target&&e.target.tagName==="TEXTAREA"&&ctxbar.style.display!=="none"&&_ctxTA===e.target) _buildCtx(e.target); });
-  picoBody.addEventListener("click", function(e){ if(e.target&&e.target.tagName==="TEXTAREA"&&ctxbar.style.display!=="none"&&_ctxTA===e.target) _buildCtx(e.target); });
+  picoBody.addEventListener("keyup", function(e){ if(e.target&&e.target.tagName==="TEXTAREA"&&_ctxTA===e.target) _showCtx(e.target); });
+  picoBody.addEventListener("click", function(e){ if(e.target&&e.target.tagName==="TEXTAREA"&&_ctxTA===e.target) _showCtx(e.target); });
+  picoBody.addEventListener("input", function(e){ if(e.target&&e.target.tagName==="TEXTAREA"&&_ctxTA===e.target) _showCtx(e.target); });
   window.addEventListener("scroll", function(){ if(ctxbar.style.display!=="none"&&_ctxTA) _posCtx(_ctxTA); }, true);
   window.addEventListener("resize", function(){ if(ctxbar.style.display!=="none"&&_ctxTA) _posCtx(_ctxTA); });
 
