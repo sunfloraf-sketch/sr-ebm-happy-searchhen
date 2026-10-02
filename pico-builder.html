@@ -102,6 +102,11 @@
   .out pre .qn.clk{cursor:pointer;border-radius:4px;transition:background .12s,color .12s}
   .out pre .qn.clk:hover{background:#DCE3E7;color:#1B6FA8;text-decoration:underline}
   .out pre .qn.copied{background:#CDEAD3;color:#166534;text-decoration:none}
+  #ctxbar{position:absolute;z-index:60;display:none;gap:6px;align-items:center;background:#fff;border:1px solid #C6CFD5;border-radius:8px;padding:5px 7px;box-shadow:0 4px 14px rgba(0,0,0,.14);font-size:12px;max-width:92vw;flex-wrap:wrap}
+  #ctxbar .cxlbl{color:#69737C;font-size:11px;margin-right:1px}
+  #ctxbar .cxbtn{background:linear-gradient(180deg,#F3F6F7,#DCE3E7);color:#25292D;border:1px solid #C6CFD5;border-radius:6px;padding:3px 9px;font-size:12px;cursor:pointer;font-weight:600;white-space:nowrap}
+  #ctxbar .cxbtn:hover{background:linear-gradient(180deg,#FAFBFC,#D3DBE0)}
+  #ctxbar .cxbtn.on{background:#CDEAD3;border-color:#9ccfa6;color:#166534}
   .out pre .qs{white-space:pre-wrap;word-break:break-word;flex:1 1 auto;min-width:0}
   .pmcount{flex:0 0 auto;min-width:86px;text-align:right;color:var(--mut);font-size:11.5px;white-space:nowrap}
   .pmcount.ok{color:#355E55;font-weight:700}.pmcount.err{color:#A33A32}
@@ -1705,6 +1710,7 @@ if (typeof module !== "undefined" && module.exports) {
     labTd.appendChild(lvlSel);
     var c0=mkCell("ref",phs.zh), c1=mkCell("free",phs.ft), c2=mkCell("cv",phs.mesh), c3=mkCell("cv",phs.emtree), c4=mkCell("cv",phs.cinahl);
     c0.ta.value=zh||""; c1.ta.value=ft||""; c2.ta.value=mesh||""; c3.ta.value=emtree||""; c4.ta.value=cinahl||"";
+    c0.ta.dataset.kind="zh"; c1.ta.dataset.kind="ft"; c2.ta.dataset.kind="mesh"; c3.ta.dataset.kind="emtree"; c4.ta.dataset.kind="cinahl";   // 供浮動工具列辨識欄位類型（不含狹義詞／日後 @欄位、次標目）
     var rmTd=document.createElement("td"); rmTd.style.verticalAlign="middle";   // 功能鍵垂直置中
     var mv=document.createElement("div"); mv.style.cssText="display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center";   // 上／下／✕ 垂直排列
     var up=document.createElement("button"); up.className="rmrow"; up.textContent="↑"; up.title=isEn()?"Move up":"上移（與上一列對調）";
@@ -1731,6 +1737,32 @@ if (typeof module !== "undefined" && module.exports) {
     updateCodes();
     return tr;
   }
+  // ===== 焦點浮動小工具列：在使用者正在填的詞格下方浮出，提供一致、工具認得的標記插入 =====
+  // 目前：控制詞彙格 → 「不含狹義詞」切換（作用於游標所在那一行）。日後擴充：自由詞格 @欄位下拉、控制詞彙次標目（獨立／floating）挑選。
+  var ctxbar=document.createElement("div"); ctxbar.id="ctxbar"; document.body.appendChild(ctxbar);
+  var _ctxTA=null, _ctxHideTimer=null;
+  function _lineAt(ta){ var v=ta.value, s=(ta.selectionStart==null?v.length:ta.selectionStart); var a=v.lastIndexOf("\n",s-1)+1; var b=v.indexOf("\n",s); if(b<0)b=v.length; return {a:a,b:b,text:v.slice(a,b)}; }
+  function _setLine(ta,a,b,nl){ var v=ta.value; ta.value=v.slice(0,a)+nl+v.slice(b); var c=a+nl.length; try{ta.setSelectionRange(c,c);}catch(_){} ta.dispatchEvent(new Event("input",{bubbles:true})); }
+  function _toggleNoexp(ta){ var L=_lineAt(ta); var line=L.text; if(!line.trim()) return; if(CV_NOEXP_RE.test(line)){ line=line.replace(CV_NOEXP_RE,"").replace(/\s{2,}/g," ").replace(/\s+$/,""); } else { line=line.replace(/\s+$/,"")+" (不含狹義詞)"; } ta.focus(); _setLine(ta,L.a,L.b,line); }
+  function _mkChip(label,on,fn){ var btn=document.createElement("button"); btn.type="button"; btn.className="cxbtn"+(on?" on":""); btn.textContent=label; btn.addEventListener("mousedown",function(e){ e.preventDefault(); }); btn.onclick=fn; return btn; }
+  function _buildCtx(ta){ ctxbar.innerHTML=""; var td=ta.closest&&ta.closest("td"); if(!td) return false;
+    if(td.classList.contains("cv")){
+      var L=_lineAt(ta); var isOn=!!(L.text&&CV_NOEXP_RE.test(L.text));
+      var lbl=document.createElement("span"); lbl.className="cxlbl"; lbl.textContent=isEn()?"This line:":"此行："; ctxbar.appendChild(lbl);
+      ctxbar.appendChild(_mkChip(isEn()?"No narrower (noexp)":"不含狹義詞", isOn, function(){ _toggleNoexp(ta); _buildCtx(ta); }));
+      return true;
+    }
+    return false;   // 自由詞 @欄位、控制詞彙次標目：待對照表／次標目清單到位再加入
+  }
+  function _posCtx(ta){ var r=ta.getBoundingClientRect(); ctxbar.style.left=(window.scrollX+r.left)+"px"; ctxbar.style.top=(window.scrollY+r.bottom+4)+"px"; }
+  function _showCtx(ta){ if(_buildCtx(ta)){ _posCtx(ta); ctxbar.style.display="flex"; } else { ctxbar.style.display="none"; } }
+  picoBody.addEventListener("focusin", function(e){ var ta=e.target; if(ta&&ta.tagName==="TEXTAREA"){ _ctxTA=ta; if(_ctxHideTimer){clearTimeout(_ctxHideTimer);} _showCtx(ta); } });
+  picoBody.addEventListener("focusout", function(){ if(_ctxHideTimer)clearTimeout(_ctxHideTimer); _ctxHideTimer=setTimeout(function(){ var ae=document.activeElement; if(ctxbar.contains(ae)) return; if(ae&&ae.tagName==="TEXTAREA"&&picoBody.contains(ae)) return; ctxbar.style.display="none"; _ctxTA=null; },150); });
+  picoBody.addEventListener("keyup", function(e){ if(e.target&&e.target.tagName==="TEXTAREA"&&ctxbar.style.display!=="none"&&_ctxTA===e.target) _buildCtx(e.target); });
+  picoBody.addEventListener("click", function(e){ if(e.target&&e.target.tagName==="TEXTAREA"&&ctxbar.style.display!=="none"&&_ctxTA===e.target) _buildCtx(e.target); });
+  window.addEventListener("scroll", function(){ if(ctxbar.style.display!=="none"&&_ctxTA) _posCtx(_ctxTA); }, true);
+  window.addEventListener("resize", function(){ if(ctxbar.style.display!=="none"&&_ctxTA) _posCtx(_ctxTA); });
+
   function updateCodes(){ Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr,i){ var b=tr.querySelector(".ccode"); if(b) b.textContent="C"+(i+1); }); }
   function seedEmpty(){ picoBody.innerHTML=""; ["P","I","C","O"].forEach(function(l){ addRow(l,"","","","","", GDM_EX[l]); }); }
 
