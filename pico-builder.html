@@ -134,6 +134,38 @@
   #meshVerifyPanel .mvchks{display:flex;flex-wrap:wrap;gap:5px 16px;margin:7px 0}
   #meshVerifyPanel .mvchk{font-size:12px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
   #meshVerifyPanel .mvbtn.add{margin-left:6px}
+  /* MeSH 原地驗證檢視 + 詳情卡 */
+  td.meshcell{position:relative}
+  .mview{font-size:13px;line-height:1.55;padding-top:2px}
+  .mview .mline{display:flex;align-items:flex-start;gap:6px;padding:2px 4px;border-radius:5px}
+  .mview .mline:hover{background:#eef3f5}
+  .mview .mi{flex:0 0 auto;font-weight:800;width:14px;text-align:center}
+  .mview .mi.ok{color:#15803d}
+  .mview .mi.entry{color:#c2410c}
+  .mview .mi.none{color:#dc2626}
+  .mview .mi.chk{color:#9aa4ac;font-weight:400}
+  .mview .mtext{flex:1 1 auto;min-width:0;word-break:break-word}
+  .mview .medit{position:absolute;top:3px;right:5px;font-size:11px;color:#69737c;background:#fff;border:1px solid var(--line);border-radius:5px;padding:1px 7px;cursor:pointer;opacity:.55}
+  .mview .medit:hover{opacity:1;background:#eef2f4}
+  #meshCard{position:absolute;z-index:70;width:330px;max-width:93vw;background:#fff;border:1px solid #d3dadf;border-radius:10px;box-shadow:0 8px 28px rgba(28,36,42,.18);padding:12px 14px;font-size:13px;display:none}
+  #meshCard .mcclose{position:absolute;top:7px;right:10px;cursor:pointer;color:#8a939b;font-size:17px;line-height:1;border:none;background:none}
+  #meshCard .mctitle{font-size:16px;font-weight:700;color:#23282D;padding-right:20px}
+  #meshCard .mcbadge{margin:6px 0 2px;font-size:12px;font-weight:600}
+  #meshCard .mcbadge.ok{color:#15803d}
+  #meshCard .mcbadge.entry{color:#c2410c}
+  #meshCard .mcbadge.none{color:#dc2626}
+  #meshCard .mcsec{margin-top:10px}
+  #meshCard .mclbl{font-size:12px;color:#69737c;font-weight:600;margin-bottom:4px}
+  #meshCard .mcchks{display:flex;flex-direction:column;gap:3px;max-height:170px;overflow:auto;border:1px solid var(--line);border-radius:6px;padding:5px 7px}
+  #meshCard .mcchk{font-size:13px;display:flex;align-items:center;gap:6px}
+  #meshCard .mcbtn{font-size:12px;padding:3px 9px;border:1px solid #C8D0D6;border-radius:6px;background:#fff;cursor:pointer;font-weight:600;margin:6px 6px 0 0}
+  #meshCard .mcbtn:hover{background:#eef2f4}
+  #meshCard a.mclink{font-size:12px;color:#1b6fa8;text-decoration:none}
+  #meshCard a.mclink:hover{text-decoration:underline}
+  #meshCard .mcmsg{font-size:12px;color:#166534;margin-left:6px}
+  #meshCard .mcsug{font-size:12px;padding:1px 8px;margin:2px 4px 0 0;border:1px solid #d6b26a;border-radius:10px;background:#fff8ec;color:#92531a;cursor:pointer;display:inline-block}
+  .mvlegend{display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-size:12px;color:#55504B}
+  .mvlegend .lg{display:inline-flex;align-items:center;gap:4px}
   .out pre .qs{white-space:pre-wrap;word-break:break-word;flex:1 1 auto;min-width:0}
   .pmcount{flex:0 0 auto;min-width:86px;text-align:right;color:var(--mut);font-size:11.5px;white-space:nowrap}
   .pmcount.ok{color:#355E55;font-weight:700}.pmcount.err{color:#A33A32}
@@ -1744,6 +1776,7 @@ if (typeof module !== "undefined" && module.exports) {
     var c0=mkCell("ref",phs.zh), c1=mkCell("free",phs.ft), c2=mkCell("cv",phs.mesh), c3=mkCell("cv",phs.emtree), c4=mkCell("cv",phs.cinahl);
     c0.ta.value=zh||""; c1.ta.value=ft||""; c2.ta.value=mesh||""; c3.ta.value=emtree||""; c4.ta.value=cinahl||"";
     c0.ta.dataset.kind="zh"; c1.ta.dataset.kind="ft"; c2.ta.dataset.kind="mesh"; c3.ta.dataset.kind="emtree"; c4.ta.dataset.kind="cinahl";   // 供浮動工具列辨識欄位類型（不含狹義詞／日後 @欄位、次標目）
+    c2.td.classList.add("meshcell"); var _mv=document.createElement("div"); _mv.className="mview"; _mv.style.display="none"; c2.td.appendChild(_mv);   // MeSH 欄：驗證後的「已驗證檢視」容器（與輸入框切換）
     var rmTd=document.createElement("td"); rmTd.style.verticalAlign="middle";   // 功能鍵垂直置中
     var mv=document.createElement("div"); mv.style.cssText="display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center";   // 上／下／✕ 垂直排列
     var up=document.createElement("button"); up.className="rmrow"; up.textContent="↑"; up.title=isEn()?"Move up":"上移（與上一列對調）";
@@ -1849,73 +1882,130 @@ if (typeof module !== "undefined" && module.exports) {
   function _replaceMeshTerm(tr, oldTerm, newTerm){
     var ta=_meshTa(tr), lines=(ta.value||"").split(/\n/);
     for(var i=0;i<lines.length;i++){ if(lines[i].trim()===String(oldTerm).trim()){ lines[i]=lines[i].replace(oldTerm.trim(), newTerm); break; } }
-    ta.value=lines.join("\n"); ta.dispatchEvent(new Event("input",{bubbles:true})); _meshVerifyAll();
+    ta.value=lines.join("\n"); ta.dispatchEvent(new Event("input",{bubbles:true})); _renderMeshCell(tr);
   }
-  function _renderEntryBox(box, ets, ftTa){
-    box.innerHTML="";
-    if(!ets.length){ box.textContent=isEn()?"(no entry terms)":"（此標目無同義詞）"; return; }
-    var all=document.createElement("button"); all.type="button"; all.className="mvbtn"; all.textContent=isEn()?"Select all & add":"全選帶入";
-    var list=document.createElement("div"); list.className="mvchks";
-    var cbs=ets.map(function(t){ var l=document.createElement("label"); l.className="mvchk"; var c=document.createElement("input"); c.type="checkbox"; c.value=t; l.appendChild(c); l.appendChild(document.createTextNode(" "+t)); list.appendChild(l); return c; });
-    var add=document.createElement("button"); add.type="button"; add.className="mvbtn add"; add.textContent=isEn()?"Add checked":"加入勾選";
-    var msg=document.createElement("span"); msg.style.cssText="font-size:12px;margin-left:8px;color:#166534";
-    add.onclick=function(){ var sel=cbs.filter(function(c){return c.checked;}).map(function(c){return c.value;}); var n=sel.length?_appendFt(ftTa,sel):0; msg.textContent=n?(isEn()?("added "+n):("已加入 "+n+" 個")):(isEn()?"nothing new":"無新增"); };
-    all.onclick=function(){ var n=_appendFt(ftTa,ets); cbs.forEach(function(c){c.checked=true;}); msg.textContent=n?(isEn()?("added "+n):("已加入 "+n+" 個")):(isEn()?"nothing new":"無新增"); };
-    box.appendChild(all); box.appendChild(list); box.appendChild(add); box.appendChild(msg);
+  function _appendMesh(ta, terms){   // 寫入 MeSH 欄（去重、一詞一行），供狹義詞「加入 MeSH 欄」
+    var seen=(ta.value||"").split(/\n/).map(function(x){return x.trim().toLowerCase();});
+    var cur=(ta.value||"").replace(/\s+$/,""), added=[];
+    terms.forEach(function(t){ var k=String(t).trim().toLowerCase(); if(k&&seen.indexOf(k)<0){ added.push(t); seen.push(k); } });
+    if(!added.length) return 0; ta.value=(cur?cur+"\n":"")+added.join("\n"); ta.dispatchEvent(new Event("input",{bubbles:true})); return added.length;
   }
-  function _addImportBtn(line, block, dId, ftTa){
-    var imp=document.createElement("button"); imp.type="button"; imp.className="mvbtn"; imp.textContent=isEn()?"+ synonyms":"＋帶入同義詞";
-    var box=document.createElement("div"); box.className="mventry"; box.style.display="none"; box._loaded=false;
-    imp.onclick=function(){ if(box.style.display==="none"){ box.style.display="block"; if(!box._loaded){ box._loaded=true; box.textContent=isEn()?"loading…":"載入中…"; _meshEntryTerms(dId).then(function(ets){ _renderEntryBox(box,ets,ftTa); }).catch(function(){ box.textContent=isEn()?"failed to load entry terms":"同義詞載入失敗"; box._loaded=false; }); } } else { box.style.display="none"; } };
-    line.appendChild(imp); block.appendChild(box);
-  }
-  var _meshBusy=false;
-  function _meshVerifyAll(){
-    var panel=$("#meshVerifyPanel"); if(!panel || _meshBusy) return;
-    var rows=Array.prototype.slice.call(picoBody.querySelectorAll("tr"));
-    panel.innerHTML=""; panel.style.display="block";
-    var hd=document.createElement("div"); hd.className="mvhd";
-    var ht=document.createElement("span"); ht.textContent=isEn()?"MeSH verification (NLM MeSH)":"MeSH 驗證結果（NLM MeSH 詞庫）"; hd.appendChild(ht);
-    var cl=document.createElement("button"); cl.type="button"; cl.className="mvclose"; cl.textContent=isEn()?"Close":"關閉"; cl.onclick=function(){ panel.style.display="none"; panel.innerHTML=""; }; hd.appendChild(cl);
-    panel.appendChild(hd);
-    var any=false, pending=0, failed=false;
-    rows.forEach(function(tr,i){
-      var rec=tr._get?tr._get():null; if(!rec) return;
-      var terms=(rec.mesh||"").split(/\n/).map(function(x){return x.trim();}).filter(Boolean);
-      if(!terms.length) return; any=true;
-      var ftTa=_ftTa(tr);
-      var block=document.createElement("div"); block.className="mvrow";
-      var lb=document.createElement("div"); lb.className="mvlabel"; lb.textContent="C"+(i+1)+(rec.label?("　"+rec.label):""); block.appendChild(lb);
-      terms.forEach(function(rawTerm){
-        var bare=_meshBare(rawTerm);
-        var line=document.createElement("div"); line.className="mvterm";
-        var nm=document.createElement("span"); nm.className="mvname"; nm.textContent=rawTerm; line.appendChild(nm);
-        var st=document.createElement("span"); st.className="mvstat"; st.textContent=isEn()?"checking…":"查核中…"; line.appendChild(st);
-        block.appendChild(line);
-        if(!bare){ st.textContent=""; return; }
-        pending++;
-        _meshCheck(bare).then(function(r){
-          if(r.state==="ok"){
-            st.className="mvstat ok"; st.textContent=(isEn()?"✓ MeSH heading":"✓ 正式標目")+((r.label&&r.label.toLowerCase()!==bare.toLowerCase())?("（"+r.label+"）"):"");
-            if(r.dId) _addImportBtn(line, block, r.dId, ftTa);
-          } else if(r.state==="entry"){
-            st.className="mvstat entry";
-            if(r.official){
-              st.textContent=(isEn()?"✓ entry term (synonym) of: ":"✓ 同義詞（entry term），正式標目：")+r.official;
-              var rep=document.createElement("button"); rep.type="button"; rep.className="mvsug"; rep.textContent=isEn()?"use official heading":"改用正式標目"; rep.title=isEn()?"Replace with the official heading":"以正式標目取代"; rep.onclick=(function(off){return function(){ _replaceMeshTerm(tr, rawTerm, off); };})(r.official); st.appendChild(document.createTextNode(" ")); st.appendChild(rep);
-              if(r.dId) _addImportBtn(line, block, r.dId, ftTa);
-            } else {
-              st.textContent=isEn()?"✓ MeSH entry term (synonym) — PubMed maps it to the official heading":"✓ MeSH 同義詞（entry term）—PubMed 檢索會自動對應正式標目";
-            }
-          } else if(r.state==="suggest"){
-            st.className="mvstat warn"; st.textContent=isEn()?"⚠ not an exact heading — did you mean: ":"⚠ 非精準標目，建議：";
-            r.suggests.slice(0,6).forEach(function(s){ var a=document.createElement("button"); a.type="button"; a.className="mvsug"; a.textContent=s.label; a.title=isEn()?"Replace with this heading":"以此標目取代"; a.onclick=function(){ _replaceMeshTerm(tr, rawTerm, s.label); }; st.appendChild(a); });
-          } else { st.className="mvstat none"; st.textContent=isEn()?"✗ not found in MeSH":"✗ MeSH 查無（可能拼錯或非 MeSH 標目）"; }
-        }).catch(function(){ st.className="mvstat none"; if(!failed){ failed=true; srAlert(isEn()?"Couldn’t reach the NLM MeSH service (possibly a network/CORS restriction on your connection). MeSH verification is unavailable right now; the verify links still work.":"無法連線 NLM MeSH 詞庫（可能是你的網路／CORS 限制）。MeSH 驗證暫時無法使用；控制詞彙查核連結仍可點。"); } st.textContent=isEn()?"lookup failed":"查詢失敗"; }).then(function(){ pending--; });
-      });
-      panel.appendChild(block);
+  // 狹義詞（下位詞）：SPARQL 取直接下位 descriptor（tree number 的直接子層）
+  var _meshNarrowCache={};
+  function _meshNarrower(dId){
+    if(_meshNarrowCache[dId]) return Promise.resolve(_meshNarrowCache[dId]);
+    var uri="http://id.nlm.nih.gov/mesh/"+dId;
+    var q='PREFIX meshv: <http://id.nlm.nih.gov/mesh/vocab#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT DISTINCT ?d ?dName WHERE { <'+uri+'> meshv:treeNumber ?tn . ?ctn meshv:parentTreeNumber ?tn . ?d meshv:treeNumber ?ctn . ?d rdfs:label ?dName } ORDER BY ?dName LIMIT 300';
+    return _meshSparql(q).then(function(j){
+      var bs=(j&&j.results&&j.results.bindings)||[], seen={}, out=[];
+      bs.forEach(function(b){ var d=_meshDid(b.d&&b.d.value), nm=b.dName&&b.dName.value; if(d&&nm&&!seen[d]){ seen[d]=1; out.push({dId:d, label:nm}); } });
+      _meshNarrowCache[dId]=out; return out;
     });
-    if(!any){ panel.style.display="none"; panel.innerHTML=""; srAlert(isEn()?"No MeSH terms to verify. Fill the MeSH column first.":"目前沒有可驗證的 MeSH 詞，請先在 MeSH 欄填入標目。"); }
+  }
+  // ---- MeSH 詳情卡 ----
+  var meshCard=document.createElement("div"); meshCard.id="meshCard"; document.body.appendChild(meshCard);
+  function _closeMeshCard(){ meshCard.style.display="none"; meshCard.innerHTML=""; meshCard._anchor=null; }
+  document.addEventListener("mousedown", function(e){ if(meshCard.style.display==="none") return; if(meshCard.contains(e.target)) return; if(e.target.closest && e.target.closest(".mline")) return; _closeMeshCard(); });
+  function _posCard(anchor){ var r=anchor.getBoundingClientRect(), w=330; var left=window.scrollX+r.right+8; if(left+w>window.scrollX+document.documentElement.clientWidth-8) left=window.scrollX+r.left-w-8; if(left<window.scrollX+8) left=window.scrollX+8; var top=window.scrollY+r.top; meshCard.style.left=left+"px"; meshCard.style.top=top+"px"; }
+  window.addEventListener("scroll", function(){ if(meshCard.style.display!=="none"&&meshCard._anchor) _posCard(meshCard._anchor); }, true);
+  function _mkChks(items, labelOf){ var box=document.createElement("div"); box.className="mcchks"; var cbs=items.map(function(it){ var l=document.createElement("label"); l.className="mcchk"; var c=document.createElement("input"); c.type="checkbox"; c.value=labelOf(it); l.appendChild(c); l.appendChild(document.createTextNode(" "+labelOf(it))); box.appendChild(l); return c; }); return {box:box, cbs:cbs}; }
+  function _openMeshCard(anchor, r, rawTerm, tr){
+    _closeMeshCard(); meshCard._anchor=anchor;
+    var ftTa=_ftTa(tr), meshTa=_meshTa(tr), dId=r.dId||"";
+    var close=document.createElement("button"); close.className="mcclose"; close.innerHTML="×"; close.onclick=_closeMeshCard; meshCard.appendChild(close);
+    var title=document.createElement("div"); title.className="mctitle"; title.textContent=(r.official||r.label||rawTerm); meshCard.appendChild(title);
+    var badge=document.createElement("div");
+    if(r.state==="ok"){ badge.className="mcbadge ok"; badge.textContent=isEn()?"✓ MeSH Descriptor":"✓ MeSH 標準詞（Descriptor）"; }
+    else if(r.state==="entry"){ badge.className="mcbadge entry"; badge.textContent=(isEn()?"! Entry term → official heading: ":"! 同義詞（Entry Term）→ 正式標目：")+(r.official||"?"); }
+    else if(r.state==="suggest"){ badge.className="mcbadge entry"; badge.textContent=isEn()?"! not an exact heading":"! 非精準標目"; }
+    else { badge.className="mcbadge none"; badge.textContent=isEn()?"✗ not found in MeSH":"✗ MeSH 查無"; }
+    meshCard.appendChild(badge);
+    if(r.state==="entry" && r.official){ var rep=document.createElement("button"); rep.className="mcbtn"; rep.textContent=isEn()?"use official heading":"改用正式標目"; rep.onclick=function(){ _replaceMeshTerm(tr, rawTerm, r.official); _closeMeshCard(); }; meshCard.appendChild(rep); }
+    if((r.state==="suggest"||r.state==="none") && r.suggests && r.suggests.length){
+      var ss=document.createElement("div"); ss.className="mcsec"; var sl=document.createElement("div"); sl.className="mclbl"; sl.textContent=isEn()?"Suggestions":"建議標目"; ss.appendChild(sl);
+      r.suggests.slice(0,8).forEach(function(s){ var a=document.createElement("span"); a.className="mcsug"; a.textContent=s.label; a.onclick=function(){ _replaceMeshTerm(tr, rawTerm, s.label); _closeMeshCard(); }; ss.appendChild(a); });
+      meshCard.appendChild(ss);
+    }
+    if(!dId){ _posCard(anchor); meshCard.style.display="block"; return; }
+    // 同義詞
+    var es=document.createElement("div"); es.className="mcsec"; var esl=document.createElement("div"); esl.className="mclbl"; esl.textContent=isEn()?"Entry Terms (synonyms)":"同義詞（Entry Terms）"; es.appendChild(esl);
+    var eb=document.createElement("div"); eb.textContent=isEn()?"loading…":"載入中…"; es.appendChild(eb); meshCard.appendChild(es);
+    _meshEntryTerms(dId).then(function(ets){
+      eb.innerHTML=""; if(!ets.length){ eb.textContent=isEn()?"(none)":"（無）"; return; }
+      var cl=_mkChks(ets, function(x){return x;}); eb.appendChild(cl.box);
+      var addA=document.createElement("button"); addA.className="mcbtn"; addA.textContent=isEn()?"All → synonyms":"全選 → 英文同義詞";
+      var add=document.createElement("button"); add.className="mcbtn"; add.textContent=isEn()?"Checked → synonyms":"勾選 → 英文同義詞";
+      var msg=document.createElement("span"); msg.className="mcmsg";
+      add.onclick=function(){ var s=cl.cbs.filter(function(c){return c.checked;}).map(function(c){return c.value;}); var n=s.length?_appendFt(ftTa,s):0; msg.textContent=n?(isEn()?("+"+n):("已加 "+n)):""; };
+      addA.onclick=function(){ var n=_appendFt(ftTa,ets); cl.cbs.forEach(function(c){c.checked=true;}); msg.textContent=n?(isEn()?("+"+n):("已加 "+n)):""; };
+      eb.appendChild(addA); eb.appendChild(add); eb.appendChild(msg);
+    }).catch(function(){ eb.textContent=isEn()?"failed to load":"載入失敗"; });
+    // 狹義詞
+    var ns=document.createElement("div"); ns.className="mcsec"; var nsl=document.createElement("div"); nsl.className="mclbl"; nsl.textContent=isEn()?"Narrower terms":"狹義詞（下位詞）"; ns.appendChild(nsl);
+    var nb=document.createElement("div"); nb.textContent=isEn()?"loading…":"載入中…"; ns.appendChild(nb); meshCard.appendChild(ns);
+    var hierUrl="https://meshb.nlm.nih.gov/record/ui?ui="+encodeURIComponent(dId);
+    function _hierLink(txt){ var d=document.createElement("div"); d.style.marginTop="6px"; var a=document.createElement("a"); a.className="mclink"; a.href=hierUrl; a.target="_blank"; a.rel="noopener"; a.textContent=txt; d.appendChild(a); return d; }
+    _meshNarrower(dId).then(function(items){
+      nb.innerHTML="";
+      var cnt=document.createElement("div"); cnt.style.cssText="font-size:12px;margin-bottom:5px;color:#55504B"; cnt.textContent=(isEn()?("Direct narrower terms: "+items.length):("直接狹義詞："+items.length+" 個")); nb.appendChild(cnt);
+      if(items.length){
+        var cl=_mkChks(items, function(x){return x.label;}); nb.appendChild(cl.box);
+        var toFt=document.createElement("button"); toFt.className="mcbtn"; toFt.textContent=isEn()?"Checked → synonyms":"勾選 → 英文同義詞";
+        var toMe=document.createElement("button"); toMe.className="mcbtn"; toMe.textContent=isEn()?"Checked → MeSH column":"勾選 → MeSH 欄";
+        var msg=document.createElement("span"); msg.className="mcmsg";
+        toFt.onclick=function(){ var s=cl.cbs.filter(function(c){return c.checked;}).map(function(c){return c.value;}); var n=s.length?_appendFt(ftTa,s):0; msg.textContent=n?(isEn()?("+"+n):("已加 "+n)):""; };
+        toMe.onclick=function(){ var s=cl.cbs.filter(function(c){return c.checked;}).map(function(c){return c.value;}); var n=s.length?_appendMesh(meshTa,s):0; msg.textContent=n?(isEn()?("+"+n+" → MeSH"):("已加 "+n+"→MeSH")):""; if(n) _renderMeshCell(tr); };
+        nb.appendChild(toFt); nb.appendChild(toMe); nb.appendChild(msg);
+      }
+      nb.appendChild(_hierLink(isEn()?"View full hierarchy on MeSH Browser →":"查看完整階層結構（MeSH Browser）→"));
+    }).catch(function(){ nb.innerHTML=""; nb.appendChild(_hierLink(isEn()?"View hierarchy on MeSH Browser →":"查看階層結構（MeSH Browser）→")); });
+    _posCard(anchor); meshCard.style.display="block";
+  }
+  // ---- 原地驗證檢視 ----
+  var _meshFailed=false;
+  function _meshFail(){ if(_meshFailed) return; _meshFailed=true; srAlert(isEn()?"Couldn’t reach the NLM MeSH service (possibly a network/CORS restriction).":"無法連線 NLM MeSH 詞庫（可能是網路／CORS 限制）。"); }
+  function _meshEditCell(tr){ var td=_meshTa(tr).closest("td"); var mv=td&&td.querySelector(".mview"); if(mv) mv.style.display="none"; _meshTa(tr).style.display=""; }
+  function _renderMeshCell(tr){
+    var ta=_meshTa(tr), td=ta.closest("td"), mv=td&&td.querySelector(".mview"); if(!mv) return;
+    var terms=(ta.value||"").split(/\n/).map(function(x){return x.trim();}).filter(Boolean);
+    mv.innerHTML="";
+    var edit=document.createElement("button"); edit.className="medit"; edit.type="button"; edit.textContent=isEn()?"edit":"編輯"; edit.onclick=function(e){ e.stopPropagation(); _meshEditCell(tr); }; mv.appendChild(edit);
+    if(!terms.length){ _meshEditCell(tr); return; }
+    terms.forEach(function(rawTerm){
+      var bare=_meshBare(rawTerm);
+      var line=document.createElement("div"); line.className="mline";
+      var ic=document.createElement("span"); ic.className="mi chk"; ic.textContent="…"; line.appendChild(ic);
+      var tx=document.createElement("span"); tx.className="mtext"; tx.textContent=rawTerm; line.appendChild(tx);
+      mv.appendChild(line);
+      if(!bare){ ic.textContent=""; return; }
+      _meshCheck(bare).then(function(r){
+        if(r.state==="ok"){ ic.className="mi ok"; ic.textContent="✓"; }
+        else if(r.state==="entry"||r.state==="suggest"){ ic.className="mi entry"; ic.textContent="!"; }
+        else { ic.className="mi none"; ic.textContent="✗"; }
+        line.style.cursor="pointer"; line.onclick=function(){ _openMeshCard(line, r, rawTerm, tr); };
+      }).catch(function(){ ic.className="mi none"; ic.textContent="✗"; _meshFail(); });
+    });
+    ta.style.display="none"; mv.style.display="block";
+  }
+  function _meshVerifyAll(){
+    var rows=Array.prototype.slice.call(picoBody.querySelectorAll("tr"));
+    var any=rows.some(function(tr){ var rec=tr._get&&tr._get(); return rec && (rec.mesh||"").trim(); });
+    if(!any){ srAlert(isEn()?"No MeSH terms to verify. Fill the MeSH column first.":"目前沒有可驗證的 MeSH 詞，請先在 MeSH 欄填入標目。"); return; }
+    _meshFailed=false;
+    rows.forEach(function(tr){ var rec=tr._get&&tr._get(); if(rec && (rec.mesh||"").trim()) _renderMeshCell(tr); });
+    _showMeshLegend();
+  }
+  function _showMeshLegend(){
+    var panel=$("#meshVerifyPanel"); if(!panel) return; panel.innerHTML=""; panel.style.display="block";
+    var row=document.createElement("div"); row.className="mvlegend";
+    function lg(sym,cls,txt){ var s=document.createElement("span"); s.className="lg"; var i=document.createElement("b"); i.style.color=cls; i.textContent=sym; s.appendChild(i); s.appendChild(document.createTextNode(" "+txt)); return s; }
+    var hint=document.createElement("span"); hint.style.cssText="font-weight:600;color:#0f766e;margin-right:4px"; hint.textContent=isEn()?"MeSH verified — click a term for details.":"MeSH 已驗證—點任一詞查看詳情、帶入同義詞／狹義詞。";
+    row.appendChild(hint);
+    row.appendChild(lg("✓","#15803d",isEn()?"MeSH Descriptor":"標準詞"));
+    row.appendChild(lg("!","#c2410c",isEn()?"Entry term (non-standard)":"同義詞／非標準詞"));
+    row.appendChild(lg("✗","#dc2626",isEn()?"not found":"未找到 MeSH 詞"));
+    var back=document.createElement("button"); back.className="mvbtn"; back.textContent=isEn()?"✎ all back to editing":"✎ 全部切回編輯"; back.style.marginLeft="auto"; back.onclick=function(){ Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr){ _meshEditCell(tr); }); panel.style.display="none"; }; row.appendChild(back);
+    panel.appendChild(row);
   }
   (function(){ var bt=$("#meshVerifyBtn"); if(bt) bt.onclick=function(){ srCount&&srCount("pico-mesh-verify","PICO-驗證MeSH"); _meshVerifyAll(); }; })();
 
@@ -2929,13 +3019,14 @@ if (typeof module !== "undefined" && module.exports) {
       if(tg.engine!=="pubmed" && DB_OPEN_URLS[tid]){
         var openBtn=document.createElement("button"); openBtn.className="copy copyicon"; openBtn.innerHTML=OPENSVG;
         var _openTitle=(isEn()?"Copy final strategy & open ":"複製最終策略並開啟 ")+tg.label+" ↗";
+        if(tid==="cinahl_ebsco") _openTitle+=(isEn()?"\nOpens the database-selection tab. EBSCO remembers your last database choice (stored per account/session, not in the URL), so select only CINAHL once and it will persist.":"\n開啟資料庫選擇分頁。EBSCO 會記住你上次選的資料庫（存在帳號／登入 session，不在網址裡），只要手動勾選一次「僅 CINAHL」，之後就會沿用。");
         if(/ncku\.edu\.tw/i.test(DB_OPEN_URLS[tid]||"")) _openTitle+=(isEn()?"\nNon-NCKU users: please open the database yourself.":"\n非成大使用者，請自行開啟資料庫");
         openBtn.title=_openTitle;
         openBtn.onclick=function(){
           try{
             var finalRow=allRows[allRows.length-1];
             if(!finalRow) throw new Error(isEn()?"No strategy to send":"沒有可傳送的檢索策略");
-            var full=expandNumberedQuery(finalRow,allRows), url=(tid==="cinahl_ebsco")?(_cinahlBase((cinahlInst&&cinahlInst.value)||"")+"/search/advanced/search-options?autocorrect=y"):DB_OPEN_URLS[tid];   // CINAHL：開在「檢索選項 search-options」分頁（資料庫選擇頁），讓使用者自選僅 CINAHL；成大與各機構皆同
+            var full=expandNumberedQuery(finalRow,allRows), url=(tid==="cinahl_ebsco")?(_cinahlBase((cinahlInst&&cinahlInst.value)||"")+"/search/advanced/search-options?autocorrect=y&defaultdb=cin20"):DB_OPEN_URLS[tid];   // CINAHL：開在「檢索選項 search-options」分頁、帶 defaultdb=cin20（標準 research.ebsco.com 會據此開 CINAHL；代理版部分機構仍依帳號記憶）
             var link=document.createElement("a");link.href=url;link.target="_blank";link.rel="noopener noreferrer";document.body.appendChild(link);link.click();link.remove();
             srCount('pico-db-open-'+tid,'PICO-開啟資料庫-'+tid);
             copyTextForPush(full).then(function(){ openBtn.innerHTML="✓"; openBtn.classList.add("done"); openBtn.title=isEn()?"Copied — paste into the search box":"已複製，請貼入搜尋框"; setTimeout(function(){openBtn.innerHTML=OPENSVG;openBtn.classList.remove("done");openBtn.title=_openTitle;},1600); })
