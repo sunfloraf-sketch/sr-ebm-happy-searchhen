@@ -354,7 +354,6 @@
         <button class="btn ghost" id="projSaveBtn" title="把目前的 PICO 表與設定存成專案檔(.json)到你的電腦，日後可開啟繼續編輯"><span data-zh>⬇ 儲存專案檔</span><span data-en>⬇ Save project</span></button>
         <button class="btn ghost" id="projOpenBtn" title="開啟先前儲存的專案檔(.json)，還原整張表繼續編輯"><span data-zh>⬆ 開啟專案檔</span><span data-en>⬆ Open project</span></button>
         <input type="file" id="projFile" accept=".json,application/json" style="display:none">
-        <label id="advToolsLbl" title="開啟後，點進詞格會在下方浮出標記小工具（例：不含狹義詞）；關閉則填寫時完全不干擾。偏好會記住。" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--mut);cursor:pointer;margin-left:2px"><input type="checkbox" id="cbAdvTools"><span data-zh>進階標記工具</span><span data-en>Advanced tools</span></label>
       </div>
     </div>
     <details class="ccbox" id="pasteBox" style="margin:0 0 12px">
@@ -426,6 +425,7 @@ Optical Imaging)</pre>
         <span data-en>⚠ Reminder: please assess the suitability of the synonyms and controlled vocabulary yourself, and be sure to verify the controlled terms — the tool only links to the thesauri and does not verify them.</span>
       </span>
       <span class="infotip"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip"><span data-zh>復原框內文字編輯：想還原剛才在某一格輸入框打的字，直接按 Ctrl+Z 即可。</span><span data-en>Undo in-cell text edits: to revert what you just typed in a cell, press Ctrl+Z. “Load last save” rolls the whole table back to its previous content.</span></span></span>
+      <label id="advToolsLbl" title="開啟後，點進詞格會在下方浮出標記小工具（例：不含狹義詞）；關閉則填寫時完全不干擾。偏好會記住。" style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#0f766e;cursor:pointer"><input type="checkbox" id="cbAdvTools" style="accent-color:#0f766e"><span data-zh>進階標記工具</span><span data-en>Advanced tools</span></label>
     </div>
     <table class="pico">
       <thead>
