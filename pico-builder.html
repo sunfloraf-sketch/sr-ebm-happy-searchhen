@@ -72,8 +72,37 @@
   .rmrow{border:none;background:none;color:#55504B;cursor:pointer;font-size:15px;padding:0 2px}
   .rmrow:hover{color:#23282D}
   .pico-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
-  .picotools{display:flex;gap:10px;flex-wrap:wrap}
+  .picotools{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   .btn{border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer}
+  /* 工具列按鈕含圖示 */
+  .picotools .btn{display:inline-flex;align-items:center;gap:6px}
+  .picotools .btn svg{display:block}
+  .pt-caret{width:12px;height:12px;opacity:.7;transition:transform .15s}
+  .pt-dd{position:relative;display:inline-flex}
+  .pt-dd.open .pt-caret{transform:rotate(180deg)}
+  .pt-dd.open>.btn.ghost{background:linear-gradient(180deg,#F0FAF8,#DCEFEC);border-color:#9fcfc8;color:#0f766e}
+  .pt-menu{position:absolute;top:calc(100% + 6px);left:0;width:max-content;min-width:100%;background:#fff;border:1px solid #D7DEE3;border-radius:10px;box-shadow:0 8px 24px rgba(28,36,42,.16);padding:6px;z-index:40;display:none}
+  .pt-dd.open .pt-menu{display:block}
+  .pt-dd.alignR .pt-menu{left:auto;right:0}
+  .pt-mi{display:flex;align-items:center;gap:9px;width:100%;white-space:nowrap;border:none;background:none;text-align:left;text-decoration:none;padding:9px 12px;border-radius:7px;font-size:13px;color:#25292D;cursor:pointer;font-weight:500;font-family:inherit}
+  .pt-mi:hover{background:#f0f4f6}
+  .pt-mi svg{flex:0 0 auto;color:#55606a}
+  .pt-adv{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#0f766e;cursor:pointer;padding-left:8px;border-left:1px solid #DDE3E7}
+  .pt-adv input{accent-color:#0f766e}
+  /* 右下角圓形微立體按鈕 */
+  .rbtn{width:38px;height:38px;border-radius:50%;border:1px solid #C3CCD3;background:linear-gradient(180deg,#FFFFFF 0%,#E7ECEF 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 2px rgba(66,77,86,.10),0 2px 5px rgba(28,36,42,.16);display:inline-flex;align-items:center;justify-content:center;color:#3a434b;cursor:pointer;padding:0;transition:transform .08s ease,box-shadow .15s ease,background .15s ease,color .15s ease}
+  .rbtn:hover{background:linear-gradient(180deg,#FFFFFF 0%,#DFE6EA 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,1),0 4px 10px rgba(28,36,42,.20);transform:translateY(-1px)}
+  .rbtn:active{transform:translateY(1px);box-shadow:inset 0 2px 4px rgba(35,44,51,.18)}
+  .rbtn svg{display:block;pointer-events:none}
+  .rbtn.on{background:linear-gradient(180deg,#EAF6F3,#CDE8E2);border-color:#8fc7bf;color:#0f766e}
+  .rbtn.clear:hover{color:#b91c1c;border-color:#e0b4b4;background:linear-gradient(180deg,#FFFFFF 0%,#F6E7E7 100%)}
+  /* hover 說明氣泡（黑底白字，比照 ⓘ 樣式） */
+  .hastip{position:relative}
+  .hastip::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 10px);transform:translateX(-50%);width:max-content;max-width:220px;white-space:normal;text-align:center;background:#1c2733;color:#fff;font-size:11.5px;font-weight:400;line-height:1.55;padding:8px 10px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:opacity .12s;z-index:130}
+  .hastip::before{content:"";position:absolute;left:50%;bottom:calc(100% + 4px);transform:translateX(-50%);border:6px solid transparent;border-top-color:#1c2733;opacity:0;pointer-events:none;transition:opacity .12s;z-index:130}
+  .hastip:hover::after,.hastip:hover::before{opacity:1}
+  .hastip.tipR::after{left:auto;right:0;transform:none}
+  .hastip.tipR::before{left:auto;right:12px;transform:none}
   .btn.ghost{background:linear-gradient(180deg,#FBFCFC,#E8EDF0);border:1px solid #CCD4DA;color:#25292D;box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 1px 2px rgba(0,0,0,.06)}
   .btn.ghost:hover{background:linear-gradient(180deg,#FFFFFF,#E2E8EC)}
   .btn:disabled,.btn:disabled:hover{background:linear-gradient(180deg,#F4F6F7,#ECEFF1);color:#AAB2B8;border-color:#DDE3E7;box-shadow:none;cursor:not-allowed;opacity:.7}
@@ -214,6 +243,11 @@
   th.cvhead:hover{background:#dedede}
   th.cvhead.on{background:#cfcfcf;box-shadow:inset 0 -3px 0 currentColor}
   table.pico th.cvhead{font-size:14px;font-weight:800;letter-spacing:.6px}
+  .meshvhd{font-size:11px;font-weight:700;letter-spacing:0;margin-left:6px;padding:2px 8px;border:1px solid #C0504D;border-radius:6px;background:#fff;color:#C0504D;cursor:pointer;vertical-align:middle;white-space:nowrap}
+  .meshvhd:hover{background:#C0504D;color:#fff}
+  .meshvhd.dirty{border-color:#c2410c;color:#c2410c}
+  .meshvhd.dirty:hover{background:#c2410c;color:#fff}
+  .meshvhd.dirty::before{content:"↻ "}
   .cvcaret{font-size:13px;opacity:.85;margin-left:3px;font-weight:700}
   #cvVerifyPanel{position:absolute;z-index:100;background:#fff;border:1px solid #D7E0E3;border-radius:10px;padding:10px 12px 12px;box-shadow:0 8px 28px rgba(0,0,0,.18);min-width:240px;max-width:420px;max-height:62vh;overflow:auto}
   .cvvptitle{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:700;color:#32383D;font-size:13px;margin-bottom:6px}
@@ -402,16 +436,42 @@
 
   <div class="panel">
     <div class="pico-head">
-      <label class="fld" style="margin:0;font-size:16px;font-weight:700;color:#23282D"><span data-zh>PICO 概念表</span><span data-en>PICO table</span></label>
+      <label class="fld" style="margin:0;font-size:16px;font-weight:700;color:#23282D"><span data-zh>PICO 檢索詞</span><span data-en>PICO search terms</span></label>
       <div class="picotools">
-        <button class="btn ghost" id="exBtn"><span data-zh>載入範例</span><span data-en>Load example</span></button>
-        <a class="btn ghost" data-zh href="pico_template_zh.docx" download style="text-decoration:none">⬇ 下載樣板</a>
-        <a class="btn ghost" data-en href="pico_template_en.docx" download style="text-decoration:none">⬇ Download template</a>
-        <button class="btn ghost" id="uploadBtn"><span data-zh>⬆ 上傳搜尋紀錄表(Word)</span><span data-en>⬆ Upload record form (Word)</span></button>
+        <!-- 載入範例：往右下箭頭（載入進下方表格） -->
+        <button class="btn ghost" id="exBtn" title="把示範資料直接填入下方 PICO 表（會覆蓋目前內容）">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="16.5" y2="16.5"/><polyline points="16.5 9 16.5 16.5 9 16.5"/></svg>
+          <span data-zh>載入範例</span><span data-en>Load example</span>
+        </button>
+
+        <!-- Word 編輯 ▾ -->
+        <div class="pt-dd" id="ddWord">
+          <button type="button" class="btn ghost" data-ptdd>
+            <svg width="15" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5"/><path d="M8.5 12.5l1.2 4 1.3-4 1.3 4 1.2-4"/></svg>
+            <span data-zh>Word編輯</span><span data-en>Word</span>
+            <svg class="pt-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="pt-menu">
+            <a class="pt-mi" data-zh href="pico_template_zh.docx" download><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11"/><polyline points="7 10 12 15 17 10"/><path d="M4 20h16"/></svg>下載搜尋紀錄表樣板</a>
+            <a class="pt-mi" data-en href="pico_template_en.docx" download><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11"/><polyline points="7 10 12 15 17 10"/><path d="M4 20h16"/></svg>Download record-form template</a>
+            <button type="button" class="pt-mi" id="uploadBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4"/><polyline points="7 9 12 4 17 9"/><path d="M4 20h16"/></svg><span data-zh>上傳搜尋紀錄表</span><span data-en>Upload record form</span></button>
+          </div>
+        </div>
         <input type="file" id="wordFile" accept=".docx" style="display:none">
-        <button class="btn ghost" id="restoreBtn" style="display:none;border-color:#7c9a7c;color:#3f6f3f">↩ <span data-zh>載入上次暫存</span><span data-en>Load last save</span></button>
-        <button class="btn ghost" id="projSaveBtn" title="把目前的 PICO 表與設定存成專案檔(.json)到你的電腦，日後可開啟繼續編輯"><span data-zh>⬇ 儲存專案檔</span><span data-en>⬇ Save project</span></button>
-        <button class="btn ghost" id="projOpenBtn" title="開啟先前儲存的專案檔(.json)，還原整張表繼續編輯"><span data-zh>⬆ 開啟專案檔</span><span data-en>⬆ Open project</span></button>
+
+        <!-- 專案 ▾ -->
+        <div class="pt-dd alignR" id="ddProj">
+          <button type="button" class="btn ghost" data-ptdd>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            <span data-zh>專案</span><span data-en>Project</span>
+            <svg class="pt-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="pt-menu">
+            <button type="button" class="pt-mi" id="projSaveBtn" title="把目前的 PICO 表與設定存成專案檔(.json)到你的電腦，日後可開啟繼續編輯"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11"/><polyline points="7 10 12 15 17 10"/><path d="M4 20h16"/></svg><span data-zh>儲存專案檔</span><span data-en>Save project file</span></button>
+            <button type="button" class="pt-mi" id="projOpenBtn" title="開啟先前儲存的專案檔(.json)，還原整張表繼續編輯"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4"/><polyline points="7 9 12 4 17 9"/><path d="M4 20h16"/></svg><span data-zh>開啟專案檔</span><span data-en>Open project file</span></button>
+            <button type="button" class="pt-mi" id="restoreBtn" style="display:none" title="還原到上次自動暫存的表格內容"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a8 8 0 1 1-1.5 6"/><polyline points="3 3.5 3 8 7.5 8"/></svg><span data-zh>回存暫存檔</span><span data-en>Restore last save</span></button>
+          </div>
+        </div>
         <input type="file" id="projFile" accept=".json,application/json" style="display:none">
       </div>
     </div>
@@ -459,6 +519,7 @@ Optical Imaging)</pre>
           <div style="padding-left:1.4em;margin-top:4px">‧ 主標題若附加副標題（subheading）：<span style="color:#3a434b">語法需自行查各資料庫</span></div>
           <div style="padding-left:2.4em">例 Ovid MEDLINE（dg 表示 Diagnostic Imaging）：</div>
           <pre style="margin:2px 0 6px 2.4em;padding:8px 10px;background:var(--codebg);border:1px solid var(--line);border-radius:6px;font-family:'SF Mono',Consolas,monospace;font-size:12px;line-height:1.5;white-space:pre;width:fit-content;max-width:100%">Optic Nerve/dg</pre>
+          <div style="margin-top:6px">．<b>復原框內文字編輯：</b>想還原剛才在某一格輸入框打的字，直接按 <code>Ctrl+Z</code> 即可。</div>
         </div>
         <div data-en>
           <div>• <b>Within a cell:</b> one term per line (the default Boolean is OR; no need to mark it).</div>
@@ -475,6 +536,7 @@ Optical Imaging)</pre>
           <div style="padding-left:1.4em;margin-top:4px">‧ To attach a subheading to a main heading: <span style="color:#3a434b">check each database for its own syntax</span></div>
           <div style="padding-left:2.4em">e.g. Ovid MEDLINE (dg = Diagnostic Imaging):</div>
           <pre style="margin:2px 0 6px 2.4em;padding:8px 10px;background:var(--codebg);border:1px solid var(--line);border-radius:6px;font-family:'SF Mono',Consolas,monospace;font-size:12px;line-height:1.5;white-space:pre;width:fit-content;max-width:100%">Optic Nerve/dg</pre>
+          <div style="margin-top:6px">• <b>Undo in-cell text edits:</b> to revert what you just typed in a cell, press <code>Ctrl+Z</code>.</div>
         </div>
       </div>
     </details>
@@ -483,8 +545,7 @@ Optical Imaging)</pre>
         <span data-zh>⚠ 提醒您！請自行評估同義詞與控制詞彙的適用性，尤其確實查核控制詞彙，工具僅提供詞表超連結，並未進行查驗。</span>
         <span data-en>⚠ Reminder: please assess the suitability of the synonyms and controlled vocabulary yourself, and be sure to verify the controlled terms — the tool only links to the thesauri and does not verify them.</span>
       </span>
-      <span class="infotip"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip"><span data-zh>復原框內文字編輯：想還原剛才在某一格輸入框打的字，直接按 Ctrl+Z 即可。</span><span data-en>Undo in-cell text edits: to revert what you just typed in a cell, press Ctrl+Z. “Load last save” rolls the whole table back to its previous content.</span></span></span>
-      <label id="advToolsLbl" title="開啟後，點進詞格會在下方浮出標記小工具（例：不含狹義詞）；關閉則填寫時完全不干擾。偏好會記住。" style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#0f766e;cursor:pointer"><input type="checkbox" id="cbAdvTools" style="accent-color:#0f766e"><span data-zh>進階標記工具</span><span data-en>Advanced marking tools</span></label>
+      <label id="advToolsLbl" title="開啟後，點進詞格會在下方浮出標記小工具（例：不含狹義詞）；關閉則填寫時完全不干擾。偏好會記住。" style="margin-left:auto;white-space:nowrap;display:inline-flex;align-items:center;gap:5px;font-size:13px;line-height:1.5;color:#0f766e;cursor:pointer"><input type="checkbox" id="cbAdvTools" style="accent-color:#0f766e"><span data-zh>進階標記工具</span><span data-en>Advanced marking tools</span></label>
     </div>
     <table class="pico">
       <thead>
@@ -493,17 +554,23 @@ Optical Imaging)</pre>
           <th class="ref" style="width:15%"><span data-zh>中文同義詞</span><span data-en>Chinese synonyms</span></th>
           <th class="free" style="width:22%"><div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap"><span><span data-zh>英文同義詞</span><span data-en>English synonyms</span></span><button class="btn ghost" id="toProxBtn" style="font-size:11px;font-weight:600;padding:3px 10px">＋ <span data-zh>用鄰近字組合器加概念</span><span data-en>Add via Proximity Builder</span></button></div></th>
           <th class="cv cvhead" data-vocab="emtree" style="width:21%" title="點一下展開 Emtree 各概念詞彙的查核連結">Emtree <span class="cvcaret">▾</span></th>
-          <th class="cv cvhead" data-vocab="mesh" style="width:21%" title="點一下展開 MeSH 各概念詞彙的查核連結">MeSH <span class="cvcaret">▾</span></th>
+          <th class="cv cvhead" data-vocab="mesh" style="width:21%" title="點一下展開 MeSH 各概念詞彙的查核連結">MeSH <span class="cvcaret">▾</span> <button type="button" id="meshVerifyHd" class="meshvhd" title="線上查核此欄每個 MeSH 詞是否為正式標目，並可帶入同義詞／狹義詞"><span data-zh>✓ 驗證</span><span data-en>✓ Verify</span></button></th>
           <th class="cv cvhead" data-vocab="cinahl" style="width:21%" title="點一下展開 CINAHL 各概念詞彙的查核連結">CINAHL Headings <span class="cvcaret">▾</span></th>
           <th style="width:30px"></th>
         </tr>
       </thead>
       <tbody id="picoBody"></tbody>
     </table>
-    <div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:8px">
-      <button class="btn ghost" id="clearBtn" style="font-size:12px;font-weight:600;padding:6px 12px"><span data-zh>清空</span><span data-en>Clear</span></button>
-      <button class="btn ghost" id="tallRows" title="一次把已填文字的儲存格高度拉高為兩倍；再按一次還原" style="font-size:12px;font-weight:600;padding:6px 12px"><span data-zh>⇕ 拉高已填格</span><span data-en>⇕ Taller cells</span></button>
-      <button class="btn ghost" id="addRow" title="新增概念 / Add concept" style="font-size:18px;font-weight:700;line-height:1;padding:5px 15px">＋</button>
+    <div style="display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-top:8px">
+      <button type="button" class="rbtn clear hastip" id="clearBtn" data-tip="清空整張表（範例內容直接清；自填資料會先確認） / Clear table" aria-label="清空整張表">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7 H20"/><path d="M9.5 7 V5.2 Q9.5 4.3 10.4 4.3 H13.6 Q14.5 4.3 14.5 5.2 V7"/><path d="M6.2 7 L7 19.2 Q7.1 20.6 8.5 20.6 H15.5 Q16.9 20.6 17 19.2 L17.8 7"/><path d="M10 10.5 V17 M14 10.5 V17"/></svg>
+      </button>
+      <button type="button" class="rbtn hastip" id="tallRows" data-tip="拉高：展開到該列最長內容、完整顯示（再按一次還原） / Expand rows to fit content" aria-label="拉高已填格">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 9 12 4 17 9"/><polyline points="7 15 12 20 17 15"/></svg>
+      </button>
+      <button type="button" class="rbtn hastip tipR" id="addRow" data-tip="新增一列概念 / Add concept" aria-label="新增一列概念">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
     </div>
     <div id="cvVerifyPanel" style="display:none"></div>
     <div id="meshVerifyPanel" style="display:none"></div>
@@ -522,7 +589,7 @@ Optical Imaging)</pre>
   <hr style="border:none;border-top:1px solid var(--line);margin:6px 0 16px">
   <div class="genbar" style="align-items:flex-start">
     <div style="display:flex;align-items:flex-start;gap:8px">
-      <label class="fld" style="margin:0;white-space:nowrap;padding-top:9px;display:inline-flex;align-items:center;gap:4px"><span><span data-zh>欄位完整度</span><span data-en>Field level</span></span><span class="infotip"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip"><span data-zh>此區選項將套用到全部列；亦可於 PICO 概念表代號下方，調整各列的欄位完整度。</span><span data-en>These options apply to all rows; you can also set each row’s field level under its code in the PICO concept table.</span></span></span></label>
+      <label class="fld" style="margin:0;white-space:nowrap;padding-top:9px;display:inline-flex;align-items:center;gap:4px"><span><span data-zh>欄位完整度</span><span data-en>Field level</span></span><span class="infotip"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip"><span data-zh>此區選項將套用到全部列；亦可於 PICO 檢索詞代號下方，調整各列的欄位完整度。</span><span data-en>These options apply to all rows; you can also set each row’s field level under its code in the PICO concept table.</span></span></span></label>
       <div>
         <select id="level">
           <option value="L0"></option>
@@ -538,9 +605,7 @@ Optical Imaging)</pre>
       <label title="以顏色標出成對圓括弧"><input type="checkbox" id="cbBracket"><span data-zh>成對括弧顏色</span><span data-en>Bracket pairs</span></label>
       <label title="把最後一行的 #行號組合展開，串成一條可直接貼入單一檢索框的長檢索式"><input type="checkbox" id="cbFlat"><span data-zh>合併為一串檢索語法</span><span data-en>One combined query</span></label>
       <span style="display:inline-flex;align-items:center;gap:8px"><label title="英文同義詞裡的多字片語：預設加引號當片語（如 &quot;gestational diabetes&quot;）；勾選則改用鄰近字（如 gestational NEAR/2 diabetes）。鄰近距離可在右方數字框設定（預設 2）。強烈建議先用「鄰近字組合器」把同義詞分堆整理乾淨再貼入。" style="display:inline-flex;align-items:center;gap:5px"><input type="checkbox" id="cbNearPhrase"><span data-zh>片語改用鄰近字</span><span data-en>Phrases as proximity</span></label><span style="display:inline-flex;align-items:center;gap:3px;color:var(--mut)"><span data-zh>鄰</span><span data-en>within&nbsp;</span><input type="number" id="nearN" min="0" max="20" value="2" title="鄰近距離：幾個單字內（預設 2）" style="width:34px;height:28px;font-size:12px;padding:0 5px;text-align:center;border:1px solid var(--line);border-radius:6px"><span data-zh>單字</span><span data-en>&nbsp;words</span></span></span>
-      <label title="產出的控制詞彙(MeSH/Emtree/CINAHL)加上可點的詞表查核連結；Word 下載也內嵌超連結。連結只供核對，複製的檢索式仍為純文字。"><input type="checkbox" id="cbLinks" checked><span data-zh>控制詞彙查核連結</span><span data-en>Vocab verify links</span></label>
-      <button class="btn ghost" id="meshVerifyBtn" type="button" title="用 NLM MeSH 詞庫線上查核每個 MeSH 欄位的詞是否為正式標目，並可選擇性帶入同義詞(Entry Terms)到英文同義詞欄。" style="font-size:12px;font-weight:600;padding:5px 11px"><span data-zh>✓ 驗證 MeSH</span><span data-en>✓ Verify MeSH</span></button>
-      <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--mut)" title="你機構的 EBSCO 專屬代碼（research.ebsco.com/c/XXXX/ 中的 XXXX，如 shmie4）；填了 CINAHL 控制詞彙才會有查核連結。只存在你的瀏覽器本機。"><span data-zh>CINAHL 機構碼</span><span data-en>CINAHL inst.</span><input type="text" id="cinahlInst" placeholder="其他機構：貼上網址或代碼" style="width:210px;font-size:12px;padding:6px 8px;border:1px solid var(--line);border-radius:6px"><span data-zh title="內建使用成大機構碼（shmie4），欄位留空即可。其他機構：貼上貴機構 CINAHL 進階檢索頁的網址（例如 research.ebsco.com/c/XXXX/…），系統會自動擷取機構碼；若擷取不到，請手動填入機構碼。只存在你的瀏覽器本機。" style="cursor:help;color:var(--brand2);font-weight:700">ⓘ</span><span data-en title="Uses NCKU’s code (shmie4) by default — leave blank. Other institutions: paste your CINAHL advanced-search URL (e.g. research.ebsco.com/c/XXXX/…) and the tool extracts the code; if it can’t, enter the code manually. Stored only in your browser." style="cursor:help;color:var(--brand2);font-weight:700">ⓘ</span></span>
+      <label title="產出的控制詞彙(MeSH/Emtree/CINAHL)加上可點的詞表查核連結；Word 下載也內嵌超連結。連結只供核對，複製的檢索式仍為純文字。"><input type="checkbox" id="cbLinks" checked><span data-zh>控制詞彙查核連結</span><span data-en>Vocab verify links</span></label>      <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--mut)" title="你機構的 EBSCO 專屬代碼（research.ebsco.com/c/XXXX/ 中的 XXXX，如 shmie4）；填了 CINAHL 控制詞彙才會有查核連結。只存在你的瀏覽器本機。"><span data-zh>CINAHL 機構碼</span><span data-en>CINAHL inst.</span><input type="text" id="cinahlInst" placeholder="其他機構：貼上網址或代碼" style="width:210px;font-size:12px;padding:6px 8px;border:1px solid var(--line);border-radius:6px"><span data-zh title="內建使用成大機構碼（shmie4），欄位留空即可。其他機構：貼上貴機構 CINAHL 進階檢索頁的網址（例如 research.ebsco.com/c/XXXX/…），系統會自動擷取機構碼；若擷取不到，請手動填入機構碼。只存在你的瀏覽器本機。" style="cursor:help;color:var(--brand2);font-weight:700">ⓘ</span><span data-en title="Uses NCKU’s code (shmie4) by default — leave blank. Other institutions: paste your CINAHL advanced-search URL (e.g. research.ebsco.com/c/XXXX/…) and the tool extracts the code; if it can’t, enter the code manually. Stored only in your browser." style="cursor:help;color:var(--brand2);font-weight:700">ⓘ</span></span>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-left:auto">
       <button class="btn primary" id="genBtn"><span data-zh>▶ 生成檢索策略</span><span data-en>▶ Generate strategies</span></button>
@@ -554,8 +619,8 @@ Optical Imaging)</pre>
   <div class="foot">
     <span data-zh>此工具為純網頁程式，未使用 AI。資料預設只在瀏覽器本機執行與暫存；只有按下「PubMed 估算文章數」時，對應檢索式才會傳送至 NCBI E-utilities。產出的檢索策略請人工覆核並於資料庫實測後再使用。</span>
     <span data-en>A pure web-based tool with no AI. Data stays in your browser by default; only when you click “Estimate PubMed counts” are the relevant queries sent to NCBI E-utilities. Please human-check and test the generated strategy before use.</span><br>
-    <span data-zh>工具引用：方靜如，SR x EBM Happy SearchHen 搜尋策略生成雞。<br>Fang CJ, SR x EBM Happy SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-search-toolkit/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-search-toolkit/</a><br></span>
-    <span data-en>Cite this tool: Fang CJ, SR x EBM Happy SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-search-toolkit/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-search-toolkit/</a></span><br>
+    <span data-zh>工具引用：方靜如，SR x EBM Happy SearchHen 搜尋策略生成雞。<br>Fang CJ, SR x EBM Happy SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/</a><br></span>
+    <span data-en>Cite this tool: Fang CJ, SR x EBM Happy SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/</a></span><br>
     © 2026 Ching-Ju Fang <a href="https://orcid.org/0000-0002-7892-8840" target="_blank" rel="noopener" title="ORCID iD" style="text-decoration:none;white-space:nowrap;color:inherit" onclick="try{if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:'author-orcid',title:'作者-ORCID',event:true})}catch(e){}"><svg width="13" height="13" viewBox="0 0 256 256" style="vertical-align:-2px;margin-right:3px" aria-hidden="true"><circle cx="128" cy="128" r="128" fill="#A6CE39"/><g fill="#fff"><path d="M86.3 186.2H70.9V79.1h15.4v107.1z"/><path d="M108.9 79.1h41.6c39.6 0 57 28.3 57 53.6 0 27.5-21.5 53.6-56.8 53.6h-41.8V79.1zm15.4 93.3h24.5c34.9 0 42.9-26.5 42.9-39.7 0-21.5-13.7-39.7-43.7-39.7h-23.7v79.4z"/><circle cx="78.6" cy="56.8" r="10.1"/></g></svg>https://orcid.org/0000-0002-7892-8840</a> · All rights reserved · v2.5.0
   </div>
 </main>
@@ -1760,7 +1825,9 @@ if (typeof module !== "undefined" && module.exports) {
   document.addEventListener("keydown", function(e){ if(e.key==="Escape") closeCvPanel(); });
   var _dragTr=null;   // 桌機拖曳排序：目前被拖的列
   function _clearDrop(){ Array.prototype.forEach.call(picoBody.querySelectorAll("tr.drop-before,tr.drop-after"),function(x){x.classList.remove("drop-before","drop-after");}); }
+  var _exampleActive=false;   // 目前表格是否為「剛載入的範例」（決定清空要不要先確認）
   function addRow(label, zh, ft, mesh, emtree, cinahl, phs, lvl){
+    _exampleActive=false;     // 任何新增／載入列都先當作「非範例」；exBtn 載入範例後會再設回 true
     phs = phs || {};
     var tr=document.createElement("tr");
     var labTd=document.createElement("td"); labTd.className="lab";
@@ -1943,7 +2010,7 @@ if (typeof module !== "undefined" && module.exports) {
     // 狹義詞
     var ns=document.createElement("div"); ns.className="mcsec"; var nsl=document.createElement("div"); nsl.className="mclbl"; nsl.textContent=isEn()?"Narrower terms":"狹義詞（下位詞）"; ns.appendChild(nsl);
     var nb=document.createElement("div"); nb.textContent=isEn()?"loading…":"載入中…"; ns.appendChild(nb); meshCard.appendChild(ns);
-    var hierUrl="https://meshb.nlm.nih.gov/record/ui?ui="+encodeURIComponent(dId);
+    var hierUrl="https://www.ncbi.nlm.nih.gov/mesh/?term="+encodeURIComponent(dId);   // NCBI MeSH 記錄頁（含階層樹）
     function _hierLink(txt){ var d=document.createElement("div"); d.style.marginTop="6px"; var a=document.createElement("a"); a.className="mclink"; a.href=hierUrl; a.target="_blank"; a.rel="noopener"; a.textContent=txt; d.appendChild(a); return d; }
     _meshNarrower(dId).then(function(items){
       nb.innerHTML="";
@@ -1957,8 +2024,8 @@ if (typeof module !== "undefined" && module.exports) {
         toMe.onclick=function(){ var s=cl.cbs.filter(function(c){return c.checked;}).map(function(c){return c.value;}); var n=s.length?_appendMesh(meshTa,s):0; msg.textContent=n?(isEn()?("+"+n+" → MeSH"):("已加 "+n+"→MeSH")):""; if(n) _renderMeshCell(tr); };
         nb.appendChild(toFt); nb.appendChild(toMe); nb.appendChild(msg);
       }
-      nb.appendChild(_hierLink(isEn()?"View full hierarchy on MeSH Browser →":"查看完整階層結構（MeSH Browser）→"));
-    }).catch(function(){ nb.innerHTML=""; nb.appendChild(_hierLink(isEn()?"View hierarchy on MeSH Browser →":"查看階層結構（MeSH Browser）→")); });
+      nb.appendChild(_hierLink(isEn()?"View on NCBI MeSH (with hierarchy) →":"到 NCBI MeSH 查看（含階層結構）→"));
+    }).catch(function(){ nb.innerHTML=""; nb.appendChild(_hierLink(isEn()?"View on NCBI MeSH →":"到 NCBI MeSH 查看 →")); });
     _posCard(anchor); meshCard.style.display="block";
   }
   // ---- 原地驗證檢視 ----
@@ -1993,6 +2060,7 @@ if (typeof module !== "undefined" && module.exports) {
     if(!any){ srAlert(isEn()?"No MeSH terms to verify. Fill the MeSH column first.":"目前沒有可驗證的 MeSH 詞，請先在 MeSH 欄填入標目。"); return; }
     _meshFailed=false;
     rows.forEach(function(tr){ var rec=tr._get&&tr._get(); if(rec && (rec.mesh||"").trim()) _renderMeshCell(tr); });
+    _meshValidated=true; _meshSetDirty(false);
     _showMeshLegend();
   }
   function _showMeshLegend(){
@@ -2007,7 +2075,10 @@ if (typeof module !== "undefined" && module.exports) {
     var back=document.createElement("button"); back.className="mvbtn"; back.textContent=isEn()?"✎ all back to editing":"✎ 全部切回編輯"; back.style.marginLeft="auto"; back.onclick=function(){ Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr){ _meshEditCell(tr); }); panel.style.display="none"; }; row.appendChild(back);
     panel.appendChild(row);
   }
-  (function(){ var bt=$("#meshVerifyBtn"); if(bt) bt.onclick=function(){ srCount&&srCount("pico-mesh-verify","PICO-驗證MeSH"); _meshVerifyAll(); }; })();
+  var _meshValidated=false, _meshDirty=false;
+  function _meshSetDirty(d){ _meshDirty=d; var b=$("#meshVerifyHd"); if(b){ if(d) b.classList.add("dirty"); else b.classList.remove("dirty"); b.title=d?(isEn()?"A MeSH cell was edited — click to re-verify":"有 MeSH 欄位已編輯，請按此重新驗證"):(isEn()?"Verify each MeSH term online; add synonyms / narrower terms":"線上查核此欄每個 MeSH 詞是否為正式標目，並可帶入同義詞／狹義詞"); } }
+  picoBody.addEventListener("input", function(e){ if(_meshValidated && e.target && e.target.dataset && e.target.dataset.kind==="mesh") _meshSetDirty(true); });
+  (function(){ var bt=$("#meshVerifyHd"); if(bt) bt.onclick=function(e){ if(e&&e.stopPropagation) e.stopPropagation(); srCount&&srCount("pico-mesh-verify","PICO-驗證MeSH"); _meshVerifyAll(); }; })();
 
   function updateCodes(){ Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr,i){ var b=tr.querySelector(".ccode"); if(b) b.textContent="C"+(i+1); }); }
   function seedEmpty(){ picoBody.innerHTML=""; ["P","I","C","O"].forEach(function(l){ addRow(l,"","","","","", GDM_EX[l]); }); }
@@ -2173,18 +2244,54 @@ if (typeof module !== "undefined" && module.exports) {
   if(restoreBtn) restoreBtn.onclick=function(){ var s=snapshotState(); if(stateNonEmpty(s)){ applyState(s); saveDraft(); restoreBtn.style.display="none"; } };
 
   $("#addRow").onclick=function(){ addRow(""); saveDraftDebounced(); };
-  // 一次拉高已填文字的儲存格到 2 倍高（再按一次還原）；只影響有輸入內容的 textarea
+  // 使用者在表格內手動編輯 → 不再視為「剛載入的範例」（清空時會改為先確認）
+  if(picoBody) picoBody.addEventListener("input", function(){ _exampleActive=false; }, true);
+
+  // 工具列下拉選單（Word編輯 / 專案）：點按鈕開關、點外面或選項後關閉
+  (function(){
+    var dds=document.querySelectorAll(".pt-dd");
+    dds.forEach(function(dd){
+      var btn=dd.querySelector("[data-ptdd]");
+      if(btn) btn.addEventListener("click", function(e){
+        e.stopPropagation();
+        var open=dd.classList.contains("open");
+        dds.forEach(function(d){ d.classList.remove("open"); });
+        if(!open) dd.classList.add("open");
+      });
+      // 點選單內的項目後收合
+      dd.querySelectorAll(".pt-mi").forEach(function(mi){
+        mi.addEventListener("click", function(){ dd.classList.remove("open"); });
+      });
+    });
+    document.addEventListener("click", function(){ dds.forEach(function(d){ d.classList.remove("open"); }); });
+    document.addEventListener("keydown", function(e){ if(e.key==="Escape") dds.forEach(function(d){ d.classList.remove("open"); }); });
+  })();
+  // 一次把「有填文字的列」整列展開到該列最長內容、完整顯示（再按一次還原）
   var _tallOn=false;
   if($("#tallRows")) $("#tallRows").onclick=function(){
     _tallOn=!_tallOn;
     Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr){
       var tas=tr.querySelectorAll("textarea");
+      if(!_tallOn){ Array.prototype.forEach.call(tas, function(t){ t.style.minHeight=""; }); return; }
       var hasText=Array.prototype.some.call(tas, function(t){return t.value.trim();});
-      Array.prototype.forEach.call(tas, function(t){ t.style.minHeight=(_tallOn && hasText)?"232px":""; });   // 同一列只要有文字，整列一起拉高／還原
+      if(!hasText){ Array.prototype.forEach.call(tas, function(t){ t.style.minHeight=""; }); return; }
+      // 量測該列每格內容的自然高度，取最長者
+      var maxH=0;
+      Array.prototype.forEach.call(tas, function(t){
+        var prev=t.style.height;
+        t.style.height="auto";
+        if(t.scrollHeight>maxH) maxH=t.scrollHeight;
+        t.style.height=prev;
+      });
+      if(maxH>0){ Array.prototype.forEach.call(tas, function(t){ t.style.minHeight=(maxH+4)+"px"; }); }  // 同列一起拉高到最長內容
     });
-    var z=$("#tallRows").querySelector("[data-zh]"), e=$("#tallRows").querySelector("[data-en]");
-    if(z) z.textContent=_tallOn?"⇕ 還原高度":"⇕ 拉高已填格";
-    if(e) e.textContent=_tallOn?"⇕ Reset height":"⇕ Taller cells";
+    var btn=$("#tallRows");
+    if(btn){
+      btn.classList.toggle("on", _tallOn);
+      btn.setAttribute("data-tip", _tallOn
+        ? "還原高度 / Reset height"
+        : "拉高：展開到該列最長內容、完整顯示（再按一次還原） / Expand rows to fit content");
+    }
   };
 
   // ===== 貼上 AI 表格：解析剪貼簿的 HTML 表格（或 Tab 分隔文字），依標題自動對欄填入 =====
@@ -2396,7 +2503,7 @@ if (typeof module !== "undefined" && module.exports) {
     });
     if(diagCopy) diagCopy.onclick=function(){ try{ navigator.clipboard.writeText(diagOut.value); }catch(e){ try{ diagOut.select(); document.execCommand&&document.execCommand("copy"); }catch(_e){} } if(diagMsg){ diagMsg.style.color="#166534"; diagMsg.textContent=isEn()?"Copied.":"已複製診斷結果。"; } };
   }
-  $("#clearBtn").onclick=function(){ if(!srConfirm(isEn()?"This can't be undone. Clear the whole table?":"動作無法復原，確認徹底清空嗎？")) return; picoBody.innerHTML=""; ["P","I","C","O"].forEach(function(l){ addRow(l); }); outs.innerHTML=""; if(picoWarn)picoWarn.style.display="none"; lastGen=null; if($("#wordBtn")) $("#wordBtn").disabled=true; try{ localStorage.removeItem("sr_pico_inbox"); }catch(e){} clearPersist(); if(restoreBtn) restoreBtn.style.display="none"; if(typeof updateRecordBtn==="function") updateRecordBtn(); };
+  $("#clearBtn").onclick=function(){ var _hasC=Array.prototype.some.call(picoBody.querySelectorAll("tr"), function(tr){ var r=tr._get&&tr._get(); return r && (r.zh||r.ft||r.mesh||r.emtree||r.cinahl); }); if(_hasC && !_exampleActive && !srConfirm(isEn()?"This can't be undone. Clear the whole table?":"動作無法復原，確認徹底清空嗎？")) return; picoBody.innerHTML=""; ["P","I","C","O"].forEach(function(l){ addRow(l); }); outs.innerHTML=""; if(picoWarn)picoWarn.style.display="none"; lastGen=null; if($("#wordBtn")) $("#wordBtn").disabled=true; try{ localStorage.removeItem("sr_pico_inbox"); }catch(e){} clearPersist(); if(restoreBtn) restoreBtn.style.display="none"; if(typeof updateRecordBtn==="function") updateRecordBtn(); };
 
   // ---- 上傳 Word 讀取檢索詞（純瀏覽器解析 .docx，使用原生 DecompressionStream，可離線）----
   var wordFile=$("#wordFile"), uploadBtn=$("#uploadBtn");
@@ -2577,6 +2684,7 @@ if (typeof module !== "undefined" && module.exports) {
     addRow("P",GDM_EX.P.zh,GDM_EX.P.ft,GDM_EX.P.mesh,GDM_EX.P.emtree,GDM_EX.P.cinahl);
     addRow("I",GDM_EX.I.zh,GDM_EX.I.ft,GDM_EX.I.mesh,GDM_EX.I.emtree,GDM_EX.I.cinahl);
     addRow("C","",""); addRow("O","","");
+    _exampleActive=true;   // 標記為「剛載入的範例」：清空時可直接清、不需確認
   };
 
   // ---- 核心：自由詞欄位範圍化（重用引擎的 field 節點；PubMed 逐詞展開） ----
@@ -3513,7 +3621,7 @@ if (typeof module !== "undefined" && module.exports) {
     ? "⚠ Reminder: 1. Verify the controlled vocabulary yourself (the tool only links to the thesauri and does not verify them). 2. Review the search strategy manually and test/evaluate it in the databases before use. 3. SR × EBM Happy SearchHen assumes no warranty or liability."
     : "⚠ 提醒您！1. 請確實查核控制詞彙（工具僅提供詞表超連結，並未進行查驗）。2. 請人工覆核檢索策略，並於資料庫實測與評估後使用。3. SR x EBM Happy SearchHen 不負保證責任。"; }
   var _CITE_ZH="方靜如，SR x EBM Happy SearchHen 搜尋策略生成雞。";
-  var _CITE_EN="Fang CJ, SR x EBM Happy SearchHen. doi: 10.5281/zenodo.21960702. https://sunfloraf-sketch.github.io/sr-search-toolkit/";
+  var _CITE_EN="Fang CJ, SR x EBM Happy SearchHen. doi: 10.5281/zenodo.21960702. https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/";
   function _citeLines(){ return isEn()? [_CITE_EN] : [_CITE_ZH, _CITE_EN]; }   // 中文版中英並列、英文版只放英文
   // 建「工具整理的檢索詞（概念表原貌）」：回傳 {head, note, tbl}；無詞則 null。說明在表格上方、控制詞彙欄內嵌查證超連結、換行為 Enter 段落。
   function _conceptTermsTable(doc){

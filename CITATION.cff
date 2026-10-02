@@ -16,8 +16,8 @@ version: "1.0.0"
 doi: "10.5281/zenodo.21960702"
 date-released: "2026-08-16"
 license: MIT
-repository-code: "https://github.com/sunfloraf-sketch/sr-search-toolkit"
-url: "https://sunfloraf-sketch.github.io/sr-search-toolkit/"
+repository-code: "https://github.com/sunfloraf-sketch/sr-ebm-happy-searchhen"
+url: "https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/"
 keywords:
   - systematic review
   - literature search
