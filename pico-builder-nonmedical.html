@@ -72,7 +72,36 @@
   .rmrow{border:none;background:none;color:#55504B;cursor:pointer;font-size:15px;padding:0 2px}
   .rmrow:hover{color:#23282D}
   .pico-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
-  .picotools{display:flex;gap:10px;flex-wrap:wrap}
+  .picotools{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  /* 工具列按鈕含圖示 */
+  .picotools .btn{display:inline-flex;align-items:center;gap:6px}
+  .picotools .btn svg{display:block}
+  .pt-caret{width:12px;height:12px;opacity:.7;transition:transform .15s}
+  .pt-dd{position:relative;display:inline-flex}
+  .pt-dd.open .pt-caret{transform:rotate(180deg)}
+  .pt-dd.open>.btn.ghost{background:linear-gradient(180deg,#F0FAF8,#DCEFEC);border-color:#9fcfc8;color:#0f766e}
+  .pt-menu{position:absolute;top:calc(100% + 6px);left:0;width:max-content;min-width:100%;background:#fff;border:1px solid #D7DEE3;border-radius:10px;box-shadow:0 8px 24px rgba(28,36,42,.16);padding:6px;z-index:40;display:none}
+  .pt-dd.open .pt-menu{display:block}
+  .pt-dd.alignR .pt-menu{left:auto;right:0}
+  .pt-mi{display:flex;align-items:center;gap:9px;width:100%;white-space:nowrap;border:none;background:none;text-align:left;text-decoration:none;padding:9px 12px;border-radius:7px;font-size:13px;color:#25292D;cursor:pointer;font-weight:500;font-family:inherit}
+  .pt-mi:hover{background:#f0f4f6}
+  .pt-mi svg{flex:0 0 auto;color:#55606a}
+  /* 右下角圓形微立體按鈕 */
+  .rbtn{width:38px;height:38px;border-radius:50%;border:1px solid #C3CCD3;background:linear-gradient(180deg,#FFFFFF 0%,#E7ECEF 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 2px rgba(66,77,86,.10),0 2px 5px rgba(28,36,42,.16);display:inline-flex;align-items:center;justify-content:center;color:#3a434b;cursor:pointer;padding:0;transition:transform .08s ease,box-shadow .15s ease,background .15s ease,color .15s ease}
+  .rbtn:hover{background:linear-gradient(180deg,#FFFFFF 0%,#DFE6EA 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,1),0 4px 10px rgba(28,36,42,.20);transform:translateY(-1px)}
+  .rbtn:active{transform:translateY(1px);box-shadow:inset 0 2px 4px rgba(35,44,51,.18)}
+  .rbtn svg{display:block;pointer-events:none}
+  .rbtn.on{background:linear-gradient(180deg,#EAF6F3,#CDE8E2);border-color:#8fc7bf;color:#0f766e}
+  .rbtn.clear:hover{color:#b91c1c;border-color:#e0b4b4;background:linear-gradient(180deg,#FFFFFF 0%,#F6E7E7 100%)}
+  .rbtn.prox{color:#0f766e;border-color:#9fcfc8;background:linear-gradient(180deg,#F3FAF8,#DCEFEC)}
+  .rbtn.prox:hover{color:#0b5c55;border-color:#7fc0b7;background:linear-gradient(180deg,#FFFFFF,#CDE8E2)}
+  /* hover 說明氣泡（黑底白字，比照 ⓘ 樣式） */
+  .hastip{position:relative}
+  .hastip::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 10px);transform:translateX(-50%);width:max-content;max-width:220px;white-space:normal;text-align:center;background:#1c2733;color:#fff;font-size:11.5px;font-weight:400;line-height:1.55;padding:8px 10px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:opacity .12s;z-index:130}
+  .hastip::before{content:"";position:absolute;left:50%;bottom:calc(100% + 4px);transform:translateX(-50%);border:6px solid transparent;border-top-color:#1c2733;opacity:0;pointer-events:none;transition:opacity .12s;z-index:130}
+  .hastip:hover::after,.hastip:hover::before{opacity:1}
+  .hastip.tipR::after{left:auto;right:0;transform:none}
+  .hastip.tipR::before{left:auto;right:12px;transform:none}
   .btn{border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer}
   .btn.ghost{background:linear-gradient(180deg,#FBFCFC,#E8EDF0);border:1px solid #CCD4DA;color:#25292D;box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 1px 2px rgba(0,0,0,.06)}
   .btn.ghost:hover{background:linear-gradient(180deg,#FFFFFF,#E2E8EC)}
@@ -350,16 +379,42 @@
 
   <div class="panel">
     <div class="pico-head">
-      <label class="fld" style="margin:0;font-size:16px;font-weight:700;color:#23282D"><span data-zh>PICO 概念表</span><span data-en>PICO table</span></label>
+      <label class="fld" style="margin:0;font-size:16px;font-weight:700;color:#23282D"><span data-zh>PICO 檢索詞</span><span data-en>PICO search terms</span></label>
       <div class="picotools">
-        <button class="btn ghost" id="exBtn"><span data-zh>載入範例</span><span data-en>Load example</span></button>
-        <a class="btn ghost" data-zh href="SRSearch_PA_EXERCISE.docx" download style="text-decoration:none">⬇ 下載樣板</a>
-        <a class="btn ghost" data-en href="SRSearch_PA_EXERCISE.docx" download style="text-decoration:none">⬇ Download template</a>
-        <button class="btn ghost" id="uploadBtn"><span data-zh>⬆ 上傳搜尋紀錄表(Word)</span><span data-en>⬆ Upload record form (Word)</span></button>
+        <!-- 載入範例：往右下箭頭（載入進下方表格） -->
+        <button class="btn ghost" id="exBtn" title="把示範資料直接填入下方 PICO 表（會覆蓋目前內容）">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="16.5" y2="16.5"/><polyline points="16.5 9 16.5 16.5 9 16.5"/></svg>
+          <span data-zh>載入範例</span><span data-en>Load example</span>
+        </button>
+
+        <!-- Word 編輯 ▾ -->
+        <div class="pt-dd" id="ddWord">
+          <button type="button" class="btn ghost" data-ptdd>
+            <svg width="15" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5"/><path d="M8.5 12.5l1.2 4 1.3-4 1.3 4 1.2-4"/></svg>
+            <span data-zh>Word編輯</span><span data-en>Word</span>
+            <svg class="pt-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="pt-menu">
+            <a class="pt-mi" data-zh href="SRSearch_PA_EXERCISE.docx" download><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11"/><polyline points="7 10 12 15 17 10"/><path d="M4 20h16"/></svg>下載搜尋紀錄表樣板</a>
+            <a class="pt-mi" data-en href="SRSearch_PA_EXERCISE.docx" download><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11"/><polyline points="7 10 12 15 17 10"/><path d="M4 20h16"/></svg>Download record-form template</a>
+            <button type="button" class="pt-mi" id="uploadBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4"/><polyline points="7 9 12 4 17 9"/><path d="M4 20h16"/></svg><span data-zh>上傳搜尋紀錄表</span><span data-en>Upload record form</span></button>
+          </div>
+        </div>
         <input type="file" id="wordFile" accept=".docx" style="display:none">
-        <button class="btn ghost" id="restoreBtn" style="display:none;border-color:#7c9a7c;color:#3f6f3f">↩ <span data-zh>載入上次暫存</span><span data-en>Load last save</span></button>
-        <button class="btn ghost" id="projSaveBtn" title="把目前的 PICO 表與設定存成專案檔(.json)到你的電腦，日後可開啟繼續編輯"><span data-zh>⬇ 儲存專案檔</span><span data-en>⬇ Save project</span></button>
-        <button class="btn ghost" id="projOpenBtn" title="開啟先前儲存的專案檔(.json)，還原整張表繼續編輯"><span data-zh>⬆ 開啟專案檔</span><span data-en>⬆ Open project</span></button>
+
+        <!-- 專案 ▾ -->
+        <div class="pt-dd alignR" id="ddProj">
+          <button type="button" class="btn ghost" data-ptdd>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            <span data-zh>專案</span><span data-en>Project</span>
+            <svg class="pt-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="pt-menu">
+            <button type="button" class="pt-mi" id="projSaveBtn" title="把目前的 PICO 表與設定存成專案檔(.json)到你的電腦，日後可開啟繼續編輯"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11"/><polyline points="7 10 12 15 17 10"/><path d="M4 20h16"/></svg><span data-zh>儲存專案檔</span><span data-en>Save project file</span></button>
+            <button type="button" class="pt-mi" id="projOpenBtn" title="開啟先前儲存的專案檔(.json)，還原整張表繼續編輯"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4"/><polyline points="7 9 12 4 17 9"/><path d="M4 20h16"/></svg><span data-zh>開啟專案檔</span><span data-en>Open project file</span></button>
+            <button type="button" class="pt-mi" id="restoreBtn" style="display:none" title="還原到上次自動暫存的表格內容"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a8 8 0 1 1-1.5 6"/><polyline points="3 3.5 3 8 7.5 8"/></svg><span data-zh>回存暫存檔</span><span data-en>Restore last save</span></button>
+          </div>
+        </div>
         <input type="file" id="projFile" accept=".json,application/json" style="display:none">
       </div>
     </div>
@@ -402,6 +457,7 @@
 AND
 (Architecture
 City blocks)</pre>
+          <div style="margin-top:6px">．<b>復原框內文字編輯：</b>想還原剛才在某一格輸入框打的字，直接按 <code>Ctrl+Z</code> 即可。</div>
         </div>
         <div data-en>
           <div>• <b>Within a cell:</b> one term per line (the default Boolean is OR; no need to mark it).</div>
@@ -413,6 +469,7 @@ City blocks)</pre>
 AND
 (Architecture
 City blocks)</pre>
+          <div style="margin-top:6px">• <b>Undo in-cell text edits:</b> to revert what you just typed in a cell, press <code>Ctrl+Z</code>.</div>
         </div>
       </div>
     </details>
@@ -421,14 +478,13 @@ City blocks)</pre>
         <span data-zh>⚠ 提醒您！請自行評估同義詞與控制詞彙的適用性，尤其確實查核控制詞彙，工具僅提供詞表超連結，並未進行查驗。（超連結亦僅適用於成大）</span>
         <span data-en>⚠ Reminder: please assess the suitability of the synonyms and controlled vocabulary yourself, and be sure to verify the controlled terms — the tool only links to the thesauri and does not verify them. (Links apply to NCKU only.)</span>
       </span>
-      <span class="infotip"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip"><span data-zh>復原框內文字編輯：想還原剛才在某一格輸入框打的字，直接按 Ctrl+Z 即可。</span><span data-en>Undo in-cell text edits: to revert what you just typed in a cell, press Ctrl+Z. “Load last save” rolls the whole table back to its previous content.</span></span></span>
     </div>
     <table class="pico">
       <thead>
         <tr>
           <th class="lab" style="width:44px"><span data-zh>概念</span><span data-en>Concept</span></th>
           <th class="ref" style="width:15%"><span data-zh>中文同義詞</span><span data-en>Chinese synonyms</span></th>
-          <th class="free"><div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap"><span><span data-zh>英文同義詞</span><span data-en>English synonyms</span></span><button class="btn ghost" id="toProxBtn" style="font-size:11px;font-weight:600;padding:3px 10px">＋ <span data-zh>用鄰近字組合器加概念</span><span data-en>Add via Proximity Builder</span></button></div></th>
+          <th class="free"><span data-zh>英文同義詞</span><span data-en>English synonyms</span></th>
           <th class="cv cvcol cvhead cvcol-asc" data-vocab="asc" style="width:13%;display:none" title="點一下展開各概念詞彙的成大 ASC 查核連結">ASC 控制詞彙 <span class="cvcaret">▾</span></th>
           <th class="cv cvcol cvhead cvcol-bsc" data-vocab="bsc" style="width:13%;display:none" title="點一下展開各概念詞彙的成大 BSC 查核連結">BSC 控制詞彙 <span class="cvcaret">▾</span></th>
           <th class="cv cvcol cvhead cvcol-eric" data-vocab="eric" style="width:13%;display:none" title="點一下展開各概念詞彙的成大 ERIC 查核連結">ERIC 控制詞彙 <span class="cvcaret">▾</span></th>
@@ -440,10 +496,19 @@ City blocks)</pre>
       </thead>
       <tbody id="picoBody"></tbody>
     </table>
-    <div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:8px">
-      <button class="btn ghost" id="clearBtn" style="font-size:12px;font-weight:600;padding:6px 12px"><span data-zh>清空</span><span data-en>Clear</span></button>
-      <button class="btn ghost" id="tallRows" title="一次把已填文字的儲存格高度拉高為兩倍；再按一次還原" style="font-size:12px;font-weight:600;padding:6px 12px"><span data-zh>⇕ 拉高已填格</span><span data-en>⇕ Taller cells</span></button>
-      <button class="btn ghost" id="addRow" title="新增概念 / Add concept" style="font-size:18px;font-weight:700;line-height:1;padding:5px 15px">＋</button>
+    <div style="display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-top:8px">
+      <button type="button" class="rbtn clear hastip" id="clearBtn" data-tip="清空整張表（範例內容直接清；自填資料會先確認） / Clear table" aria-label="清空整張表">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7 H20"/><path d="M9.5 7 V5.2 Q9.5 4.3 10.4 4.3 H13.6 Q14.5 4.3 14.5 5.2 V7"/><path d="M6.2 7 L7 19.2 Q7.1 20.6 8.5 20.6 H15.5 Q16.9 20.6 17 19.2 L17.8 7"/><path d="M10 10.5 V17 M14 10.5 V17"/></svg>
+      </button>
+      <button type="button" class="rbtn hastip" id="tallRows" data-tip="拉高：展開到該列最長內容、完整顯示（再按一次還原） / Expand rows to fit content" aria-label="拉高已填格">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 9 12 4 17 9"/><polyline points="7 15 12 20 17 15"/></svg>
+      </button>
+      <button type="button" class="rbtn prox hastip" id="toProxBtn" data-tip="用鄰近字組合器加概念（會開啟鄰近字組合器） / Add a concept via the Proximity Builder" aria-label="用鄰近字組合器加概念">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><text x="2.6" y="13" font-size="9" font-family="sans-serif" font-weight="700" fill="currentColor" stroke="none">W</text><text x="14.6" y="13" font-size="9" font-family="sans-serif" font-weight="700" fill="currentColor" stroke="none">W</text><path d="M5.5 17.4 Q12 21.3 18.5 17.4"/></svg>
+      </button>
+      <button type="button" class="rbtn hastip tipR" id="addRow" data-tip="新增一列概念 / Add concept" aria-label="新增一列概念">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
     </div>
     <div id="cvVerifyPanel" style="display:none"></div>
     <details class="ccbox" style="margin:14px 0 0">
@@ -461,7 +526,7 @@ City blocks)</pre>
   <hr style="border:none;border-top:1px solid var(--line);margin:6px 0 16px">
   <div class="genbar" style="align-items:flex-start">
     <div style="display:flex;align-items:flex-start;gap:8px">
-      <label class="fld" style="margin:0;white-space:nowrap;padding-top:9px;display:inline-flex;align-items:center;gap:4px"><span><span data-zh>欄位完整度</span><span data-en>Field level</span></span><span class="infotip"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip"><span data-zh>此區選項將套用到全部列；亦可於 PICO 概念表代號下方，調整各列的欄位完整度。</span><span data-en>These options apply to all rows; you can also set each row’s field level under its code in the PICO concept table.</span></span></span></label>
+      <label class="fld" style="margin:0;white-space:nowrap;padding-top:9px;display:inline-flex;align-items:center;gap:4px"><span><span data-zh>欄位完整度</span><span data-en>Field level</span></span><span class="infotip"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip"><span data-zh>此區選項將套用到全部列；亦可於 PICO 檢索詞代號下方，調整各列的欄位完整度。</span><span data-en>These options apply to all rows; you can also set each row’s field level under its code in the PICO concept table.</span></span></span></label>
       <div>
         <select id="level">
           <option value="L0"></option>
@@ -1729,7 +1794,9 @@ if (typeof module !== "undefined" && module.exports) {
   document.addEventListener("keydown", function(e){ if(e.key==="Escape") closeCvPanel(); });
   var _dragTr=null;   // 桌機拖曳排序：目前被拖的列
   function _clearDrop(){ Array.prototype.forEach.call(picoBody.querySelectorAll("tr.drop-before,tr.drop-after"),function(x){x.classList.remove("drop-before","drop-after");}); }
+  var _exampleActive=false;   // 目前表格是否為「剛載入的範例」（決定清空要不要先確認）
   function addRow(label, zh, ft, cv, phs, lvl){
+    _exampleActive=false;     // 任何新增／載入列都先當作「非範例」；exBtn 載入範例後會再設回 true
     phs = phs || {}; cv = cv || {}; var pcv = phs.cv || {};
     var tr=document.createElement("tr");
     var labTd=document.createElement("td"); labTd.className="lab";
@@ -1965,18 +2032,53 @@ if (typeof module !== "undefined" && module.exports) {
   if(restoreBtn) restoreBtn.onclick=function(){ var s=snapshotState(); if(stateNonEmpty(s)){ applyState(s); saveDraft(); restoreBtn.style.display="none"; } };
 
   $("#addRow").onclick=function(){ addRow(""); saveDraftDebounced(); };
-  // 一次拉高已填文字的儲存格到 2 倍高（再按一次還原）；只影響有輸入內容的 textarea
+  // 使用者在表格內手動編輯 → 不再視為「剛載入的範例」（清空時會改為先確認）
+  if(picoBody) picoBody.addEventListener("input", function(){ _exampleActive=false; }, true);
+
+  // 工具列下拉選單（Word編輯 / 專案）：點按鈕開關、點外面或選項後關閉
+  (function(){
+    var dds=document.querySelectorAll(".pt-dd");
+    dds.forEach(function(dd){
+      var btn=dd.querySelector("[data-ptdd]");
+      if(btn) btn.addEventListener("click", function(e){
+        e.stopPropagation();
+        var open=dd.classList.contains("open");
+        dds.forEach(function(d){ d.classList.remove("open"); });
+        if(!open) dd.classList.add("open");
+      });
+      dd.querySelectorAll(".pt-mi").forEach(function(mi){
+        mi.addEventListener("click", function(){ dd.classList.remove("open"); });
+      });
+    });
+    document.addEventListener("click", function(){ dds.forEach(function(d){ d.classList.remove("open"); }); });
+    document.addEventListener("keydown", function(e){ if(e.key==="Escape") dds.forEach(function(d){ d.classList.remove("open"); }); });
+  })();
+
+  // 一次把「有填文字的列」整列展開到該列最長內容、完整顯示（再按一次還原）
   var _tallOn=false;
   if($("#tallRows")) $("#tallRows").onclick=function(){
     _tallOn=!_tallOn;
     Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr){
       var tas=tr.querySelectorAll("textarea");
+      if(!_tallOn){ Array.prototype.forEach.call(tas, function(t){ t.style.minHeight=""; }); return; }
       var hasText=Array.prototype.some.call(tas, function(t){return t.value.trim();});
-      Array.prototype.forEach.call(tas, function(t){ t.style.minHeight=(_tallOn && hasText)?"232px":""; });   // 同一列只要有文字，整列一起拉高／還原
+      if(!hasText){ Array.prototype.forEach.call(tas, function(t){ t.style.minHeight=""; }); return; }
+      var maxH=0;
+      Array.prototype.forEach.call(tas, function(t){
+        var prev=t.style.height;
+        t.style.height="auto";
+        if(t.scrollHeight>maxH) maxH=t.scrollHeight;
+        t.style.height=prev;
+      });
+      if(maxH>0){ Array.prototype.forEach.call(tas, function(t){ t.style.minHeight=(maxH+4)+"px"; }); }
     });
-    var z=$("#tallRows").querySelector("[data-zh]"), e=$("#tallRows").querySelector("[data-en]");
-    if(z) z.textContent=_tallOn?"⇕ 還原高度":"⇕ 拉高已填格";
-    if(e) e.textContent=_tallOn?"⇕ Reset height":"⇕ Taller cells";
+    var btn=$("#tallRows");
+    if(btn){
+      btn.classList.toggle("on", _tallOn);
+      btn.setAttribute("data-tip", _tallOn
+        ? "還原高度 / Reset height"
+        : "拉高：展開到該列最長內容、完整顯示（再按一次還原） / Expand rows to fit content");
+    }
   };
 
   // ===== 貼上 AI 表格：解析剪貼簿的 HTML 表格（或 Tab 分隔文字），依標題自動對欄填入 =====
@@ -2313,7 +2415,7 @@ if (typeof module !== "undefined" && module.exports) {
     });
     if(diagCopy) diagCopy.onclick=function(){ try{ navigator.clipboard.writeText(diagOut.value); }catch(e){ try{ diagOut.select(); document.execCommand&&document.execCommand("copy"); }catch(_e){} } if(diagMsg){ diagMsg.style.color="#166534"; diagMsg.textContent=isEn()?"Copied.":"已複製診斷結果。"; } };
   }
-  $("#clearBtn").onclick=function(){ if(!srConfirm(isEn()?"This can't be undone. Clear the whole table?":"動作無法復原，確認徹底清空嗎？")) return; picoBody.innerHTML=""; ["P","I","C","O"].forEach(function(l){ addRow(l); }); outs.innerHTML=""; if(picoWarn)picoWarn.style.display="none"; lastGen=null; if($("#wordBtn")) $("#wordBtn").disabled=true; try{ localStorage.removeItem("sr_pico_inbox"); }catch(e){} clearPersist(); if(restoreBtn) restoreBtn.style.display="none"; if(typeof updateRecordBtn==="function") updateRecordBtn(); };
+  $("#clearBtn").onclick=function(){ var _hasC=Array.prototype.some.call(picoBody.querySelectorAll("tr"), function(tr){ var r=tr._get&&tr._get(); return r && (r.zh||r.ft||(r.cv&&JSON.stringify(r.cv)!=="{}")); }); if(_hasC && !_exampleActive && !srConfirm(isEn()?"This can't be undone. Clear the whole table?":"動作無法復原，確認徹底清空嗎？")) return; picoBody.innerHTML=""; ["P","I","C","O"].forEach(function(l){ addRow(l); }); outs.innerHTML=""; if(picoWarn)picoWarn.style.display="none"; lastGen=null; if($("#wordBtn")) $("#wordBtn").disabled=true; try{ localStorage.removeItem("sr_pico_inbox"); }catch(e){} clearPersist(); if(restoreBtn) restoreBtn.style.display="none"; if(typeof updateRecordBtn==="function") updateRecordBtn(); };
 
   // ---- 上傳 Word 讀取檢索詞（純瀏覽器解析 .docx，使用原生 DecompressionStream，可離線）----
   var wordFile=$("#wordFile"), uploadBtn=$("#uploadBtn");
@@ -2474,6 +2576,7 @@ if (typeof module !== "undefined" && module.exports) {
     addRow("O",GDM_EX.O.zh,GDM_EX.O.ft,GDM_EX.O.cv);
     // 範例含控制詞彙的資料庫（ASC／ERIC／Compendex）自動顯示，方便看到填入內容
     try{ ["asc","eric","compendex"].forEach(function(id){ var cb=document.querySelector('#dbchecks input[value="'+id+'"]'); if(cb&&!cb.checked){ cb.checked=true; cb.dispatchEvent(new Event("change",{bubbles:true})); } }); if(typeof updateCvColumns==="function") updateCvColumns(); }catch(_e){}
+    _exampleActive=true;   // 標記為「剛載入的範例」：清空時可直接清、不需確認
   };
 
   // ---- 核心：自由詞欄位範圍化（重用引擎的 field 節點；PubMed 逐詞展開） ----
