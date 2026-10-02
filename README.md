@@ -1,4 +1,4 @@
-# SR / EBM Search Toolkit · SR / EBM 搜尋工具包
+# SR x EBM Happy SearchHen 搜尋策略生成雞
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21960702.svg)](https://doi.org/10.5281/zenodo.21960702)
 
