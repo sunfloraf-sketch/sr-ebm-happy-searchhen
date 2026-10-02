@@ -361,7 +361,6 @@
         <button class="btn ghost" id="projSaveBtn" title="把目前的 PICO 表與設定存成專案檔(.json)到你的電腦，日後可開啟繼續編輯"><span data-zh>⬇ 儲存專案檔</span><span data-en>⬇ Save project</span></button>
         <button class="btn ghost" id="projOpenBtn" title="開啟先前儲存的專案檔(.json)，還原整張表繼續編輯"><span data-zh>⬆ 開啟專案檔</span><span data-en>⬆ Open project</span></button>
         <input type="file" id="projFile" accept=".json,application/json" style="display:none">
-        <button class="btn ghost" id="clearBtn"><span data-zh>清空</span><span data-en>Clear</span></button>
       </div>
     </div>
     <details class="ccbox" id="pasteBox" style="margin:0 0 12px">
@@ -442,6 +441,7 @@ City blocks)</pre>
       <tbody id="picoBody"></tbody>
     </table>
     <div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:8px">
+      <button class="btn ghost" id="clearBtn" style="font-size:12px;font-weight:600;padding:6px 12px"><span data-zh>清空</span><span data-en>Clear</span></button>
       <button class="btn ghost" id="tallRows" title="一次把已填文字的儲存格高度拉高為兩倍；再按一次還原" style="font-size:12px;font-weight:600;padding:6px 12px"><span data-zh>⇕ 拉高已填格</span><span data-en>⇕ Taller cells</span></button>
       <button class="btn ghost" id="addRow" title="新增概念 / Add concept" style="font-size:18px;font-weight:700;line-height:1;padding:5px 15px">＋</button>
     </div>
