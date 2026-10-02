@@ -484,7 +484,7 @@ Optical Imaging)</pre>
       <label title="把最後一行的 #行號組合展開，串成一條可直接貼入單一檢索框的長檢索式"><input type="checkbox" id="cbFlat"><span data-zh>合併為一串檢索語法</span><span data-en>One combined query</span></label>
       <span style="display:inline-flex;align-items:center;gap:8px"><label title="英文同義詞裡的多字片語：預設加引號當片語（如 &quot;gestational diabetes&quot;）；勾選則改用鄰近字（如 gestational NEAR/2 diabetes）。鄰近距離可在右方數字框設定（預設 2）。強烈建議先用「鄰近字組合器」把同義詞分堆整理乾淨再貼入。" style="display:inline-flex;align-items:center;gap:5px"><input type="checkbox" id="cbNearPhrase"><span data-zh>片語改用鄰近字</span><span data-en>Phrases as proximity</span></label><span style="display:inline-flex;align-items:center;gap:3px;color:var(--mut)"><span data-zh>鄰</span><span data-en>within&nbsp;</span><input type="number" id="nearN" min="0" max="20" value="2" title="鄰近距離：幾個單字內（預設 2）" style="width:34px;height:28px;font-size:12px;padding:0 5px;text-align:center;border:1px solid var(--line);border-radius:6px"><span data-zh>單字</span><span data-en>&nbsp;words</span></span></span>
       <label title="產出的控制詞彙(MeSH/Emtree/CINAHL)加上可點的詞表查核連結；Word 下載也內嵌超連結。連結只供核對，複製的檢索式仍為純文字。"><input type="checkbox" id="cbLinks" checked><span data-zh>控制詞彙查核連結</span><span data-en>Vocab verify links</span></label>
-      <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--mut)" title="你機構的 EBSCO 專屬代碼（research.ebsco.com/c/XXXX/ 中的 XXXX，如 shmie4）；填了 CINAHL 控制詞彙才會有查核連結。只存在你的瀏覽器本機。"><span data-zh>CINAHL 機構碼</span><span data-en>CINAHL inst.</span><input type="text" id="cinahlInst" placeholder="shmie4，或貼上機構網址" style="width:170px;font-size:12px;padding:6px 8px;border:1px solid var(--line);border-radius:6px"><span data-zh title="預設為成大機構碼 shmie4。其他機構：直接貼上貴機構 CINAHL 進階檢索頁的網址（例如 research.ebsco.com/c/XXXX/… 或登入後任一頁），系統會自動擷取機構碼 XXXX。（目前不適用：非 Basic 版本、院外透過 Proxy 認證登入資料庫者。）只存在你的瀏覽器本機。" style="cursor:help;color:var(--brand2);font-weight:700">ⓘ</span><span data-en title="Defaults to NCKU’s code (shmie4). Other institutions: just paste your institution’s CINAHL advanced-search URL (e.g. research.ebsco.com/c/XXXX/… or any page after signing in) and the tool extracts the code XXXX. (Not applicable to: non-Basic versions, or off-campus proxy logins.) Stored only in your browser." style="cursor:help;color:var(--brand2);font-weight:700">ⓘ</span></span>
+      <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--mut)" title="你機構的 EBSCO 專屬代碼（research.ebsco.com/c/XXXX/ 中的 XXXX，如 shmie4）；填了 CINAHL 控制詞彙才會有查核連結。只存在你的瀏覽器本機。"><span data-zh>CINAHL 機構碼</span><span data-en>CINAHL inst.</span><input type="text" id="cinahlInst" placeholder="其他機構：貼上網址或代碼" style="width:210px;font-size:12px;padding:6px 8px;border:1px solid var(--line);border-radius:6px"><span data-zh title="內建使用成大機構碼（shmie4），欄位留空即可。其他機構：貼上貴機構 CINAHL 進階檢索頁的網址（例如 research.ebsco.com/c/XXXX/…），系統會自動擷取機構碼；若擷取不到，請手動填入機構碼。只存在你的瀏覽器本機。" style="cursor:help;color:var(--brand2);font-weight:700">ⓘ</span><span data-en title="Uses NCKU’s code (shmie4) by default — leave blank. Other institutions: paste your CINAHL advanced-search URL (e.g. research.ebsco.com/c/XXXX/…) and the tool extracts the code; if it can’t, enter the code manually. Stored only in your browser." style="cursor:help;color:var(--brand2);font-weight:700">ⓘ</span></span>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-left:auto">
       <button class="btn primary" id="genBtn"><span data-zh>▶ 生成檢索策略</span><span data-en>▶ Generate strategies</span></button>
@@ -1526,7 +1526,7 @@ if (typeof module !== "undefined" && module.exports) {
     var q=encodeURIComponent(t);
     if(vocab==="mesh") return "https://www.ncbi.nlm.nih.gov/mesh/?term="+q;
     if(vocab==="emtree") return "https://www.embase.com/emtree?term="+q;
-    if(vocab==="cinahl"){ var inst=((cinahlInst&&cinahlInst.value)||"").trim(); if(!inst) return null; return "https://research.ebsco.com/c/"+encodeURIComponent(inst)+"/search/advanced/cinmesh?defaultdb=cin20&searchTerm="+q; }
+    if(vocab==="cinahl"){ return _cinahlBase((cinahlInst&&cinahlInst.value)||"")+"/search/advanced/cinmesh?defaultdb=cin20&searchTerm="+q; }   // 內建預設成大 shmie4；欄位填代碼或（代理版）完整網址皆可，主機與埠一併保留
     return null;
   }
   function hlHighlight(text, engine, semantic, brackets, vocab, linksOn){
@@ -1658,7 +1658,7 @@ if (typeof module !== "undefined" && module.exports) {
       panel.appendChild(row);
     });
     if(!any){ var e0=document.createElement("div"); e0.className="cvvhint"; e0.textContent=en?("(no "+CV_VLABEL[vocab]+" term entered)"):("（尚未輸入 "+CV_VLABEL[vocab]+" 詞彙）"); panel.appendChild(e0); }
-    if(vocab==="cinahl" && !(((cinahlInst&&cinahlInst.value)||"").trim())){ var h=document.createElement("div"); h.className="cvvhint"; h.textContent=en?"Fill the “CINAHL inst.” code (below) to enable CINAHL links.":"填下方「CINAHL 機構碼」後，CINAHL 才會有連結。"; panel.appendChild(h); }
+    if(vocab==="cinahl" && !(((cinahlInst&&cinahlInst.value)||"").trim())){ var h=document.createElement("div"); h.className="cvvhint"; h.textContent=en?"CINAHL links use NCKU’s institution code by default; other institutions can paste their URL or code in “CINAHL inst.” below.":"CINAHL 連結預設使用成大機構碼；其他機構可於下方「CINAHL 機構碼」貼上機構網址或代碼。"; panel.appendChild(h); }
     if(allUrls.length>1){
       var all=document.createElement("button"); all.type="button"; all.className="cvvall";
       all.textContent=en?("Open all ("+allUrls.length+")"):("全部開啟 ("+allUrls.length+")");
@@ -2792,7 +2792,7 @@ if (typeof module !== "undefined" && module.exports) {
           try{
             var finalRow=allRows[allRows.length-1];
             if(!finalRow) throw new Error(isEn()?"No strategy to send":"沒有可傳送的檢索策略");
-            var full=expandNumberedQuery(finalRow,allRows), url=DB_OPEN_URLS[tid];
+            var full=expandNumberedQuery(finalRow,allRows), url=(tid==="cinahl_ebsco")?(_cinahlBase((cinahlInst&&cinahlInst.value)||"")+"/search/advanced/filters?autocorrect=y&defaultdb=cin20"):DB_OPEN_URLS[tid];   // CINAHL：依機構碼／代理網址開啟該機構的進階查詢畫面
             var link=document.createElement("a");link.href=url;link.target="_blank";link.rel="noopener noreferrer";document.body.appendChild(link);link.click();link.remove();
             srCount('pico-db-open-'+tid,'PICO-開啟資料庫-'+tid);
             copyTextForPush(full).then(function(){ openBtn.innerHTML="✓"; openBtn.classList.add("done"); openBtn.title=isEn()?"Copied — paste into the search box":"已複製，請貼入搜尋框"; setTimeout(function(){openBtn.innerHTML=OPENSVG;openBtn.classList.remove("done");openBtn.title=_openTitle;},1600); })
@@ -3455,10 +3455,26 @@ if (typeof module !== "undefined" && module.exports) {
   if(nearN) nearN.addEventListener("change", function(){ if(outs.children.length && cbNearPhrase && cbNearPhrase.checked) $("#genBtn").click(); });
   // CINAHL 機構碼：本機記憶，變更後重生（讓 CINAHL 連結生效）
   // 貼上機構網址時自動擷取機構碼：research.ebsco.com/c/XXXX/… → XXXX
-  function _cinahlCode(v){ var s=String(v||"").trim(); var m=s.match(/\/c\/([A-Za-z0-9_-]+)/); return m?m[1]:s; }
-  if(cinahlInst){ var _saved=""; try{ _saved=localStorage.getItem("sr_cinahl_inst"); }catch(e){} cinahlInst.value=(_saved!=null&&_saved!=="")?_saved:"shmie4";   // 預設載入成大機構碼
-    cinahlInst.addEventListener("input", function(){ var code=_cinahlCode(cinahlInst.value); if(code!==cinahlInst.value) cinahlInst.value=code; try{ localStorage.setItem("sr_cinahl_inst", cinahlInst.value.trim()); }catch(e){} });
-    cinahlInst.addEventListener("change", function(){ var code=_cinahlCode(cinahlInst.value); if(code!==cinahlInst.value) cinahlInst.value=code; try{ localStorage.setItem("sr_cinahl_inst", cinahlInst.value.trim()); }catch(e){} if(outs.children.length && (!cbLinks||cbLinks.checked)) $("#genBtn").click(); }); }
+  // 機構碼／網址正規化：標準主機 research.ebsco.com 只留代碼；代理（自訂主機／埠）保留完整 base（scheme://host[:port]/c/代碼）
+  function _cinahlNorm(v){
+    var s=String(v||"").trim(); if(!s) return "";
+    var dec=s; try{ dec=decodeURIComponent(s); }catch(e){}   // 處理 login?url= 這類編碼網址
+    var m=dec.match(/(https?:\/\/[^\s/]+)\/c\/([A-Za-z0-9_-]+)/i) || s.match(/(https?:\/\/[^\s/]+)\/c\/([A-Za-z0-9_-]+)/i);
+    if(m){ var o=m[1], c=m[2]; return /^https?:\/\/research\.ebsco\.com$/i.test(o) ? c : (o+"/c/"+c); }
+    var m2=s.match(/([A-Za-z0-9.\-]+(?::\d+)?)\/c\/([A-Za-z0-9_-]+)/);   // 無 scheme 的 host/c/代碼
+    if(m2){ var h=m2[1], c2=m2[2]; return /^research\.ebsco\.com$/i.test(h) ? c2 : ("https://"+h+"/c/"+c2); }
+    return s;   // 純代碼或無法辨識 → 原樣
+  }
+  // 由儲存值組出 base（scheme://host[:port]/c/代碼）；空值回退成大 shmie4
+  function _cinahlBase(stored){
+    var v=String(stored||"").trim()||"shmie4";
+    if(/^https?:\/\//i.test(v)) return v.replace(/\/+$/,"");
+    if(/\/c\//.test(v)) return ("https://"+v).replace(/\/+$/,"");
+    return "https://research.ebsco.com/c/"+encodeURIComponent(v);
+  }
+  if(cinahlInst){ var _saved=""; try{ _saved=localStorage.getItem("sr_cinahl_inst"); }catch(e){} cinahlInst.value=(_saved!=null&&_saved!=="")?_saved:"";   // 預設留空（內建用成大機構碼 shmie4；其他機構才貼上）
+    cinahlInst.addEventListener("input", function(){ var code=_cinahlNorm(cinahlInst.value); if(code!==cinahlInst.value) cinahlInst.value=code; try{ localStorage.setItem("sr_cinahl_inst", cinahlInst.value.trim()); }catch(e){} });
+    cinahlInst.addEventListener("change", function(){ var code=_cinahlNorm(cinahlInst.value); if(code!==cinahlInst.value) cinahlInst.value=code; try{ localStorage.setItem("sr_cinahl_inst", cinahlInst.value.trim()); }catch(e){} if(outs.children.length && (!cbLinks||cbLinks.checked)) $("#genBtn").click(); }); }
 
   // ---- 由「鄰近字組合器」帶入（localStorage 佇列，可累加多個概念）----
   function srCount(p,t){ try{ var _e=window.event; if(_e&&(_e.type==="click"||_e.type==="change")&&_e.target&&_e.target.closest){ var _b=_e.target.closest("button,[role=button],.btn,a,input,select,th,label"); if(_b) _b.__srExplicit=_e.timeStamp; } }catch(_x){} var c=function(o){ var n=0;(function f(){ try{ if(window.goatcounter&&window.goatcounter.count){ window.goatcounter.count(o); return; } }catch(e){ return; } if(n++<40) setTimeout(f,250); })(); }; c({path:p,title:t||p,event:true}); c({path:p+'-all',title:(t||p)+'（累計）',event:true,no_session:true}); }  /* 雙軌：p=去重(不重複使用階段)、p-all=no_session(每次都算) */
