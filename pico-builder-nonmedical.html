@@ -71,8 +71,8 @@
   table.pico tbody tr:hover td.lab{background:linear-gradient(180deg,#F5F7F8,#EBEFF1)}
   .rmrow{border:none;background:none;color:#55504B;cursor:pointer;font-size:15px;padding:0 2px}
   .rmrow:hover{color:#23282D}
-  .pico-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
-  .picotools{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .pico-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+  .picotools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:40px}
   /* 工具列按鈕含圖示 */
   .picotools .btn{display:inline-flex;align-items:center;gap:6px}
   .picotools .btn svg{display:block}
@@ -200,7 +200,7 @@
   .cvvclose:hover{color:#334155}
   .cvvallrow{display:flex;align-items:center;gap:7px;margin-top:8px}
   .cvvprow{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline;padding:4px 0;border-top:1px dashed #e2e8f0}
-  .cvvplab{font-weight:700;color:#7c3aed;min-width:22px}
+  .cvvplab{font-weight:700;color:#23282D;min-width:22px}
   .cvvlink{font-size:12.5px;color:var(--deco2);text-decoration:underline;text-underline-offset:2px;word-break:break-word}
   .cvvlink:hover{color:#25292D} .cvvna{font-size:12.5px;color:#94a3b8}
   .cvvhint{font-size:11.5px;color:#b45309;line-height:1.4;margin-top:6px}
@@ -213,6 +213,7 @@
   /* ---- 統一導覽列 ---- */
   .hbar{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
   .brand{text-decoration:none;color:#fff;flex-shrink:0}
+  .brand:hover,.brand:hover h1{color:#fff}
   .brand h1{margin:0;font-size:20px;font-weight:700;letter-spacing:.3px;white-space:nowrap}
   .toolnav{display:flex;gap:8px;flex-wrap:wrap;flex:1;margin-left:4px}
   .toolbtn{text-decoration:none;color:rgba(255,255,255,.90);background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.26);padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;white-space:nowrap;transition:background .15s,color .15s}
@@ -1752,10 +1753,10 @@ if (typeof module !== "undefined" && module.exports) {
     if(allUrls.length>1){
       var all=document.createElement("button"); all.type="button"; all.className="cvvall";
       all.textContent=en?("Open all ("+allUrls.length+")"):("全部開啟 ("+allUrls.length+")");
-      var arow=document.createElement("div"); arow.className="cvvallrow"; arow.appendChild(all);
-      arow.appendChild(makeInfoTip(en
+      all.title = en
         ? "Opens one tab per term. If only the first opens, the browser blocked the rest (pop-up blocker): click the blocked-pop-up icon at the right of the address bar → allow pop-ups for this site → click again. The individual links above always work."
-        : "每個詞開一個分頁。若只開了第一個，其餘是被瀏覽器擋掉（彈窗阻擋）：點網址列右側的「彈出視窗被封鎖」圖示 →「一律允許此網站」→ 再按一次即可全開。上面每個連結單獨點永遠可用。"));
+        : "每個詞開一個分頁。若只開了第一個，其餘是被瀏覽器擋掉（彈窗阻擋）：點網址列右側的「彈出視窗被封鎖」圖示 →「一律允許此網站」→ 再按一次即可全開。上面每個連結單獨點永遠可用。";
+      var arow=document.createElement("div"); arow.className="cvvallrow"; arow.appendChild(all);
       var flag=document.createElement("span"); flag.className="cvvblockflag"; flag.style.cssText="font-size:11.5px;color:#b45309"; arow.appendChild(flag);
       all.onclick=function(){
         srCount('pico-cv-openall','PICO-查核全部開啟');
@@ -3565,8 +3566,8 @@ if (typeof module !== "undefined" && module.exports) {
     ? "⚠ Reminder: assess the suitability of synonyms and controlled vocabulary yourself, and especially verify the controlled terms — the tool only links to the thesauri and does not verify them."
     : "⚠ 提醒您！請自行評估同義詞與控制詞彙的適用性，尤其確實查核控制詞彙，工具僅提供詞表超連結，並未進行查驗。"; }
   function _noteStrat(){ return isEn()
-    ? "⚠ Reminder: 1. Verify the controlled vocabulary yourself (the tool only links to the thesauri and does not verify them). 2. Review the search strategy manually and test/evaluate it in the databases before use. 3. SR × EBM Happy SearchHen assumes no warranty or liability."
-    : "⚠ 提醒您！1. 請確實查核控制詞彙（工具僅提供詞表超連結，並未進行查驗）。2. 請人工覆核檢索策略，並於資料庫實測與評估後使用。3. SR x EBM Happy SearchHen 不負保證責任。"; }
+    ? "⚠ Reminder: verify the controlled vocabulary and review the search strategy; test and evaluate carefully in the databases. SearchHen assumes no warranty."
+    : "⚠ 提醒您！請確實查核控制詞彙，並覆核檢索策略，應謹慎於資料庫實測與評估。SearchHen 不負保證責任。"; }
   var _CITE_ZH="方靜如，SR x EBM Happy SearchHen 搜尋策略生成雞。";
   var _CITE_EN="Fang CJ, SR x EBM Happy SearchHen. doi: 10.5281/zenodo.21960702. https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/";
   function _citeLines(){ return isEn()? [_CITE_EN] : [_CITE_ZH, _CITE_EN]; }
@@ -3637,7 +3638,7 @@ if (typeof module !== "undefined" && module.exports) {
   // 在檢索策略表下方加紅字提醒：請確實查核控制詞彙（工具僅提供詞表超連結、未查驗）；具冪等性。
   function _insertCVVerifyNote(doc){
     var ts=doc.getElementsByTagNameNS(_WNS,"t");
-    for(var i=0;i<ts.length;i++){ var tx=ts[i].textContent||""; if(tx.indexOf("請人工覆核檢索策略")>=0 || tx.indexOf("Review the search strategy manually")>=0) return; }   // 已加過就跳過
+    for(var i=0;i<ts.length;i++){ var tx=ts[i].textContent||""; if(tx.indexOf("覆核檢索策略")>=0 || tx.indexOf("review the search strategy")>=0) return; }   // 已加過就跳過
     var note=_mkP(doc,[{text:_noteStrat(), color:"C00000", sz:18}]);   // 檢索策略表上方提醒（三點）
     var tbls=doc.getElementsByTagNameNS(_WNS,"tbl"), st=null;
     for(var j=0;j<tbls.length;j++){ var tr0=_wtag(tbls[j],"tr")[0]; if(tr0 && /搜尋語法|Search syntax/.test(_recCellText(tr0))){ st=tbls[j]; break; } }   // 取第一個策略表（提示放其上方）
