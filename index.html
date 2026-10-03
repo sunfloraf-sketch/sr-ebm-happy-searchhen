@@ -5,48 +5,139 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SR × EBM Happy SearchHen 搜尋策略生成雞</title>
 <style>
-  :root{--bg:#f4f6f9;--card:#ffffff;--ink:#1c2733;--mut:#5b6b7b;--line:#e2e8f0;
-    --head:#4b5563;--head2:#374151;--accent:#f3f4f6;--code:#0f172a;--codebg:#f8fafc}
+  :root{
+    --paper:#F3F0E8; --paper2:#FBF9F4; --card:#FFFFFF;
+    --ink:#23302A; --mut:#6C726B; --line:#E5E0D4;
+    --green:#2A5A49; --green-d:#1F4538; --greenlt:#EAF1EC;
+    --amber:#AE7430; --amberlt:#F3EBDC;
+    --slate:#3C5A72; --slatelt:#E8EEF3;
+    --egg:#F6EEDC; --eggln:#E4D6B8; --eggink:#3C4A43;
+  }
   *{box-sizing:border-box}
-  body{margin:0;font-family:-apple-system,"Segoe UI","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
-  header{background:linear-gradient(135deg,#4b5563,#374151);color:#fff;padding:20px 24px;font-family:-apple-system,"Segoe UI","PingFang TC","Microsoft JhengHei","Noto Sans TC",Roboto,Arial,sans-serif}
-  .hwrap{max-width:1040px;margin:0 auto;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
-  h1{margin:0 0 6px;font-size:24px}
-  header p{margin:0;font-size:14px;opacity:.92;max-width:700px}
-  .langbtn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.4);color:#fff;padding:6px 14px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600}
-  .langbtn:hover{background:rgba(255,255,255,.28)}
-  main{max-width:1040px;margin:0 auto;padding:26px 24px 40px}
-  .lead{margin:0 2px 22px;font-size:13.5px;color:var(--mut);line-height:1.65}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
-  .tool{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;text-decoration:none;color:inherit;transition:box-shadow .15s,transform .15s,border-color .15s}
-  .tool:hover{box-shadow:0 8px 24px rgba(15,23,42,.10);transform:translateY(-2px);border-color:#cbd5e1}
-  .tool h2{margin:0 0 2px;font-size:19px}
-  .tool .sub{font-size:12.5px;color:var(--mut);font-weight:600;margin-bottom:10px}
-  .tool p{margin:0 0 16px;font-size:13.5px;color:var(--mut);flex:1}
-  .go{align-self:flex-end;width:38px;height:38px;border-radius:50%;background:var(--head);color:#fff;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700;line-height:1;transition:background .15s,transform .15s}
-  .tool:hover .go{background:var(--head2);transform:translateX(2px)}
-  /* ---- PICO 雙按鈕卡片 ---- */
-  .tool-pico:hover{transform:none;box-shadow:0 8px 24px rgba(15,23,42,.10);border-color:#cbd5e1}
-  .gorow{display:flex;gap:10px;flex-wrap:wrap;margin-top:2px}
-  .gobtn{display:inline-flex;align-items:center;gap:5px;background:var(--head);color:#fff;border-radius:8px;padding:9px 20px;font-size:14px;font-weight:700;text-decoration:none;transition:background .15s}
-  .gobtn:hover{background:var(--head2)}
-  .gobtn .g-lbl{font-size:12px;font-weight:600;opacity:.85;margin-left:5px}
-  .gobtn.disabled{opacity:1;cursor:not-allowed;pointer-events:none;background:#f1f3f4;color:#98a2a9;border:1px solid #dde3e7}
-  footer{max-width:1040px;margin:0 auto;padding:0 24px 40px;color:var(--mut);font-size:12.5px}
-  footer code{background:var(--codebg);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:12px}
-  /* ---- 統一導覽列 ---- */
-  .hbar{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-  .brand{text-decoration:none;color:#fff;flex-shrink:0}
-  .brand h1{margin:0;font-size:20px;font-weight:700;letter-spacing:.3px;white-space:nowrap}
-  .toolnav{display:flex;gap:8px;flex-wrap:wrap;flex:1;margin-left:4px}
-  .toolbtn{text-decoration:none;color:#fff;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.4);padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;white-space:nowrap;transition:background .15s}
-  .toolbtn:hover{background:rgba(255,255,255,.26)}
-  .toolbtn.active{background:#fff;color:#0d6e6e;border-color:#fff;box-shadow:0 1px 8px rgba(0,0,0,.2);cursor:default}
-  .subtitle{max-width:1200px;margin:10px auto 0;font-size:13px;opacity:.92;color:#fff}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:-apple-system,"Segoe UI","PingFang TC","Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif;
+    background:var(--paper);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+  /* ---- header ---- */
+  header{position:sticky;top:0;z-index:20;background:rgba(243,240,232,.86);backdrop-filter:saturate(150%) blur(8px);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;gap:6px 18px;padding:14px 0;flex-wrap:wrap}
+  .logo{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--green-d)}
+  .logo .mark{width:37px;height:40px;flex:0 0 auto}
+  .logo .wm{display:flex;flex-direction:column;line-height:1.12}
+  .logo .wm b{font-size:16px;font-weight:800;letter-spacing:.2px}
+  .logo .wm span{font-size:11px;color:var(--mut);letter-spacing:3px}
+  .nav .sp{flex:1}
+  .nav a.navlink{text-decoration:none;color:var(--ink);font-size:14px;font-weight:600;padding:6px 4px;position:relative}
+  .nav a.navlink.active{color:var(--green-d)}
+  .nav a.navlink.active::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--amber);border-radius:2px}
+  .nav a.navlink:hover{color:var(--green-d)}
+  .langbtn{background:transparent;border:1px solid var(--line);color:var(--ink);padding:6px 13px;border-radius:20px;cursor:pointer;font-size:12.5px;font-weight:600}
+  .langbtn:hover{border-color:var(--green);color:var(--green-d)}
+
+  /* ---- hero ---- */
+  .hero{background:linear-gradient(180deg,#FBF9F4 0%, #F3F0E8 100%)}
+  .hero-in{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center;padding:52px 24px 44px}
+  .tagline{display:inline-flex;align-items:center;gap:7px;color:var(--green);font-weight:700;font-size:14.5px;letter-spacing:.3px;margin:0 0 16px}
+  .tagline .rule{display:inline-block;width:30px;height:2px;background:var(--amber);border-radius:2px}
+  .hero h1{margin:0;font-size:46px;line-height:1.08;font-weight:800;letter-spacing:.2px;color:var(--green-d)}
+  .hero h1 .hen{color:var(--amber)}
+  .hero .zh{margin:10px 0 0;font-size:25px;font-weight:800;letter-spacing:10px;color:var(--ink)}
+  .hero p.desc{margin:20px 0 0;font-size:15px;color:#43514A;max-width:468px}
+  .hero .cta{margin-top:26px;display:flex;gap:12px;flex-wrap:wrap}
+  .btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;text-decoration:none;font-weight:700;font-size:14.5px;padding:12px 22px;border-radius:10px;box-shadow:0 6px 18px rgba(31,69,56,.18);transition:background .15s,transform .15s}
+  .btn-primary:hover{background:var(--green-d);transform:translateY(-1px)}
+  .btn-ghost{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--green-d);text-decoration:none;font-weight:700;font-size:14.5px;padding:12px 20px;border-radius:10px;border:1px solid var(--green);transition:background .15s}
+  .btn-ghost:hover{background:var(--greenlt)}
+
+  /* ---- hero art: hen + nest of eggs ---- */
+  .art{position:relative;min-height:320px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .art .scene{width:100%;max-width:460px}
+  .art .scene .hen-a,.art .scene .hen-c{transition:opacity .28s ease}
+  .art .scene .hen-c{opacity:0}
+  .art .scene:hover .hen-a{opacity:0}
+  .art .scene:hover .hen-c{opacity:1}
+  .eggrow{display:flex;flex-wrap:wrap;gap:9px 10px;justify-content:center;margin-top:6px;max-width:470px}
+  .egg{display:inline-flex;align-items:center;justify-content:center;text-align:center;
+    width:92px;height:62px;background:radial-gradient(120% 120% at 50% 20%, #FCF7EA 0%, var(--egg) 70%);
+    border:1px solid var(--eggln);border-radius:50% 50% 48% 48%/58% 58% 42% 42%;
+    font-size:11.5px;font-weight:700;color:var(--eggink);line-height:1.2;padding:4px 6px;box-shadow:0 3px 7px rgba(60,74,67,.07)}
+  .egg small{display:block;font-size:10px;font-weight:600;color:#7b8178}
+
+  /* ---- cards ---- */
+  .tools{padding:46px 0 10px}
+  .sec-h{text-align:center;margin:0 0 30px}
+  .sec-h h2{margin:0;font-size:24px;font-weight:800;color:var(--green-d)}
+  .sec-h p{margin:8px auto 0;font-size:14px;color:var(--mut);max-width:620px}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px 22px 22px;transition:box-shadow .15s,transform .15s,border-color .15s}
+  .card:hover{box-shadow:0 14px 30px rgba(35,48,42,.09);transform:translateY(-3px);border-color:#d7d0bf}
+  .cnum{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#fff;margin-bottom:14px}
+  .card.c1 .cnum{background:var(--amber)} .card.c2 .cnum{background:var(--green)} .card.c3 .cnum{background:var(--slate)}
+  .card h3{margin:0;font-size:18.5px;font-weight:800;color:var(--ink)}
+  .card .en{font-size:12.5px;font-weight:600;color:var(--mut);margin:2px 0 12px}
+  .card p{margin:0 0 18px;font-size:13.5px;color:#4c554e;flex:1}
+  .crow{display:flex;gap:10px;flex-wrap:wrap}
+  .cbtn{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:9px;transition:background .15s,transform .15s}
+  .card.c1 .cbtn.solid{background:var(--amber);color:#fff} .card.c1 .cbtn.solid:hover{background:#946026}
+  .card.c1 .cbtn.line{border:1px solid var(--amber);color:#8f5d23} .card.c1 .cbtn.line:hover{background:var(--amberlt)}
+  .card.c2 .cbtn.solid{background:var(--green);color:#fff} .card.c2 .cbtn.solid:hover{background:var(--green-d)}
+  .card.c3 .cbtn.solid{background:var(--slate);color:#fff} .card.c3 .cbtn.solid:hover{background:#2f4a5e}
+  .chead{display:flex;justify-content:flex-start;align-items:flex-start;gap:54px;margin-bottom:10px}
+  .chead .cnum{margin-bottom:0;flex:0 0 auto}
+  .cart{flex:1 1 auto;min-width:0;margin:-8px 0 0 0}
+  .cart svg{display:block;width:100%;height:142px}
+  @media(min-width:861px) and (max-width:1180px){.chead{flex-direction:column;gap:4px}.cart{width:100%;margin:0}}
+
+  /* ---- story ---- */
+  .story{margin:48px 0 10px;background:linear-gradient(90deg,#2A5A49 0%,#2A5A49 38%,rgba(42,90,73,.82) 58%,rgba(42,90,73,.45) 80%,rgba(42,90,73,.10) 100%);color:#EAF1EC;border-radius:20px;padding:40px 40px}
+  .story h2{margin:0 0 10px;font-size:22px;font-weight:800;color:#fff}
+  .story p{margin:0 0 10px;font-size:14.5px;color:#D7E5DC;max-width:820px}
+  .story .egg-accent{color:#EBC98B;font-weight:700}
+
+  /* ---- footer ---- */
+  footer{margin-top:40px;border-top:1px solid var(--line);background:var(--paper2)}
+  .foot{padding:26px 24px 36px;color:var(--mut);font-size:12.5px}
+  .foot a{color:var(--green-d)}
+  .foot .frow{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:baseline}
+  .foot .brandline{font-weight:700;color:var(--ink)}
+
   [data-en]{display:none}
   html[lang="en"] [data-zh]{display:none}
   html[lang="en"] [data-en]{display:inline}
-  html[lang="en"] .sub[data-zh]{display:none}
+  html[lang="en"] .blk[data-zh]{display:none}
+  html[lang="en"] .blk[data-en]{display:block}
+  .blk[data-en]{display:none}
+
+  @media(max-width:860px){
+    .hero-in{grid-template-columns:1fr;gap:26px;padding:36px 24px}
+    .hero h1{font-size:38px}
+    .grid{grid-template-columns:1fr}
+    .art{order:-1}
+    .story{padding:30px 24px}
+  }
+  /* 與工具頁一致的頁頭位置 */
+  html{scrollbar-gutter:stable}
+  .wrap{max-width:1280px}
+  header{font-family:-apple-system,"Segoe UI","PingFang TC","Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif}
+  header .nav{padding:12px 24px;min-height:64px;box-sizing:border-box;line-height:1.5}
+  header .nav a.navlink,header .langbtn{line-height:1.5}
+  header .langbtn{width:80px;box-sizing:border-box;text-align:center;padding-left:0;padding-right:0;white-space:nowrap}
+  .story{position:relative;overflow:hidden}
+  .story>*:not(.story-art){position:relative;z-index:1}
+  .story .story-art{position:absolute;right:3%;top:50%;transform:translateY(-50%);height:280px;width:336px;opacity:.5;z-index:0;pointer-events:none;
+    -webkit-mask-image:linear-gradient(to right,transparent 0%,#000 16%);mask-image:linear-gradient(to right,transparent 0%,#000 16%)}
+  @media(max-width:860px){.story .story-art{display:none}}
+  .story .story-eggs{position:absolute;left:max(28%,440px);right:calc(3% + 280px);bottom:6px;height:112px;z-index:0;pointer-events:none;
+    -webkit-mask-image:linear-gradient(to right,transparent 0%,#000 30%);mask-image:linear-gradient(to right,transparent 0%,#000 30%)}
+  @media(max-width:860px){.story .story-eggs{display:none}}
+  .story .story-eggs svg{display:block;width:100%;height:100%}
+  .story .egg-origin{position:relative;display:inline-block;width:0;height:1em;vertical-align:middle}
+  .story .egg-origin svg{position:absolute;left:12px;top:-6px;width:clamp(200px,calc(100vw - 880px),360px);height:auto;overflow:visible;pointer-events:none}
+  @media(max-width:860px){.story .egg-origin{display:none}}
+  html[lang="en"] .card .en{display:none}
+  html[lang="en"] .card h3{margin-bottom:12px}
   /* 全域 title 提示：比照 ⓘ（黑底白字），取代瀏覽器原生灰底提示 */
   #gtip{position:fixed;z-index:9999;max-width:240px;white-space:normal;text-align:left;background:#1c2733;color:#fff;font-size:11.5px;font-weight:400;line-height:1.55;padding:8px 10px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.25);pointer-events:none;opacity:0;transition:opacity .12s;display:none}
   #gtip.show{opacity:1}
@@ -56,50 +147,226 @@
 </style>
 </head>
 <body>
-<header>
-  <div class="hbar">
-    <a class="brand" href="index.html"><h1><span data-zh>SR × EBM Happy SearchHen 搜尋策略生成雞</span><span data-en>SR × EBM Happy SearchHen</span></h1></a>
-    <button class="langbtn" id="langBtn" onclick="toggleLang()" style="margin-left:auto">English</button>
-  </div>
-  <p class="subtitle"><span data-zh>系統性文獻回顧檢索的三個獨立小工具，各自可單獨使用，也能互相搭配。</span><span data-en>Three independent tools for systematic-review searching. Use any one on its own, or combine them.</span></p>
-</header>
-<main>
-  <div class="lead">
-    <span data-zh>這套工具是配合製作者的「系統性文獻回顧（SR）檢索」課程所設計，可能不完全符合您的工作流程；建議您使用時，順著找出最適合自己的檢索作業方式。</span>
-    <span data-en>These tools were designed to accompany the author's systematic-review (SR) searching course, so they may not fully match your own workflow — as you use them, find the search process that works best for you.</span>
-  </div>
 
-  <div class="grid">
-    <div class="tool tool-pico">
-      <h2><span data-zh>PICO 檢索策略產生器</span><span data-en>PICO Strategy Builder</span></h2>
-      <div class="sub" data-zh>PICO Strategy Builder</div>
-      <p><span data-zh>在 PICO 概念表填入自由詞彙與控制詞彙，選欄位決定完整度，一鍵生成各資料庫的檢索策略。並可利用 PubMed API（內建官方輕量版）簡易測試潛在文章數量與組合，幫助發展檢索策略。</span><span data-en>Fill free-text and controlled terms into the PICO table, choose a field level, and generate each database's strategy in one click. You can also use the PubMed API (a built-in, official lightweight edition) to quickly test potential article counts and combinations, helping you develop your search strategy.</span></p>
-      <div class="gorow">
-        <a class="gobtn" href="pico-builder.html"><span data-zh>醫學領域</span><span data-en>Medical</span> →</a>
-        <a class="gobtn" href="pico-builder-nonmedical.html"><span data-zh>非醫學領域</span><span data-en>Non-medical</span> →</a>
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="index.html" aria-label="SR × EBM Happy SearchHen">
+      <svg class="mark" viewBox="4 0 40 48" fill="none" aria-hidden="true"><path d="M24 1.8 C33.5 1.8 42.2 14.5 42.2 27 C42.2 38.6 34.4 46.2 24 46.2 C13.6 46.2 5.8 38.6 5.8 27 C5.8 14.5 14.5 1.8 24 1.8 Z" fill="#FBF9F4" stroke="#2A5A49" stroke-width="1.5"/><g transform="translate(0 3)"><path d="M30 15c0-2.4-2-4.3-4.4-4.3-1.3 0-2.5.6-3.3 1.5-.6-1.6-2.1-2.7-3.9-2.7-1.4 0-2.6.6-3.4 1.6" stroke="#AE7430" stroke-width="1.8" stroke-linecap="round"/><path d="M17 16c-3.4 1.3-5.8 4.6-5.8 8.4 0 3.1 1.6 5.9 4 7.5v3.3h3.1v-2.1c.7.1 1.3.2 2 .2h4.1v1.9h3.1v-3.1c2.9-1.5 4.9-4.5 4.9-8 0-2.2-.8-4.2-2.1-5.7" stroke="#2A5A49" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" fill="#fff"/><path d="M30 19.5 L34.6 20.5 L30.6 22.7 Z" fill="#D98E2E" stroke="#B07420" stroke-width=".5" stroke-linejoin="round"/><circle cx="27" cy="20.2" r="1.15" fill="#2A5A49"/></g></svg>
+    </a>
+    <div class="sp"></div>
+    <a class="navlink" href="pico-builder.html"><span data-zh>PICO 檢索策略產生器</span><span data-en>PICO Strategy Builder</span></a>
+    <a class="navlink" href="syntax-converter.html"><span data-zh>資料庫檢索語法轉換器</span><span data-en>Syntax Converter</span></a>
+    <a class="navlink" href="proximity-builder.html"><span data-zh>鄰近字分堆組合器</span><span data-en>Proximity Builder</span></a>
+    <button class="langbtn" id="langBtn" onclick="toggleLang()">English</button>
+  </div>
+</header>
+
+<a id="top"></a>
+<section class="hero">
+  <div class="wrap hero-in">
+    <div class="hero-txt">
+      <p class="tagline"><span class="rule"></span><span data-zh>我的介面友善，你的檢索快樂</span><span data-en>Friendly interface, happy searching</span></p>
+      <h1>SR × EBM<br>Happy Search<span class="hen">Hen</span></h1>
+      <p class="zh">搜尋策略生成雞</p>
+      <p class="desc"><span data-zh>從檢索詞到跨資料庫搜尋策略，讓 SR 與 EBM 的檢索流程更輕鬆、更有效率。純網頁、可離線、不上傳研究資料。</span><span data-en>From search terms to cross-database strategies — making SR and EBM searching lighter and more efficient. Pure web, offline-ready, and it never uploads your research data.</span></p>
+      <div class="cta">
+        <a class="btn-primary" href="pico-builder.html"><span data-zh>開始建立檢索策略</span><span data-en>Start building</span> →</a>
+        <a class="btn-ghost" href="#tools"><span data-zh>看看三個工具</span><span data-en>Explore the tools</span></a>
       </div>
     </div>
-
-    <a class="tool" href="syntax-converter.html">
-      <h2><span data-zh>資料庫檢索語法轉換器</span><span data-en>Search Syntax Converter</span></h2>
-      <div class="sub" data-zh>Search Syntax Converter</div>
-      <p><span data-zh>貼上任一起始資料庫的檢索式，一鍵轉出各大資料庫／平台的語法，並可下載 Word。但是控制詞彙要自理喔！</span><span data-en>Paste a query from any starting database and convert it to the syntax of the major databases/platforms in one click, with Word export. Note: controlled vocabulary is up to you!</span></p>
-      <span class="go" aria-hidden="true">→</span>
-    </a>
-
-    <a class="tool" href="proximity-builder.html">
-      <h2><span data-zh>鄰近字組合器</span><span data-en>Proximity Builder</span></h2>
-      <div class="sub" data-zh>Proximity Builder</div>
-      <p><span data-zh>把多堆同義詞組成鄰近字（ADJ/NEAR/N）；也能貼一份 Before 清單自動分堆，整理好可直接送進 PICO 檢索策略產生器或語法轉換器。</span><span data-en>Combine stacks of synonyms into a proximity fragment (ADJ/NEAR/N); or paste a Before list to auto-split into stacks, then send the result straight to the PICO Strategy Builder or the Search Syntax Converter.</span></p>
-      <span class="go" aria-hidden="true">→</span>
-    </a>
+    <div class="art">
+      <svg class="scene" viewBox="0 36 460 246" fill="none" aria-hidden="true">
+        <defs>
+          <radialGradient id="eg" cx="36%" cy="28%" r="80%">
+            <stop offset="0" stop-color="#FFFDF8"/><stop offset="1" stop-color="#EEDFBF"/>
+          </radialGradient>
+        </defs>
+        <!-- soft shadow under the hen (no nest) -->
+        <ellipse cx="240" cy="199" rx="92" ry="8" fill="#E6DFCF" opacity=".75"/>
+        <!-- ===== hen: A (default) / C (on hover) ===== -->
+        <g class="hen-a"><path d="M250 70c40 0 70 30 70 70 0 26-14 46-36 58h-96c-24-10-40-32-40-60 0-28 20-50 46-58" fill="#FCFBF7" stroke="#2F4A42" stroke-width="2.4" stroke-linejoin="round"/><path d="M250 120c22 0 40 12 48 30-12 10-28 16-46 16-6 0-12-.6-17-1.8" stroke="#2F4A42" stroke-width="2.2" fill="#F1EEE4"/><circle cx="236" cy="82" r="30" fill="#FCFBF7" stroke="#2F4A42" stroke-width="2.4"/><path d="M224 56c-.5-6 3-10 8-10 1.5-5 7-7 11-4 4-2 9 .5 9 5 3 1 5 4 4 8" fill="#C06A49" stroke="#9c4f34" stroke-width="1.3" stroke-linejoin="round"/><path d="M208 84l-16 5 15 7z" fill="#CD9A3E" stroke="#a87e2d" stroke-width="1.1" stroke-linejoin="round"/><path d="M206 94c-2 5-1 9 2 11" stroke="#C06A49" stroke-width="3.2" stroke-linecap="round"/><circle cx="228" cy="80" r="9" fill="#fff" stroke="#2F4A42" stroke-width="1.8"/><path d="M237 78l8-2" stroke="#2F4A42" stroke-width="1.8" stroke-linecap="round"/><path d="M223.4 82 q4.6 -5.6 9.2 0" stroke="#2F4A42" stroke-width="2.1" stroke-linecap="round"/><ellipse cx="231.5" cy="95.5" rx="6.6" ry="3.6" fill="#E9A08A" opacity=".55"/><path d="M318 96c16-8 30-6 40 6-10 2-16 8-18 18 12-2 22 2 28 12-14 4-30 2-42-8" fill="#EDE8DA" stroke="#2F4A42" stroke-width="2.2" stroke-linejoin="round"/><g opacity="1"><path d="M352 50v17.0" stroke="#2A5A49" stroke-width="2.0" stroke-linecap="round"/><circle cx="349.3" cy="67.6" r="3.2" fill="#2A5A49"/><path d="M352 50l7.0 -2.6" stroke="#2A5A49" stroke-width="2.0" stroke-linecap="round"/></g><g opacity="0.85"><path d="M176 52v15.3" stroke="#2A5A49" stroke-width="1.8" stroke-linecap="round"/><circle cx="173.6" cy="67.8" r="2.9" fill="#2A5A49"/><path d="M176 52l6.3 -2.3" stroke="#2A5A49" stroke-width="1.8" stroke-linecap="round"/></g><path transform="translate(262,50) scale(1.0)" d="M0 -6 L1.4 -1.4 L6 0 L1.4 1.4 L0 6 L-1.4 1.4 L-6 0 L-1.4 -1.4 Z" fill="#D9A23A"/><path transform="translate(272,64) scale(0.6)" d="M0 -6 L1.4 -1.4 L6 0 L1.4 1.4 L0 6 L-1.4 1.4 L-6 0 L-1.4 -1.4 Z" fill="#E3B85A"/><g opacity="0.9" stroke="#2A5A49" stroke-linecap="round"><path d="M378 47v14.4 M389.7 43.4v14.4" stroke-width="1.7"/><path d="M378 47L389.7 43.4" stroke-width="3.1"/></g><g opacity="0.9" fill="#2A5A49"><circle cx="375.7" cy="61.9" r="2.7"/><circle cx="387.4" cy="58.3" r="2.7"/></g></g>
+        <g class="hen-c" aria-hidden="true"><path d="M318 96c16-8 30-6 40 6-10 2-16 8-18 18 12-2 22 2 28 12-14 4-30 2-42-8" fill="#EDE8DA" stroke="#2F4A42" stroke-width="2.2" stroke-linejoin="round"/><path d="M250 70c40 0 70 30 70 70 0 26-14 46-36 58h-96c-24-10-40-32-40-60 0-28 20-50 46-58" fill="#FCFBF7" stroke="#2F4A42" stroke-width="2.4" stroke-linejoin="round"/><path d="M256 124 C262 98 284 78 310 72 C304 86 296 96 288 102 C296 101 302 104 305 108 C292 118 272 124 256 124 Z" fill="#F1EEE4" stroke="#2F4A42" stroke-width="2.2" stroke-linejoin="round"/><circle cx="236" cy="82" r="30" fill="#FCFBF7" stroke="#2F4A42" stroke-width="2.4"/><path d="M224 56c-.5-6 3-10 8-10 1.5-5 7-7 11-4 4-2 9 .5 9 5 3 1 5 4 4 8" fill="#C06A49" stroke="#9c4f34" stroke-width="1.3" stroke-linejoin="round"/><path d="M207.6 85.6 l-13.6 2.6 13.4 3z" fill="#B5553F"/><path d="M208 82.4l-16.8 3.8 15.8 2.6z" fill="#CD9A3E" stroke="#a87e2d" stroke-width="1.1" stroke-linejoin="round"/><path d="M207.4 90.2l-12.4 5.4 12.4 1.6z" fill="#C48F35" stroke="#a87e2d" stroke-width="1.1" stroke-linejoin="round"/><path d="M206 94c-2 5-1 9 2 11" stroke="#C06A49" stroke-width="3.2" stroke-linecap="round"/><circle cx="228" cy="80" r="9" fill="#fff" stroke="#2F4A42" stroke-width="1.8"/><path d="M237 78l8-2" stroke="#2F4A42" stroke-width="1.8" stroke-linecap="round"/><circle cx="228" cy="80.5" r="3.4" fill="#2F4A42"/><circle cx="226.8" cy="79.2" r="1.2" fill="#fff"/><ellipse cx="231.5" cy="95.5" rx="6.6" ry="3.6" fill="#E9A08A" opacity=".55"/><path transform="translate(182,44) scale(1.0)" d="M0 3 C-2.5 -1 -7 0 -6 3.6 C-5.4 6 -2.6 7.8 0 10 C2.6 7.8 5.4 6 6 3.6 C7 0 2.5 -1 0 3 Z" fill="#E08A7A"/><path transform="translate(168,62) scale(0.7)" d="M0 3 C-2.5 -1 -7 0 -6 3.6 C-5.4 6 -2.6 7.8 0 10 C2.6 7.8 5.4 6 6 3.6 C7 0 2.5 -1 0 3 Z" fill="#E9A08A"/><path transform="translate(272,50) scale(1.0)" d="M0 -6 L1.4 -1.4 L6 0 L1.4 1.4 L0 6 L-1.4 1.4 L-6 0 L-1.4 -1.4 Z" fill="#D9A23A"/><path transform="translate(296,44) scale(0.65)" d="M0 -6 L1.4 -1.4 L6 0 L1.4 1.4 L0 6 L-1.4 1.4 L-6 0 L-1.4 -1.4 Z" fill="#E3B85A"/><path transform="translate(338,58) scale(0.8)" d="M0 -6 L1.4 -1.4 L6 0 L1.4 1.4 L0 6 L-1.4 1.4 L-6 0 L-1.4 -1.4 Z" fill="#D9A23A"/><g opacity="0.9"><path d="M352 50v15.3" stroke="#2A5A49" stroke-width="1.8" stroke-linecap="round"/><circle cx="349.6" cy="65.8" r="2.9" fill="#2A5A49"/><path d="M352 50l6.3 -2.3" stroke="#2A5A49" stroke-width="1.8" stroke-linecap="round"/></g></g>
+        <!-- ===== eggs laid naturally (standing, slight tilt) ===== -->
+        <g font-family="-apple-system,'Segoe UI','PingFang TC','Microsoft JhengHei',sans-serif" text-anchor="middle" fill="#6A5E46" font-weight="700" font-size="8">
+        <ellipse cx="62" cy="253" rx="17" ry="3.6" fill="#E2DBCA" opacity=".9"/>
+        <ellipse cx="110" cy="259" rx="17" ry="3.6" fill="#E2DBCA" opacity=".9"/>
+        <ellipse cx="159" cy="263" rx="17" ry="3.6" fill="#E2DBCA" opacity=".9"/>
+        <ellipse cx="208" cy="265" rx="17" ry="3.6" fill="#E2DBCA" opacity=".9"/>
+        <ellipse cx="258" cy="264" rx="17" ry="3.6" fill="#E2DBCA" opacity=".9"/>
+        <ellipse cx="307" cy="262" rx="17" ry="3.6" fill="#E2DBCA" opacity=".9"/>
+        <ellipse cx="356" cy="258" rx="17" ry="3.6" fill="#E2DBCA" opacity=".9"/>
+        <ellipse cx="404" cy="252" rx="17" ry="3.6" fill="#E2DBCA" opacity=".9"/>
+        <g transform="translate(62,226) rotate(-10)"><path d="M0,-27 C12,-27 20,-10 20,4 C20,18 11,27 0,27 C-11,27 -20,18 -20,4 C-20,-10 -12,-27 0,-27 Z" fill="url(#eg)" stroke="#DCCBA4" stroke-width="1.1"/><text y="7">PubMed</text></g>
+        <g transform="translate(110,232) rotate(-5)"><path d="M0,-27 C12,-27 20,-10 20,4 C20,18 11,27 0,27 C-11,27 -20,18 -20,4 C-20,-10 -12,-27 0,-27 Z" fill="url(#eg)" stroke="#DCCBA4" stroke-width="1.1"/><text y="3">Ovid</text><text y="12" font-size="6.6" fill="#8a7d60">MEDLINE</text></g>
+        <g transform="translate(159,236) rotate(-2)"><path d="M0,-27 C12,-27 20,-10 20,4 C20,18 11,27 0,27 C-11,27 -20,18 -20,4 C-20,-10 -12,-27 0,-27 Z" fill="url(#eg)" stroke="#DCCBA4" stroke-width="1.1"/><text y="7">Embase</text></g>
+        <g transform="translate(208,238) rotate(2)"><path d="M0,-27 C12,-27 20,-10 20,4 C20,18 11,27 0,27 C-11,27 -20,18 -20,4 C-20,-10 -12,-27 0,-27 Z" fill="url(#eg)" stroke="#DCCBA4" stroke-width="1.1"/><text y="7">CINAHL</text></g>
+        <g transform="translate(258,237) rotate(-1)"><path d="M0,-27 C12,-27 20,-10 20,4 C20,18 11,27 0,27 C-11,27 -20,18 -20,4 C-20,-10 -12,-27 0,-27 Z" fill="url(#eg)" stroke="#DCCBA4" stroke-width="1.1"/><text y="3" font-size="7.4">Cochrane</text><text y="12" font-size="6.6" fill="#8a7d60">Library</text></g>
+        <g transform="translate(307,235) rotate(3)"><path d="M0,-27 C12,-27 20,-10 20,4 C20,18 11,27 0,27 C-11,27 -20,18 -20,4 C-20,-10 -12,-27 0,-27 Z" fill="url(#eg)" stroke="#DCCBA4" stroke-width="1.1"/><text y="7">Scopus</text></g>
+        <g transform="translate(356,231) rotate(6)"><path d="M0,-27 C12,-27 20,-10 20,4 C20,18 11,27 0,27 C-11,27 -20,18 -20,4 C-20,-10 -12,-27 0,-27 Z" fill="url(#eg)" stroke="#DCCBA4" stroke-width="1.1"/><text y="3" font-size="7.4">Web of</text><text y="12" font-size="7.4">Science</text></g>
+        <g transform="translate(404,225) rotate(11)"><path d="M0,-27 C12,-27 20,-10 20,4 C20,18 11,27 0,27 C-11,27 -20,18 -20,4 C-20,-10 -12,-27 0,-27 Z" fill="url(#eg)" stroke="#DCCBA4" stroke-width="1.1"/><text y="9" font-size="13" fill="#8a7d60">⋯</text></g>
+        </g>
+      </svg>
+    </div>
   </div>
-</main>
+</section>
+
+<a id="tools"></a>
+<section class="tools">
+  <div class="wrap">
+    <div class="sec-h">
+      <h2><span data-zh>三個獨立工具</span><span data-en>Three independent tools</span></h2>
+      <p><span data-zh>各自可單獨使用，也能互相搭配。使用時請找出最適合自己的流程。</span><span data-en>Use any one on its own, or combine them. Find the workflow that suits you best.</span></p>
+    </div>
+    <div class="grid">
+
+      <div class="card c1">
+        <div class="chead"><div class="cnum">1</div><div class="cart"><svg viewBox="0 0 240 130" preserveAspectRatio="xMinYMid meet" fill="none" aria-hidden="true">
+          <!-- ===== free-text: natural foods (left) ===== -->
+          <path d="M40 46 C30 34 34 16 50 10 C66 14 72 30 64 44 C58 52 46 54 40 46 Z" fill="#C7DBAE"/>
+          <path d="M50 12 C50 26 50 38 46 48" stroke="#A9C38E" stroke-width="1.4" stroke-linecap="round"/>
+          <path d="M14 56 C12 58 9 55 11 53 L38 25 C40 21 47 20 50 24 C53 28 51 34 47 35 Z" fill="#E28D4F"/>
+          <path d="M22 46 l5 3 M28 40 l5 3 M34 34 l4 3" stroke="#C9733A" stroke-width="1.3" stroke-linecap="round"/>
+          <path d="M47 24 C50 16 54 12 60 11 M48 25 C54 22 60 22 64 25 M46 23 C46 16 44 12 41 9" stroke="#7FA36E" stroke-width="2.2" stroke-linecap="round"/>
+          <rect x="74" y="30" width="7" height="22" rx="3" fill="#B7CD99"/>
+          <circle cx="71" cy="27" r="7" fill="#7FA36E"/><circle cx="80" cy="22" r="8" fill="#6E9460"/><circle cx="88" cy="29" r="7" fill="#7FA36E"/><circle cx="79" cy="31" r="6" fill="#86AA75"/>
+          <circle cx="92" cy="50" r="8" fill="#DA7A5E"/>
+          <path d="M88 43.5 l4 2.6 4 -2.6 -1.5 4 M92 46 v-3.5" stroke="#6E9460" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="89.5" cy="48" r="1.6" fill="#EBA48C"/>
+          <!-- ===== controlled vocabulary: feed sack + pellets (right), verified ===== -->
+          <path d="M164 16 C164 10 170 8 176 10 L202 10 C208 8 213 10 213 16 L217 48 C217 54 211 56 205 56 L170 56 C164 56 158 54 158 48 Z" fill="#EADCBD" stroke="#CDB98F" stroke-width="1.4"/>
+          <path d="M168 13 q20 -7 40 0" stroke="#CDB98F" stroke-width="1.6" stroke-linecap="round"/>
+          <rect x="172" y="24" width="32" height="18" rx="3" fill="#F8F2E4" stroke="#D6C49A" stroke-width="1.1"/>
+          <path d="M177 30 h22 M177 34.5 h16 M177 39 h19" stroke="#D2BF94" stroke-width="1.6" stroke-linecap="round"/>
+          <rect x="-3.4" y="-2.1" width="6.8" height="4.2" rx="2" fill="#A87A4F" transform="translate(152,56) rotate(20)"/><rect x="-3.4" y="-2.1" width="6.8" height="4.2" rx="2" fill="#BE915F" transform="translate(160,58) rotate(-15)"/><rect x="-3.4" y="-2.1" width="6.8" height="4.2" rx="2" fill="#946640" transform="translate(168,57) rotate(35)"/><rect x="-3.4" y="-2.1" width="6.8" height="4.2" rx="2" fill="#A87A4F" transform="translate(176,58) rotate(-30)"/><rect x="-3.4" y="-2.1" width="6.8" height="4.2" rx="2" fill="#BE915F" transform="translate(184,57) rotate(10)"/><rect x="-3.4" y="-2.1" width="6.8" height="4.2" rx="2" fill="#946640" transform="translate(156,52) rotate(-40)"/><rect x="-3.4" y="-2.1" width="6.8" height="4.2" rx="2" fill="#BE915F" transform="translate(164,53) rotate(15)"/><rect x="-3.4" y="-2.1" width="6.8" height="4.2" rx="2" fill="#A87A4F" transform="translate(172,52) rotate(-10)"/><rect x="-3.4" y="-2.1" width="6.8" height="4.2" rx="2" fill="#946640" transform="translate(180,53) rotate(40)"/><rect x="-3.4" y="-2.1" width="6.8" height="4.2" rx="2" fill="#A87A4F" transform="translate(168,48) rotate(0)"/><rect x="-3.4" y="-2.1" width="6.8" height="4.2" rx="2" fill="#A87A4F" transform="translate(160,49) rotate(25)"/><rect x="-3.4" y="-2.1" width="6.8" height="4.2" rx="2" fill="#BE915F" transform="translate(176,49) rotate(-25)"/>
+          <g transform="translate(202,2) scale(1.05)">
+            <path d="M12 3 L19 6 V11 c0 4.5 -3 7.5 -7 9 c-4 -1.5 -7 -4.5 -7 -9 V6 Z" fill="#2F7A55" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M8.8 11.8 l2.2 2.2 4.2 -4.5" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+          <!-- labels -->
+          <text data-zh x="52" y="74" text-anchor="middle" font-size="11" font-weight="800" fill="#8F5D23">自由詞彙</text>
+          <text data-zh x="52" y="84" text-anchor="middle" font-size="6.6" fill="#A88660">Free-text terms</text>
+          <text data-en x="52" y="77" text-anchor="middle" font-size="9.5" font-weight="800" fill="#8F5D23">Free-text</text>
+          <text data-zh x="194" y="74" text-anchor="middle" font-size="11" font-weight="800" fill="#2F6B57">控制詞彙</text>
+          <text data-zh x="188" y="85" text-anchor="middle" font-size="6" font-weight="700" fill="#4F7464">MeSH・Emtree・CINAHL 查核</text>
+          <text data-en x="194" y="74" text-anchor="middle" font-size="9.5" font-weight="800" fill="#2F6B57">Controlled</text>
+          <text data-en x="186" y="85" text-anchor="middle" font-size="5.8" font-weight="700" fill="#4F7464">check MeSH · Emtree · CINAHL</text>
+          <!-- converge into plate -->
+          <g stroke="#B9AF99" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M98 60 C104 72 106 82 110 92"/><path d="M105.5 88.5 l4.5 3.8 1.6 -5.6"/>
+            <path d="M150 62 C142 72 136 82 132 92"/><path d="M130.5 86.6 l1.5 5.6 4.6 -3.6"/>
+          </g>
+          <circle cx="121" cy="78" r="7" fill="#fff" stroke="#CFC6B2" stroke-width="1.2"/>
+          <path d="M117.4 78 h7.2 M121 74.4 v7.2" stroke="#8A8170" stroke-width="1.8" stroke-linecap="round"/>
+          <!-- plate with the mix -->
+          <ellipse cx="121" cy="124" rx="54" ry="4" fill="#ECE5D6"/>
+          <ellipse cx="121" cy="111" rx="58" ry="14" fill="#FBF9F4" stroke="#D5CDBB" stroke-width="1.4"/>
+          <ellipse cx="121" cy="110" rx="45" ry="9" fill="#F2EDE2"/>
+          <circle cx="101" cy="111" r="4.2" fill="#E28D4F"/><circle cx="101" cy="111" r="1.8" fill="#F0B27F"/>
+          <circle cx="129" cy="114" r="4" fill="#E28D4F"/><circle cx="129" cy="114" r="1.7" fill="#F0B27F"/>
+          <path d="M108 104 c4 -3 9 -2 10 2 c-4 2 -8 2 -10 -2 Z" fill="#9DBB83"/>
+          <path d="M136 108 c4 -3 9 -2 10 2 c-4 2 -8 2 -10 -2 Z" fill="#B7CD99"/>
+          <circle cx="114" cy="113" r="3.2" fill="#7FA36E"/><circle cx="118" cy="110.5" r="2.8" fill="#6E9460"/>
+          <circle cx="146" cy="112" r="3.4" fill="#DA7A5E"/>
+          <rect x="-3" y="-1.9" width="6" height="3.8" rx="1.8" fill="#A87A4F" transform="translate(104,108) rotate(30)"/><rect x="-3" y="-1.9" width="6" height="3.8" rx="1.8" fill="#946640" transform="translate(117,116) rotate(-20)"/><rect x="-3" y="-1.9" width="6" height="3.8" rx="1.8" fill="#BE915F" transform="translate(133,107) rotate(10)"/><rect x="-3" y="-1.9" width="6" height="3.8" rx="1.8" fill="#A87A4F" transform="translate(142,115) rotate(-35)"/><rect x="-3" y="-1.9" width="6" height="3.8" rx="1.8" fill="#946640" transform="translate(123,110) rotate(45)"/>
+          <text data-zh x="198" y="118" font-size="9" font-weight="800" fill="#8A8170">組配</text>
+          <text data-en x="194" y="118" font-size="8.5" font-weight="800" fill="#8A8170">combine</text>
+        </svg></div></div>
+        <h3><span data-zh>PICO 檢索策略產生器</span><span data-en>PICO Strategy Builder</span></h3>
+        <div class="en">PICO Strategy Builder</div>
+        <p><span data-zh>在 PICO 表填入/匯入自由詞彙與控制詞彙，啟動半自動查驗控制詞彙，選欄位決定完整度，一鍵生成各資料庫檢索策略 (可匯出)。並可用內建 PubMed API 粗估文章量、應用於實證精準查。</span><span data-en>Enter or import free-text terms and controlled vocabulary into the PICO table, run semi-automatic verification of the controlled vocabulary, choose a field level, and generate each database's strategy in one click (exportable). A built-in PubMed API can also estimate article counts, useful for precise evidence searching.</span></p>
+        <div class="crow">
+          <a class="cbtn solid" href="pico-builder.html"><span data-zh>醫學領域</span><span data-en>Medical</span> →</a>
+          <a class="cbtn line" href="pico-builder-nonmedical.html"><span data-zh>非醫學領域</span><span data-en>Non-medical</span> →</a>
+        </div>
+      </div>
+
+      <div class="card c2">
+        <div class="chead"><div class="cnum">2</div><div class="cart"><svg viewBox="0 0 240 130" preserveAspectRatio="xMinYMid meet" fill="none" aria-hidden="true">
+          <ellipse cx="56" cy="123" rx="46" ry="4.5" fill="#E9EFE9"/>
+          <g transform="translate(80 0) scale(-1 1)"><path d="M32 18c-.3-4 2-6.5 5.2-6.5 1-3.2 4.6-4.4 7.2-2.6 2.6-1.3 5.8.3 5.8 3.2 2 .6 3.2 2.6 2.6 5.2" fill="#C06A49" stroke="#9c4f34" stroke-width="1"/>
+          <circle cx="40" cy="30" r="15" fill="#FCFBF7" stroke="#2F4A42" stroke-width="1.8"/>
+          <path d="M25.5 31l-8.5 3 8 4z" fill="#CD9A3E" stroke="#a87e2d" stroke-width=".9" stroke-linejoin="round"/>
+          <circle cx="35" cy="28" r="5" fill="#fff" stroke="#2F4A42" stroke-width="1.3"/>
+          <circle cx="35" cy="28" r="1.5" fill="#2F4A42"/>
+          <path d="M40.1 27l4.2-1" stroke="#2F4A42" stroke-width="1.3" stroke-linecap="round"/></g>
+          <g class="wings"><path d="M30 58 C18 55.5 7 62.5 3 74 C2.2 76.6 4 78 6.2 77 C4.2 80.8 5.2 84 8.4 83 C7.2 87 9.4 90.2 12.4 88.2 C12.4 92.4 15.4 94.4 18.4 91.2 C22.6 86.2 27.4 80 30 72 Z" fill="#FCFBF7" stroke="#2F4A42" stroke-width="1.6" stroke-linejoin="round"/><path d="M25 63.5 C17.6 65.6 11.4 70.4 7.4 76 M26 69.6 C19.6 72.8 13.8 78.4 10.4 83.6 M27.4 75.8 C22.6 79.6 18.4 84.6 15.4 89" stroke="#2F4A42" stroke-width="1.05" stroke-linecap="round" opacity=".7"/><g transform="translate(114 -5) scale(-1 1)"><path d="M30 58 C18 55.5 7 62.5 3 74 C2.2 76.6 4 78 6.2 77 C4.2 80.8 5.2 84 8.4 83 C7.2 87 9.4 90.2 12.4 88.2 C12.4 92.4 15.4 94.4 18.4 91.2 C22.6 86.2 27.4 80 30 72 Z" fill="#FCFBF7" stroke="#2F4A42" stroke-width="1.6" stroke-linejoin="round"/><path d="M25 63.5 C17.6 65.6 11.4 70.4 7.4 76 M26 69.6 C19.6 72.8 13.8 78.4 10.4 83.6 M27.4 75.8 C22.6 79.6 18.4 84.6 15.4 89" stroke="#2F4A42" stroke-width="1.05" stroke-linecap="round" opacity=".7"/></g></g>
+          <g transform="rotate(-4 57 78)">
+            <rect x="22" y="36" width="70" height="82" rx="6" fill="#FFFDF8" stroke="#9FB8A7" stroke-width="1.6"/>
+            <text x="57" y="51" text-anchor="middle" font-size="8" font-style="italic" font-weight="800" fill="#2F4A42">Seed Strategy</text>
+            <path d="M29 56h56" stroke="#DCE6DF" stroke-width="1.2"/>
+            <rect x="29" y="61" width="9" height="9" rx="2" fill="#F3F7F4" stroke="#9FB8A7" stroke-width="1.1"/><path d="M30.6 65.4 l2.4 2.6 4.4 -5" stroke="#4C8368" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M43 66 h36" stroke="#C9D6CC" stroke-width="3" stroke-linecap="round"/><rect x="29" y="75" width="9" height="9" rx="2" fill="#F3F7F4" stroke="#9FB8A7" stroke-width="1.1"/><path d="M30.6 79.4 l2.4 2.6 4.4 -5" stroke="#4C8368" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M43 80 h36" stroke="#C9D6CC" stroke-width="3" stroke-linecap="round"/><rect x="29" y="89" width="9" height="9" rx="2" fill="#F3F7F4" stroke="#9FB8A7" stroke-width="1.1"/><path d="M30.6 93.4 l2.4 2.6 4.4 -5" stroke="#4C8368" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M43 94 h36" stroke="#C9D6CC" stroke-width="3" stroke-linecap="round"/><rect x="29" y="103" width="9" height="9" rx="2" fill="#F3F7F4" stroke="#9FB8A7" stroke-width="1.1"/><path d="M30.6 107.4 l2.4 2.6 4.4 -5" stroke="#4C8368" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M43 108 h24" stroke="#C9D6CC" stroke-width="3" stroke-linecap="round"/>
+          </g>
+          
+          
+          <g stroke="#7FA08D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M114 72 C123 72 120 24 131 24"/><path d="M126.5 20 l5 4 -5 4"/><path d="M114 74 C123 74 120 50 131 50"/><path d="M126.5 46 l5 4 -5 4"/><path d="M114 76 C123 76 120 76 131 76"/><path d="M126.5 72 l5 4 -5 4"/><path d="M114 78 C123 78 120 102 131 102"/><path d="M126.5 98 l5 4 -5 4"/></g>
+          <rect x="137" y="14" width="49" height="20" rx="6" fill="#3F7663"/><text x="161.5" y="27.6" text-anchor="middle" font-size="8.4" font-weight="800" fill="#fff">Embase</text><rect x="189" y="14" width="49" height="20" rx="6" fill="#3F7663"/><text x="213.5" y="27.6" text-anchor="middle" font-size="8.4" font-weight="800" fill="#fff">PubMed</text><rect x="137" y="40" width="49" height="20" rx="6" fill="#3F7663"/><text x="161.5" y="53.6" text-anchor="middle" font-size="8.4" font-weight="800" fill="#fff">Ovid</text><rect x="189" y="40" width="49" height="20" rx="6" fill="#3F7663"/><text x="213.5" y="53.6" text-anchor="middle" font-size="6.7" font-weight="800" fill="#fff">EBSCOhost</text><rect x="137" y="66" width="49" height="20" rx="6" fill="#3F7663"/><text x="161.5" y="79.6" text-anchor="middle" font-size="6.7" font-weight="800" fill="#fff">Cochrane L</text><rect x="189" y="66" width="49" height="20" rx="6" fill="#3F7663"/><text x="213.5" y="79.6" text-anchor="middle" font-size="8.4" font-weight="800" fill="#fff">Scopus</text><rect x="137" y="92" width="49" height="20" rx="6" fill="#3F7663"/><text x="161.5" y="105.6" text-anchor="middle" font-size="8.4" font-weight="800" fill="#fff">WoS</text><rect x="189" y="92" width="49" height="20" rx="6" fill="#D5E3DA"/><text x="213.5" y="106.5" text-anchor="middle" font-size="12" font-weight="800" fill="#3F7663">⋯</text>
+        </svg></div></div>
+        <h3><span data-zh>資料庫檢索語法轉換器</span><span data-en>Search Syntax Converter</span></h3>
+        <div class="en">Search Syntax Converter</div>
+        <p><span data-zh>貼上任一起始資料庫的檢索式，一鍵轉出各大資料庫／平台語法，並可下載 Word。（控制詞彙要自理喔！）</span><span data-en>Paste a query from any starting database and convert it to the major databases/platforms in one click, with Word export. (Controlled vocabulary is up to you!)</span></p>
+        <div class="crow">
+          <a class="cbtn solid" href="syntax-converter.html"><span data-zh>開始轉換</span><span data-en>Start converting</span> →</a>
+        </div>
+      </div>
+
+      <div class="card c3">
+        <div class="chead"><div class="cnum">3</div><div class="cart"><svg viewBox="0 0 272 130" preserveAspectRatio="xMinYMid meet" fill="none" aria-hidden="true">
+          <ellipse cx="46" cy="105" rx="40" ry="4.5" fill="#ECE6DA"/>
+          <path d="M15 58 C15 14 77 14 77 58" stroke="#A97B43" stroke-width="4.4" stroke-linecap="round"/><path d="M17 57 C18 19 74 19 75 57" stroke="#D9B57E" stroke-width="1.2" stroke-linecap="round" opacity=".7"/><ellipse cx="46" cy="58" rx="40" ry="9" fill="#7E5530"/>
+          <g transform="translate(22,37) rotate(6)"><path d="M-1 -3.5 C-5 -6 -8 -10 -9 -14 M-1.5 0 C-6 -1 -11 -2 -14 -3 M-1 3.2 C-5 5 -9 7 -11 10" stroke="#6E9A5A" stroke-width="2.2" stroke-linecap="round"/><path d="M-6 -7.5 l-3 -1 M-7 -1.2 l-3 1.2 M-6 6 l-3 0" stroke="#86AE68" stroke-width="1.4" stroke-linecap="round"/><path d="M0 -5.2 C8.4 -5.2 19.6 -2.9 28 0 C19.6 2.9 8.4 5.2 0 5.2 C-1.8 3.1 -1.8 -3.1 0 -5.2 Z" fill="#F3F0E8" stroke="#CFCBBF" stroke-width=".7"/><path d="M2 -2.9 C8.4 -3.9 15.4 -2.6 21.0 -1.1" stroke="#FFFFFF" stroke-width="1.1" stroke-linecap="round"/><path d="M7.0 -3.7 l1.6 3.5" stroke="#CFCBBF" stroke-width=".9" stroke-linecap="round"/><path d="M12.6 -2.7 l1.6 2.6" stroke="#CFCBBF" stroke-width=".9" stroke-linecap="round"/><path d="M18.2 -1.7 l1.6 1.6" stroke="#CFCBBF" stroke-width=".9" stroke-linecap="round"/></g><g transform="translate(70,35) rotate(172)"><path d="M0 -4.8 C8.4 -4.8 19.6 -2.6 28 0 C19.6 2.6 8.4 4.8 0 4.8 C-1.8 2.9 -1.8 -2.9 0 -4.8 Z" fill="#E8B93A"/><path d="M2 -2.6 C8.4 -3.6 15.4 -2.4 21.0 -1.1" stroke="#F3D57A" stroke-width="1.1" stroke-linecap="round"/><path d="M7.0 -3.4 l1.6 3.2" stroke="#C99A22" stroke-width=".9" stroke-linecap="round"/><path d="M12.6 -2.5 l1.6 2.4" stroke="#C99A22" stroke-width=".9" stroke-linecap="round"/><path d="M18.2 -1.6 l1.6 1.5" stroke="#C99A22" stroke-width=".9" stroke-linecap="round"/></g><g transform="translate(46,40) rotate(-10)"><path d="M-15.0 0 C-12.6 -6 -3.0 -7.5 4.5 -7 C10.5 -6.5 15.0 -3 15.0 0 C15.0 3 10.5 6.5 4.5 7 C-3.0 7.5 -12.6 6 -15.0 0 Z" fill="#8A4A5E"/><path d="M-10.5 -3 C-3.0 -5.6 6.0 -5.4 11.2 -2.6" stroke="#A86478" stroke-width="1.1" stroke-linecap="round"/><path d="M-15.0 0 l-3 -1 M15.0 0 l3 .8" stroke="#7E3F55" stroke-width="1" stroke-linecap="round"/></g><g transform="translate(17,45) rotate(-10)"><path d="M-1 -3.5 C-5 -6 -8 -10 -9 -14 M-1.5 0 C-6 -1 -11 -2 -14 -3 M-1 3.2 C-5 5 -9 7 -11 10" stroke="#6E9A5A" stroke-width="2.2" stroke-linecap="round"/><path d="M-6 -7.5 l-3 -1 M-7 -1.2 l-3 1.2 M-6 6 l-3 0" stroke="#86AE68" stroke-width="1.4" stroke-linecap="round"/><path d="M0 -4.8 C9.6 -4.8 22.4 -2.6 32 0 C22.4 2.6 9.6 4.8 0 4.8 C-1.8 2.9 -1.8 -2.9 0 -4.8 Z" fill="#E2843F"/><path d="M2 -2.6 C9.6 -3.6 17.6 -2.4 24.0 -1.1" stroke="#F0AA74" stroke-width="1.1" stroke-linecap="round"/><path d="M8.0 -3.4 l1.6 3.2" stroke="#C86F33" stroke-width=".9" stroke-linecap="round"/><path d="M14.4 -2.5 l1.6 2.4" stroke="#C86F33" stroke-width=".9" stroke-linecap="round"/><path d="M20.8 -1.6 l1.6 1.5" stroke="#C86F33" stroke-width=".9" stroke-linecap="round"/></g><g transform="translate(85,43) rotate(196)"><path d="M-1 -3.5 C-5 -6 -8 -10 -9 -14 M-1.5 0 C-6 -1 -11 -2 -14 -3 M-1 3.2 C-5 5 -9 7 -11 10" stroke="#6E9A5A" stroke-width="2.2" stroke-linecap="round"/><path d="M-6 -7.5 l-3 -1 M-7 -1.2 l-3 1.2 M-6 6 l-3 0" stroke="#86AE68" stroke-width="1.4" stroke-linecap="round"/><path d="M0 -4.8 C9.0 -4.8 21.0 -2.6 30 0 C21.0 2.6 9.0 4.8 0 4.8 C-1.8 2.9 -1.8 -2.9 0 -4.8 Z" fill="#7A3F70"/><path d="M2 -2.6 C9.0 -3.6 16.5 -2.4 22.5 -1.1" stroke="#9E6493" stroke-width="1.1" stroke-linecap="round"/><path d="M7.5 -3.4 l1.6 3.2" stroke="#5F3157" stroke-width=".9" stroke-linecap="round"/><path d="M13.5 -2.5 l1.6 2.4" stroke="#5F3157" stroke-width=".9" stroke-linecap="round"/><path d="M19.5 -1.6 l1.6 1.5" stroke="#5F3157" stroke-width=".9" stroke-linecap="round"/></g><ellipse cx="46" cy="33" rx="3" ry="2.3" fill="#A9A59C"/><ellipse cx="45.1" cy="32.2" rx="1.0" ry="0.6" fill="#D3D0C9"/><g transform="translate(38,44) rotate(16)"><path d="M0 -4.8 C7.8 -4.8 18.2 -2.6 26 0 C18.2 2.6 7.8 4.8 0 4.8 C-1.8 2.9 -1.8 -2.9 0 -4.8 Z" fill="#E8B93A"/><path d="M2 -2.6 C7.8 -3.6 14.3 -2.4 19.5 -1.1" stroke="#F3D57A" stroke-width="1.1" stroke-linecap="round"/><path d="M6.5 -3.4 l1.6 3.2" stroke="#C99A22" stroke-width=".9" stroke-linecap="round"/><path d="M11.7 -2.5 l1.6 2.4" stroke="#C99A22" stroke-width=".9" stroke-linecap="round"/><path d="M16.9 -1.6 l1.6 1.5" stroke="#C99A22" stroke-width=".9" stroke-linecap="round"/></g><g transform="translate(58,47) rotate(8)"><path d="M-16.0 0 C-13.4 -6 -3.2 -7.5 4.8 -7 C11.2 -6.5 16.0 -3 16.0 0 C16.0 3 11.2 6.5 4.8 7 C-3.2 7.5 -13.4 6 -16.0 0 Z" fill="#8A4A5E"/><path d="M-11.2 -3 C-3.2 -5.6 6.4 -5.4 12.0 -2.6" stroke="#A86478" stroke-width="1.1" stroke-linecap="round"/><path d="M-16.0 0 l-3 -1 M16.0 0 l3 .8" stroke="#7E3F55" stroke-width="1" stroke-linecap="round"/></g><g transform="translate(13,51) rotate(-4)"><path d="M0 -4.8 C9.0 -4.8 21.0 -2.6 30 0 C21.0 2.6 9.0 4.8 0 4.8 C-1.8 2.9 -1.8 -2.9 0 -4.8 Z" fill="#7A3F70"/><path d="M2 -2.6 C9.0 -3.6 16.5 -2.4 22.5 -1.1" stroke="#9E6493" stroke-width="1.1" stroke-linecap="round"/><path d="M7.5 -3.4 l1.6 3.2" stroke="#5F3157" stroke-width=".9" stroke-linecap="round"/><path d="M13.5 -2.5 l1.6 2.4" stroke="#5F3157" stroke-width=".9" stroke-linecap="round"/><path d="M19.5 -1.6 l1.6 1.5" stroke="#5F3157" stroke-width=".9" stroke-linecap="round"/></g><g transform="translate(87,50) rotate(186)"><path d="M0 -4.8 C8.4 -4.8 19.6 -2.6 28 0 C19.6 2.6 8.4 4.8 0 4.8 C-1.8 2.9 -1.8 -2.9 0 -4.8 Z" fill="#E2843F"/><path d="M2 -2.6 C8.4 -3.6 15.4 -2.4 21.0 -1.1" stroke="#F0AA74" stroke-width="1.1" stroke-linecap="round"/><path d="M7.0 -3.4 l1.6 3.2" stroke="#C86F33" stroke-width=".9" stroke-linecap="round"/><path d="M12.6 -2.5 l1.6 2.4" stroke="#C86F33" stroke-width=".9" stroke-linecap="round"/><path d="M18.2 -1.6 l1.6 1.5" stroke="#C86F33" stroke-width=".9" stroke-linecap="round"/></g><g transform="translate(28,51) rotate(-18)"><path d="M-14.0 0 C-11.8 -6 -2.8 -7.5 4.2 -7 C9.8 -6.5 14.0 -3 14.0 0 C14.0 3 9.8 6.5 4.2 7 C-2.8 7.5 -11.8 6 -14.0 0 Z" fill="#8A4A5E"/><path d="M-9.8 -3 C-2.8 -5.6 5.6 -5.4 10.5 -2.6" stroke="#A86478" stroke-width="1.1" stroke-linecap="round"/><path d="M-14.0 0 l-3 -1 M14.0 0 l3 .8" stroke="#7E3F55" stroke-width="1" stroke-linecap="round"/></g><ellipse cx="60" cy="41" rx="3.2" ry="2.4" fill="#B7B3AA"/><ellipse cx="59.0" cy="40.2" rx="1.1" ry="0.6" fill="#D3D0C9"/><ellipse cx="28" cy="44" rx="2.8" ry="2.2" fill="#BDB9B0"/><ellipse cx="27.2" cy="43.2" rx="1.0" ry="0.6" fill="#D3D0C9"/><g transform="translate(16,58) rotate(6)"><path d="M0 -4.8 C9.0 -4.8 21.0 -2.6 30 0 C21.0 2.6 9.0 4.8 0 4.8 C-1.8 2.9 -1.8 -2.9 0 -4.8 Z" fill="#E2843F"/><path d="M2 -2.6 C9.0 -3.6 16.5 -2.4 22.5 -1.1" stroke="#F0AA74" stroke-width="1.1" stroke-linecap="round"/><path d="M7.5 -3.4 l1.6 3.2" stroke="#C86F33" stroke-width=".9" stroke-linecap="round"/><path d="M13.5 -2.5 l1.6 2.4" stroke="#C86F33" stroke-width=".9" stroke-linecap="round"/><path d="M19.5 -1.6 l1.6 1.5" stroke="#C86F33" stroke-width=".9" stroke-linecap="round"/></g><g transform="translate(62,57) rotate(-6)"><path d="M-15.0 0 C-12.6 -6 -3.0 -7.5 4.5 -7 C10.5 -6.5 15.0 -3 15.0 0 C15.0 3 10.5 6.5 4.5 7 C-3.0 7.5 -12.6 6 -15.0 0 Z" fill="#8A4A5E"/><path d="M-10.5 -3 C-3.0 -5.6 6.0 -5.4 11.2 -2.6" stroke="#A86478" stroke-width="1.1" stroke-linecap="round"/><path d="M-15.0 0 l-3 -1 M15.0 0 l3 .8" stroke="#7E3F55" stroke-width="1" stroke-linecap="round"/></g><g transform="translate(81,57) rotate(192)"><path d="M0 -5.2 C7.8 -5.2 18.2 -2.9 26 0 C18.2 2.9 7.8 5.2 0 5.2 C-1.8 3.1 -1.8 -3.1 0 -5.2 Z" fill="#F3F0E8" stroke="#CFCBBF" stroke-width=".7"/><path d="M2 -2.9 C7.8 -3.9 14.3 -2.6 19.5 -1.1" stroke="#FFFFFF" stroke-width="1.1" stroke-linecap="round"/><path d="M6.5 -3.7 l1.6 3.5" stroke="#CFCBBF" stroke-width=".9" stroke-linecap="round"/><path d="M11.7 -2.7 l1.6 2.6" stroke="#CFCBBF" stroke-width=".9" stroke-linecap="round"/><path d="M16.9 -1.7 l1.6 1.6" stroke="#CFCBBF" stroke-width=".9" stroke-linecap="round"/></g><g transform="translate(40,59) rotate(12)"><path d="M-13.0 0 C-10.9 -6 -2.6 -7.5 3.9 -7 C9.1 -6.5 13.0 -3 13.0 0 C13.0 3 9.1 6.5 3.9 7 C-2.6 7.5 -10.9 6 -13.0 0 Z" fill="#8A4A5E"/><path d="M-9.1 -3 C-2.6 -5.6 5.2 -5.4 9.8 -2.6" stroke="#A86478" stroke-width="1.1" stroke-linecap="round"/><path d="M-13.0 0 l-3 -1 M13.0 0 l3 .8" stroke="#7E3F55" stroke-width="1" stroke-linecap="round"/></g><g transform="translate(50,54) rotate(-160)"><path d="M0 -4.8 C7.2 -4.8 16.8 -2.6 24 0 C16.8 2.6 7.2 4.8 0 4.8 C-1.8 2.9 -1.8 -2.9 0 -4.8 Z" fill="#7A3F70"/><path d="M2 -2.6 C7.2 -3.6 13.2 -2.4 18.0 -1.1" stroke="#9E6493" stroke-width="1.1" stroke-linecap="round"/><path d="M6.0 -3.4 l1.6 3.2" stroke="#5F3157" stroke-width=".9" stroke-linecap="round"/><path d="M10.8 -2.5 l1.6 2.4" stroke="#5F3157" stroke-width=".9" stroke-linecap="round"/><path d="M15.6 -1.6 l1.6 1.5" stroke="#5F3157" stroke-width=".9" stroke-linecap="round"/></g><ellipse cx="72" cy="53" rx="3.4" ry="2.6" fill="#A9A59C"/><ellipse cx="71.0" cy="52.1" rx="1.2" ry="0.7" fill="#D3D0C9"/>
+          <path d="M6 58 C14 66 30 70 46 70 C62 70 78 66 86 58 L80 94 C78 100 72 102 66 102 L26 102 C20 102 14 100 12 94 Z" fill="#C4985A"/><path d="M10.0 72 C30 77 62 77 82.0 72" stroke="#A97B43" stroke-width="1.2" opacity=".8"/><path d="M11.2 82 C30 87 62 87 80.8 82" stroke="#A97B43" stroke-width="1.2" opacity=".8"/><path d="M12.4 92 C30 97 62 97 79.6 92" stroke="#A97B43" stroke-width="1.2" opacity=".8"/><path d="M14 67 q1.5 3.0 0 7" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M24 67 q1.5 3.0 0 7" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M34 67 q1.5 3.0 0 7" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M44 67 q1.5 3.0 0 7" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M54 67 q1.5 3.0 0 7" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M64 67 q1.5 3.0 0 7" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M74 67 q1.5 3.0 0 7" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M19 75 q1.5 3.0 0 7" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M29 75 q1.5 3.0 0 7" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M39 75 q1.5 3.0 0 7" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M49 75 q1.5 3.0 0 7" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M59 75 q1.5 3.0 0 7" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M69 75 q1.5 3.0 0 7" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M79 75 q1.5 3.0 0 7" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M14 85 q1.5 3.0 0 7" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M24 85 q1.5 3.0 0 7" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M34 85 q1.5 3.0 0 7" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M44 85 q1.5 3.0 0 7" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M54 85 q1.5 3.0 0 7" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M64 85 q1.5 3.0 0 7" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M74 85 q1.5 3.0 0 7" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M19 95 q1.5 1.5 0 4" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M29 95 q1.5 1.5 0 4" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M39 95 q1.5 1.5 0 4" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M49 95 q1.5 1.5 0 4" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M59 95 q1.5 1.5 0 4" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M69 95 q1.5 1.5 0 4" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M79 95 q1.5 1.5 0 4" stroke="#B88A4E" stroke-width="1.6" stroke-linecap="round" opacity=".75"/><path d="M6 58 C14 66 30 70 46 70 C62 70 78 66 86 58" stroke="#A97B43" stroke-width="5" stroke-linecap="round"/><path d="M8 58 C16 65 31 68.5 46 68.5 C61 68.5 76 65 84 58" stroke="#D9B57E" stroke-width="1.4" stroke-linecap="round"/>
+          <text data-zh x="46" y="122" text-anchor="middle" font-size="10" font-weight="800" fill="#4C554E">混雜詞組</text>
+          <text data-en x="46" y="122" text-anchor="middle" font-size="9.5" font-weight="800" fill="#4C554E">Mixed terms</text>
+          <path d="M92 30 C103 16 119 16 128 28" stroke="#A8A293" stroke-width="2" stroke-linecap="round"/>
+          <path d="M121.5 26.6 l6.5 1.6 0.4 -6.6" stroke="#A8A293" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M106 102 H270" stroke="#E4DDCD" stroke-width="2" stroke-linecap="round"/>
+          <g transform="translate(10 0)"><g transform="translate(106.0,97.7) rotate(-10)"><ellipse cy="1.7" rx="6.6" ry="3.7" fill="#7E3F55"/><ellipse rx="6.6" ry="3.7" fill="#F1C176" stroke="#7E3F55" stroke-width=".7"/><circle cx="-2.0" cy="-0.4" r=".7" fill="#F8DDA6"/><circle cx="1.6" cy="0.7" r=".6" fill="#F8DDA6"/></g><g transform="translate(115.5,98.2) rotate(-12)"><ellipse cy="1.7" rx="5.4" ry="3.3" fill="#CF9E2A"/><ellipse rx="5.4" ry="3.3" fill="#EFCB62" stroke="#CF9E2A" stroke-width=".7"/><ellipse rx="2.4" ry="1.5" fill="#F8E3A2"/></g><g transform="translate(125.0,98.1) rotate(-4)"><ellipse cy="1.7" rx="5.4" ry="3.3" fill="#CFCBBF"/><ellipse rx="5.4" ry="3.3" fill="#F7F4EC" stroke="#CFCBBF" stroke-width=".7"/><ellipse rx="2.4" ry="1.5" fill="#FFFFFF"/></g><g transform="translate(134.5,97.3) rotate(0)"><ellipse cy="1.7" rx="5.4" ry="3.3" fill="#D2722F"/><ellipse rx="5.4" ry="3.3" fill="#EE9A55" stroke="#D2722F" stroke-width=".7"/><ellipse rx="2.4" ry="1.5" fill="#F6C08C"/></g><g transform="translate(144.0,97.3) rotate(-2)"><ellipse cy="1.7" rx="6.6" ry="3.7" fill="#7E3F55"/><ellipse rx="6.6" ry="3.7" fill="#F1C176" stroke="#7E3F55" stroke-width=".7"/><circle cx="-2.0" cy="-0.4" r=".7" fill="#F8DDA6"/><circle cx="1.6" cy="0.7" r=".6" fill="#F8DDA6"/></g><g transform="translate(152.0,97.3) rotate(-11)"><ellipse cy="1.7" rx="5.4" ry="3.3" fill="#5F3157"/><ellipse rx="5.4" ry="3.3" fill="#8E4E80" stroke="#5F3157" stroke-width=".7"/><ellipse rx="2.4" ry="1.5" fill="#E7A04A"/></g><g transform="translate(110.0,90.9) rotate(9)"><ellipse cy="1.7" rx="5.4" ry="3.3" fill="#CF9E2A"/><ellipse rx="5.4" ry="3.3" fill="#EFCB62" stroke="#CF9E2A" stroke-width=".7"/><ellipse rx="2.4" ry="1.5" fill="#F8E3A2"/></g><g transform="translate(119.5,90.4) rotate(-8)"><ellipse cy="1.7" rx="5.4" ry="3.3" fill="#D2722F"/><ellipse rx="5.4" ry="3.3" fill="#EE9A55" stroke="#D2722F" stroke-width=".7"/><ellipse rx="2.4" ry="1.5" fill="#F6C08C"/></g><g transform="translate(129.0,91.2) rotate(13)"><ellipse cy="1.7" rx="5.4" ry="3.3" fill="#CFCBBF"/><ellipse rx="5.4" ry="3.3" fill="#F7F4EC" stroke="#CFCBBF" stroke-width=".7"/><ellipse rx="2.4" ry="1.5" fill="#FFFFFF"/></g><g transform="translate(138.5,91.1) rotate(-3)"><ellipse cy="1.7" rx="6.6" ry="3.7" fill="#7E3F55"/><ellipse rx="6.6" ry="3.7" fill="#F1C176" stroke="#7E3F55" stroke-width=".7"/><circle cx="-2.0" cy="-0.4" r=".7" fill="#F8DDA6"/><circle cx="1.6" cy="0.7" r=".6" fill="#F8DDA6"/></g><g transform="translate(147.5,91.8) rotate(-13)"><ellipse cy="1.7" rx="5.4" ry="3.3" fill="#D2722F"/><ellipse rx="5.4" ry="3.3" fill="#EE9A55" stroke="#D2722F" stroke-width=".7"/><ellipse rx="2.4" ry="1.5" fill="#F6C08C"/></g><g transform="translate(115.0,84.6) rotate(-6)"><ellipse cy="1.7" rx="5.4" ry="3.3" fill="#5F3157"/><ellipse rx="5.4" ry="3.3" fill="#8E4E80" stroke="#5F3157" stroke-width=".7"/><ellipse rx="2.4" ry="1.5" fill="#E7A04A"/></g><g transform="translate(124.5,83.4) rotate(-11)"><ellipse cy="1.7" rx="6.6" ry="3.7" fill="#7E3F55"/><ellipse rx="6.6" ry="3.7" fill="#F1C176" stroke="#7E3F55" stroke-width=".7"/><circle cx="-2.0" cy="-0.4" r=".7" fill="#F8DDA6"/><circle cx="1.6" cy="0.7" r=".6" fill="#F8DDA6"/></g><g transform="translate(134.0,83.7) rotate(9)"><ellipse cy="1.7" rx="5.4" ry="3.3" fill="#CF9E2A"/><ellipse rx="5.4" ry="3.3" fill="#EFCB62" stroke="#CF9E2A" stroke-width=".7"/><ellipse rx="2.4" ry="1.5" fill="#F8E3A2"/></g><g transform="translate(143.0,83.5) rotate(2)"><ellipse cy="1.7" rx="5.4" ry="3.3" fill="#CFCBBF"/><ellipse rx="5.4" ry="3.3" fill="#F7F4EC" stroke="#CFCBBF" stroke-width=".7"/><ellipse rx="2.4" ry="1.5" fill="#FFFFFF"/></g><g transform="translate(120.0,77.7) rotate(-4)"><ellipse cy="1.7" rx="5.4" ry="3.3" fill="#D2722F"/><ellipse rx="5.4" ry="3.3" fill="#EE9A55" stroke="#D2722F" stroke-width=".7"/><ellipse rx="2.4" ry="1.5" fill="#F6C08C"/></g><g transform="translate(129.5,77.6) rotate(-12)"><ellipse cy="1.7" rx="6.6" ry="3.7" fill="#7E3F55"/><ellipse rx="6.6" ry="3.7" fill="#F1C176" stroke="#7E3F55" stroke-width=".7"/><circle cx="-2.0" cy="-0.4" r=".7" fill="#F8DDA6"/><circle cx="1.6" cy="0.7" r=".6" fill="#F8DDA6"/></g><g transform="translate(138.0,76.8) rotate(-8)"><ellipse cy="1.7" rx="5.4" ry="3.3" fill="#5F3157"/><ellipse rx="5.4" ry="3.3" fill="#8E4E80" stroke="#5F3157" stroke-width=".7"/><ellipse rx="2.4" ry="1.5" fill="#E7A04A"/></g><g transform="translate(125.0,71.8) rotate(-2)"><ellipse cy="1.7" rx="5.4" ry="3.3" fill="#CF9E2A"/><ellipse rx="5.4" ry="3.3" fill="#EFCB62" stroke="#CF9E2A" stroke-width=".7"/><ellipse rx="2.4" ry="1.5" fill="#F8E3A2"/></g><g transform="translate(134.0,71.2) rotate(2)"><ellipse cy="1.7" rx="5.4" ry="3.3" fill="#D2722F"/><ellipse rx="5.4" ry="3.3" fill="#EE9A55" stroke="#D2722F" stroke-width=".7"/><ellipse rx="2.4" ry="1.5" fill="#F6C08C"/></g><g transform="translate(129.5,65.9) rotate(-6)"><ellipse cy="1.7" rx="5.4" ry="3.3" fill="#CFCBBF"/><ellipse rx="5.4" ry="3.3" fill="#F7F4EC" stroke="#CFCBBF" stroke-width=".7"/><ellipse rx="2.4" ry="1.5" fill="#FFFFFF"/></g></g>
+          <g transform="translate(22 0)"><ellipse cx="185" cy="99" rx="27" ry="4" fill="#5E8A4C" opacity=".22"/><g transform="translate(176.0,98.0) rotate(-38)"><path d="M0 0 C1 -13.6 -1 -23.8 0 -34" stroke="#6C9A50" stroke-width="1.3" stroke-linecap="round"/><ellipse cx="2.3" cy="-4.2" rx="2.6" ry="1.0" fill="#7BAA5E" transform="rotate(-40 2.3 -4.2)"/><ellipse cx="-2.3" cy="-4.2" rx="2.6" ry="1.0" fill="#7BAA5E" transform="rotate(40 -2.3 -4.2)"/><ellipse cx="2.2" cy="-8.5" rx="2.4" ry="0.9" fill="#7BAA5E" transform="rotate(-40 2.2 -8.5)"/><ellipse cx="-2.2" cy="-8.5" rx="2.4" ry="0.9" fill="#7BAA5E" transform="rotate(40 -2.2 -8.5)"/><ellipse cx="2.0" cy="-12.8" rx="2.2" ry="0.8" fill="#7BAA5E" transform="rotate(-40 2.0 -12.8)"/><ellipse cx="-2.0" cy="-12.8" rx="2.2" ry="0.8" fill="#7BAA5E" transform="rotate(40 -2.0 -12.8)"/><ellipse cx="1.8" cy="-17.0" rx="2.0" ry="0.8" fill="#7BAA5E" transform="rotate(-40 1.8 -17.0)"/><ellipse cx="-1.8" cy="-17.0" rx="2.0" ry="0.8" fill="#7BAA5E" transform="rotate(40 -1.8 -17.0)"/><ellipse cx="1.7" cy="-21.2" rx="1.8" ry="0.7" fill="#7BAA5E" transform="rotate(-40 1.7 -21.2)"/><ellipse cx="-1.7" cy="-21.2" rx="1.8" ry="0.7" fill="#7BAA5E" transform="rotate(40 -1.7 -21.2)"/><ellipse cx="1.5" cy="-25.5" rx="1.6" ry="0.6" fill="#7BAA5E" transform="rotate(-40 1.5 -25.5)"/><ellipse cx="-1.5" cy="-25.5" rx="1.6" ry="0.6" fill="#7BAA5E" transform="rotate(40 -1.5 -25.5)"/><ellipse cx="1.3" cy="-29.8" rx="1.5" ry="0.6" fill="#7BAA5E" transform="rotate(-40 1.3 -29.8)"/><ellipse cx="-1.3" cy="-29.8" rx="1.5" ry="0.6" fill="#7BAA5E" transform="rotate(40 -1.3 -29.8)"/><ellipse cy="-35.5" rx="1" ry="2.2" fill="#7BAA5E"/></g><g transform="translate(184.0,98.0) rotate(-12)"><path d="M0 0 C1 -15.2 -1 -26.6 0 -38" stroke="#6C9A50" stroke-width="1.3" stroke-linecap="round"/><ellipse cx="2.3" cy="-4.8" rx="2.6" ry="1.0" fill="#6FA052" transform="rotate(-40 2.3 -4.8)"/><ellipse cx="-2.3" cy="-4.8" rx="2.6" ry="1.0" fill="#6FA052" transform="rotate(40 -2.3 -4.8)"/><ellipse cx="2.2" cy="-9.5" rx="2.4" ry="0.9" fill="#6FA052" transform="rotate(-40 2.2 -9.5)"/><ellipse cx="-2.2" cy="-9.5" rx="2.4" ry="0.9" fill="#6FA052" transform="rotate(40 -2.2 -9.5)"/><ellipse cx="2.0" cy="-14.2" rx="2.2" ry="0.8" fill="#6FA052" transform="rotate(-40 2.0 -14.2)"/><ellipse cx="-2.0" cy="-14.2" rx="2.2" ry="0.8" fill="#6FA052" transform="rotate(40 -2.0 -14.2)"/><ellipse cx="1.8" cy="-19.0" rx="2.0" ry="0.8" fill="#6FA052" transform="rotate(-40 1.8 -19.0)"/><ellipse cx="-1.8" cy="-19.0" rx="2.0" ry="0.8" fill="#6FA052" transform="rotate(40 -1.8 -19.0)"/><ellipse cx="1.7" cy="-23.8" rx="1.8" ry="0.7" fill="#6FA052" transform="rotate(-40 1.7 -23.8)"/><ellipse cx="-1.7" cy="-23.8" rx="1.8" ry="0.7" fill="#6FA052" transform="rotate(40 -1.7 -23.8)"/><ellipse cx="1.5" cy="-28.5" rx="1.6" ry="0.6" fill="#6FA052" transform="rotate(-40 1.5 -28.5)"/><ellipse cx="-1.5" cy="-28.5" rx="1.6" ry="0.6" fill="#6FA052" transform="rotate(40 -1.5 -28.5)"/><ellipse cx="1.3" cy="-33.2" rx="1.5" ry="0.6" fill="#6FA052" transform="rotate(-40 1.3 -33.2)"/><ellipse cx="-1.3" cy="-33.2" rx="1.5" ry="0.6" fill="#6FA052" transform="rotate(40 -1.3 -33.2)"/><ellipse cy="-39.5" rx="1" ry="2.2" fill="#6FA052"/></g><g transform="translate(190.0,98.0) rotate(14)"><path d="M0 0 C1 -14.4 -1 -25.2 0 -36" stroke="#6C9A50" stroke-width="1.3" stroke-linecap="round"/><ellipse cx="2.3" cy="-4.5" rx="2.6" ry="1.0" fill="#7BAA5E" transform="rotate(-40 2.3 -4.5)"/><ellipse cx="-2.3" cy="-4.5" rx="2.6" ry="1.0" fill="#7BAA5E" transform="rotate(40 -2.3 -4.5)"/><ellipse cx="2.2" cy="-9.0" rx="2.4" ry="0.9" fill="#7BAA5E" transform="rotate(-40 2.2 -9.0)"/><ellipse cx="-2.2" cy="-9.0" rx="2.4" ry="0.9" fill="#7BAA5E" transform="rotate(40 -2.2 -9.0)"/><ellipse cx="2.0" cy="-13.5" rx="2.2" ry="0.8" fill="#7BAA5E" transform="rotate(-40 2.0 -13.5)"/><ellipse cx="-2.0" cy="-13.5" rx="2.2" ry="0.8" fill="#7BAA5E" transform="rotate(40 -2.0 -13.5)"/><ellipse cx="1.8" cy="-18.0" rx="2.0" ry="0.8" fill="#7BAA5E" transform="rotate(-40 1.8 -18.0)"/><ellipse cx="-1.8" cy="-18.0" rx="2.0" ry="0.8" fill="#7BAA5E" transform="rotate(40 -1.8 -18.0)"/><ellipse cx="1.7" cy="-22.5" rx="1.8" ry="0.7" fill="#7BAA5E" transform="rotate(-40 1.7 -22.5)"/><ellipse cx="-1.7" cy="-22.5" rx="1.8" ry="0.7" fill="#7BAA5E" transform="rotate(40 -1.7 -22.5)"/><ellipse cx="1.5" cy="-27.0" rx="1.6" ry="0.6" fill="#7BAA5E" transform="rotate(-40 1.5 -27.0)"/><ellipse cx="-1.5" cy="-27.0" rx="1.6" ry="0.6" fill="#7BAA5E" transform="rotate(40 -1.5 -27.0)"/><ellipse cx="1.3" cy="-31.5" rx="1.5" ry="0.6" fill="#7BAA5E" transform="rotate(-40 1.3 -31.5)"/><ellipse cx="-1.3" cy="-31.5" rx="1.5" ry="0.6" fill="#7BAA5E" transform="rotate(40 -1.3 -31.5)"/><ellipse cy="-37.5" rx="1" ry="2.2" fill="#7BAA5E"/></g><g transform="translate(196.0,98.0) rotate(40)"><path d="M0 0 C1 -12.0 -1 -21.0 0 -30" stroke="#6C9A50" stroke-width="1.3" stroke-linecap="round"/><ellipse cx="2.3" cy="-3.8" rx="2.6" ry="1.0" fill="#6FA052" transform="rotate(-40 2.3 -3.8)"/><ellipse cx="-2.3" cy="-3.8" rx="2.6" ry="1.0" fill="#6FA052" transform="rotate(40 -2.3 -3.8)"/><ellipse cx="2.2" cy="-7.5" rx="2.4" ry="0.9" fill="#6FA052" transform="rotate(-40 2.2 -7.5)"/><ellipse cx="-2.2" cy="-7.5" rx="2.4" ry="0.9" fill="#6FA052" transform="rotate(40 -2.2 -7.5)"/><ellipse cx="2.0" cy="-11.2" rx="2.2" ry="0.8" fill="#6FA052" transform="rotate(-40 2.0 -11.2)"/><ellipse cx="-2.0" cy="-11.2" rx="2.2" ry="0.8" fill="#6FA052" transform="rotate(40 -2.0 -11.2)"/><ellipse cx="1.8" cy="-15.0" rx="2.0" ry="0.8" fill="#6FA052" transform="rotate(-40 1.8 -15.0)"/><ellipse cx="-1.8" cy="-15.0" rx="2.0" ry="0.8" fill="#6FA052" transform="rotate(40 -1.8 -15.0)"/><ellipse cx="1.7" cy="-18.8" rx="1.8" ry="0.7" fill="#6FA052" transform="rotate(-40 1.7 -18.8)"/><ellipse cx="-1.7" cy="-18.8" rx="1.8" ry="0.7" fill="#6FA052" transform="rotate(40 -1.7 -18.8)"/><ellipse cx="1.5" cy="-22.5" rx="1.6" ry="0.6" fill="#6FA052" transform="rotate(-40 1.5 -22.5)"/><ellipse cx="-1.5" cy="-22.5" rx="1.6" ry="0.6" fill="#6FA052" transform="rotate(40 -1.5 -22.5)"/><ellipse cx="1.3" cy="-26.2" rx="1.5" ry="0.6" fill="#6FA052" transform="rotate(-40 1.3 -26.2)"/><ellipse cx="-1.3" cy="-26.2" rx="1.5" ry="0.6" fill="#6FA052" transform="rotate(40 -1.3 -26.2)"/><ellipse cy="-31.5" rx="1" ry="2.2" fill="#6FA052"/></g><g transform="translate(166.0,92.0) rotate(-60) scale(1.15)"><path d="M0 5.5 L0 11.5" stroke="#5E8A4C" stroke-width="1.3" stroke-linecap="round"/><path d="M0 -9 C7 -6 9 1 4 6 C2.5 7.5 .8 7 0 5.5 C-.8 7 -2.5 7.5 -4 6 C-9 1 -7 -6 0 -9 Z" fill="#6E9A5A"/><path d="M0 5 L0 -7 M0 -1 L3.6 -4 M0 -1 L-3.6 -4 M0 2.5 L4 0 M0 2.5 L-4 0" stroke="#A9CB8C" stroke-width=".7" stroke-linecap="round"/></g><g transform="translate(175.0,82.0) rotate(-32) scale(1.20)"><path d="M0 5.5 L0 11.5" stroke="#5E8A4C" stroke-width="1.3" stroke-linecap="round"/><path d="M0 -9 C7 -6 9 1 4 6 C2.5 7.5 .8 7 0 5.5 C-.8 7 -2.5 7.5 -4 6 C-9 1 -7 -6 0 -9 Z" fill="#7FA662"/><path d="M0 5 L0 -7 M0 -1 L3.6 -4 M0 -1 L-3.6 -4 M0 2.5 L4 0 M0 2.5 L-4 0" stroke="#A9CB8C" stroke-width=".7" stroke-linecap="round"/></g><g transform="translate(186.0,76.0) rotate(-6) scale(1.20)"><path d="M0 5.5 L0 11.5" stroke="#5E8A4C" stroke-width="1.3" stroke-linecap="round"/><path d="M0 -9 C7 -6 9 1 4 6 C2.5 7.5 .8 7 0 5.5 C-.8 7 -2.5 7.5 -4 6 C-9 1 -7 -6 0 -9 Z" fill="#5E8A4C"/><path d="M0 5 L0 -7 M0 -1 L3.6 -4 M0 -1 L-3.6 -4 M0 2.5 L4 0 M0 2.5 L-4 0" stroke="#A9CB8C" stroke-width=".7" stroke-linecap="round"/></g><g transform="translate(197.0,81.0) rotate(22) scale(1.20)"><path d="M0 5.5 L0 11.5" stroke="#5E8A4C" stroke-width="1.3" stroke-linecap="round"/><path d="M0 -9 C7 -6 9 1 4 6 C2.5 7.5 .8 7 0 5.5 C-.8 7 -2.5 7.5 -4 6 C-9 1 -7 -6 0 -9 Z" fill="#86AE68"/><path d="M0 5 L0 -7 M0 -1 L3.6 -4 M0 -1 L-3.6 -4 M0 2.5 L4 0 M0 2.5 L-4 0" stroke="#A9CB8C" stroke-width=".7" stroke-linecap="round"/></g><g transform="translate(206.0,91.0) rotate(55) scale(1.10)"><path d="M0 5.5 L0 11.5" stroke="#5E8A4C" stroke-width="1.3" stroke-linecap="round"/><path d="M0 -9 C7 -6 9 1 4 6 C2.5 7.5 .8 7 0 5.5 C-.8 7 -2.5 7.5 -4 6 C-9 1 -7 -6 0 -9 Z" fill="#6E9A5A"/><path d="M0 5 L0 -7 M0 -1 L3.6 -4 M0 -1 L-3.6 -4 M0 2.5 L4 0 M0 2.5 L-4 0" stroke="#A9CB8C" stroke-width=".7" stroke-linecap="round"/></g><g transform="translate(180.0,87.0) rotate(-14) scale(1.10)"><path d="M0 5.5 L0 11.5" stroke="#5E8A4C" stroke-width="1.3" stroke-linecap="round"/><path d="M0 -9 C7 -6 9 1 4 6 C2.5 7.5 .8 7 0 5.5 C-.8 7 -2.5 7.5 -4 6 C-9 1 -7 -6 0 -9 Z" fill="#86AE68"/><path d="M0 5 L0 -7 M0 -1 L3.6 -4 M0 -1 L-3.6 -4 M0 2.5 L4 0 M0 2.5 L-4 0" stroke="#A9CB8C" stroke-width=".7" stroke-linecap="round"/></g><g transform="translate(193.0,87.0) rotate(14) scale(1.10)"><path d="M0 5.5 L0 11.5" stroke="#5E8A4C" stroke-width="1.3" stroke-linecap="round"/><path d="M0 -9 C7 -6 9 1 4 6 C2.5 7.5 .8 7 0 5.5 C-.8 7 -2.5 7.5 -4 6 C-9 1 -7 -6 0 -9 Z" fill="#7FA662"/><path d="M0 5 L0 -7 M0 -1 L3.6 -4 M0 -1 L-3.6 -4 M0 2.5 L4 0 M0 2.5 L-4 0" stroke="#A9CB8C" stroke-width=".7" stroke-linecap="round"/></g></g>
+          <g transform="translate(34 0)"><ellipse cx="219" cy="97" rx="3.8" ry="2.9" fill="#B7B3AA"/><ellipse cx="217.9" cy="96.0" rx="1.3" ry="0.7" fill="#D3D0C9"/><ellipse cx="227" cy="98" rx="4" ry="3" fill="#A9A59C"/><ellipse cx="225.8" cy="97.0" rx="1.4" ry="0.8" fill="#D3D0C9"/><ellipse cx="234" cy="97" rx="3.2" ry="2.6" fill="#BDB9B0"/><ellipse cx="233.0" cy="96.1" rx="1.1" ry="0.7" fill="#D3D0C9"/><ellipse cx="223" cy="92" rx="3.4" ry="2.7" fill="#AFABA2"/><ellipse cx="222.0" cy="91.1" rx="1.2" ry="0.7" fill="#D3D0C9"/><ellipse cx="231" cy="92.5" rx="3.2" ry="2.6" fill="#B7B3AA"/><ellipse cx="230.0" cy="91.6" rx="1.1" ry="0.7" fill="#D3D0C9"/></g>
+          <path d="M141 54 C154 35 192 35 205 54" stroke="#D9A23A" stroke-width="2.4" stroke-linecap="round"/>
+          <path d="M138.6 47.4 l2.4 6.6 6.4 -2.5" stroke="#D9A23A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M207.4 47.4 l-2.4 6.6 -6.4 -2.5" stroke="#D9A23A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <text data-zh x="139" y="115" text-anchor="middle" font-size="10" font-weight="800" fill="#B4612A">概念 A</text>
+          <text data-zh x="207" y="115" text-anchor="middle" font-size="10" font-weight="800" fill="#557A3E">概念 B</text>
+          <text data-zh x="261" y="115" text-anchor="middle" font-size="10" font-weight="800" fill="#6F6C66">雜質</text>
+          <text data-en x="139" y="115" text-anchor="middle" font-size="7.6" font-weight="800" fill="#B4612A">Concept A</text>
+          <text data-en x="207" y="115" text-anchor="middle" font-size="7.6" font-weight="800" fill="#557A3E">Concept B</text>
+          <text data-en x="258" y="115" text-anchor="middle" font-size="7.2" font-weight="800" fill="#6F6C66">Noise</text>
+        </svg></div></div>
+        <h3><span data-zh>鄰近字分堆組合器</span><span data-en>Proximity Builder</span></h3>
+        <div class="en">Proximity Builder</div>
+        <p><span data-zh>把相同概念的多個片語，透過程式判斷自動分堆，再用鄰近字語法組合，兼顧完整與精準度的平衡。整理好可直接送進 PICO 產生器或語法轉換器。</span><span data-en>Phrases for the same concept are automatically grouped into stacks, then combined with proximity syntax to balance completeness and precision. Send the result straight to the PICO Strategy Builder or the Syntax Converter.</span></p>
+        <div class="crow">
+          <a class="cbtn solid" href="proximity-builder.html"><span data-zh>開始組合</span><span data-en>Start combining</span> →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<a id="story"></a>
+<section class="wrap">
+  <div class="story">
+    <h2><span data-zh>Happy SearchHen 緣起</span><span data-en>How Happy SearchHen began</span></h2>
+    <p class="blk" data-zh>系統性回顧的檢索，常讓人覺得繁瑣又容易出錯。<br><span class="egg-accent">Happy SearchHen（搜尋策略生成雞）</span>希望把這段過程變得友善一點：<br>你把同義詞與控制詞彙交給牠，<br>牠幫你把跨資料庫的檢索策略一顆一顆「生」出來<br>——穩定、可重現、好覆核。</p>
+    <p class="blk" data-en>Searching for a systematic review is often tedious and error-prone.<br><span class="egg-accent">Happy SearchHen</span> aims to make it a little friendlier:<br>hand over your synonyms and controlled vocabulary,<br>and it lays out cross-database search strategies one egg at a time<br>— stable, reproducible, and easy to double-check.</p>
+    <p class="blk" data-zh>我幫你友善介面，你人道負責任養好雞<br>SearchHen 幫我們生出顆顆一致的金蛋 🥚</p>
+    <p class="blk" data-en>I make the interface friendly, you raise the hen humanely and responsibly,<br>and SearchHen lays consistent golden eggs for all of us 🥚</p>
+  </div>
+</section>
+
 <footer>
-  <p><span data-zh>此工具包為純網頁程式，未使用到AI運作，僅在您的瀏覽器本機執行與暫存，不會上傳任何研究資料到網路。各工具輸出結果請人工覆核後再使用。</span><span data-en>This toolkit is pure web-based software with no AI — everything runs and is cached entirely in your browser and never uploads any of your research data. Please human-check each tool's output before use.</span></p>
-  <p><span data-zh>工具引用：方靜如，SR x EBM Happy SearchHen 搜尋策略生成雞。<br>Fang CJ, SR x EBM Happy SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/</a></span><span data-en>Cite this tool: Fang CJ, SR x EBM Happy SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/</a></span></p>
-  <p>© 2026 Ching-Ju Fang <a href="https://orcid.org/0000-0002-7892-8840" target="_blank" rel="noopener" title="ORCID iD" style="text-decoration:none;white-space:nowrap;color:inherit" onclick="try{if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:'author-orcid',title:'作者-ORCID',event:true})}catch(e){}"><svg width="13" height="13" viewBox="0 0 256 256" style="vertical-align:-2px;margin-right:3px" aria-hidden="true"><circle cx="128" cy="128" r="128" fill="#A6CE39"/><g fill="#fff"><path d="M86.3 186.2H70.9V79.1h15.4v107.1z"/><path d="M108.9 79.1h41.6c39.6 0 57 28.3 57 53.6 0 27.5-21.5 53.6-56.8 53.6h-41.8V79.1zm15.4 93.3h24.5c34.9 0 42.9-26.5 42.9-39.7 0-21.5-13.7-39.7-43.7-39.7h-23.7v79.4z"/><circle cx="78.6" cy="56.8" r="10.1"/></g></svg>https://orcid.org/0000-0002-7892-8840</a> · All rights reserved · v3.2.2</p>
+  <div class="wrap foot">
+    <p><span data-zh>此工具包為純網頁程式，未使用到 AI 運作，僅在您的瀏覽器本機執行與暫存，不會上傳任何研究資料到網路。各工具輸出結果請人工覆核後再使用。</span><span data-en>This toolkit is pure web-based software with no AI — everything runs and is cached entirely in your browser and never uploads any of your research data. Please human-check each tool's output before use.</span></p>
+    <p><span data-zh>工具引用：方靜如，SR × EBM Happy SearchHen 搜尋策略生成雞。doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/</a></span><span data-en>Cite this tool: Fang CJ, SR × EBM Happy SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/</a></span></p>
+    <div class="frow">
+      <span class="brandline">SR × EBM Happy SearchHen　搜尋策略生成雞</span>
+      <span>© 2026 Ching-Ju Fang <a href="https://orcid.org/0000-0002-7892-8840" target="_blank" rel="noopener" title="ORCID iD" style="text-decoration:none;white-space:nowrap;color:inherit" onclick="try{if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:'author-orcid',title:'作者-ORCID',event:true})}catch(e){}"><svg width="13" height="13" viewBox="0 0 256 256" style="vertical-align:-2px;margin-right:3px" aria-hidden="true"><circle cx="128" cy="128" r="128" fill="#A6CE39"/><g fill="#fff"><path d="M86.3 186.2H70.9V79.1h15.4v107.1z"/><path d="M108.9 79.1h41.6c39.6 0 57 28.3 57 53.6 0 27.5-21.5 53.6-56.8 53.6h-41.8V79.1zm15.4 93.3h24.5c34.9 0 42.9-26.5 42.9-39.7 0-21.5-13.7-39.7-43.7-39.7h-23.7v79.4z"/><circle cx="78.6" cy="56.8" r="10.1"/></g></svg>0000-0002-7892-8840</a> · v3.2.3</span>
+    </div>
+  </div>
 </footer>
+
 <script>
   function toggleLang(){
     var en=document.documentElement.getAttribute("lang")==="en";
@@ -107,12 +374,11 @@
     document.getElementById("langBtn").textContent=en?"English":"中文";
     try{ localStorage.setItem("sr_lang", en?"zh":"en"); }catch(e){}
   }
-  // 語言決定順序：網址 ?lang=en／?lang=zh（或 #en／#zh）＞ 本機記憶。提供英文版專屬網址：index.html?lang=en
   (function(){
     var q=((location.search.match(/[?&]lang=(en|zh)/i)||[])[1]||(location.hash.match(/^#(en|zh)\b/i)||[])[1]||"").toLowerCase();
     var want=q||(function(){ try{ return localStorage.getItem("sr_lang"); }catch(e){ return null; } })();
     if(want==="en") toggleLang();
-    if(q){ try{ localStorage.setItem("sr_lang", q); }catch(e){} }   // 由網址指定時，一併記住，讓子頁面（PICO／轉換器…）也以該語言開啟
+    if(q){ try{ localStorage.setItem("sr_lang", q); }catch(e){} }
   })();
   // 事件統計（雙軌：p=去重、p-all=no_session 每次都算）；並自動追蹤按鈕與工具連結點擊
   function srCount(p,t){ try{ var _e=window.event; if(_e&&(_e.type==="click"||_e.type==="change")&&_e.target&&_e.target.closest){ var _b=_e.target.closest("button,[role=button],.btn,a"); if(_b) _b.__srExplicit=_e.timeStamp; } }catch(_x){} var c=function(o){ var n=0;(function f(){ try{ if(window.goatcounter&&window.goatcounter.count){ window.goatcounter.count(o); return; } }catch(e){ return; } if(n++<40) setTimeout(f,250); })(); }; c({path:p,title:t||p,event:true}); c({path:p+'-all',title:(t||p)+'（累計）',event:true,no_session:true}); }
@@ -124,7 +390,7 @@
   // 統計介面語言使用（等 GoatCounter 載入後送出 lang-en／lang-zh 事件）
   (function countLang(){ var lang=document.documentElement.getAttribute("lang")==="en"?"en":"zh"; var n=0;(function f(){ if(window.goatcounter&&window.goatcounter.count){window.goatcounter.count({path:"lang-"+lang,title:"介面語言-"+lang,event:true});window.goatcounter.count({path:"lang-"+lang+"-all",title:"介面語言-"+lang+"（累計）",event:true,no_session:true});}else if(n++<40){setTimeout(f,250);} })(); })();
 </script>
-<script>/* 頁面瀏覽路徑正規化：去除 ?lang 等 query，避免同頁被拆成多筆（不影響功能事件的顯式 path） */window.goatcounter={path:function(p){try{return location.pathname;}catch(e){return p;}}};</script>
+<script>window.goatcounter={path:function(p){try{return location.pathname;}catch(e){return p;}}};</script>
 <script>
 /* 全域提示：把所有原生 title 改成 ⓘ 同款黑底白字氣泡；已用 .hastip（data-tip）者維持原樣。 */
 (function(){
