@@ -244,11 +244,10 @@
   th.cvhead:hover{background:#dedede}
   th.cvhead.on{background:#cfcfcf;box-shadow:inset 0 -3px 0 currentColor}
   table.pico th.cvhead{font-size:14px;font-weight:800;letter-spacing:.6px}
-  .meshvhd{display:inline-flex;align-items:center;justify-content:center;margin-left:7px;width:27px;height:22px;padding:0;border:1px solid #e0b0b0;border-radius:6px;background:#fff;color:#b45309;cursor:pointer;vertical-align:middle}
-  .meshvhd:hover{background:#FDF2F2;border-color:#d79393}
+  .meshvhd{display:inline-flex;align-items:center;justify-content:center;margin-left:7px;padding:0;border:none;background:none;color:#c2410c;cursor:pointer;vertical-align:middle;line-height:0}
+  .meshvhd:hover{opacity:.82}
   .meshvhd svg{display:block}
-  .meshvhd.vok{color:#15803d;border-color:#9ccfb0}
-  .meshvhd.vok:hover{background:#F0FBF6;border-color:#7cbf99}
+  .meshvhd.vok{color:#15803d}
   .cvcaret{font-size:13px;opacity:.85;margin-left:3px;font-weight:700}
   .cvcaret svg{width:11px;height:11px;vertical-align:-1px}
   #cvVerifyPanel{position:absolute;z-index:100;background:#fff;border:1px solid #D7E0E3;border-radius:10px;padding:10px 12px 12px;box-shadow:0 8px 28px rgba(0,0,0,.18);min-width:240px;max-width:420px;max-height:62vh;overflow:auto}
@@ -558,7 +557,7 @@ Optical Imaging)</pre>
           <th class="ref" style="width:15%"><span data-zh>中文同義詞</span><span data-en>Chinese synonyms</span></th>
           <th class="free" style="width:22%"><span data-zh>英文同義詞</span><span data-en>English synonyms</span></th>
           <th class="cv cvhead" data-vocab="emtree" style="width:21%" title="點一下展開 Emtree 各概念詞彙的查核連結">Emtree <span class="cvcaret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span></th>
-          <th class="cv cvhead" data-vocab="mesh" style="width:21%" title="點一下展開 MeSH 各概念詞彙的查核連結">MeSH <span class="cvcaret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span> <button type="button" id="meshVerifyHd" class="meshvhd" title="線上查核此欄每個 MeSH 詞是否為正式標目，並可帶入同義詞／狹義詞"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 L19 6 V11 c0 4.5 -3 7.5 -7 9 c-4 -1.5 -7 -4.5 -7 -9 V6 Z"/><path d="M9.5 9.8 L14.5 14.4 M14.5 9.8 L9.5 14.4"/></svg></button></th>
+          <th class="cv cvhead" data-vocab="mesh" style="width:21%" title="點一下展開 MeSH 各概念詞彙的查核連結">MeSH <span class="cvcaret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span> <button type="button" id="meshVerifyHd" class="meshvhd" title="線上查核此欄每個 MeSH 詞是否為正式標目，並可帶入同義詞／狹義詞"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M12 3 L19 6 V11 c0 4.5 -3 7.5 -7 9 c-4 -1.5 -7 -4.5 -7 -9 V6 Z" fill="currentColor"/><path d="M9.3 9.6 L14.7 14.6 M14.7 9.6 L9.3 14.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/></svg></button></th>
           <th class="cv cvhead" data-vocab="cinahl" style="width:21%" title="點一下展開 CINAHL 各概念詞彙的查核連結">CINAHL Headings <span class="cvcaret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span></th>
           <th style="width:30px"></th>
         </tr>
@@ -2098,8 +2097,8 @@ if (typeof module !== "undefined" && module.exports) {
       ? (isEn()?"MeSH verified — all are valid headings. Click to re-verify.":"MeSH 已驗證：全部為正式標目；可再按重新驗證。")
       : (isEn()?"Verify MeSH headings (not yet verified, or some didn't pass).":"驗證 MeSH 標目（尚未驗證，或有未通過，點我驗證）");
     b.innerHTML = ok
-      ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 L19 6 V11 c0 4.5 -3 7.5 -7 9 c-4 -1.5 -7 -4.5 -7 -9 V6 Z"/><path d="M8.8 12 l2.2 2.2 4 -4.4"/></svg>'
-      : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 L19 6 V11 c0 4.5 -3 7.5 -7 9 c-4 -1.5 -7 -4.5 -7 -9 V6 Z"/><path d="M9.5 9.8 L14.5 14.4 M14.5 9.8 L9.5 14.4"/></svg>';
+      ? '<svg width="26" height="26" viewBox="0 0 24 24"><path d="M12 3 L19 6 V11 c0 4.5 -3 7.5 -7 9 c-4 -1.5 -7 -4.5 -7 -9 V6 Z" fill="currentColor"/><path d="M8.6 12 l2.3 2.3 4.4 -4.7" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      : '<svg width="26" height="26" viewBox="0 0 24 24"><path d="M12 3 L19 6 V11 c0 4.5 -3 7.5 -7 9 c-4 -1.5 -7 -4.5 -7 -9 V6 Z" fill="currentColor"/><path d="M9.3 9.6 L14.7 14.6 M14.7 9.6 L9.3 14.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/></svg>';
   }
   picoBody.addEventListener("input", function(e){ if(_meshValidated && e.target && e.target.dataset && e.target.dataset.kind==="mesh") _meshSetDirty(true); });
   (function(){ var bt=$("#meshVerifyHd"); if(bt) bt.onclick=function(e){ if(e&&e.stopPropagation) e.stopPropagation(); srCount&&srCount("pico-mesh-verify","PICO-驗證MeSH"); _meshVerifyAll(); }; })();
