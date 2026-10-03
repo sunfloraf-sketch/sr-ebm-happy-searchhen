@@ -47,6 +47,12 @@
   html[lang="en"] [data-zh]{display:none}
   html[lang="en"] [data-en]{display:inline}
   html[lang="en"] .sub[data-zh]{display:none}
+  /* 全域 title 提示：比照 ⓘ（黑底白字），取代瀏覽器原生灰底提示 */
+  #gtip{position:fixed;z-index:9999;max-width:240px;white-space:normal;text-align:left;background:#1c2733;color:#fff;font-size:11.5px;font-weight:400;line-height:1.55;padding:8px 10px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.25);pointer-events:none;opacity:0;transition:opacity .12s;display:none}
+  #gtip.show{opacity:1}
+  #gtip::after{content:"";position:absolute;left:var(--ax,50%);transform:translateX(-50%);border:6px solid transparent}
+  #gtip.above::after{top:100%;border-top-color:#1c2733}
+  #gtip.below::after{bottom:100%;border-bottom-color:#1c2733}
 </style>
 </head>
 <body>
@@ -119,6 +125,51 @@
   (function countLang(){ var lang=document.documentElement.getAttribute("lang")==="en"?"en":"zh"; var n=0;(function f(){ if(window.goatcounter&&window.goatcounter.count){window.goatcounter.count({path:"lang-"+lang,title:"介面語言-"+lang,event:true});window.goatcounter.count({path:"lang-"+lang+"-all",title:"介面語言-"+lang+"（累計）",event:true,no_session:true});}else if(n++<40){setTimeout(f,250);} })(); })();
 </script>
 <script>/* 頁面瀏覽路徑正規化：去除 ?lang 等 query，避免同頁被拆成多筆（不影響功能事件的顯式 path） */window.goatcounter={path:function(p){try{return location.pathname;}catch(e){return p;}}};</script>
+<script>
+/* 全域提示：把所有原生 title 改成 ⓘ 同款黑底白字氣泡；已用 .hastip（data-tip）者維持原樣。 */
+(function(){
+  var tip=document.createElement("div"); tip.id="gtip"; document.body.appendChild(tip);
+  var cur=null, orig=null;
+  function textFor(el){
+    var en=document.body.classList.contains("en");
+    if(en && el.getAttribute("data-tip-en")) return el.getAttribute("data-tip-en");
+    if(!en && el.getAttribute("data-tip-zh")) return el.getAttribute("data-tip-zh");
+    return el.getAttribute("title");
+  }
+  function hide(){ if(!cur) return; if(orig!=null && cur.getAttribute("title")==="") cur.setAttribute("title",orig); tip.classList.remove("show"); tip.style.display="none"; cur=null; orig=null; }
+  function show(el){
+    var txt=textFor(el); if(!txt) return;
+    orig=el.getAttribute("title"); if(orig!=null) el.setAttribute("title","");
+    cur=el; tip.textContent=txt; tip.style.display="block"; tip.classList.remove("show");
+    var r=el.getBoundingClientRect(), tb=tip.getBoundingClientRect();
+    var cx=r.left+r.width/2;
+    var left=Math.max(6, Math.min(cx-tb.width/2, window.innerWidth-tb.width-6));
+    var above=r.top > tb.height+14;
+    var top=above ? (r.top-tb.height-10) : (r.bottom+10);
+    tip.style.left=left+"px"; tip.style.top=top+"px";
+    tip.classList.toggle("above",above); tip.classList.toggle("below",!above);
+    tip.style.setProperty("--ax",(cx-left)+"px");
+    requestAnimationFrame(function(){ if(cur===el) tip.classList.add("show"); });
+  }
+  document.addEventListener("mouseover",function(e){
+    var t=e.target; if(!t||!t.closest) return;
+    var el=t.closest("[title],[data-tip-zh],[data-tip-en]");
+    if(!el){ if(cur) hide(); return; }
+    if(el.classList && el.classList.contains("hastip")) return;
+    if(el.closest(".hastip")) return;
+    if(el===cur) return;
+    hide(); show(el);
+  });
+  document.addEventListener("mouseout",function(e){
+    if(!cur) return; var to=e.relatedTarget;
+    if(to && (to===cur || (cur.contains && cur.contains(to)))) return;
+    hide();
+  });
+  window.addEventListener("scroll",hide,true);
+  document.addEventListener("click",hide,true);
+  window.addEventListener("blur",hide);
+})();
+</script>
 <script data-goatcounter="https://sr-toolkit.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

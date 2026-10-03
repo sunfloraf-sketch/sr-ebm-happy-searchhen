@@ -37,7 +37,8 @@
   .lvlnote{font-size:12px;color:#66717A;line-height:1.6;margin-top:8px;max-width:280px;white-space:pre-line;padding-left:12px}
   table.pico{border-collapse:separate;border-spacing:0;width:100%;margin-top:4px;font-size:13px;table-layout:fixed;border:1px solid #C7D0D6;border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 2px 10px rgba(27,36,43,.035), inset 0 1px 0 rgba(255,255,255,.9)}
   table.pico th,table.pico td{border:0;border-right:1px solid #D9E0E4;border-bottom:1px solid #D9E0E4;padding:6px;vertical-align:top}
-  table.pico th{background:linear-gradient(180deg,#F7F8F9,#E9EDF0);color:#333A40;font-size:12.5px;font-weight:650;box-shadow:inset 0 1px 0 rgba(255,255,255,.9)}
+  table.pico th{background:linear-gradient(180deg,#F7F8F9,#E9EDF0);color:#333A40;font-size:12.5px;font-weight:650;vertical-align:middle;box-shadow:inset 0 1px 0 rgba(255,255,255,.9)}
+  table.pico th.ref,table.pico th.free,table.pico th.cvhead{font-size:19px}
   table.pico th.cvhead[data-vocab="emtree"]{color:#E36C0A;--cvc:#E36C0A}
   table.pico th.cvhead[data-vocab="mesh"]{color:#C0504D;--cvc:#C0504D}
   table.pico th.cvhead[data-vocab="cinahl"]{color:#00B050;--cvc:#00B050}
@@ -46,7 +47,7 @@
   table.pico th.cvhead[data-vocab].on{box-shadow:inset 0 -3px 0 rgba(0,0,0,.3)}
   table.pico td.ref textarea{font-family:inherit;font-size:12.5px}
   table.pico td.lab{width:52px;text-align:center;vertical-align:middle;background:linear-gradient(180deg,#F7F8F9,#EEF1F3)}
-  table.pico td.lab input{width:100%;padding:0;margin:0;box-sizing:border-box;text-align:center;font-weight:700;color:#2B2B2B;border:none;background:transparent;font-size:14px}
+  table.pico td.lab input{width:100%;padding:0;margin:0;box-sizing:border-box;text-align:center;font-weight:700;color:#2B2B2B;border:none;background:transparent;font-size:21px}
   table.pico td.lab .ccode{text-align:center}
   table.pico td.lab .rowlvl{width:100%;min-width:0;box-sizing:border-box;-webkit-appearance:none;appearance:none;margin-top:4px;font-size:11px;font-weight:700;text-align:center;text-align-last:center;padding:1px 0;border:1px solid #cdd5da;border-radius:5px;background:#EEF1F3;color:#3f6f3f;cursor:pointer}
   #level{background:#4b5563;color:#fff;border-color:#374151}
@@ -71,11 +72,16 @@
   table.pico tbody tr:hover td.lab{background:linear-gradient(180deg,#F5F7F8,#EBEFF1)}
   .rmrow{border:none;background:none;color:#55504B;cursor:pointer;font-size:15px;padding:0 2px}
   .rmrow:hover{color:#23282D}
-  .pico-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:6px}
-  .picotools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:40px}
+  .pico-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+  .picotools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:0}
   /* 工具列按鈕含圖示 */
   .picotools .btn{display:inline-flex;align-items:center;gap:6px}
   .picotools .btn svg{display:block}
+  /* 載入範例：超連結樣式（沿用說明連結的青色 + hover 底線） */
+  .exlink{display:inline;cursor:pointer;font-weight:700;font-size:13px;color:#0f766e;text-decoration:none;white-space:nowrap;margin-left:2px}
+  .exlink svg{width:14px;height:14px;vertical-align:-2px;margin-right:3px}
+  .exlink:hover{text-decoration:underline}
+  .exlink:focus-visible{outline:2px solid #0f766e;outline-offset:3px;border-radius:4px}
   .pt-caret{width:12px;height:12px;opacity:.7;transition:transform .15s}
   .pt-dd{position:relative;display:inline-flex}
   .pt-dd.open .pt-caret{transform:rotate(180deg)}
@@ -102,6 +108,12 @@
   .hastip:hover::after,.hastip:hover::before{opacity:1}
   .hastip.tipR::after{left:auto;right:0;transform:none}
   .hastip.tipR::before{left:auto;right:12px;transform:none}
+  /* 全域 title 提示：比照 ⓘ（黑底白字），取代瀏覽器原生灰底提示 */
+  #gtip{position:fixed;z-index:9999;max-width:240px;white-space:normal;text-align:left;background:#1c2733;color:#fff;font-size:11.5px;font-weight:400;line-height:1.55;padding:8px 10px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.25);pointer-events:none;opacity:0;transition:opacity .12s;display:none}
+  #gtip.show{opacity:1}
+  #gtip::after{content:"";position:absolute;left:var(--ax,50%);transform:translateX(-50%);border:6px solid transparent}
+  #gtip.above::after{top:100%;border-top-color:#1c2733}
+  #gtip.below::after{bottom:100%;border-bottom-color:#1c2733}
   .btn{border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer}
   .btn.ghost{background:linear-gradient(180deg,#FBFCFC,#E8EDF0);border:1px solid #CCD4DA;color:#25292D;box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 1px 2px rgba(0,0,0,.06)}
   .btn.ghost:hover{background:linear-gradient(180deg,#FFFFFF,#E2E8EC)}
@@ -380,14 +392,8 @@
 
   <div class="panel">
     <div class="pico-head">
-      <label class="fld" style="margin:0;font-size:16px;font-weight:700;color:#23282D"><span data-zh>PICO 檢索詞</span><span data-en>PICO search terms</span></label>
+      <label class="fld" style="margin:0;font-size:22px;font-weight:700;color:#23282D;line-height:1.15"><span data-zh>PICO 檢索詞</span><span data-en>PICO search terms</span></label>
       <div class="picotools">
-        <!-- 載入範例：往右下箭頭（載入進下方表格） -->
-        <button class="btn ghost" id="exBtn" title="把示範資料直接填入下方 PICO 表（會覆蓋目前內容）">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="16.5" y2="16.5"/><polyline points="16.5 9 16.5 16.5 9 16.5"/></svg>
-          <span data-zh>載入範例</span><span data-en>Load example</span>
-        </button>
-
         <!-- Word 編輯 ▾ -->
         <div class="pt-dd" id="ddWord">
           <button type="button" class="btn ghost" data-ptdd>
@@ -446,7 +452,7 @@
       </div>
     </details>
     <details class="ccbox" id="fillHelp" style="margin:0 0 12px">
-      <summary style="cursor:pointer;font-weight:700;font-size:13px;color:#0f766e"><span data-zh>填寫說明</span><span data-en>How to fill in</span></summary>
+      <summary style="cursor:pointer;font-weight:700;font-size:13px;color:#0f766e"><span data-zh>填寫說明</span><span data-en>How to fill in</span><a id="exBtn" class="exlink" role="button" tabindex="0" title="把示範資料直接填入下方 PICO 表（會覆蓋目前內容）" style="margin-left:18px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="16.5" y2="16.5"/><polyline points="16.5 9 16.5 16.5 9 16.5"/></svg><span data-zh>載入範例</span><span data-en>Load example</span></a></summary>
       <div class="hint" style="margin:8px 0 0;line-height:1.75">
         <div data-zh>
           <div>．<b>儲存格內：</b>一詞一行（預設布林邏輯關係為 OR，不需標示）</div>
@@ -2579,6 +2585,17 @@ if (typeof module !== "undefined" && module.exports) {
     try{ ["asc","eric","compendex"].forEach(function(id){ var cb=document.querySelector('#dbchecks input[value="'+id+'"]'); if(cb&&!cb.checked){ cb.checked=true; cb.dispatchEvent(new Event("change",{bubbles:true})); } }); if(typeof updateCvColumns==="function") updateCvColumns(); }catch(_e){}
     _exampleActive=true;   // 標記為「剛載入的範例」：清空時可直接清、不需確認
   };
+  // 載入範例為超連結（嵌在「填寫說明」標題右側）：點擊只載入、不展開說明；補鍵盤觸發
+  (function(){ var ex=$("#exBtn"); if(!ex) return;
+    ex.addEventListener("click", function(e){ e.preventDefault(); e.stopPropagation(); });
+    ex.addEventListener("keydown", function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); e.stopPropagation(); ex.click(); } });
+  })();
+  // 順序：填寫說明在上、貼上整理好的表格在下；且一次只展開一個（手風琴）
+  (function(){ var fill=document.getElementById("fillHelp"), paste=document.getElementById("pasteBox");
+    if(fill && paste && fill.parentNode===paste.parentNode){ paste.parentNode.insertBefore(fill, paste); }
+    var group=[fill,paste].filter(Boolean);
+    group.forEach(function(d){ d.addEventListener("toggle", function(){ if(d.open){ group.forEach(function(o){ if(o!==d && o.open) o.open=false; }); } }); });
+  })();
 
   // ---- 核心：自由詞欄位範圍化（重用引擎的 field 節點；PubMed 逐詞展開） ----
   function stripOuterParen(s){ s=(s||"").trim(); if(s[0]!=="("||s[s.length-1]!==")") return s; var depth=0; for(var i=0;i<s.length;i++){ if(s[i]==="(")depth++; else if(s[i]===")"){ depth--; if(depth===0 && i<s.length-1) return s; } } return s.slice(1,-1).trim(); }
@@ -3742,6 +3759,51 @@ if (typeof module !== "undefined" && module.exports) {
     refreshLvlNote();
     setLangPlaceholders();
   };
+
+  /* 全域提示：把所有原生 title（含連結、JS 動態設定者）改成 ⓘ 同款黑底白字氣泡。
+     已用 .hastip（data-tip）者維持原樣，不重複顯示。 */
+  (function(){
+    var tip=document.createElement("div"); tip.id="gtip"; document.body.appendChild(tip);
+    var cur=null, orig=null;
+    function textFor(el){
+      var en=document.body.classList.contains("en");
+      if(en && el.getAttribute("data-tip-en")) return el.getAttribute("data-tip-en");
+      if(!en && el.getAttribute("data-tip-zh")) return el.getAttribute("data-tip-zh");
+      return el.getAttribute("title");
+    }
+    function hide(){ if(!cur) return; if(orig!=null && cur.getAttribute("title")==="") cur.setAttribute("title",orig); tip.classList.remove("show"); tip.style.display="none"; cur=null; orig=null; }
+    function show(el){
+      var txt=textFor(el); if(!txt) return;
+      orig=el.getAttribute("title"); if(orig!=null) el.setAttribute("title","");
+      cur=el; tip.textContent=txt; tip.style.display="block"; tip.classList.remove("show");
+      var r=el.getBoundingClientRect(), tb=tip.getBoundingClientRect();
+      var cx=r.left+r.width/2;
+      var left=Math.max(6, Math.min(cx-tb.width/2, window.innerWidth-tb.width-6));
+      var above=r.top > tb.height+14;
+      var top=above ? (r.top-tb.height-10) : (r.bottom+10);
+      tip.style.left=left+"px"; tip.style.top=top+"px";
+      tip.classList.toggle("above",above); tip.classList.toggle("below",!above);
+      tip.style.setProperty("--ax",(cx-left)+"px");
+      requestAnimationFrame(function(){ if(cur===el) tip.classList.add("show"); });
+    }
+    document.addEventListener("mouseover",function(e){
+      var t=e.target; if(!t||!t.closest) return;
+      var el=t.closest("[title],[data-tip-zh],[data-tip-en]");
+      if(!el) { if(cur) hide(); return; }
+      if(el.classList && el.classList.contains("hastip")) return;
+      if(el.closest(".hastip")) return;
+      if(el===cur) return;
+      hide(); show(el);
+    });
+    document.addEventListener("mouseout",function(e){
+      if(!cur) return; var to=e.relatedTarget;
+      if(to && (to===cur || (cur.contains && cur.contains(to)))) return;
+      hide();
+    });
+    window.addEventListener("scroll",hide,true);
+    document.addEventListener("click",hide,true);
+    window.addEventListener("blur",hide);
+  })();
 
   // 已生成策略時：切換輸出資料庫、增刪／編輯檢索詞 → 自動更新
   if(dbchecks) dbchecks.addEventListener("change", function(){ updateCvColumns(); syncCustomColumns(); autoRegen(); });

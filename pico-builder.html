@@ -37,7 +37,8 @@
   .lvlnote{font-size:12px;color:#66717A;line-height:1.6;margin-top:8px;max-width:280px;white-space:pre-line;padding-left:12px}
   table.pico{border-collapse:separate;border-spacing:0;width:100%;margin-top:4px;font-size:13px;table-layout:fixed;border:1px solid #C7D0D6;border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 2px 10px rgba(27,36,43,.035), inset 0 1px 0 rgba(255,255,255,.9)}
   table.pico th,table.pico td{border:0;border-right:1px solid #D9E0E4;border-bottom:1px solid #D9E0E4;padding:6px;vertical-align:top}
-  table.pico th{background:linear-gradient(180deg,#F7F8F9,#E9EDF0);color:#333A40;font-size:12.5px;font-weight:650;box-shadow:inset 0 1px 0 rgba(255,255,255,.9)}
+  table.pico th{background:linear-gradient(180deg,#F7F8F9,#E9EDF0);color:#333A40;font-size:12.5px;font-weight:650;vertical-align:middle;box-shadow:inset 0 1px 0 rgba(255,255,255,.9)}
+  table.pico th.ref,table.pico th.free{font-size:19px}
   table.pico th.cvhead[data-vocab="emtree"]{color:#D97706;--cvc:#D97706;--cvlt:#FFF7E8;--cvlo:#FDECC8}
   table.pico th.cvhead[data-vocab="mesh"]{color:#B91C1C;--cvc:#B91C1C;--cvlt:#FDF2F2;--cvlo:#FADADA}
   table.pico th.cvhead[data-vocab="cinahl"]{color:#059669;--cvc:#059669;--cvlt:#F0FBF6;--cvlo:#DDF3E8}
@@ -45,7 +46,7 @@
   table.pico th.cvhead[data-vocab].on{background:var(--cvlo);box-shadow:inset 0 -3px 0 var(--cvc)}
   table.pico td.ref textarea{font-family:inherit;font-size:12.5px}
   table.pico td.lab{width:52px;text-align:center;vertical-align:middle;background:linear-gradient(180deg,#F7F8F9,#EEF1F3)}
-  table.pico td.lab input{width:100%;padding:0;margin:0;box-sizing:border-box;text-align:center;font-weight:700;color:#2B2B2B;border:none;background:transparent;font-size:14px}
+  table.pico td.lab input{width:100%;padding:0;margin:0;box-sizing:border-box;text-align:center;font-weight:700;color:#2B2B2B;border:none;background:transparent;font-size:21px}
   table.pico td.lab .ccode{text-align:center}
   table.pico td.lab .rowlvl{width:100%;min-width:0;box-sizing:border-box;-webkit-appearance:none;appearance:none;margin-top:4px;font-size:11px;font-weight:700;text-align:center;text-align-last:center;padding:1px 0;border:1px solid #cdd5da;border-radius:5px;background:#EEF1F3;color:#3f6f3f;cursor:pointer}
   #level{background:#4b5563;color:#fff;border-color:#374151}
@@ -70,12 +71,17 @@
   table.pico tbody tr:hover td.lab{background:linear-gradient(180deg,#F5F7F8,#EBEFF1)}
   .rmrow{border:none;background:none;color:#55504B;cursor:pointer;font-size:15px;padding:0 2px}
   .rmrow:hover{color:#23282D}
-  .pico-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:6px}
-  .picotools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:40px}
+  .pico-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+  .picotools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:0}
   .btn{border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer}
   /* 工具列按鈕含圖示 */
   .picotools .btn{display:inline-flex;align-items:center;gap:6px}
   .picotools .btn svg{display:block}
+  /* 載入範例：超連結樣式（沿用說明連結的青色 + hover 底線） */
+  .exlink{display:inline;cursor:pointer;font-weight:700;font-size:13px;color:#0f766e;text-decoration:none;white-space:nowrap;margin-left:2px}
+  .exlink svg{width:14px;height:14px;vertical-align:-2px;margin-right:3px}
+  .exlink:hover{text-decoration:underline}
+  .exlink:focus-visible{outline:2px solid #0f766e;outline-offset:3px;border-radius:4px}
   .pt-caret{width:12px;height:12px;opacity:.7;transition:transform .15s}
   .pt-dd{position:relative;display:inline-flex}
   .pt-dd.open .pt-caret{transform:rotate(180deg)}
@@ -104,6 +110,12 @@
   .hastip:hover::after,.hastip:hover::before{opacity:1}
   .hastip.tipR::after{left:auto;right:0;transform:none}
   .hastip.tipR::before{left:auto;right:12px;transform:none}
+  /* 全域 title 提示：比照 ⓘ（黑底白字），取代瀏覽器原生灰底提示 */
+  #gtip{position:fixed;z-index:9999;max-width:240px;white-space:normal;text-align:left;background:#1c2733;color:#fff;font-size:11.5px;font-weight:400;line-height:1.55;padding:8px 10px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.25);pointer-events:none;opacity:0;transition:opacity .12s;display:none}
+  #gtip.show{opacity:1}
+  #gtip::after{content:"";position:absolute;left:var(--ax,50%);transform:translateX(-50%);border:6px solid transparent}
+  #gtip.above::after{top:100%;border-top-color:#1c2733}
+  #gtip.below::after{bottom:100%;border-bottom-color:#1c2733}
   .btn.ghost{background:linear-gradient(180deg,#FBFCFC,#E8EDF0);border:1px solid #CCD4DA;color:#25292D;box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 1px 2px rgba(0,0,0,.06)}
   .btn.ghost:hover{background:linear-gradient(180deg,#FFFFFF,#E2E8EC)}
   .btn:disabled,.btn:disabled:hover{background:linear-gradient(180deg,#F4F6F7,#ECEFF1);color:#AAB2B8;border-color:#DDE3E7;box-shadow:none;cursor:not-allowed;opacity:.7}
@@ -143,7 +155,7 @@
   #ctxbar .cxbtn.on:hover{ background:linear-gradient(180deg,#ECEFF1 0%,#DEE3E6 100%); border-color:#9DA9B2; }
   #ctxbar .cxbtn:active{ transform:translateY(1px); box-shadow:inset 0 1px 3px rgba(35,44,51,.10); }
   /* === MeSH 驗證結果面板 === */
-  #meshVerifyPanel{margin:2px 0 10px;font-size:13px}
+  #meshVerifyPanel{margin:2px 0 10px;font-size:13px;border-top:1px solid #D9E0E4;padding-top:8px}
   #meshVerifyPanel .mvhd{font-weight:700;color:#0f766e;margin-bottom:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
   #meshVerifyPanel .mvhd .mvclose{margin-left:auto;font-size:12px;font-weight:600;border:1px solid #C8D0D6;border-radius:6px;background:#fff;cursor:pointer;padding:2px 8px}
   #meshVerifyPanel .mvrow{padding:7px 0;border-top:1px solid var(--line)}
@@ -169,10 +181,10 @@
   .mview{font-size:13px;line-height:1.55;padding-top:2px}
   .mview .mline{display:flex;align-items:flex-start;gap:6px;padding:2px 4px;border-radius:5px}
   .mview .mline:hover{background:#eef3f5}
-  .mview .mi{flex:0 0 auto;font-weight:800;width:14px;text-align:center}
+  .mview .mi{flex:0 0 auto;font-weight:800;width:15px;height:20px;display:inline-flex;align-items:center;justify-content:center;text-align:center}
   .mview .mi.ok{color:#15803d}
   .mview .mi.entry{color:#c2410c}
-  .mview .mi.none{color:#dc2626}
+  .mview .mi.none{color:#c2410c}
   .mview .mi.chk{color:#9aa4ac;font-weight:400}
   .mview .mtext{flex:1 1 auto;min-width:0;word-break:break-word}
   .mview .medit{position:absolute;top:3px;right:5px;font-size:11px;color:#69737c;background:#fff;border:1px solid var(--line);border-radius:5px;padding:1px 7px;cursor:pointer;opacity:.55}
@@ -183,12 +195,12 @@
   #meshCard .mcbadge{margin:6px 0 2px;font-size:12px;font-weight:600}
   #meshCard .mcbadge.ok{color:#15803d}
   #meshCard .mcbadge.entry{color:#c2410c}
-  #meshCard .mcbadge.none{color:#dc2626}
-  #meshCard .mcsec{margin-top:10px}
-  #meshCard .mclbl{font-size:12px;color:#69737c;font-weight:600;margin-bottom:4px}
+  #meshCard .mcbadge.none{color:#c2410c}
+  #meshCard .mcsec{margin-top:14px}
+  #meshCard .mclbl{font-size:12.5px;color:#25292D;font-weight:700;margin-bottom:4px}
   #meshCard .mcchks{display:flex;flex-direction:column;gap:3px;max-height:170px;overflow:auto;padding:2px 0;margin:2px 0}
   #meshCard .mcchk{font-size:13px;display:flex;align-items:center;gap:6px}
-  #meshCard .mcbtn{font-size:12px;padding:3px 9px;border:1px solid #C8D0D6;border-radius:6px;background:#fff;cursor:pointer;font-weight:600;margin:6px 6px 0 0}
+  #meshCard .mcbtn{display:inline-flex;align-items:center;justify-content:center;font-size:12px;line-height:1;padding:6px 10px;border:1px solid #25292D;border-radius:6px;background:#fff;color:#25292D;cursor:pointer;font-weight:600;margin:6px 6px 0 0}
   #meshCard .mcbtn:hover{background:#eef2f4}
   #meshCard a.mclink{font-size:12px;color:#1b6fa8;text-decoration:none}
   #meshCard a.mclink:hover{text-decoration:underline}
@@ -196,6 +208,18 @@
   #meshCard .mcsug{font-size:12px;padding:1px 8px;margin:2px 4px 0 0;border:1px solid #d6b26a;border-radius:10px;background:#fff8ec;color:#92531a;cursor:pointer;display:inline-block}
   .mvlegend{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:flex-end;font-size:12px;color:#55504B}
   .mvlegend .lg{display:inline-flex;align-items:center;gap:4px}
+  /* 驗證結果靜態圖例（警告列右側） */
+  .mvkey{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:#55504B;white-space:nowrap}
+  .mvkey .mvk-t{font-weight:700;color:#3a4149}
+  .mvkey .lg{display:inline-flex;align-items:center;gap:3px}
+  .mvkey .mvk-sep{color:#c3cace}
+  .mvkey .mvk-i{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px}
+  .mvkey .mvk-i svg{width:13px;height:13px;display:block}
+  .mvkey .mvk-i.ok{color:#15803d}
+  .mvkey .mvk-i.entry{color:#c2410c}
+  .mvkey .mvk-i.none{color:#c2410c}
+  /* 格內標記 SVG（✓／！／✗ 乾淨、垂直置中） */
+  .mview .mi .misvg{width:13px;height:13px;display:block}
   .out pre .qs{white-space:pre-wrap;word-break:break-word;flex:1 1 auto;min-width:0}
   .pmcount{flex:0 0 auto;min-width:86px;text-align:right;color:var(--mut);font-size:11.5px;white-space:nowrap}
   .pmcount.ok{color:#355E55;font-weight:700}.pmcount.err{color:#A33A32}
@@ -243,7 +267,7 @@
   th.cvhead{cursor:pointer;user-select:none}
   th.cvhead:hover{background:#dedede}
   th.cvhead.on{background:#cfcfcf;box-shadow:inset 0 -3px 0 currentColor}
-  table.pico th.cvhead{font-size:14px;font-weight:800;letter-spacing:.6px}
+  table.pico th.cvhead{font-size:21px;font-weight:800;letter-spacing:.6px}
   .meshvhd{display:inline-flex;align-items:center;justify-content:center;margin-left:7px;padding:0;border:none;background:none;color:#c2410c;cursor:pointer;vertical-align:middle;line-height:0}
   .meshvhd:hover{opacity:.82}
   .meshvhd svg{display:block}
@@ -438,14 +462,8 @@
 
   <div class="panel">
     <div class="pico-head">
-      <label class="fld" style="margin:0;font-size:16px;font-weight:700;color:#23282D"><span data-zh>PICO 檢索詞</span><span data-en>PICO search terms</span></label>
+      <label class="fld" style="margin:0;font-size:22px;font-weight:700;color:#23282D;line-height:1.15"><span data-zh>PICO 檢索詞</span><span data-en>PICO search terms</span></label>
       <div class="picotools">
-        <!-- 載入範例：往右下箭頭（載入進下方表格） -->
-        <button class="btn ghost" id="exBtn" title="把示範資料直接填入下方 PICO 表（會覆蓋目前內容）">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="16.5" y2="16.5"/><polyline points="16.5 9 16.5 16.5 9 16.5"/></svg>
-          <span data-zh>載入範例</span><span data-en>Load example</span>
-        </button>
-
         <!-- Word 編輯 ▾ -->
         <div class="pt-dd" id="ddWord">
           <button type="button" class="btn ghost" data-ptdd>
@@ -504,7 +522,7 @@
       </div>
     </details>
     <details class="ccbox" id="fillHelp" style="margin:0 0 12px">
-      <summary style="cursor:pointer;font-weight:700;font-size:13px;color:#0f766e"><span data-zh>填寫說明</span><span data-en>How to fill in</span></summary>
+      <summary style="cursor:pointer;font-weight:700;font-size:13px;color:#0f766e"><span data-zh>填寫說明</span><span data-en>How to fill in</span><a id="exBtn" class="exlink" role="button" tabindex="0" title="把示範資料直接填入下方 PICO 表（會覆蓋目前內容）" style="margin-left:18px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="16.5" y2="16.5"/><polyline points="16.5 9 16.5 16.5 9 16.5"/></svg><span data-zh>載入範例</span><span data-en>Load example</span></a></summary>
       <div class="hint" style="margin:8px 0 0;line-height:1.75">
         <div data-zh>
           <div>．<b>儲存格內：</b>一詞一行（預設布林邏輯關係為 OR，不需標示）</div>
@@ -542,12 +560,19 @@ Optical Imaging)</pre>
         </div>
       </div>
     </details>
-    <div style="display:flex;justify-content:flex-start;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
-      <span style="flex:0 1 auto;min-width:0;text-align:left;font-size:13px;line-height:1.5;color:#c0392b">
-        <span data-zh>⚠ 提醒您！請自行評估同義詞與控制詞彙的適用性，尤其確實查核控制詞彙，工具僅提供詞表超連結，並未進行查驗。</span>
-        <span data-en>⚠ Reminder: please assess the suitability of the synonyms and controlled vocabulary yourself, and be sure to verify the controlled terms — the tool only links to the thesauri and does not verify them.</span>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:4px;flex-wrap:wrap">
+      <span style="flex:1 1 300px;min-width:0;text-align:left;font-size:13px;line-height:1.5;color:#c0392b">
+        <span data-zh>⚠ 提醒您！請自行評估同義詞與控制詞彙的適用性，務必利用工具查核控制詞彙。</span>
+        <span data-en>⚠ Reminder: assess the suitability of synonyms and controlled vocabulary yourself, and be sure to verify the controlled terms with the tools.</span>
       </span>
-      <label id="advToolsLbl" class="hastip tipR" data-tip="開啟後，點進詞格會在下方浮出標記小工具（例：不含狹義詞）；關閉則填寫時完全不干擾。偏好會記住。" style="margin-left:auto;white-space:nowrap;display:inline-flex;align-items:center;gap:5px;font-size:13px;line-height:1.5;color:#0f766e;cursor:pointer"><input type="checkbox" id="cbAdvTools" style="accent-color:#0f766e"><span data-zh>進階標記工具</span><span data-en>Advanced marking tools</span></label>
+      <span class="mvkey">
+        <span class="mvk-t"><span data-zh>盾牌點擊驗證 MeSH：</span><span data-en>Click shield to verify MeSH:</span></span>
+        <span class="lg"><span class="mvk-i ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12.5 10 17.5 19 7"/></svg></span><span data-zh>驗證通過</span><span data-en>verified</span></span>
+        <span class="mvk-sep">｜</span>
+        <span class="lg"><span class="mvk-i entry"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="4.5" x2="12" y2="13.5"/><circle cx="12" cy="18.3" r="1.5" fill="currentColor" stroke="none"/></svg></span><span data-zh>非正式</span><span data-en>informal</span></span>
+        <span class="mvk-sep">｜</span>
+        <span class="lg"><span class="mvk-i none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="7" y1="7" x2="17" y2="17"/><line x1="17" y1="7" x2="7" y2="17"/></svg></span><span data-zh>查無</span><span data-en>not found</span></span>
+      </span>
     </div>
     <div id="meshVerifyPanel" style="display:none"></div>
     <table class="pico">
@@ -557,14 +582,16 @@ Optical Imaging)</pre>
           <th class="ref" style="width:15%"><span data-zh>中文同義詞</span><span data-en>Chinese synonyms</span></th>
           <th class="free" style="width:22%"><span data-zh>英文同義詞</span><span data-en>English synonyms</span></th>
           <th class="cv cvhead" data-vocab="emtree" style="width:21%" title="點一下展開 Emtree 各概念詞彙的查核連結">Emtree <span class="cvcaret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span></th>
-          <th class="cv cvhead" data-vocab="mesh" style="width:21%" title="點一下展開 MeSH 各概念詞彙的查核連結">MeSH <span class="cvcaret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span> <button type="button" id="meshVerifyHd" class="meshvhd" title="線上查核此欄每個 MeSH 詞是否為正式標目，並可帶入同義詞／狹義詞"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M12 3 L19 6 V11 c0 4.5 -3 7.5 -7 9 c-4 -1.5 -7 -4.5 -7 -9 V6 Z" fill="currentColor"/><path d="M9.3 9.6 L14.7 14.6 M14.7 9.6 L9.3 14.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/></svg></button></th>
+          <th class="cv cvhead" data-vocab="mesh" style="width:21%" title="點一下展開 MeSH 各概念詞彙的查核連結">MeSH <span class="cvcaret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span> <button type="button" id="meshVerifyHd" class="meshvhd" title="線上查核此欄每個 MeSH 詞是否為正式標目，並可帶入同義詞／狹義詞"><svg width="30" height="30" viewBox="0 0 24 24"><path d="M12 3 L19 6 V11 c0 4.5 -3 7.5 -7 9 c-4 -1.5 -7 -4.5 -7 -9 V6 Z" fill="currentColor"/><path d="M10 10.3 L14 14.3 M14 10.3 L10 14.3" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg></button></th>
           <th class="cv cvhead" data-vocab="cinahl" style="width:21%" title="點一下展開 CINAHL 各概念詞彙的查核連結">CINAHL Headings <span class="cvcaret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span></th>
           <th style="width:30px"></th>
         </tr>
       </thead>
       <tbody id="picoBody"></tbody>
     </table>
-    <div style="display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-top:8px">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px">
+      <label id="advToolsLbl" class="hastip" data-tip="開啟後，點進詞格會在下方浮出標記小工具（例：不含狹義詞）；關閉則填寫時完全不干擾。偏好會記住。" style="white-space:nowrap;display:inline-flex;align-items:center;gap:5px;font-size:13px;line-height:1.5;color:#0f766e;cursor:pointer"><input type="checkbox" id="cbAdvTools" style="accent-color:#0f766e"><span data-zh>進階標記工具</span><span data-en>Advanced marking tools</span></label>
+      <span style="display:inline-flex;align-items:center;gap:10px">
       <button type="button" class="rbtn clear hastip" id="clearBtn" data-tip="清空整張表（範例內容直接清；自填資料會先確認） / Clear table" aria-label="清空整張表">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7 H20"/><path d="M9.5 7 V5.2 Q9.5 4.3 10.4 4.3 H13.6 Q14.5 4.3 14.5 5.2 V7"/><path d="M6.2 7 L7 19.2 Q7.1 20.6 8.5 20.6 H15.5 Q16.9 20.6 17 19.2 L17.8 7"/><path d="M10 10.5 V17 M14 10.5 V17"/></svg>
       </button>
@@ -577,6 +604,7 @@ Optical Imaging)</pre>
       <button type="button" class="rbtn hastip tipR" id="addRow" data-tip="新增一列概念 / Add concept" aria-label="新增一列概念">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       </button>
+      </span>
     </div>
     <div id="cvVerifyPanel" style="display:none"></div>
     <details class="ccbox" style="margin:14px 0 0">
@@ -1747,7 +1775,7 @@ if (typeof module !== "undefined" && module.exports) {
   // ---- PICO 列 ----
   // GDM 範例資料（供「載入 GDM 範例」與空白表格的灰字預覽共用）
   var GDM_EX = {
-    P:{ zh:"((妊娠\n孕期\n懷孕)\nAND\n糖尿病)", ft:"GDM\n((gestation*\npregnan*\ngravid*)\nNEAR/4\n(diabet*\nT2DM\nNIDDM))", mesh:"Diabetes, Gestational\nPregnancy in Diabetics", emtree:"maternal diabetes", cinahl:"Pregnancy in Diabetes" },
+    P:{ zh:"((妊娠\n孕期\n懷孕)\nAND\n糖尿病)", ft:"GDM\n((gestation*\npregnan*\ngravid*)\nNEAR/4\n(diabet*\nT2DM\nNIDDM))", mesh:"Gestational Diabetes\nPregnancy in Diabetics\nGDM", emtree:"maternal diabetes", cinahl:"Pregnancy in Diabetes" },
     I:{ zh:"身體活動\n體能活動\n運動\n訓練\n走路", ft:"physical activit*\nexercise*\nkinesio*\nsport*\ntraining\nfitness\nwalk*", mesh:"Exercise\nExercise Therapy", emtree:"exercise\nkinesiotherapy\nphysical activity", cinahl:"Exercise\nTherapeutic Exercise" }
   };
   function mkCell(cls, ph){ var td=document.createElement("td"); if(cls)td.className=cls; var ta=document.createElement("textarea"); ta.spellcheck=false; if(cls&&/\bcv\b/.test(cls)) ta.wrap="off"; if(ph)ta.placeholder=ph; td.appendChild(ta); return {td:td, ta:ta}; }
@@ -1987,16 +2015,50 @@ if (typeof module !== "undefined" && module.exports) {
     var close=document.createElement("button"); close.className="mcclose"; close.innerHTML="×"; close.onclick=_closeMeshCard; meshCard.appendChild(close);
     var title=document.createElement("div"); title.className="mctitle"; title.textContent=(r.official||r.label||rawTerm); meshCard.appendChild(title);
     var badge=document.createElement("div");
-    if(r.state==="ok"){ badge.className="mcbadge ok"; badge.textContent=isEn()?"✓ MeSH Descriptor":"✓ MeSH 標準詞 Descriptor"; }
-    else if(r.state==="entry"){ badge.className="mcbadge entry"; badge.textContent=(isEn()?"! Entry term → official heading: ":"! 同義詞（Entry Term）→ 正式標目：")+(r.official||"?"); }
+    if(r.state==="ok"){ badge.className="mcbadge ok"; badge.textContent=isEn()?"✓ MeSH Term verified":"✓ MeSH Term 已驗證"; }
+    else if(r.state==="entry"){ var _bareE=_meshBare(rawTerm)||rawTerm; badge.className="mcbadge entry"; badge.textContent=""; badge.appendChild(document.createTextNode("! "+_bareE)); badge.appendChild(document.createElement("br")); badge.appendChild(document.createTextNode(isEn()?"informal MeSH":"非正式MeSH")); }
     else if(r.state==="suggest"){ badge.className="mcbadge entry"; badge.textContent=isEn()?"! not an exact heading":"! 非精準標目"; }
     else { badge.className="mcbadge none"; badge.textContent=isEn()?"✗ not found in MeSH":"✗ MeSH 查無"; }
-    meshCard.appendChild(badge);
-    if(r.state==="entry" && r.official){ var rep=document.createElement("button"); rep.className="mcbtn"; rep.textContent=isEn()?"use official heading":"改用正式標目"; rep.onclick=function(){ _replaceMeshTerm(tr, rawTerm, r.official); _closeMeshCard(); }; meshCard.appendChild(rep); }
+    badge.style.margin="0";
+    var brow=document.createElement("div"); brow.style.cssText="display:flex;justify-content:space-between;align-items:center;gap:10px;margin:6px 0 2px"; brow.appendChild(badge);
+    if(r.state==="ok"||r.state==="entry"){
+      var inc=document.createElement("label"); inc.style.cssText="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#25292D;cursor:pointer;white-space:nowrap";
+      var incCb=document.createElement("input"); incCb.type="checkbox"; incCb.style.accentColor="#0f766e"; incCb.checked=!CV_NOEXP_RE.test(rawTerm);
+      inc.title=isEn()?"Checked = include all narrower terms (exploded, default). Uncheck to mark this heading as non-exploded; then add specific narrower terms below.":"預設打勾＝包含所有狹義詞（展開）。取消勾選＝此標目設為「不含狹義詞」，之後可於下方指定加入特定狹義詞。";
+      incCb.onchange=function(){
+        var lines=(meshTa.value||"").split(/\n/);
+        for(var i=0;i<lines.length;i++){ if(lines[i].trim()===rawTerm.trim()){
+          if(incCb.checked){ lines[i]=lines[i].replace(CV_NOEXP_RE,"").replace(/\s{2,}/g," ").replace(/\s+$/,""); }
+          else if(!CV_NOEXP_RE.test(lines[i])){ lines[i]=lines[i].replace(/\s+$/,"")+(isEn()?" (noexp)":" (不含狹義詞)"); }
+          break; } }
+        meshTa.value=lines.join("\n"); meshTa.dispatchEvent(new Event("input",{bubbles:true})); _renderMeshCell(tr); _closeMeshCard();
+      };
+      inc.appendChild(incCb); inc.appendChild(document.createTextNode(isEn()?"Include narrower":"包含狹義詞"));
+      brow.appendChild(inc);
+    }
+    meshCard.appendChild(brow);
+    if(r.state==="entry" && r.official){ var repRow=document.createElement("div"); repRow.style.cssText="display:flex;align-items:center;gap:8px;margin:2px 0 2px"; var repLbl=document.createElement("span"); repLbl.style.cssText="font-size:12.5px;color:#55504B"; repLbl.textContent=isEn()?"Please click":"請點擊"; var rep=document.createElement("button"); rep.className="mcbtn"; rep.textContent=isEn()?"use official MeSH":"改用正式MeSH"; rep.onclick=function(){ _replaceMeshTerm(tr, rawTerm, r.official); _closeMeshCard(); }; repRow.appendChild(repLbl); repRow.appendChild(rep); meshCard.appendChild(repRow); }
     if((r.state==="suggest"||r.state==="none") && r.suggests && r.suggests.length){
       var ss=document.createElement("div"); ss.className="mcsec"; var sl=document.createElement("div"); sl.className="mclbl"; sl.textContent=isEn()?"Suggestions":"建議標目"; ss.appendChild(sl);
       r.suggests.slice(0,8).forEach(function(s){ var a=document.createElement("span"); a.className="mcsug"; a.textContent=s.label; a.onclick=function(){ _replaceMeshTerm(tr, rawTerm, s.label); _closeMeshCard(); }; ss.appendChild(a); });
       meshCard.appendChild(ss);
+    }
+    if(r.state==="none" || r.state==="suggest"){
+      var _bare=_meshBare(rawTerm)||rawTerm;
+      function _solLink(txt,url){ var d=document.createElement("div"); d.style.cssText="margin:3px 0 3px 2px;font-size:12.5px"; var a=document.createElement("a"); a.className="mclink"; a.href=url; a.target="_blank"; a.rel="noopener"; a.textContent="→ "+txt; d.appendChild(a); return d; }
+      function _solStep(txt){ var d=document.createElement("div"); d.style.cssText="margin:3px 0 3px 2px;font-size:12.5px;color:#55504B"; d.textContent="→ "+txt; return d; }
+      var sol=document.createElement("div"); sol.className="mcsec"; sol.style.marginTop="14px";
+      var s1=document.createElement("div"); s1.className="mclbl"; s1.textContent=isEn()?"Solution 1. MEDLINE (Ovid), institutional":"解法1. MEDLINE (Ovid) 機構訂戶"; sol.appendChild(s1);
+      (function(){ var d=document.createElement("div"); d.style.cssText="margin:3px 0 3px 2px;font-size:12.5px"; d.appendChild(document.createTextNode("→ ")); var a=document.createElement("a"); a.className="mclink"; a.href="https://research.lib.ncku.edu.tw/er/geter/DB000000228"; a.target="_blank"; a.rel="noopener"; a.title=isEn()?"Opens the link and copies the term so you can paste it":"開啟連結並複製詞彙，方便直接貼上"; a.textContent=isEn()?"Open NCKU link":"開啟成大連結"; var fb=document.createElement("span"); fb.style.cssText="color:#166534;margin-left:6px"; a.onclick=function(){ try{ navigator.clipboard.writeText(_bare); fb.textContent=isEn()?("copied “"+_bare+"”"):("已複製「"+_bare+"」"); }catch(e){} }; d.appendChild(a); var note=document.createElement("span"); note.style.color="#55504B"; note.textContent=isEn()?" (non-NCKU: use your own)":"（非成大者，請自行連結）"; d.appendChild(note); d.appendChild(fb); sol.appendChild(d); })();
+      sol.appendChild(_solStep(isEn()?"Type the term and run the search":"人工輸入詞彙並執行查詢"));
+      sol.appendChild(_solStep(isEn()?"If the database suggests possible MeSH, pick from them":"若資料庫有建議可能 MeSH，可從中挑選"));
+      sol.appendChild(_solStep(isEn()?"Fill a suitable MeSH back yourself":"自行回填適用 MeSH"));
+      var s2=document.createElement("div"); s2.className="mclbl"; s2.style.marginTop="12px"; s2.textContent=isEn()?"Solution 2. Reverse-infer from highly relevant PubMed articles":"解法2. PubMed 找高相關性文章反推"; sol.appendChild(s2);
+      sol.appendChild(_solLink(isEn()?"Open results (title [ti] · MEDLINE · abstract view)":"開啟查詢結果（篇名 [ti]・限 MEDLINE・摘要格式）","https://pubmed.ncbi.nlm.nih.gov/?term="+encodeURIComponent(_bare+"[ti]")+"&filter=other.medline&format=abstract"));
+      sol.appendChild(_solStep(isEn()?"Read two or three relevant articles":"人工查閱兩三篇相關文章"));
+      sol.appendChild(_solStep(isEn()?"Check their tagged MeSH and infer possible terms":"查看被標記之 MeSH，並推敲可能詞彙"));
+      sol.appendChild(_solStep(isEn()?"Fill a suitable MeSH back yourself":"自行回填適用 MeSH"));
+      meshCard.appendChild(sol);
     }
     if(!dId){ _posCard(anchor); meshCard.style.display="block"; return; }
     // 同義詞
@@ -2013,16 +2075,18 @@ if (typeof module !== "undefined" && module.exports) {
       eb.appendChild(addA); eb.appendChild(add); eb.appendChild(msg);
     }).catch(function(){ eb.textContent=isEn()?"failed to load":"載入失敗"; });
     // 狹義詞
+    var hr=document.createElement("div"); hr.style.cssText="border-top:1px solid #e3e8ec;margin-top:14px"; meshCard.appendChild(hr);
     var ns=document.createElement("div"); ns.className="mcsec"; var nsl=document.createElement("div"); nsl.className="mclbl"; nsl.textContent=isEn()?"Narrower terms (one level down)":"狹義詞（僅顯示下一層）"; ns.appendChild(nsl);
     var nb=document.createElement("div"); nb.textContent=isEn()?"loading…":"載入中…"; ns.appendChild(nb); meshCard.appendChild(ns);
     var hierUrl="https://www.ncbi.nlm.nih.gov/mesh/?term="+encodeURIComponent(dId);   // NCBI MeSH 記錄頁（含階層樹）
-    function _hierLink(txt){ var d=document.createElement("div"); d.style.marginTop="6px"; var a=document.createElement("a"); a.className="mclink"; a.href=hierUrl; a.target="_blank"; a.rel="noopener"; a.textContent=txt; d.appendChild(a); return d; }
+    function _hierLink(txt){ var d=document.createElement("div"); d.style.marginTop="14px"; var a=document.createElement("a"); a.className="mclink"; a.href=hierUrl; a.target="_blank"; a.rel="noopener"; a.textContent=txt; d.appendChild(a); return d; }
     _meshNarrower(dId).then(function(items){
       nb.innerHTML="";
       if(items.length){
         var cl=_mkChks(items, function(x){return x.label;}); nb.appendChild(cl.box);
-        var toFt=document.createElement("button"); toFt.className="mcbtn"; toFt.textContent=isEn()?"Checked → synonyms":"勾選 → 英文同義詞";
-        var toMe=document.createElement("button"); toMe.className="mcbtn"; toMe.textContent=isEn()?"Checked → MeSH column":"勾選 → MeSH 欄";
+        var _narrTip=isEn()?"By default a heading already includes all its narrower terms. Only when you set it to non-exploded (uncheck “Include narrower” above) do you need to add specific narrower terms here.":"預設均包含所有狹義詞；僅在設定為「不含狹義詞」時，才需要在此指定添加狹義詞加入。";
+        var toFt=document.createElement("button"); toFt.className="mcbtn"; toFt.title=_narrTip; toFt.textContent=isEn()?"Checked → synonyms":"勾選 → 英文同義詞";
+        var toMe=document.createElement("button"); toMe.className="mcbtn"; toMe.title=_narrTip; toMe.textContent=isEn()?"Checked → MeSH column":"勾選 → MeSH 欄";
         var msg=document.createElement("span"); msg.className="mcmsg";
         toFt.onclick=function(){ var s=cl.cbs.filter(function(c){return c.checked;}).map(function(c){return c.value;}); var n=s.length?_appendFt(ftTa,s):0; msg.textContent=n?(isEn()?("+"+n):("已加 "+n)):""; };
         toMe.onclick=function(){ var s=cl.cbs.filter(function(c){return c.checked;}).map(function(c){return c.value;}); var n=s.length?_appendMesh(meshTa,s):0; msg.textContent=n?(isEn()?("+"+n+" → MeSH"):("已加 "+n+"→MeSH")):""; if(n) _renderMeshCell(tr); };
@@ -2033,6 +2097,12 @@ if (typeof module !== "undefined" && module.exports) {
     _posCard(anchor); meshCard.style.display="block";
   }
   // ---- 原地驗證檢視 ----
+  // 乾淨對齊的狀態標記 SVG（✓／！／✗），用 currentColor 承接 .mi 顏色
+  function _meshMarkSvg(kind){
+    if(kind==="ok") return '<svg class="misvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12.5 10 17.5 19 7"/></svg>';
+    if(kind==="entry") return '<svg class="misvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="4.5" x2="12" y2="13.5"/><circle cx="12" cy="18.3" r="1.5" fill="currentColor" stroke="none"/></svg>';
+    return '<svg class="misvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="7" y1="7" x2="17" y2="17"/><line x1="17" y1="7" x2="7" y2="17"/></svg>';
+  }
   var _meshFailed=false;
   function _meshFail(){ if(_meshFailed) return; _meshFailed=true; srAlert(isEn()?"Couldn’t reach the NLM MeSH service (possibly a network/CORS restriction).":"無法連線 NLM MeSH 詞庫（可能是網路／CORS 限制）。"); }
   function _meshEditCell(tr){ var td=_meshTa(tr).closest("td"); var mv=td&&td.querySelector(".mview"); if(mv) mv.style.display="none"; _meshTa(tr).style.display=""; }
@@ -2051,12 +2121,12 @@ if (typeof module !== "undefined" && module.exports) {
       mv.appendChild(line);
       if(!bare){ ic.textContent=""; return; }
       _proms.push(_meshCheck(bare).then(function(r){
-        if(r.state==="ok"){ ic.className="mi ok"; ic.textContent="✓"; }
-        else if(r.state==="entry"||r.state==="suggest"){ ic.className="mi entry"; ic.textContent="!"; }
-        else { ic.className="mi none"; ic.textContent="✗"; }
+        if(r.state==="ok"){ ic.className="mi ok"; ic.innerHTML=_meshMarkSvg("ok"); }
+        else if(r.state==="entry"||r.state==="suggest"){ ic.className="mi entry"; ic.innerHTML=_meshMarkSvg("entry"); }
+        else { ic.className="mi none"; ic.innerHTML=_meshMarkSvg("none"); }
         line.style.cursor="pointer"; line.onclick=function(){ _openMeshCard(line, r, rawTerm, tr); };
         return r.state;
-      }).catch(function(){ ic.className="mi none"; ic.textContent="✗"; _meshFail(); return "none"; }));
+      }).catch(function(){ ic.className="mi none"; ic.innerHTML=_meshMarkSvg("none"); _meshFail(); return "none"; }));
     });
     ta.style.display="none"; mv.style.display="block";
     return Promise.all(_proms);
@@ -2080,12 +2150,9 @@ if (typeof module !== "undefined" && module.exports) {
     var panel=$("#meshVerifyPanel"); if(!panel) return; panel.innerHTML=""; panel.style.display="block";
     var row=document.createElement("div"); row.className="mvlegend";
     function lg(sym,cls,txt){ var s=document.createElement("span"); s.className="lg"; var i=document.createElement("b"); i.style.color=cls; i.textContent=sym; s.appendChild(i); s.appendChild(document.createTextNode(" "+txt)); return s; }
-    var hint=document.createElement("span"); hint.style.cssText="font-weight:600;color:#0f766e;margin-right:4px"; hint.textContent=isEn()?"MeSH verified — click a term for details.":"MeSH 已驗證—點任一詞查看詳情、帶入同義詞／狹義詞。";
+    var hint=document.createElement("span"); hint.style.cssText="font-weight:600;color:#23282D;margin-right:4px"; hint.textContent=isEn()?"Click any term for details; pull in synonyms / narrower terms.":"可點任一詞彙查看詳情、帶入同義詞／狹義詞";
     row.appendChild(hint);
-    row.appendChild(lg("✓","#15803d",isEn()?"MeSH Descriptor":"標準詞"));
-    row.appendChild(lg("!","#c2410c",isEn()?"Entry term (non-standard)":"同義詞／非標準詞"));
-    row.appendChild(lg("✗","#dc2626",isEn()?"not found":"未找到 MeSH 詞"));
-    var back=document.createElement("button"); back.className="mvbtn"; back.textContent=isEn()?"✎ all back to editing":"✎ 全部切回編輯"; back.onclick=function(){ Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr){ _meshEditCell(tr); }); panel.style.display="none"; }; row.appendChild(back);
+    var back=document.createElement("button"); back.className="mvbtn"; back.textContent=isEn()?"MeSH back to editing":"MeSH切回編輯模式"; back.onclick=function(){ Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr){ _meshEditCell(tr); }); panel.style.display="none"; }; row.appendChild(back);
     panel.appendChild(row);
   }
   var _meshValidated=false, _meshDirty=false;
@@ -2097,8 +2164,8 @@ if (typeof module !== "undefined" && module.exports) {
       ? (isEn()?"MeSH verified — all are valid headings. Click to re-verify.":"MeSH 已驗證：全部為正式標目；可再按重新驗證。")
       : (isEn()?"Verify MeSH headings (not yet verified, or some didn't pass).":"驗證 MeSH 標目（尚未驗證，或有未通過，點我驗證）");
     b.innerHTML = ok
-      ? '<svg width="26" height="26" viewBox="0 0 24 24"><path d="M12 3 L19 6 V11 c0 4.5 -3 7.5 -7 9 c-4 -1.5 -7 -4.5 -7 -9 V6 Z" fill="currentColor"/><path d="M8.6 12 l2.3 2.3 4.4 -4.7" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-      : '<svg width="26" height="26" viewBox="0 0 24 24"><path d="M12 3 L19 6 V11 c0 4.5 -3 7.5 -7 9 c-4 -1.5 -7 -4.5 -7 -9 V6 Z" fill="currentColor"/><path d="M9.3 9.6 L14.7 14.6 M14.7 9.6 L9.3 14.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/></svg>';
+      ? '<svg width="30" height="30" viewBox="0 0 24 24"><path d="M12 3 L19 6 V11 c0 4.5 -3 7.5 -7 9 c-4 -1.5 -7 -4.5 -7 -9 V6 Z" fill="currentColor"/><path d="M9.1 12.2 l1.9 1.9 3.8 -4.1" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      : '<svg width="30" height="30" viewBox="0 0 24 24"><path d="M12 3 L19 6 V11 c0 4.5 -3 7.5 -7 9 c-4 -1.5 -7 -4.5 -7 -9 V6 Z" fill="currentColor"/><path d="M10 10.3 L14 14.3 M14 10.3 L10 14.3" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg>';
   }
   picoBody.addEventListener("input", function(e){ if(_meshValidated && e.target && e.target.dataset && e.target.dataset.kind==="mesh") _meshSetDirty(true); });
   (function(){ var bt=$("#meshVerifyHd"); if(bt) bt.onclick=function(e){ if(e&&e.stopPropagation) e.stopPropagation(); srCount&&srCount("pico-mesh-verify","PICO-驗證MeSH"); _meshVerifyAll(); }; })();
@@ -2709,6 +2776,17 @@ if (typeof module !== "undefined" && module.exports) {
     addRow("C","",""); addRow("O","","");
     _exampleActive=true;   // 標記為「剛載入的範例」：清空時可直接清、不需確認
   };
+  // 載入範例為超連結（嵌在「填寫說明」標題右側）：點擊只載入、不展開說明；補鍵盤觸發
+  (function(){ var ex=$("#exBtn"); if(!ex) return;
+    ex.addEventListener("click", function(e){ e.preventDefault(); e.stopPropagation(); });
+    ex.addEventListener("keydown", function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); e.stopPropagation(); ex.click(); } });
+  })();
+  // 順序：填寫說明在上、貼上整理好的表格在下；且一次只展開一個（手風琴）
+  (function(){ var fill=document.getElementById("fillHelp"), paste=document.getElementById("pasteBox");
+    if(fill && paste && fill.parentNode===paste.parentNode){ paste.parentNode.insertBefore(fill, paste); }
+    var group=[fill,paste].filter(Boolean);
+    group.forEach(function(d){ d.addEventListener("toggle", function(){ if(d.open){ group.forEach(function(o){ if(o!==d && o.open) o.open=false; }); } }); });
+  })();
 
   // ---- 核心：自由詞欄位範圍化（重用引擎的 field 節點；PubMed 逐詞展開） ----
   function stripOuterParen(s){ s=(s||"").trim(); if(s[0]!=="("||s[s.length-1]!==")") return s; var depth=0; for(var i=0;i<s.length;i++){ if(s[i]==="(")depth++; else if(s[i]===")"){ depth--; if(depth===0 && i<s.length-1) return s; } } return s.slice(1,-1).trim(); }
@@ -3807,6 +3885,51 @@ if (typeof module !== "undefined" && module.exports) {
     refreshLvlNote();
     setLangPlaceholders();
   };
+
+  /* 全域提示：把所有原生 title（含盾牌、連結、JS 動態設定者）改成 ⓘ 同款黑底白字氣泡。
+     已用 .hastip（data-tip）者維持原樣，不重複顯示。 */
+  (function(){
+    var tip=document.createElement("div"); tip.id="gtip"; document.body.appendChild(tip);
+    var cur=null, orig=null;
+    function textFor(el){
+      var en=document.body.classList.contains("en");
+      if(en && el.getAttribute("data-tip-en")) return el.getAttribute("data-tip-en");
+      if(!en && el.getAttribute("data-tip-zh")) return el.getAttribute("data-tip-zh");
+      return el.getAttribute("title");
+    }
+    function hide(){ if(!cur) return; if(orig!=null && cur.getAttribute("title")==="") cur.setAttribute("title",orig); tip.classList.remove("show"); tip.style.display="none"; cur=null; orig=null; }
+    function show(el){
+      var txt=textFor(el); if(!txt) return;
+      orig=el.getAttribute("title"); if(orig!=null) el.setAttribute("title","");
+      cur=el; tip.textContent=txt; tip.style.display="block"; tip.classList.remove("show");
+      var r=el.getBoundingClientRect(), tb=tip.getBoundingClientRect();
+      var cx=r.left+r.width/2;
+      var left=Math.max(6, Math.min(cx-tb.width/2, window.innerWidth-tb.width-6));
+      var above=r.top > tb.height+14;
+      var top=above ? (r.top-tb.height-10) : (r.bottom+10);
+      tip.style.left=left+"px"; tip.style.top=top+"px";
+      tip.classList.toggle("above",above); tip.classList.toggle("below",!above);
+      tip.style.setProperty("--ax",(cx-left)+"px");
+      requestAnimationFrame(function(){ if(cur===el) tip.classList.add("show"); });
+    }
+    document.addEventListener("mouseover",function(e){
+      var t=e.target; if(!t||!t.closest) return;
+      var el=t.closest("[title],[data-tip-zh],[data-tip-en]");
+      if(!el) { if(cur) hide(); return; }
+      if(el.classList && el.classList.contains("hastip")) return;
+      if(el.closest(".hastip")) return;
+      if(el===cur) return;
+      hide(); show(el);
+    });
+    document.addEventListener("mouseout",function(e){
+      if(!cur) return; var to=e.relatedTarget;
+      if(to && (to===cur || (cur.contains && cur.contains(to)))) return;
+      hide();
+    });
+    window.addEventListener("scroll",hide,true);
+    document.addEventListener("click",hide,true);
+    window.addEventListener("blur",hide);
+  })();
 
   // 已生成策略時：切換輸出資料庫、增刪／編輯檢索詞 → 自動更新
   if(dbchecks) dbchecks.addEventListener("change", autoRegen);
