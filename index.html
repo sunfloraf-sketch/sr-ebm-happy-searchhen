@@ -125,6 +125,13 @@
   @media(max-width:860px){.hero-txt{padding-left:0}}
   /* 窄螢幕：緣起區不做右側漸淡，避免文字壓到淺色區 */
   @media(max-width:860px){.story{background:#2A5A49}}
+  /* 首頁簡介：飼料／雞／蛋比喻 */
+  .hero ul.metaphor{list-style:none;margin:20px 0 0;padding:0;font-size:15px;color:#43514A;line-height:1.85}
+  .hero ul.metaphor li{position:relative;padding-left:16px}
+  .hero ul.metaphor li::before{content:"";position:absolute;left:0;top:.72em;width:7px;height:9px;border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;background:var(--amber)}
+  .hero ul.metaphor b{color:var(--green-d);font-weight:700}
+  .hero p.desc .nw{white-space:nowrap}
+  .hero ul.metaphor + p.desc{margin-top:14px;max-width:585px}
   /* 與工具頁一致的頁頭位置 */
   html{scrollbar-gutter:stable}
   .wrap{max-width:1280px}
@@ -315,7 +322,12 @@
       <p class="tagline"><span class="rule"></span><span data-zh>我的介面友善，你的檢索快樂</span><span data-en>Friendly interface, happy searching</span></p>
       <h1>SR × EBM<br>Happy Search<span class="hen">Hen</span></h1>
       <p class="zh"><span class="zht">搜尋策略生成雞</span><svg class="zhmark" viewBox="4 0 40 48" fill="none" aria-hidden="true"><path d="M24 1.8 C33.5 1.8 42.2 14.5 42.2 27 C42.2 38.6 34.4 46.2 24 46.2 C13.6 46.2 5.8 38.6 5.8 27 C5.8 14.5 14.5 1.8 24 1.8 Z" fill="#FBF9F4" stroke="#2A5A49" stroke-width="1.5"/><g transform="translate(0 3)"><path d="M30 15c0-2.4-2-4.3-4.4-4.3-1.3 0-2.5.6-3.3 1.5-.6-1.6-2.1-2.7-3.9-2.7-1.4 0-2.6.6-3.4 1.6" stroke="#AE7430" stroke-width="1.8" stroke-linecap="round"/><path d="M17 16c-3.4 1.3-5.8 4.6-5.8 8.4 0 3.1 1.6 5.9 4 7.5v3.3h3.1v-2.1c.7.1 1.3.2 2 .2h4.1v1.9h3.1v-3.1c2.9-1.5 4.9-4.5 4.9-8 0-2.2-.8-4.2-2.1-5.7" stroke="#2A5A49" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" fill="#fff"/><path d="M30 19.5 L34.6 20.5 L30.6 22.7 Z" fill="#D98E2E" stroke="#B07420" stroke-width=".5" stroke-linejoin="round"/><circle cx="27" cy="20.2" r="1.15" fill="#2A5A49"/></g></svg></p>
-      <p class="desc"><span data-zh>從檢索詞到跨資料庫搜尋策略，讓 SR 與 EBM 的檢索流程更輕鬆、更有效率。純網頁、可離線、不上傳研究資料。</span><span data-en>From search terms to cross-database strategies — making SR and EBM searching lighter and more efficient. Pure web, offline-ready, and it never uploads your research data.</span></p>
+      <ul class="metaphor">
+        <li><b><span data-zh>優質飼料</span><span data-en>Quality feed</span></b><span data-zh>是合適的檢索詞</span><span data-en> = well-chosen search terms</span></li>
+        <li><b><span data-zh>健康的雞</span><span data-en>A healthy hen</span></b><span data-zh>是初始檢索策略</span><span data-en> = your initial search strategy</span></li>
+        <li><b><span data-zh>蛋</span><span data-en>Eggs</span></b><span data-zh>是各資料庫的檢索式</span><span data-en> = search strings for each database</span></li>
+      </ul>
+      <p class="desc"><span data-zh>搜尋策略不是按一下就自動長好的成品。<br>搜尋策略需要使用者／研究者理解問題、照料每個概念，<span class="nw">再逐步發展、檢查與測試。</span></span><span data-en>A search strategy isn’t a finished product that grows at a single click.<br>It needs a user / researcher who understands the question, tends each concept, and develops, checks and tests it step by step.</span></p>
       <div class="cta">
         <a class="btn-primary" href="pico-builder.html"><span data-zh>開始建立檢索策略</span><span data-en>Start building</span> →</a>
         <a class="btn-ghost" href="#tools"><span data-zh>看看三個工具</span><span data-en>Explore the tools</span></a>
