@@ -41,8 +41,8 @@ If you use this toolkit in your work, please cite it using the DOI below, or use
 
 ## License · 授權
 
-Released under the [MIT License](LICENSE) — free to use, modify, and redistribute, provided the copyright notice is retained.
+All rights reserved. You may use the tool online, free of charge, at its official address for personal, educational, research or clinical work; search strategies you create are yours to use. Copying, modifying, re-hosting (including mirrors and iframe embedding), redistribution or commercial use require the author's prior written consent. See [LICENSE](LICENSE).
 
-以 [MIT 授權](LICENSE) 釋出——可自由使用、修改、再散布，保留著作權聲明即可。
+著作權所有，保留一切權利。歡迎透過官方網址免費線上使用（個人、教學、研究、臨床皆可），產生的檢索策略歸使用者自由運用；未經作者書面同意，不得複製、修改、改作、放置於其他網站（含鏡像、iframe 嵌入）、再散布或商業利用。詳見 [LICENSE](LICENSE)。
 
 © 2026 Ching-Ju Fang

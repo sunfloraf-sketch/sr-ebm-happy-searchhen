@@ -111,6 +111,68 @@
   header.sh a.sh-link,header.sh button.sh-lang{line-height:1.5}
   header.sh button.sh-lang{width:80px;box-sizing:border-box;text-align:center;padding-left:0;padding-right:0;white-space:nowrap}
   header.sh a.sh-link.active{font-weight:600}
+  /* ===== 鄰近字：左功能、右範例（主欄寬度同頁頭 1280，切頁不跳動） ===== */
+  main.pxmain{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:22px;align-items:start}
+  .pxtool{min-width:0}
+  .pxside{position:sticky;top:14px}
+  .pxside .panel h2{color:var(--sh-green-d)}
+  .excard{display:flex;gap:11px;align-items:flex-start;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 12px;margin-top:10px;cursor:pointer;font:inherit;color:inherit;transition:border-color .15s,box-shadow .15s}
+  .excard:hover{border-color:var(--sh-green);box-shadow:0 2px 10px rgba(31,69,56,.10)}
+  .exn{flex:0 0 auto;font-size:12px;font-weight:700;border-radius:7px;padding:3px 9px;margin-top:1px;white-space:nowrap;background:#F1F2EF;color:#4E5752;border:1px solid #DEE1DC;min-width:82px;text-align:center;box-sizing:border-box}
+  .ext b{display:block;font-size:14px;color:var(--sh-ink);line-height:1.4}
+  .ext i{display:block;font-style:normal;font-size:12px;color:var(--mut);margin-top:3px;line-height:1.5}
+  .exnote{margin-top:12px;padding:10px 12px;background:#F4F5F3;border:1px solid #DCDFDA;border-radius:10px;font-size:12.5px;color:#4E5752;line-height:1.65}
+  .exnote b{display:block;color:var(--sh-green-d);font-size:13px;margin-bottom:2px}
+  .tippanel ul{margin:6px 0 0;padding-left:18px;font-size:12.5px;color:#4b5650;line-height:1.65}
+  .tippanel li{margin:0 0 6px}
+  .tippanel li b{color:var(--sh-ink)}
+  body.en .tippanel ul.blk[data-en]{display:block}
+  .bP{background:#E3EFE8;color:#1F4538}
+  .stacktip{background:#FBF6EC;border:1px solid #EBD9B4;border-left:4px solid var(--sh-amber);border-radius:10px;padding:9px 14px;margin:8px 0 4px;font-size:12.5px;color:#5B4A2C;line-height:1.7}
+  .stacktip b{color:#8A5A1E}
+  .stacktip .sendbtn,.stacktip .copy{margin-left:4px;vertical-align:1px}
+  .out pre b.gp{font-weight:900;color:#1F4538;font-size:1.22em;line-height:1;text-shadow:.4px 0 0 currentColor,-.4px 0 0 currentColor;padding:0 1px}
+  .g1hd{display:none;font-size:13px;color:var(--mut);margin:10px 0 0;align-items:center;gap:8px}
+  .g1hd b{color:var(--sh-green-d);font-size:13.5px}
+  #step2.grouped .g1hd{display:flex}
+  .g2hd .copy{margin-left:auto}
+  .gor{text-align:center;font-weight:800;color:var(--ok);font-size:13px;margin:14px 0 0;letter-spacing:1px}
+  .review td.ghd{background:#F4F6F3;font-weight:700;color:var(--sh-green-d)}
+  .cmpgl{font-size:11.5px;font-weight:700;color:var(--sh-green-d);margin-top:2px}
+  .cmpor{font-size:11px;font-weight:800;color:var(--ok);text-align:center;border-top:1px dashed var(--line);padding-top:4px;margin-top:2px}
+  .cleaninfo{background:#F1F6F3;border:1px solid #CFE0D6;border-left:4px solid var(--sh-green);border-radius:10px;padding:9px 14px;margin:12px 0 0;font-size:12.5px;color:#2F4A3F;line-height:1.65}
+  .cleaninfo b{color:var(--sh-green-d)}
+  .cleaninfo .ci2{margin-top:7px;padding-top:7px;border-top:1px dashed #CFE0D6}
+  .cleaninfo .ci2 .sendbtn{margin-left:4px;vertical-align:1px}
+  .cleaninfo + .splithint{margin-top:10px}
+  #splitHint .splithint{margin:12px 0 0}
+  .cmpwrap{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+  .cmph{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;font-size:12px;color:var(--mut)}
+  .cmph b{font-size:14px;color:var(--sh-green-d)}
+  /* 未納入：改為可換行的小卡，減少高度 */
+  .removed{background:#F4F5F3;border-color:#DCDFDA}
+  .removed .rh{color:#4E5752}
+  .removed .rrow{display:inline-flex;margin:0 6px 6px 0;padding:3px 4px 3px 9px;background:#fff;border:1px solid #DCDFDA;border-radius:8px;gap:6px}
+  .removed .rword{min-width:0;font-size:12.5px}
+  .removed .rrow select{min-width:0;font-size:12px;padding:2px 4px;border-radius:6px}
+  .cmpgrid{display:grid;grid-template-columns:repeat(var(--cols,3),minmax(0,1fr));gap:12px;margin-top:10px}
+  .cmpcard{border:1px solid var(--line);border-radius:10px;background:#fff;padding:12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+  .cmpcard.rec{border-color:var(--sh-green);box-shadow:inset 0 0 0 1px var(--sh-green)}
+  .cmphd{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .cmphd b{font-size:15px;margin-right:2px}
+  .chip{font-size:11px;font-weight:700;border-radius:20px;padding:1px 8px;background:var(--sh-green);color:#fff;white-space:nowrap}
+  .chip.cur{background:#E8EEF1;color:#32383D}
+  .chip.warn{background:#fff4e5;color:#b34700}
+  .cmpmeta{font-size:11.5px;color:var(--mut);line-height:1.5}
+  .cmpmeta b{color:var(--sh-ink)}
+  .cmpstk{font-family:"SF Mono",Consolas,monospace;font-size:12px;line-height:1.6;word-break:break-word}
+  .cmpstk .badge{font-family:-apple-system,"Segoe UI","Noto Sans TC",sans-serif}
+  .cmpop{font-size:11px;font-weight:700;color:var(--ok);padding-left:2px}
+  .cmpsolo{font-size:11.5px;color:var(--mut);border-top:1px dashed var(--line);padding-top:6px;word-break:break-word}
+  .cmpcard .gobtn{margin-top:auto;padding:7px 12px;font-size:13px}
+  .cmpcard.cur .gobtn{background:#EEF3F0;border-color:#CFE0D6;color:var(--sh-green-d);box-shadow:none}
+  @media(max-width:1000px){main.pxmain{grid-template-columns:1fr}.pxside{position:static}}
+  @media(max-width:760px){.cmpgrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -127,7 +189,8 @@
   </div>
 </header>
 <div class="sh-sub"><span data-zh>多堆同義詞 → 鄰近字片段；或貼 Before 清單自動分堆 · 可送到語法轉換器</span><span data-en>Multi-stack synonyms → proximity fragment; or auto-split a Before list · send to the converter</span></div>
-<main>
+<main class="pxmain">
+<div class="pxtool">
   <div class="panel">
     <div class="controls">
       <div>
@@ -155,26 +218,36 @@
     <button class="copy" style="background:#64748b;margin-left:6px" onclick="clearPicoInbox()"><span data-zh>清除累加</span><span data-en>Clear queue</span></button>
   </div>
 
-  <div class="panel">
+  <div class="panel" id="step1">
     <h2><span data-zh>① 自動分堆（選用）：貼上 Before 清單</span><span data-en>① Auto-split (optional): paste a Before list</span></h2>
-    <div class="sub" data-zh>每行一個多字詞。按「自動分堆」後合併字根、保留縮寫，並用二部圖著色分到兩堆（3–4 堆時先分兩堆，其餘請手動移）。被移除或未分類的字會列在下方，可加回任一堆。停用字僅含純虛詞（介系詞/冠詞/連接詞），疾病/症狀等實詞不會被當停用字。</div>
-    <div class="sub" data-en>One multi-word term per line. Auto-split merges roots, keeps abbreviations, and splits into two stacks by bipartite coloring (for 3–4 stacks it fills two, move the rest manually). Removed/unclassified words are listed below and can be added back to any stack. Stopwords are function words only (prepositions/articles/conjunctions); disease/symptom terms are never treated as stopwords.</div>
+    <div class="sub" data-zh>每行一個詞（逗號不會拆成兩個詞）。自動合併字根、保留縮寫；品牌名、括號註記、逗號倒裝與頭尾修飾字會自動整理，未納入的字列在下方可加回。同時比較可用的堆數（依最長片語的字數，最多四堆；結構混合時另給分組），先套用最吻合的一種。</div>
+    <div class="sub" data-en>One term per line (commas never split a term). Roots are merged and abbreviations kept; brand names, bracketed notes, inverted terms and edge qualifiers are cleaned automatically, and anything left out is listed below to add back. Compares the usable stack counts (up to the longest phrase, max 4; plus a grouped option for mixed structures) and applies the best fit.</div>
     <div class="autobar">
       <textarea id="before" spellcheck="false" placeholder="GDM&#10;gestational diabetes mellitus&#10;gestational diabetes&#10;gestational DM&#10;diabetes in pregnancy&#10;pregnancy-induced diabetes&#10;pregnancy associated diabetes&#10;diabetes mellitus gravidarum"></textarea>
       <div style="display:flex;flex-direction:column;gap:8px">
         <button class="gobtn" onclick="autoSplit()"><span data-zh>自動分堆 →</span><span data-en>Auto-split →</span></button>
-        <button class="gobtn" style="background:linear-gradient(180deg,#FBFCFC,#E8EDF0);color:#25292D;border:1px solid #CCD4DA;font-weight:600" onclick="loadExample()"><span data-zh>載入範例</span><span data-en>Load example</span></button>
         <button class="gobtn" style="background:linear-gradient(180deg,#FBFCFC,#E8EDF0);color:#25292D;border:1px solid #CCD4DA;font-weight:600" onclick="clearProx()"><span data-zh>清空</span><span data-en>Clear</span></button>
       </div>
+    </div>
+    <div class="cmpwrap" id="cmpPanel" style="display:none">
+      <div class="cmph"><b><span data-zh>堆數比較</span><span data-en>Stack options compared</span></b><span><span data-zh>已先套用「推薦」到下方，可改採用其他堆數</span><span data-en>The best fit is applied below — pick another if you prefer</span></span></div>
+      <div class="cmpgrid" id="cmpBox"></div>
     </div>
     <div id="splitHint"></div>
     <div class="review" id="review"></div>
     <div id="removedBox"></div>
   </div>
 
-  <div class="panel">
+  <div class="panel" id="step2">
     <h2><span data-zh>② 詞堆（可手動編輯）</span><span data-en>② Stacks (editable)</span></h2>
+    <div id="stackTip"></div>
+    <div class="g1hd"><b><span data-zh>第一組</span><span data-en>Group 1</span></b><span id="g1n"></span></div>
     <div class="stackset" id="stackset"></div>
+    <div id="g2wrap" style="display:none">
+      <div class="gor">OR</div>
+      <div class="g1hd g2hd"><b><span data-zh>第二組</span><span data-en>Group 2</span></b><span id="g2n"></span><button class="copy" onclick="removeGroup2()"><span data-zh>移除第二組</span><span data-en>Remove group 2</span></button></div>
+      <div class="stackset" id="stackset2"></div>
+    </div>
     <div class="solowrap">
       <label class="fld"><span data-zh>單獨保留（縮寫等，會以 OR 併入，多個以逗號或換行分隔）</span><span data-en>Keep separate (abbreviations; OR-ed in; comma/line separated)</span></label>
       <textarea id="solo" spellcheck="false" placeholder="GDM" rows="2"></textarea>
@@ -184,13 +257,52 @@
   </div>
 
   <div id="outs"></div>
+</div>
+  <aside class="pxside">
+    <div class="panel expanel">
+      <h2><span data-zh>範例</span><span data-en>Examples</span></h2>
+      <div class="sub"><span data-zh>點一下即載入並自動分堆</span><span data-en>Click to load and auto-split</span></div>
+      <button class="excard" onclick="loadEx(2)"><span class="exn"><span data-zh>二堆</span><span data-en>2 stacks</span></span><span class="ext"><b><span data-zh>妊娠糖尿病</span><span data-en>Gestational diabetes</span> GDM</b><i><span data-zh>時期 × 疾病；縮寫 GDM 單獨保留</span><span data-en>Period × disease; abbreviation GDM kept separate</span></i></span></button>
+      <button class="excard" onclick="loadEx(3)"><span class="exn"><span data-zh>二堆＋三堆</span><span data-en>2 + 3</span></span><span class="ext"><b><span data-zh>中央靜脈導管</span><span data-en>Central venous catheter</span> CVC</b><i><span data-zh>37 個詞混了品牌名、括號註記、逗號倒裝與修飾字；縮寫片語與 central line 做二堆，其餘做三堆</span><span data-en>37 terms mixing brand names, bracketed notes, inverted terms and qualifiers; abbreviation phrases + central line as 2 stacks, the rest as 3</span></i></span></button>
+      <button class="excard" onclick="loadEx(3,'icu')"><span class="exn"><span data-zh>二堆＋三堆</span><span data-en>2 + 3</span></span><span class="ext"><b><span data-zh>加護病房</span><span data-en>Intensive care unit</span> ICU</b><i><span data-zh>結構混合的分組示範：critical care／intensive care 做二堆，respiratory／coronary care unit 做三堆，再 OR 合併</span><span data-en>Mixed structures: critical care / intensive care as 2 stacks, respiratory / coronary care unit as 3 stacks, then OR-ed</span></i></span></button>
+      <button class="excard" onclick="loadEx(4)"><span class="exn"><span data-zh>四堆</span><span data-en>4 stacks</span></span><span class="ext"><b><span data-zh>慢性阻塞性肺病</span><span data-en>Chronic obstructive pulmonary disease</span> COPD</b><i><span data-zh>chronic × obstructive × 肺／呼吸道 × disease；MeSH 倒裝寫法自動轉正</span><span data-en>chronic × obstructive × lung/airway × disease; MeSH-style inversion handled</span></i></span></button>
+      <div class="exnote"><b><span data-zh>分堆只是建議</span><span data-en>Stacks are only a suggestion</span></b>
+        <span data-zh>工具只看字面與字的位置，不懂詞義，請逐堆檢查、手動搬字。例如中央靜脈導管範例中，access 被放到堆2（與 venous 同堆），但 central venous access device 的 access 其實和 catheter、device 同一類，應自己移到堆3。</span>
+        <span data-en>The tool only sees spelling and word position, not meaning — check each stack and move words yourself. In the CVC example, access lands in stack 2 (with venous), but in “central venous access device” it belongs with catheter / device, so move it to stack 3.</span></div>
+    </div>
+    <div class="panel tippanel">
+      <h2><span data-zh>系統分堆規則</span><span data-en>How the auto-split works</span></h2>
+      <ul class="blk" data-zh>
+        <li><b>重複出現才算核心字：</b>在 2 行以上出現的字才進詞堆。</li>
+        <li><b>括號註記忽略：</b>Careflow (central venous catheter) 只取 Careflow。</li>
+        <li><b>逗號不拆詞：</b>catheter, central venous 自動轉正。</li>
+        <li><b>頭尾修飾字略過：</b>kit、short-term 只出現一次又在頭尾，自動拿掉。</li>
+        <li><b>較短片語不分堆：</b>少於堆數的詞（central line）以片語併入。</li>
+        <li><b>泛用詞那堆可拿掉：</b>整堆只有 disease、disorder、dysfunction、patient 這類泛用詞，或夾在中間的治療／情境用語（therapy、treatment、related），詞堆上方會建議「移除」或「合併」。</li>
+        <li><b>可直接貼檢索式：</b>(GDM OR "gestational diabetes mellitus" OR "gestational diabetes"…)，將依大寫 OR 拆成一行一詞。</li>
+        <li><b>結構混合時分組：</b>同時有兩詞（critical care）與三詞（respiratory care unit）的情況時，會多一張「二堆＋三堆（分組）」：兩組各自分堆再 OR 合併。</li>
+        <li><b>短字不切截、自動補複數：</b>切截後不足 5 個字母（vein、line、cath）就不切，避免 cath* 這類切太前面；4 個字母以內的字自動補複數。</li>
+      </ul>
+      <ul class="blk" data-en>
+        <li><b>Core words must recur:</b> only words found in 2+ lines go into the stacks.</li>
+        <li><b>Bracketed notes ignored:</b> Careflow (central venous catheter) → Careflow.</li>
+        <li><b>Commas don’t split terms:</b> catheter, central venous is put back in order.</li>
+        <li><b>Edge qualifiers skipped:</b> one-off words at the start or end (kit, short-term) are dropped.</li>
+        <li><b>Shorter phrases aren’t stacked:</b> terms with fewer words than stacks (central line) are OR-ed in as phrases.</li>
+        <li><b>A generic stack can go:</b> if a whole stack is just generic words (disease, disorder, dysfunction, patient) or treatment/context words in the middle (therapy, treatment, related), a suggestion above the stacks offers “Remove” or “Merge”.</li>
+        <li><b>Paste a search string:</b> (GDM OR "gestational diabetes mellitus" OR "gestational diabetes"…) is split by uppercase OR into one term per line.</li>
+        <li><b>Mixed structures → groups:</b> with both 2-word (critical care) and 3-word (respiratory care unit) terms, an extra “2 + 3 stacks (grouped)” option appears: each group is stacked separately, then OR-ed.</li>
+        <li><b>Short words: no truncation, plural added:</b> if truncation would leave fewer than 5 letters (vein, line, cath) the word is kept whole, so nothing like cath* is produced; words of 4 letters or fewer get a plural added.</li>
+      </ul>
+    </div>
+  </aside>
 </main>
 <footer class="shfoot"><div class="shfoot-in">
   <p><span data-zh>此工具為純網頁程式，未使用到AI運作，僅在您的瀏覽器本機執行與暫存，不會上傳任何研究資料到網路。自動分堆為輔助建議，請務必人工核對切截點與分堆。</span>
     <span data-en>A pure web-based tool with no AI — it runs and is cached entirely in your browser and never uploads any of your research data. Auto-split is only a suggestion — always verify truncation points and grouping.</span></p>
   <p><span data-zh>工具引用：方靜如，SR x EBM Happy SearchHen 搜尋策略生成雞。<br>Fang CJ, SR x EBM Happy SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/</a><br></span>
     <span data-en>Cite this tool: Fang CJ, SR x EBM Happy SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/</a></span></p>
-  <div class="frow"><span class="brandline">SR × EBM Happy SearchHen　搜尋策略生成雞</span><span>© 2026 Ching-Ju Fang <a href="https://orcid.org/0000-0002-7892-8840" target="_blank" rel="noopener" title="ORCID iD" style="text-decoration:none;white-space:nowrap;color:inherit" onclick="try{if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:'author-orcid',title:'作者-ORCID',event:true})}catch(e){}"><svg width="13" height="13" viewBox="0 0 256 256" style="vertical-align:-2px;margin-right:3px" aria-hidden="true"><circle cx="128" cy="128" r="128" fill="#A6CE39"/><g fill="#fff"><path d="M86.3 186.2H70.9V79.1h15.4v107.1z"/><path d="M108.9 79.1h41.6c39.6 0 57 28.3 57 53.6 0 27.5-21.5 53.6-56.8 53.6h-41.8V79.1zm15.4 93.3h24.5c34.9 0 42.9-26.5 42.9-39.7 0-21.5-13.7-39.7-43.7-39.7h-23.7v79.4z"/><circle cx="78.6" cy="56.8" r="10.1"/></g></svg>https://orcid.org/0000-0002-7892-8840</a> · All rights reserved · v3.2.3</span></div>
+  <div class="frow"><span class="brandline">SR × EBM Happy SearchHen　搜尋策略生成雞</span><span>© 2026 Ching-Ju Fang <a href="https://orcid.org/0000-0002-7892-8840" target="_blank" rel="noopener" title="ORCID iD" style="text-decoration:none;white-space:nowrap;color:inherit" onclick="try{if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:'author-orcid',title:'作者-ORCID',event:true})}catch(e){}"><svg width="13" height="13" viewBox="0 0 256 256" style="vertical-align:-2px;margin-right:3px" aria-hidden="true"><circle cx="128" cy="128" r="128" fill="#A6CE39"/><g fill="#fff"><path d="M86.3 186.2H70.9V79.1h15.4v107.1z"/><path d="M108.9 79.1h41.6c39.6 0 57 28.3 57 53.6 0 27.5-21.5 53.6-56.8 53.6h-41.8V79.1zm15.4 93.3h24.5c34.9 0 42.9-26.5 42.9-39.7 0-21.5-13.7-39.7-43.7-39.7h-23.7v79.4z"/><circle cx="78.6" cy="56.8" r="10.1"/></g></svg>https://orcid.org/0000-0002-7892-8840</a> · All rights reserved · <a href="https://github.com/sunfloraf-sketch/sr-ebm-happy-searchhen/blob/main/LICENSE" target="_blank" rel="noopener"><span data-zh>使用條款</span><span data-en>Terms of use</span></a> · v3.2.3</span></div>
 </div></footer>
 
 <script>
@@ -222,7 +334,7 @@ var STOP={a:1,an:1,and:1,or:1,not:1,of:1,the:1,to:1,in:1,on:1,at:1,by:1,"for":1,
 // 組合字首：若是複合詞的第一個字，改拆成切截(如 immuno* deficien*)而非引號片語
 var PREFIX_ROOTS={immuno:1,cardio:1,neuro:1,gastro:1,hepato:1,broncho:1,nephro:1,entero:1,musculo:1,cerebro:1,haemato:1,hemato:1,osteo:1,dermato:1,psycho:1,electro:1,thermo:1,radio:1,chemo:1,angio:1,uro:1,pulmo:1};
 // 病因/修飾連接詞（幾乎不單獨檢索）：預設移除，但列在「未納入」可加回。疾病症狀實詞(disease/syndrome/disorder…)不列入。
-var MODIFIER={mellitus:1,induced:1,related:1,associated:1,complicated:1,acquired:1,attributable:1};
+var MODIFIER={mellitus:1,induced:1,related:1,associated:1,complicated:1,acquired:1,attributable:1,based:1,mediated:1};
 var SUF=["arum","orum","ies","ing","ally","ed","al","ic","ous","es","us","um","ae","cy","s","a"];
 
 var $=function(s){return document.querySelector(s);};
@@ -231,7 +343,7 @@ var STACK_COLORS=["bA","bB","bC","bD"];
 
 DBS.forEach(function(d){var o=document.createElement("option");o.value=d;o.textContent=DB_LABEL[d];srcSel.appendChild(o);});
 srcSel.value="embase";
-for(var k=2;k<=4;k++){var o=document.createElement("option");o.value=k;o.textContent=k+(document.body.classList.contains("en")?" stacks":" 堆");nSel.appendChild(o);}
+for(var k=2;k<=4;k++){var o=document.createElement("option");o.value=k;o.textContent=(document.body.classList.contains("en")?(k+" stacks"):(["","","二","三","四"][k]+"堆"));nSel.appendChild(o);}
 nSel.value="2";
 function fillDist(){var cur=distSel.value||"3";distSel.innerHTML="";var en=document.body.classList.contains("en");for(var n=0;n<=10;n++){var op=document.createElement("option");op.value=n;op.textContent=(n===0)?(en?"within 0 words":"鄰 0 單字內"):((en?"within ":"鄰 ")+n+(en?(n===1?" word":" words"):" 單字內"));distSel.appendChild(op);}distSel.value=cur;}
 fillDist();
@@ -242,10 +354,13 @@ fillOrder();
 
 var EX_BY_N={
   "2":"GDM\ngestational diabetes mellitus\ngestational diabetes\ngestational DM\ndiabetes in pregnancy\npregnancy-induced diabetes\npregnancy associated diabetes\ndiabetes mellitus gravidarum",
-  "3":"ICU\nrespiratory care unit\nrespiratory care units\ncoronary care unit\nspecial care unit\nintensive care department",
-  "4":"central line associated bloodstream infection\ncentral catheter related bloodstream infection\ncentral catheter associated blood stream infection\ncentral catheter associated blood stream infections\ncentral access associated blood stream infections\nCLABSI\nCLABSIs"
+  "3":"AXERA\nBroviac\nCareflow (central venous catheter)\ncatheter, central venous\ncentral intravenous catheter\ncentral line\ncentral vein catheter\ncentral venous access catheter\ncentral venous access device\ncentral venous catheter, device\ncentral venous catheterization kit, short-term\ncentral venous catheters\ncentral venous line\nCook Spectrum (central venous catheter)\ncv cath\nCVP line\nGroshong\nIcy (central venous catheter)\nLeonard\nLeonard catheter\nLOGICATH\nOrion II\nPediaSat\nPowerLine (central venous catheter)\nPowerwand\nPro-Line\nSecalon-T\nshort-term central venous catheterization kit\nVortex (central venous catheter)\nVortex Port\ncentral venous catheter\ncatheterisation, central venous\ncatheterization, central venous\ncentral vein catheterisation\ncentral vein catheterization\ncentral venous catheterisation\ncentral venous catheterization",
+  "4":"COPD\nCOAD\nchronic obstructive pulmonary disease\nchronic obstructive pulmonary diseases\nchronic obstructive lung disease\nchronic obstructive lung diseases\nchronic obstructive airway disease\nchronic obstructive airways disease\nchronic obstructive respiratory disease\nchronic obstructive bronchopulmonary disease\nchronic obstructive pulmonary disorder\nchronic obstructive lung disorder\nPulmonary Disease, Chronic Obstructive\nchronic obstructive airway disease (COAD)\nchronic obstructive pulmonary disease, severe early-onset"
 };
 window.loadExample=function(){ beforeTa.value=EX_BY_N[nSel.value]||EX_BY_N["2"]; autoSplit(); };
+var EX_MORE={icu:{n:3,text:"ICU\nICUs\ncritical care\ncritically ill\ncritical illness\ncritically ill patient\nintensive care\nintensive therapy unit\nintensive treatment unit\nrespiratory care unit\nrespiratory care units\ncoronary care unit\nspecial care unit\nintensive care department"}};
+window.loadEx=function(n,key){ var ex=key&&EX_MORE[key]; if(ex) n=ex.n; srCount('prox-example-'+(key||n),'鄰近字-範例'+(key||n+'堆')); nSel.value=String(n); renderStacks(); beforeTa.value=ex?ex.text:EX_BY_N[String(n)]; autoSplit();
+  if(window.innerWidth<1000){ var s1=document.getElementById("step1"); if(s1) s1.scrollIntoView({behavior:"smooth",block:"start"}); } };
 window.clearProx=function(){
   if(soloIn){ soloIn.value=""; soloIn.placeholder=""; }   // 連同 placeholder 一起清（避免殘留灰字 GDM）
   stackEls.forEach(function(t){ t.value=""; });            // 清空各詞堆內容
@@ -256,6 +371,7 @@ window.clearProx=function(){
   renderStacks();                                          // 重建空的詞堆（保留堆數）
   beforeTa.value=""; beforeTa.placeholder="";              // 放在 renderStacks 之後，避免範例 placeholder 回填
   if(outs)outs.innerHTML="";
+  lastCmp=null; appliedKey=null; renderStacks2(0); renderCompare();
 };
 function lines(t){return (t||"").split(/[\r\n,]+/).map(function(x){return x.trim();}).filter(Boolean);}
 function opFor(src,sem){var p=PROX[src];var N=Math.max(0,sem+(p.off||0));var ordered=orderSel&&orderSel.value==="ordered";if(ordered&&ORD_OK[src])return PROX_ORD[src].replace("%N",N);return p.tpl.replace("%N",N);}
@@ -342,7 +458,7 @@ function renderStacks(){
     col.appendChild(lb); col.appendChild(ta); stackset.appendChild(col);
     stackEls.push(ta);
   }
-  refreshStackTargets();
+  refreshStackTargets(); if(typeof updateGroupLabels==="function") updateGroupLabels();
   if(typeof EX_BY_N!=="undefined" && beforeTa) beforeTa.placeholder=(EX_BY_N[nSel.value]||EX_BY_N["2"]);
   build();
 }
@@ -351,156 +467,517 @@ function renderStacks(){
 function seed(){ nSel.value="2"; renderStacks(); stackEls[0].value="gestation*\npregnan*\ngravid*"; stackEls[1].value="diabet*\nT2DM\nNIDDM"; soloIn.value="GDM"; build(); }
 
 /* ---------- 自動分堆 ---------- */
-function stem(w){for(var i=0;i<SUF.length;i++){var s=SUF[i];if(w.length>s.length+3&&w.slice(-s.length)===s)return w.slice(0,w.length-s.length);} if(w.length>4 && /[^aeiou]y$/.test(w)) return w.slice(0,w.length-1); return w;}
+function stem(w){if(/ss$/.test(w))return w; if(/ous$/.test(w))return w.length>8?w.slice(0,-3):w; for(var i=0;i<SUF.length;i++){var s=SUF[i];if(w.length-s.length>=6&&w.slice(-s.length)===s)return w.slice(0,w.length-s.length);} if(w.length>=7 && /[^aeiou]y$/.test(w)) return w.slice(0,w.length-1); return w;}
 function commonPrefix(a,b){var n=Math.min(a.length,b.length),i=0;while(i<n&&a[i]===b[i])i++;return a.slice(0,i);}
 function isAbbrev(norm,orig){ var o2=(orig||"").replace(/s$/,""); return /[0-9]/.test(norm)||(/^[A-Z0-9]+$/.test(orig)&&orig.length<=6)||(/^[A-Z0-9]+$/.test(o2)&&o2.length<=6)||!/[aeiou]/.test(norm); }
 
-function autoSplit(){
-  srCount('prox-autosplit','鄰近字-自動分堆');
-  var nsel=parseInt(nSel.value,10)||2;
-  var removed=[];
-  function pushRemoved(w,kind){ if(!removed.some(function(x){return x.word===w;})) removed.push({word:w,kind:kind}); }
-  var rows=lines(beforeTa.value).map(function(line){
-    var rawToks=line.replace(/[\/-]/g," ").split(/\s+/).filter(Boolean);
-    var toks=[];
-    rawToks.forEach(function(rt){
-      var norm=rt.toLowerCase().replace(/[^a-z0-9]/g,"");
-      if(!norm)return;
-      var clean=rt.replace(/[^A-Za-z0-9-]/g,"");
-      if(STOP[norm]){ pushRemoved(clean,"stop"); return; }
-      if(MODIFIER[norm]){ pushRemoved(clean,"mod"); return; }
-      toks.push({norm:norm,orig:rt.replace(/[^A-Za-z0-9]/g,""),abbr:isAbbrev(norm,rt.replace(/[^A-Za-z0-9]/g,""))});
-    });
-    return {toks:toks};
-  }).filter(function(r){return r.toks.length>0;});
-  rows.forEach(function(r){ r.multi = r.toks.length>=2; });
+var NUMZH={2:"二",3:"三",4:"四"};
+function isEn(){ return document.body.classList.contains("en"); }
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
 
-  // 單字先抓 + 刪冗贅片語：凡以「單一字」單獨成列者視為 solo（含縮寫，如 BMD）；
-  // 任何「含有該 solo 單字」的多字片語即為冗贅（solo 單字本身即可涵蓋，如 BMD 已涵蓋 forearm BMD），自動略過。
-  var soloWords={};
-  rows.forEach(function(r){ if(r.toks.length===1) soloWords[r.toks[0].norm]=r.toks[0].orig; });
+/* ---------- 前處理：每行一詞（逗號不再拆成兩行） ----------
+   ・括號／方括號註記忽略：Careflow (central venous catheter) → Careflow
+   ・逗號倒裝轉正：catheter, central venous → central venous catheter
+     （逗號前只有 1 個字，或逗號後 ≥2 個字才倒裝；否則逗號後視為修飾語略過，如 …, device / …, short-term） */
+/* 貼上的是檢索式（("a b" OR c OR …)）時：依大寫 OR 拆詞、去括號／引號／欄位標記。
+   為避免誤砍縮寫 OR（operating room、odds ratio），需同時符合：大寫 OR 當連接詞（前後都有詞）≥2 次，
+   且有引號或括號、或連接詞 OR 佔行數一半以上；只有「OR」一個字的行一律保留。 */
+function detectBool(text){
+  var t=text||"", ls=t.split(/\r?\n/).filter(function(x){return x.trim();});
+  var conn=(t.match(/(^|[\s(])OR(?=\s+["(A-Za-z0-9])/gm)||[]).length;
+  if(conn<2) return false;
+  return /["()]/.test(t) || conn>=ls.length*0.5;
+}
+function compoundHyphen(word){ // cardio-oncology、onco-cardiology：左半是 -o 結尾的字首 → 視為一個字
+  var m=word.match(/^([A-Za-z]{2,6}o)-([A-Za-z]{3,})$/); if(!m) return false;
+  return !!(PREFIX_ROOTS[m[1].toLowerCase()] || /o$/i.test(m[1]));
+}
+var HY_PREFIX={post:1,pre:1,non:1,anti:1,peri:1,sub:1,inter:1,intra:1,extra:1,over:1,under:1,re:1,co:1,trans:1,multi:1};
+function prepLines(text){
+  var paren=[], inv=0, invEx="", tails=[], recs=[];
+  var bool=detectBool(text), boolN=0;
+  var rawLines=(text||"").split(/\r?\n/);
+  if(bool){
+    var items=[];
+    rawLines.forEach(function(l){
+      l=l.replace(/\[[^\]]*\]/g," ").replace(/[()]/g," ");
+      l.split(/(?:^|\s)OR(?=\s|$)/).forEach(function(x){ x=x.replace(/"/g," ").replace(/\s+/g," ").trim(); if(x && x!=="OR"){ items.push(x); boolN++; } });
+    });
+    rawLines=items;
+  }
+  // 清單裡出現過的「整個字」（去掉連字號）：分寫的 post partum／post-partum 若合起來等於 postpartum，就視為同一個字的片語寫法
+  var joined={};
+  rawLines.forEach(function(l){ String(l).replace(/[()"\[\]]/g," ").split(/[\s\/,]+/).forEach(function(w){ var n=w.toLowerCase().replace(/[^a-z0-9]/g,""); if(n.length>=6 && !/-/.test(w)) joined[n]=1; }); });
+  rawLines.forEach(function(raw){
+    raw=raw.trim(); if(!raw) return;
+    var s=raw.replace(/\([^)]*\)|\[[^\]]*\]/g,function(m){ paren.push(m.trim()); return " "; }).replace(/\s+/g," ").trim();
+    if(s.indexOf(",")>=0){
+      var seg=s.split(","); var head=seg.shift().trim(); var tail=seg.join(" ").replace(/\s+/g," ").trim();
+      var hw=head?head.split(" ").length:0, tw=tail?tail.split(" ").length:0;
+      if(head && tail && (hw===1 || tw>=2)){ s=tail+" "+head; inv++; if(!invEx) invEx=raw; }
+      else { if(head && tail) tails.push(tail); s=head||tail; }
+    }
+    if(!s) return;
+    var toks=[], stops=[];
+    s.split(/[\s\/]+/).forEach(function(word){
+      var src=word.replace(/[^A-Za-z0-9-]/g,"");
+      word.split("-").forEach(function(rt){
+        var norm=rt.toLowerCase().replace(/[^a-z0-9]/g,""); if(!norm) return;
+        var orig=rt.replace(/[^A-Za-z0-9]/g,"");
+        if(STOP[norm] && !(!bool && orig.length>=2 && orig===orig.toUpperCase())){ stops.push({w:orig,k:"stop"}); return; }
+        if(MODIFIER[norm]){ stops.push({w:orig,k:"mod"}); return; }
+        toks.push({norm:norm, orig:orig, abbr:isAbbrev(norm,orig), src:src});
+      });
+    });
+    for(var ci=0; ci<toks.length-1; ci++){
+      var a=toks[ci], b=toks[ci+1];
+      // 連字號的組合只在左半是 post-／pre-／non- 這類字首時才合併（cardio-oncology 仍拆成兩個概念）
+      var hyPair = a.src===b.src && /-/.test(a.src);
+      if(!a.abbr && !b.abbr && joined[a.norm+b.norm] && (!hyPair || HY_PREFIX[a.norm])){ toks.splice(ci,2,{norm:a.norm+b.norm, orig:a.orig+" "+b.orig, abbr:false, src:a.src+" "+b.src, phrase:true}); }
+    }
+    recs.push({raw:raw, disp:s, toks:toks, stops:stops});
+  });
+  return {recs:recs, paren:paren, inv:inv, invEx:invEx, tails:tails, bool:bool, boolN:boolN};
+}
+// 單字成列時，才當「縮寫」自動單獨保留（AXERA 這類全大寫品牌名不算）
+function soloAbbr(orig){ var o=(orig||"").replace(/s$/,""); if(/[0-9]/.test(o)) return true; if(!/^[A-Z]+$/.test(o)) return false; if(o.length<=4) return true; var v=(o.match(/[AEIOU]/g)||[]).length; return o.length<=6 && v/o.length<0.5; }
+function prefixGroups(norms){
+  norms=norms.slice().sort(); var g={},gp={},gc=0,last=null;
+  norms.forEach(function(nm){ if(last!==null){ var cp=commonPrefix(gp[last],nm); if(cp.length>=5){ g[nm]=last; gp[last]=cp; return; } } var key="G"+(gc++); g[nm]=key; gp[key]=nm; last=key; });
+  return {g:g, gp:gp};
+}
+// 字根 → 輸出詞：切截後不足 5 個字母（pro、cath、vein、line…）就不切，直接列出原字
+function termsFor(prefix, members){
+  if(members.length>1 && prefix.length>=5 && members.map(function(m){return m.toLowerCase();}).indexOf(prefix)>=0) return [prefix+"*"];
+  var r=stem(prefix);
+  if(r.length>=6 || (r.length===5 && r!==prefix)) return [r+"*"];   // 5 個字母且沒去字尾的字（units、renal）不切
+  var out=[]; members.forEach(function(m){ m=m.toLowerCase(); if(out.indexOf(m)<0) out.push(m); });
+  return out.length?out:[prefix];
+}
+/* 短字自動補複數（只對 4 個字母以內、不切截的小寫字）
+   規則：一般 +s；字尾 s/x/z/ch/sh +es；子音+y → -ies；子音+o 多數 +s（hero/echo 等查表 +es）；
+   已像複數（字尾 s，但非 ss/us/is）不補；不規則（foot→feet、leaf→leaves…）查表；
+   非名詞（形容詞、字首、不可數名詞）列在排除表不補。補上的詞標「自動複數」，可自行刪除。 */
+var PL_NO={};"onco uro neuro low high deep long oral anti post pre non pro over open full mild poor good bad new old late past near far all any both each more most less many much very real true free safe sick ill dry wet hot cold warm cool soft hard firm weak dead live able main half self care data news fish milk meat rice gold iron zinc lead pus info mid semi sub auto"
+  .split(" ").forEach(function(w){ PL_NO[w]=1; });
+var PL_IRR={foot:"feet",man:"men",ox:"oxen",axis:"axes",leaf:"leaves",life:"lives",wife:"wives",calf:"calves",loaf:"loaves",wolf:"wolves"};
+var PL_OES={hero:1,echo:1,veto:1};
+function pluralOf(w){
+  if(!/^[a-z]{2,4}$/.test(w) || PL_NO[w]) return null;
+  if(PL_IRR.hasOwnProperty(w)) return PL_IRR[w];
+  if(/s$/.test(w) && !/(ss|us|is)$/.test(w)) return null;
+  if(/(s|x|z|ch|sh)$/.test(w)) return w+"es";
+  if(/[^aeiou]y$/.test(w)) return w.slice(0,-1)+"ies";
+  if(/[^aeiou]o$/.test(w)) return PL_OES[w] ? w+"es" : w+"s";
+  return w+"s";
+}
+function withPlurals(terms, ns){
+  var out=[]; terms.forEach(function(d){ out.push({d:d}); var p=pluralOf(d); if(p && !ns[p] && terms.indexOf(p)<0) out.push({d:p, auto:true, from:d}); });
+  return out;
+}
+// 一堆 token → [{disp:切截詞, members:[原字]}]
+function rootsDetail(items){
+  var ns={}; items.forEach(function(t){ if(!t.abbr) ns[t.norm]=1; });
+  var pg=prefixGroups(Object.keys(ns)), gm={}, ph={}, order=[];
+  items.forEach(function(t){
+    var k=t.abbr ? ("A:"+t.orig.toUpperCase()) : pg.g[t.norm];
+    if(!gm[k]){ gm[k]=[]; ph[k]=[]; order.push(k); }
+    var o=t.abbr ? t.orig : t.orig.toLowerCase();
+    if(t.phrase){ if(ph[k].indexOf(o)<0) ph[k].push(o); if(gm[k].indexOf(t.norm)<0) gm[k].push(t.norm); }
+    else if(gm[k].indexOf(o)<0) gm[k].push(o);
+  });
+  var out=[], seen={};
+  order.forEach(function(k){
+    var terms = k.slice(0,2)==="A:" ? [k.slice(2)] : termsFor(pg.gp[k], gm[k]);
+    withPlurals(terms, ns).forEach(function(o){ if(seen[o.d]) return; seen[o.d]=1; out.push({disp:o.d, members: o.auto?[o.from]:(terms.length>1?[o.d]:gm[k]), autoPl:!!o.auto}); });
+    ph[k].forEach(function(x){ var d='"'+x+'"'; if(seen[d]) return; seen[d]=1; out.push({disp:d, members:[x], phrase:true}); });
+  });
+  return out;
+}
+function quotePh(s){ return /[\s-]/.test(s) ? ('"'+s+'"') : s; }
+
+/* ---------- 2 堆：二部圖著色 ---------- */
+function split2(P){
+  var removed=[]; function rem(w,k){ if(!removed.some(function(x){return x.word===w;})) removed.push({word:w,kind:k}); }
+  P.recs.forEach(function(r){ r.stops.forEach(function(s){ rem(s.w,s.k); }); });
+  P.tails.forEach(function(t){ rem(t,"qual"); });
+  var rows=P.recs.filter(function(r){return r.toks.length>0;}).map(function(r){ return {toks:r.toks, multi:r.toks.length>=2}; });
+  // 單字先抓 + 刪冗贅片語（含 solo 單字的多字片語已被涵蓋）
+  var soloWords={}; rows.forEach(function(r){ if(r.toks.length===1) soloWords[r.toks[0].norm]=r.toks[0].orig; });
   var redundant=[];
   if(Object.keys(soloWords).length){
-    rows = rows.filter(function(r){
-      if(r.multi){
-        var via=null; r.toks.forEach(function(t){ if(via===null && soloWords[t.norm]!==undefined) via=soloWords[t.norm]; });
-        if(via!==null){ redundant.push({phrase:r.toks.map(function(t){return t.orig;}).join(" "), via:via}); return false; }
-      }
-      return true;
-    });
+    rows=rows.filter(function(r){ if(r.multi){ var via=null; r.toks.forEach(function(t){ if(via===null && soloWords[t.norm]!==undefined) via=soloWords[t.norm]; }); if(via!==null){ redundant.push({phrase:r.toks.map(function(t){return t.orig;}).join(" "), via:via}); return false; } } return true; });
   }
-
-  var normSet={}; rows.forEach(function(r){r.toks.forEach(function(t){if(!t.abbr)normSet[t.norm]=1;});});
-  var norms=Object.keys(normSet).sort();
-  var normGroup={},groupPrefix={},gc=0,lastKey=null;
-  norms.forEach(function(nm){
-    if(lastKey!==null){var cp=commonPrefix(groupPrefix[lastKey],nm);if(cp.length>=4){normGroup[nm]=lastKey;groupPrefix[lastKey]=cp;return;}}
-    var key="G"+(gc++);normGroup[nm]=key;groupPrefix[key]=nm;lastKey=key;
-  });
-  function gid(t){return t.abbr?("A:"+t.orig.toUpperCase()):normGroup[t.norm];}
-  function disp(g){return g.slice(0,2)==="A:"?g.slice(2):stem(groupPrefix[g])+"*";}
-
-  var members={},appearsMulti={},order=[],seen={};
-  rows.forEach(function(r){r.toks.forEach(function(t){var g=gid(t);if(!members[g])members[g]=[];if(members[g].indexOf(t.orig)<0)members[g].push(t.orig);if(r.multi)appearsMulti[g]=1;if(!seen[g]){seen[g]=1;order.push(g);}});});
-
-  var adj={};order.forEach(function(g){adj[g]=[];});
-  // 一行內每兩個概念都建邊（完全圖）：≥3 概念的行也能推斷關係，不再丟失
-  rows.forEach(function(r){ if(!r.multi)return; var gs=[];r.toks.forEach(function(t){var g=gid(t);if(gs.indexOf(g)<0)gs.push(g);}); for(var i=0;i<gs.length;i++)for(var j=i+1;j<gs.length;j++){adj[gs[i]].push(gs[j]);adj[gs[j]].push(gs[i]);} });
+  var ns={}; rows.forEach(function(r){ r.toks.forEach(function(t){ if(!t.abbr) ns[t.norm]=1; }); });
+  var pg=prefixGroups(Object.keys(ns));
+  function gid(t){ return t.abbr?("A:"+t.orig.toUpperCase()):pg.g[t.norm]; }
+  var members={},phr={},appearsMulti={},order=[],seen={};
+  rows.forEach(function(r){ r.toks.forEach(function(t){ var g=gid(t); if(!members[g]){members[g]=[];phr[g]=[];} var o=t.abbr?t.orig:t.orig.toLowerCase(); if(t.phrase){ if(phr[g].indexOf(o)<0) phr[g].push(o); o=t.norm; } if(members[g].indexOf(o)<0)members[g].push(o); if(r.multi)appearsMulti[g]=1; if(!seen[g]){seen[g]=1;order.push(g);} }); });
+  var adj={}; order.forEach(function(g){adj[g]=[];});
+  rows.forEach(function(r){ if(!r.multi)return; var gs=[]; r.toks.forEach(function(t){var g=gid(t); if(gs.indexOf(g)<0)gs.push(g);}); for(var i=0;i<gs.length;i++)for(var j=i+1;j<gs.length;j++){adj[gs[i]].push(gs[j]);adj[gs[j]].push(gs[i]);} });
   var color={},bip=true;
-  order.forEach(function(start){ if(color[start]!==undefined)return; if(!appearsMulti[start])return; if(adj[start].length===0)return; /* 孤立群 -> 未分類 */ color[start]=0; var q=[start]; while(q.length){var u=q.shift();adj[u].forEach(function(v){if(color[v]===undefined){color[v]=color[u]^1;q.push(v);}else if(color[v]===color[u])bip=false;});} });
-
-  var A=[],B=[],solo=[],unclassified=[],review=[];
+  order.forEach(function(start){ if(color[start]!==undefined||!appearsMulti[start]||adj[start].length===0)return; color[start]=0; var q=[start]; while(q.length){ var u=q.shift(); adj[u].forEach(function(v){ if(color[v]===undefined){color[v]=color[u]^1;q.push(v);} else if(color[v]===color[u]) bip=false; }); } });
+  var A=[],B=[],solo=[],soloRows=[];
   order.forEach(function(g){
-    var dp=disp(g),tag;
-    if(!appearsMulti[g]){ solo.push(dp); tag="S"; }
-    else if(color[g]===0){ A.push(dp); tag="A"; }
-    else if(color[g]===1){ B.push(dp); tag="B"; }
-    else { unclassified.push(dp); tag="?"; }
-    review.push({disp:dp,tag:tag,members:members[g]});
+    var terms = g.slice(0,2)==="A:" ? [g.slice(2)] : termsFor(pg.gp[g], members[g]);
+    withPlurals(terms, ns).concat(phr[g].map(function(x){ return {d:'"'+x+'"', ph:x}; })).forEach(function(o){
+      var it={disp:o.d, members: o.ph?[o.ph]:(o.auto?[o.from]:(terms.length>1?[o.d]:members[g])), autoPl:!!o.auto};
+      if(!appearsMulti[g]){ solo.push(it.disp); soloRows.push({disp:it.disp, members:it.members, autoPl:it.autoPl}); }
+      else if(color[g]===0) A.push(it); else if(color[g]===1) B.push(it); else rem(it.disp,"unc");
+    });
   });
+  var exact=0; rows.forEach(function(r){ if(!r.multi) return; var cs={}; var ok=true; r.toks.forEach(function(t){ var c=color[gid(t)]; if(c===undefined) ok=false; else cs[c]=1; }); var gs={}; r.toks.forEach(function(t){gs[gid(t)]=1;}); if(ok && cs[0] && cs[1] && Object.keys(gs).length===2) exact++; });
+  return {n:2, stacks:[A,B], solo:solo, soloRows:soloRows, shortPh:[], names:[], quals:[], removed:removed, redundant:redundant, bip:bip, exact:exact, paren:P.paren.length, inv:P.inv, invEx:P.invEx};
+}
 
-  // 填堆：2 堆用二部著色；3-4 堆用位置分堆（首/中/末）
-  if(parseInt(nSel.value,10)<2){ nSel.value="2"; }
-  if(nsel>=3){ planNStacksFill(nsel); }
-  else { renderStacks(); if(stackEls[0]) stackEls[0].value=A.join("\n"); if(stackEls[1]) stackEls[1].value=B.join("\n"); soloIn.value=solo.join(", "); }
+/* 共同前處理：找核心字、分出品牌名／縮寫片語／修飾字，回傳可分堆的行 */
+function coreAnalyze(P){
+  var C={removed:[], quals:[], namesS:[], namesM:[], soloA:[], abbrPh:[], abbrPhT:[], soloW:[], isoPh:[], placed:[]};
+  function rem(w,k){ if(!C.removed.some(function(x){return x.word===w;})) C.removed.push({word:w,kind:k}); }
+  function addQ(w){ if(w && C.quals.indexOf(w)<0) C.quals.push(w); }
+  C.rem=rem;
+  P.tails.forEach(addQ);
+  var multi=P.recs.filter(function(r){return r.toks.length>=2;});
+  var ns={}; multi.forEach(function(r){ r.toks.forEach(function(t){ if(!t.abbr) ns[t.norm]=1; }); });
+  var pg=prefixGroups(Object.keys(ns));
+  function gk(t){ return t.abbr?("A:"+t.orig.toUpperCase()):pg.g[t.norm]; }
+  C.gk=gk;
+  // 出現次數：先粗算，再把「去掉罕見字後相同」的行視為同一詞（如 …kit, short-term 與 short-term …kit）只算一次
+  var f1={}; multi.forEach(function(r){ var s={}; r.toks.forEach(function(t){ var g=gk(t); if(!s[g]){ s[g]=1; f1[g]=(f1[g]||0)+1; } }); });
+  var freq={}, sigSeen={};
+  multi.forEach(function(r){ var gs={}; r.toks.forEach(function(t){ var g=gk(t); if(f1[g]>=2) gs[g]=1; }); var sig=Object.keys(gs).sort().join("|"); if(sigSeen[sig]) return; sigSeen[sig]=1; Object.keys(gs).forEach(function(g){ freq[g]=(freq[g]||0)+1; }); });
+  function anchor(t){ return !t.abbr && (freq[gk(t)]||0)>=2; }
+  // 各字根出現在「行首／行尾」的比例：short-term central…（central 通常在行首）→ 略過 short-term；
+  // coronary care unit（care 通常在中間）→ coronary 保留
+  var occ={}, atFirst={}, atLast={};
+  multi.forEach(function(r){ var m=r.toks.length; r.toks.forEach(function(t,i){ var g=gk(t); occ[g]=(occ[g]||0)+1; if(i===0) atFirst[g]=(atFirst[g]||0)+1; if(i===m-1) atLast[g]=(atLast[g]||0)+1; }); });
+  function usuallyFirst(t){ var g=gk(t); return (atFirst[g]||0)/(occ[g]||1)>=0.6; }
+  function usuallyLast(t){ var g=gk(t); return (atLast[g]||0)/(occ[g]||1)>=0.6; }
+  // 大小寫訊號：清單多為小寫開頭時，首字大寫的字視為品牌／專有名詞
+  var lowerLines=multi.filter(function(r){ return /^[a-z]/.test(r.disp); }).length;
+  var useCase = multi.length>0 && lowerLines/multi.length>=0.5;
+  function plainWord(t){ return !t.abbr && (!useCase || t.orig===t.orig.toLowerCase()); }
+  P.recs.forEach(function(r){
+    if(!r.toks.length) return;
+    if(r.toks.length===1){ var t=r.toks[0]; if(soloAbbr(t.orig)){ if(C.soloA.indexOf(t.orig)<0) C.soloA.push(t.orig); } else if(/^[a-z0-9]/.test(r.disp)){ if(C.soloW.indexOf(r.disp)<0) C.soloW.push(r.disp); } else C.namesS.push(r.disp); return; }
+    var ix=[]; r.toks.forEach(function(t,i){ if(anchor(t)) ix.push(i); });
+    var hasAbbr=r.toks.some(function(t){return t.abbr;});
+    // 可分堆：≥2 個核心字；或 1 個核心字、其餘都是一般小寫字（critically ill、intensive care department）
+    var ok = ix.length>=2 || (ix.length===1 && !hasAbbr && r.toks.every(function(t){ return anchor(t) || plainWord(t); }));
+    if(!ok){
+      // 縮寫片語（CVP line、cv cath）：含縮寫，其餘字為小寫或核心字 → 不是品牌名，以片語 OR 併入
+      var abbrLike = hasAbbr && r.toks.every(function(t){ return t.abbr || anchor(t) || t.orig===t.orig.toLowerCase(); });
+      if(abbrLike){ if(C.abbrPh.indexOf(r.disp)<0){ C.abbrPh.push(r.disp); C.abbrPhT.push({T:r.toks, disp:r.disp}); } return; }
+      if(!hasAbbr && r.toks.every(plainWord)){ if(C.isoPh.indexOf(r.disp)<0) C.isoPh.push(r.disp); return; }
+      C.namesM.push(r.disp); return;
+    }
+    var a=ix[0], b=ix[ix.length-1];
+    if(a>0 && !usuallyFirst(r.toks[a])) a=0;
+    if(b<r.toks.length-1 && !usuallyLast(r.toks[b])) b=r.toks.length-1;
+    r.toks.slice(0,a).concat(r.toks.slice(b+1)).forEach(function(t){ addQ(t.src); });
+    r.stops.forEach(function(s){ rem(s.w,s.k); });
+    C.placed.push({T:r.toks.slice(a,b+1), disp:r.disp});
+  });
+  C.fallback=false;
+  if(!C.placed.length){ C.fallback=true; C.namesM=[]; multi.forEach(function(r){ C.placed.push({T:r.toks, disp:r.disp}); }); }
+  return C;
+}
+/* 把一批行分到 n 堆：每個字根只進一堆（「剛好 n 個位置」的行投票權重 2，其次依首／末位置） */
+function placeIn(C, lines, n){
+  var gk=C.gk, votes={};
+  function vote(g,s,w){ votes[g]=votes[g]||{}; votes[g][s]=(votes[g][s]||0)+w; }
+  lines.forEach(function(p){ var T=p.T, m=T.length;
+    if(m===n) T.forEach(function(t,i){ vote(gk(t),i,2); });
+    else if(m<n) T.forEach(function(t,i){ vote(gk(t), i===m-1?n-1:i, 1); });
+    else { vote(gk(T[0]),0,1); vote(gk(T[m-1]),n-1,1); }
+  });
+  var gStack={};
+  Object.keys(votes).forEach(function(g){ var best=-1,bs=0; Object.keys(votes[g]).forEach(function(s){ if(votes[g][s]>best){ best=votes[g][s]; bs=+s; } }); gStack[g]=bs; });
+  lines.forEach(function(p){ var T=p.T, m=T.length; T.forEach(function(t,i){ var g=gk(t); if(gStack[g]===undefined) gStack[g]=Math.max(1,Math.min(n-2,Math.round(i*(n-1)/(m-1)))); }); });
+  var buckets=[]; for(var i=0;i<n;i++) buckets.push([]);
+  var exact=0, shortPh=[];
+  lines.forEach(function(p){ var m=p.T.length; if(m<n){ if(shortPh.indexOf(p.disp)<0) shortPh.push(p.disp); } else if(m===n) exact++; p.T.forEach(function(t){ buckets[gStack[gk(t)]].push(t); }); });
+  return {n:n, buckets:buckets, gStack:gStack, exact:exact, shortPh:shortPh, stacks:buckets.map(rootsDetail)};
+}
+function finishRes(C, P, extra){
+  var placedSrc={}; C.placed.forEach(function(p){ p.T.forEach(function(t){ placedSrc[t.src.toLowerCase()]=1; placedSrc[t.norm]=1; }); });
+  var quals=C.quals.filter(function(w){ return !placedSrc[w.toLowerCase()]; });
+  var names=C.namesS.concat(C.namesM);
+  names.forEach(function(w){ C.rem(w,"name"); });
+  quals.forEach(function(w){ C.rem(w,"qual"); });
+  var shortPh=extra.shortPh||[];
+  var soloRows=C.soloA.map(function(a){ return {disp:a, members:[a], kind:"abbr"}; })
+    .concat(C.soloW.map(function(w){ return {disp:quotePh(w), members:[w], kind:"word"}; }))
+    .concat(C.abbrPh.map(function(s){ return {disp:quotePh(s), members:[s], kind:"abbrph"}; }))
+    .concat(C.isoPh.map(function(s){ return {disp:quotePh(s), members:[s], kind:"iso"}; }))
+    .concat(shortPh.map(function(s){ return {disp:quotePh(s), members:[s], kind:"short"}; }));
+  var res={abbrPh:C.abbrPh, solo:C.soloA.concat(C.soloW.map(quotePh), C.abbrPh.map(quotePh), C.isoPh.map(quotePh), shortPh.map(quotePh)), isoPh:C.isoPh, soloRows:soloRows, shortPh:shortPh, names:names, quals:quals, removed:C.removed, redundant:[], bip:true, fallback:C.fallback, paren:P.paren.length, inv:P.inv, invEx:P.invEx, bool:P.bool, boolN:P.boolN};
+  Object.keys(extra).forEach(function(k){ res[k]=extra[k]; });
+  return res;
+}
+/* 二堆：同一行的兩個字根必須分到不同堆（二部著色），不看先後順序；著色衝突時改用位置法 */
+function place2(C, lines){
+  var gk=C.gk, adj={}, order=[];
+  lines.forEach(function(p){ var gs=[]; p.T.forEach(function(t){ var g=gk(t); if(gs.indexOf(g)<0) gs.push(g); if(!adj[g]){ adj[g]=[]; order.push(g); } });
+    for(var i=0;i<gs.length;i++) for(var j=i+1;j<gs.length;j++){ adj[gs[i]].push(gs[j]); adj[gs[j]].push(gs[i]); } });
+  var color={}, comp={}, nc=0, ok=true;
+  order.forEach(function(st){ if(color[st]!==undefined) return; color[st]=0; comp[st]=nc; var q=[st]; while(q.length){ var u=q.shift(); adj[u].forEach(function(v){ if(color[v]===undefined){ color[v]=color[u]^1; comp[v]=nc; q.push(v); } else if(color[v]===color[u]) ok=false; }); } nc++; });
+  if(!ok) return placeIn(C, lines, 2);
+  // 每個不相連的子圖各自決定方向：多數字根在行中的先後位置與堆號一致（CVP line、cv cath → CVP／CV 在堆1）
+  var score={}; lines.forEach(function(p){ p.T.forEach(function(t,i){ var g=gk(t), pos=i===0?0:1; score[comp[g]]=(score[comp[g]]||0)+(color[g]===pos?1:-1); }); });
+  Object.keys(color).forEach(function(g){ if((score[comp[g]]||0)<0) color[g]^=1; });
+  var buckets=[[],[]], exact=0;
+  lines.forEach(function(p){ var cs={}; p.T.forEach(function(t){ var c=color[gk(t)]; cs[c]=1; buckets[c].push(t); }); if(cs[0]&&cs[1]) exact++; });
+  return {n:2, buckets:buckets, gStack:color, exact:exact, shortPh:[], stacks:buckets.map(rootsDetail)};
+}
+/* ---------- 3–4 堆：核心字（≥2 行出現）定位 ---------- */
+function splitN(P,n){
+  var C=coreAnalyze(P), r=placeIn(C, C.placed, n);
+  return finishRes(C, P, {n:n, stacks:r.stacks, exact:r.exact, shortPh:r.shortPh});
+}
+/* ---------- 分組：二堆＋三（四）堆 ----------
+   清單混了不同結構時（critical care／critically ill 與 respiratory care unit／coronary care unit），
+   兩個位置的行做一組二堆，三個位置以上的行做一組三（四）堆，最後 OR 合併。
+   第二組裡已被第一組涵蓋、又不符合第二組結構的行（critically ill patient）略過；
+   被涵蓋但符合結構的行（intensive care department）保留，讓 department 進第三堆。 */
+function splitGroup(P){
+  var C=coreAnalyze(P), gk=C.gk;
+  // 第一組（二堆）：兩個位置的行，加上兩個字的縮寫片語（CVP line、cv cath 可與 central line 同組）
+  var lowAbbr=C.abbrPhT.filter(function(p){return p.T.length===2;});
+  var low=C.placed.filter(function(p){return p.T.length===2;}).concat(lowAbbr), high=C.placed.filter(function(p){return p.T.length>=3;});
+  if(low.length<2 || high.length<2) return null;
+  var mc={}; high.forEach(function(p){ var m=Math.min(p.T.length,4); mc[m]=(mc[m]||0)+1; });
+  var nHigh=(mc[4]||0)>(mc[3]||0)?4:3;
+  var r1=place2(C, low);
+  var S=[{},{}]; Object.keys(r1.gStack).forEach(function(g){ S[r1.gStack[g]][g]=1; });
+  function covered(p){ var T=p.T; for(var i=0;i<T.length;i++) for(var j=0;j<T.length;j++){ if(i!==j && S[0][gk(T[i])] && S[1][gk(T[j])]) return true; } return false; }
+  var unc=high.filter(function(p){return !covered(p);}), cov=high.filter(covered);
+  if(unc.length<2) return null;
+  var slot={}; unc.forEach(function(p){ if(p.T.length===nHigh) p.T.forEach(function(t,i){ slot[i+"|"+gk(t)]=1; }); });
+  var keep=[], redundant=[];
+  cov.forEach(function(p){ var hit=0; p.T.forEach(function(t,i){ if(slot[i+"|"+gk(t)]) hit++; }); if(hit>=2) keep.push(p); else redundant.push({phrase:p.disp, via:"group1"}); });
+  var r2=placeIn(C, unc.concat(keep), nHigh);
+  C.abbrPh=C.abbrPh.filter(function(d){ return !lowAbbr.some(function(p){return p.disp===d;}); });
+  var red=redundant.map(function(x){return x.phrase;});
+  C.placed=C.placed.filter(function(p){ return red.indexOf(p.disp)<0; });
+  return finishRes(C, P, {n:2, grouped:true, groups:[{n:2, stacks:r1.stacks},{n:nHigh, stacks:r2.stacks}], stacks:r1.stacks, exact:r1.exact+r2.exact, shortPh:r1.shortPh.concat(r2.shortPh), redundant:redundant, label:"2+"+nHigh, lowEx:(C.placed.filter(function(p){return p.T.length===2;})[0]||{}).disp||""});
+}
+function coveredBy(stacks, T, gk, gStack){ var hit={}; T.forEach(function(t){ var s=gStack[gk(t)]; if(s!==undefined) hit[s]=1; }); for(var i=0;i<stacks;i++) if(!hit[i]) return false; return true; }
+function splitN2(P){
+  var C=coreAnalyze(P), gk=C.gk;
+  var low=C.placed.filter(function(p){return p.T.length===2;});
+  if(low.length<1) return null;
+  var r=place2(C, low), longPh=[];
+  C.placed.forEach(function(p){ if(p.T.length>2 && !coveredBy(2, p.T, gk, r.gStack)) longPh.push(p.disp); });
+  C.placed=C.placed.filter(function(p){ return p.T.length===2 || longPh.indexOf(p.disp)<0; });
+  return finishRes(C, P, {n:2, stacks:r.stacks, exact:r.exact, shortPh:longPh});
+}
+function computeSplit(P,n){
+  if(n!==2) return splitN(P,n);
+  var a=split2(P); if(a.bip) return a;
+  var b=splitN2(P); return b||a;
+}
+/* ---------- 涵蓋率：實際模擬檢索式能抓到清單裡幾行（片語備援不算） ---------- */
+function termHit(term, words, line){
+  var t=String(term).toLowerCase().replace(/"/g,"").trim(); if(!t) return false;
+  if(/\s/.test(t)){ var ps=t.split(/\s+/); for(var i=0;i+ps.length<=words.length;i++){ var ok=true; for(var j=0;j<ps.length;j++){ var q=ps[j]; if(q.slice(-1)==="*"){ if(words[i+j].indexOf(q.slice(0,-1))!==0){ok=false;break;} } else if(words[i+j]!==q){ok=false;break;} } if(ok) return true; } return false; }
+  if(t.slice(-1)==="*"){ var pre=t.slice(0,-1); return words.some(function(w){ return w.indexOf(pre)===0; }); }
+  return words.indexOf(t)>=0;
+}
+function coverage(res, P, skip){
+  var gs=res.grouped?res.groups:[{stacks:res.stacks}];
+  var singles=(res.solo||[]).filter(function(x){ return !/[\s"]/.test(x.replace(/^"|"$/g,"")) || !/\s/.test(x); });
+  var tot=0, hit=0;
+  P.recs.forEach(function(r){
+    if(skip[r.disp]) return; tot++;
+    var words=r.disp.toLowerCase().replace(/[^a-z0-9]+/g," ").trim().split(" ");
+    if(singles.some(function(x){ return !/\s/.test(x.replace(/"/g,"")) && termHit(x, words); })){ hit++; return; }
+    if(gs.some(function(g){ return g.stacks.length && g.stacks.every(function(st){ return st.some(function(x){ return termHit(x.disp, words); }); }); })) hit++;
+  });
+  return {hit:hit, tot:tot};
+}
 
-  // 分群檢視
-  var en=document.body.classList.contains("en");
-  var multiN = nsel>=3;
-  var html='<b>'+(en?(multiN?"Truncation review (stacks filled below):":"Grouping review (verify truncation & stacks):"):(multiN?"切截檢視（分堆以下方 N 堆為準）：":"分群檢視（請核對切截點與分堆）："))+'</b><table>';
-  review.forEach(function(r){
-    var cls=r.tag==="A"?"bA":r.tag==="B"?"bB":r.tag==="S"?"bS":"bC";
-    var label=r.tag==="A"?(en?"Stack 1":"堆1"):r.tag==="B"?(en?"Stack 2":"堆2"):r.tag==="S"?(en?"Separate":"單獨"):(en?"Unclassified":"未分類");
-    var badgeHtml = multiN ? '' : ('<span class="badge '+cls+'">'+label+'</span>');
-    html+='<tr><td class="k">'+esc(r.disp)+'</td><td>'+badgeHtml+esc(r.members.join("  ·  "))+'</td></tr>';
+
+/* ---------- 套用到下方詞堆 ---------- */
+function cleanInfoHtml(res){
+  var en=isEn(), parts=[];
+  if(res.bool) parts.push(en?("search-string format detected — split into "+res.boolN+" terms by OR; brackets and quotes removed"):("偵測到檢索式格式：已依 OR 拆成 "+res.boolN+" 個詞，並移除括號與引號"));
+  if(res.paren && !res.bool) parts.push(en?("ignored "+res.paren+" bracketed note(s)"):("括號註記 "+res.paren+" 處已忽略"));
+  if(res.inv) parts.push(en?(res.inv+" inverted term(s) put back in order (e.g. “"+res.invEx+"”)"):("逗號倒裝 "+res.inv+" 行已轉正（如 "+res.invEx+"）"));
+  if(res.quals&&res.quals.length) parts.push(en?("qualifiers skipped: "+res.quals.join(", ")):("頭尾修飾字略過："+res.quals.join("、")));
+  if(res.names&&res.names.length) parts.push(en?(res.names.length+" brand / proper name(s) not stacked (see below; add back if needed)"):("品牌／專有名詞 "+res.names.length+" 項未分堆（見下方，可加回）"));
+  var pls=[]; (res.grouped?res.groups[0].stacks.concat(res.groups[1].stacks):res.stacks).forEach(function(st){ st.forEach(function(x){ if(x.autoPl) pls.push(x.disp); }); }); (res.soloRows||[]).forEach(function(x){ if(x.autoPl) pls.push(x.disp); });
+  if(pls.length) parts.push(en?("short words not truncated; plurals added: "+pls.join(", ")):("短字不切截，已自動補複數："+pls.join("、")));
+  if(res.grouped) parts.push(en?("mixed structures — split into 2 groups (2 stacks + "+res.groups[1].n+" stacks), OR-ed together"+(res.redundant.length?("; "+res.redundant.length+" line(s) already covered by group 1 skipped"):"")):("結構混合，已分成兩組（二堆＋"+NUMZH[res.groups[1].n]+"堆）再 OR 合併"+(res.redundant.length?("；已由第一組涵蓋的 "+res.redundant.length+" 行略過"):"")));
+  if(res.isoPh&&res.isoPh.length) parts.push(en?("stand-alone phrases OR-ed in: "+res.isoPh.join(", ")):("獨立片語以片語併入："+res.isoPh.join("、")));
+  if(res.abbrPh&&res.abbrPh.length) parts.push(en?("abbreviation phrases OR-ed in: "+res.abbrPh.join(", ")):("縮寫片語以片語併入："+res.abbrPh.join("、")));
+  if(res.shortPh&&res.shortPh.length) parts.push(en?(res.shortPh.length+" shorter phrase(s) OR-ed in separately"):("較短片語 "+res.shortPh.length+" 項另以 OR 併入"));
+  if(!parts.length) return "";
+  var tip="";
+  if(res.abbrPh&&res.abbrPh.length && !res.grouped){
+    var g=lastP?splitGroup(lastP):null;
+    var absorbs = g && g.abbrPh.length<res.abbrPh.length;
+    if(absorbs){
+      var gt=g.groups[1].n;
+      tip='<div class="ci2"><b>'+(en?"Tip: ":"提醒：")+'</b>'+esc(en?("these abbreviation phrases can form a 2-stack group with the other 2-position terms"+(g.lowEx?(" (e.g. "+g.lowEx+")"):"")+", grouped with the "+gt+"-stack set and OR-ed together."):("這些縮寫片語可以和其他兩個位置的詞"+(g.lowEx?("（如 "+g.lowEx+"）"):"")+"一起做成二堆，再與"+NUMZH[gt]+"堆分組後 OR 合併。"))+' <button class="sendbtn" onclick="useGrouped()">'+esc(en?("Use 2 + "+gt+" stacks"):("改用二堆＋"+NUMZH[gt]+"堆"))+'</button></div>';
+    } else {
+      tip='<div class="ci2"><b>'+(en?"Tip: ":"提醒：")+'</b>'+esc(en?"these abbreviation phrases can also be built as a separate 2-stack proximity and OR-ed with this result.":"這些縮寫片語也可以另外做成二堆鄰近，再與本結果 OR 起來。")+'</div>';
+    }
+  }
+  return '<div class="cleaninfo"><b>'+(en?"Auto-cleaned: ":"已自動整理：")+'</b>'+parts.map(esc).join(en?" · ":"・")+tip+'</div>';
+}
+function bipWarnBox(){
+  var en=isEn();
+  var box=document.createElement("div"); box.className="splithint";
+  box.innerHTML = en
+    ? '<div class="shh">⚠ This list is hard to split cleanly into two stacks</div><p>The list may mix different structures (e.g. modifier+core vs modifier+core+core); a single auto-split cannot separate them reliably. Try 3 or 4 stacks, paste two separate batches, or choose an option below:</p>'
+    : '<div class="shh">⚠ 這份清單較難乾淨分成兩堆</div><p>清單可能混了不同結構（例如「修飾＋核心」與「修飾＋核心＋核心」），可改試 3／4 堆，或分兩次貼上各自處理。或者選擇下列處理方式：</p>';
+  var brow=document.createElement("div"); brow.style.cssText="display:flex;gap:8px;margin:8px 0;flex-wrap:wrap;align-items:center";
+  var b3=document.createElement("button"); b3.className="copy"; b3.textContent=en?"Copy all as phrase OR":"全片語 OR（複製）";
+  b3.onclick=function(){ navigator.clipboard.writeText(orLump()); var t=b3.textContent; b3.textContent="✓"; setTimeout(function(){b3.textContent=t;},1200); };
+  var s3=document.createElement("a"); s3.className="sendbtn"; s3.textContent=en?"Phrase OR → Converter":"全片語 OR → 轉換器";
+  s3.href="syntax-converter.html?src="+encodeURIComponent(srcSel.value)+"&q="+encodeURIComponent(orLump());
+  brow.appendChild(b3); brow.appendChild(s3); box.appendChild(brow);
+  return box;
+}
+var appliedKey=null;
+function resKey(r){ return r.grouped ? "g" : String(r.n); }
+function resTitle(r,en){ return r.grouped ? (en?("2 + "+r.groups[1].n+" stacks (grouped)"):("二堆＋"+NUMZH[r.groups[1].n]+"堆（分組）")) : (en?(r.n+" stacks"):(NUMZH[r.n]+"堆")); }
+function applySplit(res){
+  var en=isEn();
+  appliedKey=resKey(res);
+  var gs = res.grouped ? res.groups : [{n:res.n, stacks:res.stacks}];
+  nSel.value=String(gs[0].n); renderStacks();
+  gs[0].stacks.forEach(function(st,i){ if(stackEls[i]) stackEls[i].value=st.map(function(x){return x.disp;}).join("\n"); });
+  if(gs[1]) renderStacks2(gs[1].n, gs[1].stacks.map(function(st){ return st.map(function(x){return x.disp;}).join("\n"); }));
+  else renderStacks2(0);
+  soloIn.value=res.solo.join(", ");
+  var html='<b>'+(en?"Grouping review (verify truncation & stacks):":"分群檢視（請核對切截點與分堆）：")+'</b><table>';
+  function plNote(x){ return '<span class="badge bP">'+(en?"Auto plural":"自動複數")+'</span>'+esc(en?("of “"+x.members[0]+"” — delete if not needed"):("由「"+x.members[0]+"」補上，不需要可刪除")); }
+  gs.forEach(function(g,gi){
+    if(gs.length>1) html+='<tr><td colspan="2" class="ghd">'+(en?("Group "+(gi+1)+" ("+g.n+" stacks)"):("第"+(gi===0?"一":"二")+"組（"+NUMZH[g.n]+"堆）"))+'</td></tr>';
+    g.stacks.forEach(function(st,i){ st.forEach(function(x){ html+='<tr><td class="k">'+esc(x.disp)+'</td><td><span class="badge '+STACK_COLORS[i]+'">'+(en?"Stack ":"堆")+(i+1)+'</span>'+(x.autoPl?plNote(x):esc(x.members.join("  ·  ")))+'</td></tr>'; }); });
   });
-  redundant.forEach(function(rd){
-    html+='<tr><td class="k">'+esc(rd.phrase)+'</td><td><span class="badge bC">'+(en?"Skipped":"略過")+'</span>'+esc(en?("redundant — already covered by “"+rd.via+"”"):("冗贅 — 已由「"+rd.via+"」涵蓋"))+'</td></tr>';
-  });
+  if(gs.length>1 && ((res.soloRows||[]).length || (res.redundant||[]).length)) html+='<tr><td colspan="2" class="ghd">'+(en?"Other":"其他")+'</td></tr>';
+  (res.soloRows||[]).forEach(function(r){ var note=r.kind==="short"?(en?"shorter phrase — OR-ed in":"較短片語 — 以 OR 併入"):r.kind==="word"?(en?"single word — OR-ed in":"單一字 — 以 OR 併入"):r.kind==="iso"?(en?"stand-alone phrase (no words shared with other terms) — OR-ed in as a phrase":"獨立片語（與其他詞沒有共同字）— 以片語 OR 併入"):r.kind==="abbrph"?(en?"abbreviation phrase — OR-ed in as a phrase (or grouped as 2 stacks with other 2-word terms)":"縮寫片語 — 以片語 OR 併入（也可與其他兩個字的詞做成二堆分組）"):r.members.join("  ·  "); html+='<tr><td class="k">'+esc(r.disp)+'</td><td><span class="badge bS">'+(en?"Separate":"單獨")+'</span>'+(r.autoPl?plNote(r):esc(note))+'</td></tr>'; });
+  (res.redundant||[]).forEach(function(rd){ var t=rd.via==="group1"?(en?"already covered by group 1":"已由第一組涵蓋"):(en?("redundant — already covered by “"+rd.via+"”"):("冗贅 — 已由「"+rd.via+"」涵蓋")); html+='<tr><td class="k">'+esc(rd.phrase)+'</td><td><span class="badge bC">'+(en?"Skipped":"略過")+'</span>'+esc(t)+'</td></tr>'; });
   html+='</table>';
   reviewEl.innerHTML=html;
-  var hintEl=document.getElementById("splitHint"); hintEl.innerHTML="";
-  if(!bip){
-    var box=document.createElement("div"); box.className="splithint";
-    box.innerHTML = en
-      ? '<div class="shh">\u26A0 This list is hard to split cleanly into two stacks</div><p>You prefer proximity — here are ways to handle it (try \u2460 first):</p>'
-      : '<div class="shh">\u26A0 這份清單較難乾淨分成兩堆</div><p>你偏好鄰近字，以下提供幾種處理方式（建議先試 \u2460）：</p>';
-    var pEl=box.querySelector("p"); if(pEl) pEl.innerHTML = en ? "The list may mix different structures (e.g. modifier+core vs modifier+core+core); a single auto-split cannot separate them reliably. Consider pasting two separate batches, or choose an option below:" : "清單可能混了不同結構（例如「修飾＋核心」與「修飾＋核心＋核心」），單次自動難以拆準，建議重新分兩次貼上各自處理。或者選擇下列處理方式：";
-    var brow=document.createElement("div"); brow.style.cssText="display:flex;gap:8px;margin:8px 0;flex-wrap:wrap;align-items:center";
-    var b2=document.createElement("button"); b2.className="gobtn"; b2.style.cssText="padding:7px 14px;font-size:13px";
-    b2.textContent=en?"\u2460 Modifier \u00d7 core \u2192 two stacks (auto-fill)":"\u2460 修飾 \u00d7 核心 兩堆（自動填入下方）";
-    var nnow=parseInt(nSel.value,10)||2;
-    b2.textContent=en?("① Modifier + core → "+nnow+" stacks (auto-fill)"):("① 修飾＋核心 "+nnow+" 堆（自動填入下方）");
-    b2.onclick=function(){ planNStacks(parseInt(nSel.value,10)||2); };
-    var b3=document.createElement("button"); b3.className="copy"; b3.textContent=en?"\u2461 Copy all as phrase OR":"\u2461 全片語 OR（複製）";
-    b3.onclick=function(){ navigator.clipboard.writeText(orLump()); var t=b3.textContent; b3.textContent="\u2713"; setTimeout(function(){b3.textContent=t;},1200); };
-    var s3=document.createElement("a"); s3.className="sendbtn"; s3.textContent=en?"\u2461 Phrase OR \u2192 Converter":"\u2461 全片語 OR \u2192 轉換器";
-    s3.href="syntax-converter.html?src="+encodeURIComponent(srcSel.value)+"&q="+encodeURIComponent(orLump());
-    brow.appendChild(b2); brow.appendChild(b3); brow.appendChild(s3); box.appendChild(brow);
-    var p3=document.createElement("p"); p3.style.cssText="margin:4px 0;font-size:12.5px";
-    p3.innerHTML=en
-      ? "<b>\u2462</b> If the list mixes different structures (e.g. Human+modifier+core vs modifier+core), a single auto-split can\u2019t separate them reliably \u2014 paste the two structures as two separate batches."
-      : "<b>\u2462</b> 若清單混了不同結構（例如「Human＋修飾＋核心」與「修飾＋核心」），單次自動難以拆準，建議分兩次貼上各自處理。";
-    hintEl.appendChild(box);
-  }
-
-  // 被移除/未分類 -> 可加回清單
-  buildRemoved(removed, unclassified);
+  var hintEl=document.getElementById("splitHint"); hintEl.innerHTML=cleanInfoHtml(res);
+  if(!res.grouped && res.n===2 && !res.bip) hintEl.appendChild(bipWarnBox());
+  buildRemoved(res.removed);
   build();
 }
-function esc(s){return String(s).replace(/[&<>]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;"}[c];});}
+
+/* ---------- 2／3／4 堆同時比較（版面 B） ---------- */
+var lastP=null, lastCmp=null;
+function cmpStacksHtml(stacks, opTxt, en){
+  var h="";
+  stacks.forEach(function(st,i){
+    if(i>0) h+='<div class="cmpop">'+esc(opTxt)+'</div>';
+    h+='<div class="cmpstk"><span class="badge '+STACK_COLORS[i]+'">'+(en?"Stack ":"堆")+(i+1)+'</span>'+(st.length?esc(st.map(function(x){return x.disp;}).join(" / ")):'<i style="color:var(--mut)">'+(en?"(empty)":"（空）")+'</i>')+'</div>';
+  });
+  return h;
+}
+function renderCompare(){
+  var panel=document.getElementById("cmpPanel"), box=document.getElementById("cmpBox");
+  if(!panel||!box) return;
+  if(!lastCmp){ panel.style.display="none"; box.innerHTML=""; return; }
+  panel.style.display="";
+  var en=isEn(), src=srcSel.value, sem=parseInt(distSel.value,10); if(isNaN(sem)) sem=3;
+  var opTxt=PROX[src].expand?(en?"proximity":"鄰近"):opFor(src,sem);
+  box.innerHTML="";
+  box.style.setProperty("--cols", Math.max(2, lastCmp.res.length));
+  lastCmp.res.forEach(function(r){
+    var k=resKey(r), cur=(appliedKey===k);
+    var card=document.createElement("div"); card.className="cmpcard"+(lastCmp.best===r?" rec":"")+(cur?" cur":"");
+    var chips="";
+    if(lastCmp.best===r) chips+='<span class="chip">'+(en?"Best fit":"推薦")+'</span>';
+    if(!r.grouped && r.n===2 && !r.bip) chips+='<span class="chip warn">'+(en?"Hard to split":"不易分兩堆")+'</span>';
+    if(cur) chips+='<span class="chip cur">'+(en?"In use":"目前採用")+'</span>';
+    var h='<div class="cmphd"><b>'+resTitle(r,en)+'</b>'+chips+'</div>';
+    var nm=(r.names?r.names.length:0)+r.removed.filter(function(x){return x.kind==="unc";}).length;
+    var exTxt = r.grouped ? (en?("Exact match in each group: <b>"+r.exact+"</b>"):("各組剛好吻合：<b>"+r.exact+"</b> 行")) : (en?("Exact "+r.n+"-position match: <b>"+r.exact+"</b>"):("剛好 "+r.n+" 個位置：<b>"+r.exact+"</b> 行"));
+    if(r.cov) exTxt=(en?("Catches <b>"+r.cov.hit+"</b> / "+r.cov.tot+" terms · "):("可抓到 <b>"+r.cov.hit+"</b> / "+r.cov.tot+" 行・"))+exTxt.replace(/<\/?b>/g,"");
+    h+='<div class="cmpmeta">'+exTxt+(r.shortPh.length?(en?(" · shorter: "+r.shortPh.length):("・較短另加 "+r.shortPh.length)):"")+(nm?(en?(" · not stacked: "+nm):("・未分堆 "+nm)):"")+'</div>';
+    if(r.grouped){
+      h+='<div class="cmpgl">'+(en?"Group 1":"第一組")+'</div>'+cmpStacksHtml(r.groups[0].stacks,opTxt,en);
+      h+='<div class="cmpor">OR</div><div class="cmpgl">'+(en?"Group 2":"第二組")+'</div>'+cmpStacksHtml(r.groups[1].stacks,opTxt,en);
+    } else h+=cmpStacksHtml(r.stacks,opTxt,en);
+    if(r.solo.length){ var sl=r.solo.slice(0,3).join(", ")+(r.solo.length>3?(en?(" … +"+(r.solo.length-3)+" more"):("…等 "+r.solo.length+" 項")):""); h+='<div class="cmpsolo">'+(en?"Separate: ":"單獨保留：")+esc(sl)+'</div>'; }
+    card.innerHTML=h;
+    var b=document.createElement("button"); b.className="gobtn"; b.textContent=cur?(en?"✓ In use — edit below":"✓ 已採用，於下方編輯"):(en?"Use this ↓":"採用並編輯 ↓");
+    b.onclick=function(){ srCount('prox-cmp-use-'+k,'鄰近字-採用'+k); applySplit(r); renderCompare(); var s2=document.getElementById("step2"); if(s2) s2.scrollIntoView({behavior:"smooth",block:"start"}); };
+    card.appendChild(b);
+    box.appendChild(card);
+  });
+}
+
+function autoSplit(){
+  srCount('prox-autosplit','鄰近字-自動分堆');
+  resultsStale=false;
+  var P=prepLines(beforeTa.value); lastP=P;
+  var nsel=parseInt(nSel.value,10)||2;
+  if(document.getElementById("cmpPanel")){
+    // 只比較用得到的堆數：片語最多 3 個位置就不給四堆、最多 2 個位置就只給二堆（以此類推）
+    var maxPos=2; coreAnalyze(P).placed.forEach(function(p){ if(p.T.length>maxPos) maxPos=p.T.length; });
+    var ns=[2,3,4].filter(function(n){ return n<=Math.max(2,maxPos); });
+    var res=ns.map(function(n){ return computeSplit(P,n); });
+    var g=splitGroup(P);
+    if(g && res.length>=3){ // 最多顯示三種：加入「分組」時，拿掉吻合最少的單一堆數（同分拿掉堆數多的）
+      var worst=null; res.forEach(function(r){ if(!worst || r.exact<worst.exact || (r.exact===worst.exact && r.n>worst.n)) worst=r; });
+      res=res.filter(function(r){return r!==worst;}); res.push(g);
+    } else if(g) res.push(g);
+    var C0=coreAnalyze(P), skip={}; C0.namesS.concat(C0.namesM, C0.isoPh).forEach(function(d){ skip[d]=1; });
+    res.forEach(function(r){ r.cov=coverage(r,P,skip); r.stackSum=(r.grouped?r.groups[0].n+r.groups[1].n:r.n); });
+    var best=null; res.forEach(function(r){ if(!r.grouped && r.n===2 && !r.bip) return;
+      if(!best || r.cov.hit>best.cov.hit || (r.cov.hit===best.cov.hit && (r.exact>best.exact || (r.exact===best.exact && r.stackSum<best.stackSum)))) best=r; });
+    lastCmp={res:res, best:best};
+    applySplit(best||res[0]);
+    renderCompare();
+  } else {
+    applySplit(computeSplit(P,nsel));
+  }
+}
 
 var removedWords=[]; // {word, kind}
-function buildRemoved(removed, unclassified){
-  removedWords=[];
-  removed.forEach(function(o){removedWords.push({word:o.word,kind:o.kind});});
-  (unclassified||[]).forEach(function(w){removedWords.push({word:w,kind:"unc"});});
+function buildRemoved(removed){
+  removedWords=(removed||[]).map(function(o){ return {word:o.word, kind:o.kind}; });
   renderRemoved();
 }
+function addToSolo(w){ var v=quotePh(w); var cur=lines(soloIn.value); if(cur.indexOf(v)<0) soloIn.value=(soloIn.value?soloIn.value+", ":"")+v; }
 function renderRemoved(){
   removedBox.innerHTML="";
   if(!removedWords.length) return;
-  var en=document.body.classList.contains("en");
+  var en=isEn();
   var box=document.createElement("div"); box.className="removed";
   var hd=document.createElement("div"); hd.className="rh";
-  hd.textContent=en?"Words not placed (stopwords removed / unclassified) — add any back to a stack:":"未納入的字（停用字移除／未分類）— 可加回任一堆：";
+  hd.textContent=en?"Not placed (brand names / qualifiers / stopwords / unclassified) — add any back:":"未納入（品牌／專有名詞、修飾字、停用字、未分類）— 可加回任一堆：";
   box.appendChild(hd);
-  removedWords.forEach(function(item,idx){
+  var nNames=removedWords.filter(function(x){return x.kind==="name";}).length;
+  if(nNames>1){
+    var bulk=document.createElement("button"); bulk.className="copy"; bulk.style.cssText="display:block;margin:0 0 8px";
+    bulk.textContent=en?("Add all "+nNames+" names → Keep separate"):("全部 "+nNames+" 個專有名詞 → 單獨保留");
+    bulk.onclick=function(){ removedWords.filter(function(x){return x.kind==="name";}).forEach(function(x){ addToSolo(x.word); }); removedWords=removedWords.filter(function(x){return x.kind!=="name";}); renderRemoved(); build(); };
+    box.appendChild(bulk);
+  }
+  removedWords.forEach(function(item){
     var rw=document.createElement("div"); rw.className="rrow";
     var wd=document.createElement("span"); wd.className="rword";
-    var kindTxt=item.kind==="stop"?(en?"  (stopword)":"（停用字）"):item.kind==="mod"?(en?"  (modifier)":"（修飾詞）"):(en?"  (unclassified)":"（未分類）");
-    wd.textContent=item.word+kindTxt;
+    var K={stop:[" (stopword)","（停用字）"],mod:[" (modifier)","（修飾詞）"],qual:[" (qualifier)","（修飾字）"],name:[" (name / brand)","（專有名詞）"],unc:[" (unclassified)","（未分類）"]}[item.kind]||["",""];
+    wd.textContent=item.word+(en?K[0]:K[1]);
     rw.appendChild(wd);
     var sel=document.createElement("select");
     var opt0=document.createElement("option"); opt0.value=""; opt0.textContent=en?"— ignore —":"— 略過 —"; sel.appendChild(opt0);
-    var n=stackEls.length;
-    for(var i=0;i<n;i++){var op=document.createElement("option");op.value="s"+i;op.textContent=(en?"→ Stack ":"→ 堆")+(i+1);sel.appendChild(op);}
     var opS=document.createElement("option"); opS.value="solo"; opS.textContent=en?"→ Keep separate":"→ 單獨保留"; sel.appendChild(opS);
+    var g2=stackEls2.length>0;
+    for(var i=0;i<stackEls.length;i++){ var op=document.createElement("option"); op.value="s"+i; op.textContent=(g2?(en?"→ G1 stack ":"→ 第一組堆"):(en?"→ Stack ":"→ 堆"))+(i+1); sel.appendChild(op); }
+    for(var j=0;j<stackEls2.length;j++){ var op2=document.createElement("option"); op2.value="t"+j; op2.textContent=(en?"→ G2 stack ":"→ 第二組堆")+(j+1); sel.appendChild(op2); }
     sel.onchange=function(){
       var v=sel.value; if(!v) return;
-      if(v==="solo"){ soloIn.value=(soloIn.value?soloIn.value+", ":"")+item.word; }
-      else { var si=parseInt(v.slice(1),10); if(stackEls[si]){ stackEls[si].value=(stackEls[si].value?stackEls[si].value+"\n":"")+item.word; } }
-      // 從清單移除該項
+      if(v==="solo") addToSolo(item.word);
+      else { var arr=v[0]==="t"?stackEls2:stackEls; var si=parseInt(v.slice(1),10); if(arr[si]) arr[si].value=(arr[si].value?arr[si].value+"\n":"")+item.word; }
+      var k=removedWords.indexOf(item); if(k>=0) removedWords.splice(k,1);
       rw.remove(); build();
     };
     rw.appendChild(sel);
@@ -511,48 +988,164 @@ function renderRemoved(){
 // nSel 改變時，更新已顯示的加回下拉的堆選項
 function refreshStackTargets(){ if(removedWords.length) renderRemoved(); }
 
+/* ---------- 第二組詞堆（分組模式） ---------- */
+var stackEls2=[];
+function renderStacks2(n, vals){
+  var wrap=document.getElementById("g2wrap"), set=document.getElementById("stackset2"), s2=document.getElementById("step2");
+  if(!wrap||!set) return;
+  var prev=vals || stackEls2.map(function(t){return t.value;});
+  set.innerHTML=""; stackEls2=[];
+  if(!n){ wrap.style.display="none"; if(s2) s2.classList.remove("grouped"); updateGroupLabels(); refreshStackTargets(); build(); return; }
+  wrap.style.display=""; if(s2) s2.classList.add("grouped");
+  var en=isEn();
+  for(var i=0;i<n;i++){
+    if(i>0){ var op=document.createElement("div"); op.className="opmid"; op.textContent="NEAR"; set.appendChild(op); }
+    var col=document.createElement("div"); col.className="stackcol";
+    var lb=document.createElement("label"); lb.innerHTML='<span class="badge '+STACK_COLORS[i]+'">'+(en?"Stack ":"堆")+(i+1)+'</span>'+(en?"one per line = OR":"每行一詞 = OR");
+    var ta=document.createElement("textarea"); ta.spellcheck=false; ta.value=prev[i]||"";
+    ta.addEventListener("input",build);
+    col.appendChild(lb); col.appendChild(ta); set.appendChild(col);
+    stackEls2.push(ta);
+  }
+  updateGroupLabels(); refreshStackTargets(); build();
+}
+function updateGroupLabels(){
+  var en=isEn(), a=document.getElementById("g1n"), b=document.getElementById("g2n");
+  var n1=parseInt(nSel.value,10)||2;
+  if(a) a.textContent=en?(" ("+n1+" stacks)"):("（"+NUMZH[n1]+"堆）");
+  if(b) b.textContent=stackEls2.length?(en?(" ("+stackEls2.length+" stacks)"):("（"+NUMZH[stackEls2.length]+"堆）")):"";
+}
+window.removeGroup2=function(){ renderStacks2(0); };
+
+/* ---------- 精簡建議：整堆都是泛用詞（disease、disorder、patient…）時，建議移除 ----------
+   例：chronic × obstructive × (pulmonary…) × (disease / disorder) — 前 3 堆已具代表性，
+   第 4 堆只會讓「沒寫出 disease」的文獻（chronic obstructive lung…）被漏掉。 */
+var GENERIC=["disease","disorder","dysfunction","syndrome","condition","illness","patient","people","person","individual","subject","problem"];
+function isGenericTerm(t){
+  t=(t||"").toLowerCase().replace(/["*?#$]/g,"").trim(); if(!t || /\s/.test(t)) return false;
+  return GENERIC.some(function(g){ return t===g || t===g+"s" || t.indexOf(g)===0 || (t.length>=5 && g.indexOf(t)===0); });
+}
+var CONTEXT_MID=["therapy","therapies","therap","treatment","treat","intervention","management","exposure","related","induced","associated","use"];
+function isContextTerm(t){ t=(t||"").toLowerCase().replace(/["*?#$]/g,"").trim(); if(!t || /\s/.test(t)) return false; return CONTEXT_MID.some(function(g){ return t===g || t===g+"s" || t.indexOf(g)===0 || (t.length>=5 && g.indexOf(t)===0); }); }
+var stackTipDismissed={};
+function updateStackTip(){
+  var box=document.getElementById("stackTip"); if(!box) return;
+  var en=isEn(), html="", sets=[[stackEls,1],[typeof stackEls2!=="undefined"?stackEls2:[],2]];
+  var grouped=stackEls2&&stackEls2.length>0;
+  sets.forEach(function(pair){
+    var els=pair[0], gi=pair[1]; if(els.length<3) return;
+    els.forEach(function(ta,i){
+      var ws=lines(ta.value); if(!ws.length) return;
+      var mid = i>0 && i<els.length-1 && ws.every(isContextTerm);
+      if(!mid && !ws.every(isGenericTerm)) return;
+      var sig=gi+"|"+i+"|"+ws.join(","); if(stackTipDismissed[sig]) return;
+      var name=(grouped?(en?("group "+gi+" "):(gi===1?"第一組":"第二組")):"")+(en?("stack "+(i+1)):("堆"+(i+1)));
+      var w0=ws[0].replace(/["*?#$]/g,"");
+      var msg = mid ? (en?(name+" ("+ws.join(", ")+") holds treatment / context words sitting between the key concepts. The proximity distance already spans words in between, so after removing it phrasings with these words are still found — and records written without them are no longer missed (keep the distance ≥2)."):(name+"（"+ws.join("、")+"）是夾在中間的治療／情境用語；鄰近距離本來就涵蓋中間的字，移除後中間夾著這些字的寫法仍找得到，也不會漏掉沒寫出這些字的文獻（請確認鄰近距離 ≥2）。")) : null;
+      html+='<div class="stacktip"><b>'+(en?"Suggestion: ":"建議：")+'</b>'+(msg?esc(msg):esc(en?(name+" ("+ws.join(", ")+") holds only generic words and the other stacks are already specific. Removing it avoids missing records that don’t use “"+ws[0].replace(/["*?#$]/g,"")+"”."):(name+"（"+ws.join("、")+"）都是泛用詞，其他幾堆已具代表性；移除可避免漏掉沒寫出「"+ws[0].replace(/["*?#$]/g,"")+"」的文獻。")))
+        +' <button class="sendbtn" onclick="dropStack('+gi+','+i+')">'+esc(en?("Remove "+name):("移除"+name))+'</button>'
+        +' <button class="copy" onclick="keepStack(\''+esc(sig).replace(/'/g,"\\'")+'\')">'+(en?"Keep":"保留")+'</button></div>';
+    });
+  });
+  // 兩組都只剩二堆、且其中一堆有共同的詞 → 建議合併成一組二堆
+  if(stackEls2.length===2 && stackEls.length===2){
+    var A=stackEls.map(function(t){return lines(t.value);}), B=stackEls2.map(function(t){return lines(t.value);});
+    var hit=null; for(var i=0;i<2&&!hit;i++) for(var j=0;j<2&&!hit;j++){ if(A[i].some(function(w){return B[j].indexOf(w)>=0;})) hit=[i,j]; }
+    if(hit){
+      var sigM="merge|"+A.join(";")+"|"+B.join(";");
+      if(!stackTipDismissed[sigM]){
+        var shared=A[hit[0]].filter(function(w){return B[hit[1]].indexOf(w)>=0;});
+        html+='<div class="stacktip"><b>'+(en?"Suggestion: ":"建議：")+'</b>'+esc(en?("both groups now have 2 stacks and share “"+shared.join(", ")+"”. Merge them into one 2-stack group — simpler, and the extra cross-combinations are usually harmless."):("兩組都剩二堆，且都有「"+shared.join("、")+"」；可合併成一組二堆，檢索式更精簡，多出來的交叉組合通常無害。"))
+          +' <button class="sendbtn" onclick="mergeGroups('+hit[0]+','+hit[1]+')">'+(en?"Merge groups":"合併兩組")+'</button>'
+          +' <button class="copy" onclick="keepStack(\''+esc(sigM).replace(/'/g,"\\'")+'\')">'+(en?"Keep":"保留")+'</button></div>';
+      }
+    }
+  }
+  box.innerHTML=html;
+}
+window.mergeGroups=function(i,j){
+  srCount('prox-merge-groups','鄰近字-合併兩組');
+  var A=stackEls.map(function(t){return lines(t.value);}), B=stackEls2.map(function(t){return lines(t.value);});
+  function uni(a,b){ var o=a.slice(); b.forEach(function(w){ if(o.indexOf(w)<0) o.push(w); }); return o; }
+  var s0=uni(A[i],B[j]), s1=uni(A[1-i],B[1-j]);
+  renderStacks2(0);
+  nSel.value="2"; renderStacks(); stackEls[0].value=s0.join("\n"); stackEls[1].value=s1.join("\n"); build();
+};
+window.keepStack=function(sig){ stackTipDismissed[sig]=1; updateStackTip(); };
+window.dropStack=function(gi,i){
+  srCount('prox-drop-generic','鄰近字-移除泛用詞堆');
+  if(gi===2){ var v2=stackEls2.map(function(t){return t.value;}); v2.splice(i,1); renderStacks2(v2.length, v2); return; }
+  var v=stackEls.map(function(t){return t.value;}); v.splice(i,1);
+  nSel.value=String(v.length); renderStacks(); v.forEach(function(x,k){ if(stackEls[k]) stackEls[k].value=x; }); build();
+};
+
+window.useGrouped=function(){
+  var g=null; if(lastCmp) lastCmp.res.forEach(function(r){ if(r.grouped) g=r; });
+  if(!g && lastP) g=splitGroup(lastP);
+  if(!g) return;
+  srCount('prox-use-grouped','鄰近字-改用分組');
+  applySplit(g); renderCompare();
+  var s2=document.getElementById("step2"); if(s2) s2.scrollIntoView({behavior:"smooth",block:"start"});
+};
+
+/* ---------- 開始在 Before 清單打字／貼上 → 視為新題目，清掉舊的分堆結果 ----------
+   （只清一次；按「自動分堆」或載入範例後，下一次開始輸入再清） */
+var resultsStale=false;
+function resetResults(){
+  if(soloIn){ soloIn.value=""; soloIn.placeholder=""; }
+  stackEls.forEach(function(t){ t.value=""; });
+  removedWords=[];
+  ["review","removedBox","splitHint","stackTip"].forEach(function(id){ var e=document.getElementById(id); if(e) e.innerHTML=""; });
+  lastCmp=null; appliedKey=null;
+  renderStacks2(0);
+  if(outs) outs.innerHTML="";
+  renderCompare();
+}
+beforeTa.addEventListener("input", function(){ if(resultsStale) return; resultsStale=true; resetResults(); });
+
 /* ---------- 產生輸出（支援 N 堆） ---------- */
+function plainParen(t){ return String(t).replace(/\u0001/g,"(").replace(/\u0002/g,")"); }
+function boldParen(t){ return String(t).replace(/[&<>]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;"}[c];}).replace(/\u0001/g,'<b class="gp">(</b>').replace(/\u0002/g,'<b class="gp">)</b>'); }
 function build(){
   var src=srcSel.value, sem=(distSel.value===""?3:parseInt(distSel.value,10)); if(isNaN(sem))sem=3;
-  var stacks=stackEls.map(function(t){return lines(t.value);});
-  var nonEmpty=stacks.filter(function(s){return s.length;});
   var solo=lines(soloIn.value);
   var en=document.body.classList.contains("en");
   outs.innerHTML="";
+  if(typeof updateStackTip==="function") updateStackTip();
   // 更新中間 op 標籤
   var opTxt = PROX[src].expand ? (en?"proximity":"鄰近") : opFor(src,sem);
   Array.prototype.forEach.call(document.querySelectorAll(".opmid"),function(e){e.textContent=opTxt;});
-  if(nonEmpty.length<2) return;
+  // 第一組＋（分組時）第二組，各自 ≥2 個非空堆才成立，最後 OR 合併
+  var groups=[stackEls, (typeof stackEls2!=="undefined"?stackEls2:[])].map(function(els){ return els.map(function(t){return lines(t.value);}).filter(function(s){return s.length;}); }).filter(function(g){ return g.length>=2; });
+  if(!groups.length) return;
 
   var cards=[];
   if(PROX[src].expand){
-    // PubMed：所有非空堆做笛卡爾積，去切截
-    var hadTrunc=false, combos=[[]];
-    nonEmpty.forEach(function(stack){ var nx=[]; combos.forEach(function(pre){ stack.forEach(function(w){ if(/[*?#$]/.test(w))hadTrunc=true; nx.push(pre.concat([w.replace(/[*?#$]/g,"")])); }); }); combos=nx; });
-    // 鄰 0＝相鄰：用片語（[tiab]）表示，PubMed 不需 :~0
-    var pairs=combos.map(function(c){return sem===0 ? ('"'+c.join(" ")+'"[tiab]') : ('"'+c.join(" ")+'"[tiab:~'+sem+']');});
+    // PubMed：每組所有非空堆做笛卡爾積，去切截
+    var hadTrunc=false, pairs=[];
+    groups.forEach(function(nonEmpty){ var combos=[[]]; nonEmpty.forEach(function(stack){ var nx=[]; combos.forEach(function(pre){ stack.forEach(function(w){ if(/[*?#$]/.test(w))hadTrunc=true; nx.push(pre.concat([w.replace(/[*?#$"]/g,"")])); }); }); combos=nx; });
+      combos.forEach(function(c){ pairs.push(sem===0 ? ('"'+c.join(" ")+'"[tiab]') : ('"'+c.join(" ")+'"[tiab:~'+sem+']')); }); });
     var body=pairs.join(" OR ");
     var full=solo.length?(solo.map(function(s){return s+"[tiab]";}).join(" OR ")+" OR "+body):body;
     var pmNotes=[];
     if(hadTrunc) pmNotes.push(en?"Proximity does not support truncation; * removed — add suffix variants yourself.":"鄰近字語法不支援切截，已移除 * ，請自行補齊字尾變化。");
     if(ordUnsupported(src)) pmNotes.push(en?"PubMed has no ordered proximity operator; kept unordered (any order).":"PubMed 無『有次序』鄰近運算子，已維持無次序（任意順序）。");
-    // 送到 PICO 用的中性斷行片段：保留切截，鄰近以「鄰N」標記（PICO 會依各庫轉成 NEAR/ADJ…）
-    var pnParts=nonEmpty.map(function(s){return s.length>1?("("+s.join("\n")+")"):s[0];});
-    var pnGrp="("+pnParts.join("\n 鄰"+sem+" \n")+")";
-    var picoFragPM=solo.length?(solo.join("\n")+"\n"+pnGrp):pnGrp;
+    var pnGrps=groups.map(function(ne){ var parts=ne.map(function(s){return s.length>1?("("+s.join("\n")+")"):s[0];}); return "("+parts.join("\n 鄰"+sem+" \n")+")"; });
+    var picoFragPM=solo.concat(pnGrps).join("\n");
     cards.push({title:(en?"PubMed proximity (expanded)":"PubMed 鄰近展開（逐一配對）"),text:full,send:full,
       note:pmNotes.length?pmNotes.join(en?"  ":"　"):null, pico:true, picoFrag:picoFragPM, picoSrc:"pubmed", conv:true});
   }else{
     var op=opFor(src,sem);
-    var stackedParts=nonEmpty.map(function(s){return s.length>1?("("+s.join("\n")+")"):s[0];});
-    var stackedGrp="("+stackedParts.join("\n "+op+" \n")+")";
-    var onelineParts=nonEmpty.map(function(s){return s.length>1?("("+s.join(" OR ")+")"):s[0];});
-    var onelineGrp="("+onelineParts.join(" "+op+" ")+")";
-    var stacked=solo.length?(solo.join("\n")+"\n"+stackedGrp):stackedGrp;
-    var oneline=solo.length?("("+solo.join(" OR ")+" OR "+onelineGrp+")"):onelineGrp;
+    // 整組（鄰近片段）與整串 OR 的外層括號以 \u0001 \u0002 標記，顯示時加粗，複製／送出時還原成 ( )
+    var stackedGrps=groups.map(function(ne){ var parts=ne.map(function(s){return s.length>1?("("+s.join("\n")+")"):s[0];}); return "\u0001"+parts.join("\n "+op+" \n")+"\u0002"; });
+    var onelineGrps=groups.map(function(ne){ var parts=ne.map(function(s){return s.length>1?("("+s.join(" OR ")+")"):s[0];}); return "\u0001"+parts.join(" "+op+" ")+"\u0002"; });
+    var stackedM=solo.concat(stackedGrps).join("\n");
+    var items=solo.concat(onelineGrps);
+    var onelineM=items.length>1?("\u0001"+items.join(" OR ")+"\u0002"):items[0];
+    var stacked=plainParen(stackedM), oneline=plainParen(onelineM);
     var ordNote = ordUnsupported(src) ? (en?(DB_LABEL[src]+" has no ordered proximity operator; kept unordered ("+op+")."):(DB_LABEL[src]+" 無『有次序』鄰近運算子，已維持無次序（"+op+"）。")) : null;
-    cards.push({title:(en?"Stacked (line break = OR)":"換行整理版（換行＝OR）"),text:stacked,send:oneline,note:ordNote,pico:true,picoFrag:stacked,picoSrc:PICO_SRC[src]});
-    cards.push({title:(en?"One line (OR expanded)":"單行 OR 版"),text:oneline,send:oneline,note:ordNote,conv:true});
+    cards.push({title:(en?"Stacked (line break = OR)":"換行整理版（換行＝OR）"),text:stacked,html:boldParen(stackedM),send:oneline,note:ordNote,pico:true,picoFrag:stacked,picoSrc:PICO_SRC[src]});
+    cards.push({title:(en?"One line (OR expanded)":"單行 OR 版"),text:oneline,html:boldParen(onelineM),send:oneline,note:ordNote,conv:true});
   }
 
   cards.forEach(function(c){
@@ -576,19 +1169,21 @@ function build(){
       row.appendChild(a);
     }
     h.appendChild(nm); h.appendChild(row); card.appendChild(h);
-    var pre=document.createElement("pre"); pre.textContent=c.text; card.appendChild(pre);
+    var pre=document.createElement("pre"); if(c.html) pre.innerHTML=c.html; else pre.textContent=c.text; card.appendChild(pre);
     if(c.note){var nt=document.createElement("div");nt.className="pmnote";nt.textContent="⚠ "+c.note;card.appendChild(nt);}
     outs.appendChild(card);
   });
 }
 
-srcSel.addEventListener("change",build);
-distSel.addEventListener("change",build);
+srcSel.addEventListener("change",function(){build();renderCompare();});
+distSel.addEventListener("change",function(){build();renderCompare();});
 orderSel.addEventListener("change",build);
 nSel.addEventListener("change",renderStacks);
 soloIn.addEventListener("input",build);
 seed();
 updatePicoBar();
+/* 網址帶入：?n=2&before=…（例如從縮寫片語提醒開新分頁） */
+(function(){ try{ var q=new URLSearchParams(location.search); var b=q.get("before"); if(!b) return; var n=q.get("n"); if(n&&/^[234]$/.test(n)){ nSel.value=n; renderStacks(); } beforeTa.value=b; autoSplit(); }catch(e){} })();
 
 window.toggleLang=function(){
   var b=document.body; b.classList.toggle("en");
@@ -598,9 +1193,10 @@ window.toggleLang=function(){
   try{ localStorage.setItem("sr_lang", en?"en":"zh"); }catch(e){}
   fillDist();
   fillOrder();
-  var cn=nSel.value; nSel.innerHTML=""; for(var k=2;k<=4;k++){var o=document.createElement("option");o.value=k;o.textContent=k+(en?" stacks":" 堆");nSel.appendChild(o);} nSel.value=cn;
+  var cn=nSel.value; nSel.innerHTML=""; for(var k=2;k<=4;k++){var o=document.createElement("option");o.value=k;o.textContent=(en?(k+" stacks"):(["","","二","三","四"][k]+"堆"));nSel.appendChild(o);} nSel.value=cn;
   ["splitHint","removedBox","review"].forEach(function(id){var e=document.getElementById(id);if(e)e.innerHTML="";});
   renderStacks();
+  if(stackEls2.length) renderStacks2(stackEls2.length); if(lastCmp){ lastCmp=null; appliedKey=null; } renderCompare();
 };
 (function(){ var q=((location.search.match(/[?&]lang=(en|zh)/i)||[])[1]||(location.hash.match(/^#(en|zh)\b/i)||[])[1]||"").toLowerCase(); var want=q||(function(){try{return localStorage.getItem("sr_lang");}catch(e){return null;}})(); try{ if(want==="en" && !document.body.classList.contains("en")) window.toggleLang(); }catch(e){} if(q){ try{ localStorage.setItem("sr_lang", q); }catch(e){} } })();  /* 網址 ?lang=en／?lang=zh（或 #en／#zh）＞ 本機記憶 */
 // 統計介面語言使用（等 GoatCounter 載入後送出 lang-en／lang-zh 事件）

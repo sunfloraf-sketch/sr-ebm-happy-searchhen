@@ -1,21 +1,34 @@
-MIT License
+SR × EBM Happy SearchHen（搜尋策略生成雞）
+Copyright © 2026 Ching-Ju Fang（方靜如）. All rights reserved.
+著作權所有，保留一切權利。
 
-Copyright (c) 2026 Ching-Ju Fang
+使用條款 / Terms of Use
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+【允許】
+透過官方網址 https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/
+免費線上使用本工具，用於個人、教學、研究或臨床工作，並請依建議格式引用：
+Fang CJ, SR x EBM Happy SearchHen. doi: 10.5281/zenodo.21960702.
+使用本工具產生的檢索策略與輸出內容，歸使用者自由運用。
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+【禁止】未經作者書面同意，不得：
+1. 複製、修改、改作、翻譯本工具的程式碼、介面、圖像或文字；
+2. 將本工具或其衍生版本放置於其他網站、伺服器或平台（含鏡像、iframe 嵌入）；
+3. 再散布、轉授權或作商業利用。
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+----------------------------------------------------------------------
+
+Copyright © 2026 Ching-Ju Fang. All rights reserved.
+
+PERMITTED
+You may use this tool online, free of charge, at its official address
+https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/
+for personal, educational, research or clinical work. Please cite:
+Fang CJ, SR x EBM Happy SearchHen. doi: 10.5281/zenodo.21960702.
+Search strategies and other output you create with the tool are yours to use freely.
+
+NOT PERMITTED without the author's prior written consent:
+1. Copying, modifying, adapting or translating the tool's code, interface,
+   images or text;
+2. Placing the tool or any derivative on another website, server or platform
+   (including mirrors and iframe embedding);
+3. Redistributing, sublicensing or any commercial use.
