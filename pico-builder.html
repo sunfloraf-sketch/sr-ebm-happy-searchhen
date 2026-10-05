@@ -516,7 +516,9 @@
   #meshCard .mcchk{line-height:1.45}
   #meshCard .mcmaster{margin:0 2px 0 0;accent-color:#0f766e;flex:0 0 auto;cursor:pointer}
   #meshCard .mcchk input{accent-color:#0f766e;margin:0;flex:0 0 auto}
-  #meshCard .mchdT{border-bottom:0;margin-right:9px}
+  #meshCard .mchdT{border-bottom:0;margin-right:9px}  #meshCard .mcdel{width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;padding:0;border:1px solid transparent;border-radius:7px;background:none;color:#8a948e;cursor:pointer}
+  #meshCard .mcdel svg{width:17px;height:17px;display:block}
+  #meshCard .mcdel:hover{background:#FBF1F0;border-color:#E0C9C6;color:#9E2B25}
 </style>
 </head>
 <body>
@@ -1895,8 +1897,8 @@ if (typeof module !== "undefined" && module.exports) {
   // ---- PICO 列 ----
   // GDM 範例資料（供「載入 GDM 範例」與空白表格的灰字預覽共用）
   var GDM_EX = {
-    P:{ zh:"((妊娠\n孕期\n懷孕)\nAND\n糖尿病)", ft:"GDM\n((gestation*\npregnan*\ngravid*)\nNEAR/4\n(diabet*\nT2DM\nNIDDM))", mesh:"Gestational Diabetes\nPregnancy in Diabetics\nGDM", emtree:"maternal diabetes", cinahl:"Pregnancy in Diabetes" },
-    I:{ zh:"身體活動\n體能活動\n運動\n訓練\n走路", ft:"physical activit*\nexercise*\nkinesio*\nsport*\ntraining\nfitness\nwalk*", mesh:"Exercise\nExercise Therapy", emtree:"exercise\nkinesiotherapy\nphysical activity", cinahl:"Exercise\nTherapeutic Exercise" }
+    P:{ before:"GDM\ngestational diabetes\ngestational T2DM\ngestational NIDDM\ndiabetes in pregnancy\npregnancy-induced diabetes\npregnancy associated diabetes\ndiabetes mellitus gravidarum", zh:"((妊娠\n孕期\n懷孕)\nAND\n糖尿病)", ft:"GDM\n((gestation*\npregnan*\ngravid*)\nNEAR/4\n(diabet*\nT2DM\nNIDDM))", mesh:"Gestational Diabetes\nPregnancy in Diabetics\nGDM", emtree:"maternal diabetes", cinahl:"Pregnancy in Diabetes" },
+    I:{ before:"physical activity\nphysical activities\nexercise\nkinesiotherapy\nsport\nsports\ntraining\nfitness\nwalking", zh:"身體活動\n體能活動\n運動\n訓練\n走路", ft:"physical activit*\nexercise*\nkinesio*\nsport*\ntraining\nfitness\nwalk*", mesh:"Exercise\nExercise Therapy", emtree:"exercise\nkinesiotherapy\nphysical activity", cinahl:"Exercise\nTherapeutic Exercise" }
   };
   function mkCell(cls, ph){ var td=document.createElement("td"); if(cls)td.className=cls; var ta=document.createElement("textarea"); ta.spellcheck=false; if(cls&&/\bcv\b/.test(cls)) ta.wrap="off"; if(ph)ta.placeholder=ph; td.appendChild(ta); return {td:td, ta:ta}; }
   // 可重複使用的 ⓘ 浮動說明（滑過浮出；點擊固定顯示，再點別處收起）。未來其他區塊的詳細說明比照此法。
@@ -1993,7 +1995,8 @@ if (typeof module !== "undefined" && module.exports) {
     lvlSel.title=LVL_NOTE[isEn()?"en":"zh"][lvlSel.value];
     lvlSel.onchange=function(){ lvlSel.title=LVL_NOTE[isEn()?"en":"zh"][lvlSel.value]; if(typeof saveDraftDebounced==="function") saveDraftDebounced(); if(typeof autoRegen==="function") autoRegen(); };
     labTd.appendChild(lvlSel);
-    var cb=mkCell("bef",""), cbTa=cb.ta; cbTa.classList.add("beftxt"); cbTa.value=before||"";
+    var cb=mkCell("bef", (phs&&phs.before)||""), cbTa=cb.ta; cbTa.classList.add("beftxt"); cbTa.value=before||"";
+    if(phs&&phs.before) cbTa.setAttribute("data-ph-ex", phs.before);   // 有範例預覽時不要被通用提示字蓋掉
     var c0=mkCell("ref",phs.zh), c1=mkCell("free",phs.ft), c2=mkCell("cv",phs.mesh), c3=mkCell("cv",phs.emtree), c4=mkCell("cv",phs.cinahl);
     c0.ta.value=zh||""; c1.ta.value=ft||""; c2.ta.value=mesh||""; c3.ta.value=emtree||""; c4.ta.value=cinahl||"";
     c0.ta.dataset.kind="zh"; c1.ta.dataset.kind="ft"; c2.ta.dataset.kind="mesh"; c3.ta.dataset.kind="emtree"; c4.ta.dataset.kind="cinahl";   // 供浮動工具列辨識欄位類型（不含狹義詞／日後 @欄位、次標目）
@@ -2197,6 +2200,16 @@ if (typeof module !== "undefined" && module.exports) {
     if(!added.length) return 0;
     ta.value=(cur?cur+"\n":"")+added.join("\n"); ta.dispatchEvent(new Event("input",{bubbles:true})); return added.length;
   }
+  function _removeMeshTerm(tr, rawTerm){   // 從 MeSH 欄刪掉這一個標目（卡片上的「移除此標目」）
+    var ta=_meshTa(tr), lines=(ta.value||"").split(/\n/), out=[], done=false;
+    for(var i=0;i<lines.length;i++){
+      if(!done && lines[i].trim()===String(rawTerm).trim()){ done=true; continue; }
+      out.push(lines[i]);
+    }
+    ta.value=out.join("\n").replace(/^\n+|\n+$/g,"");
+    ta.dispatchEvent(new Event("input",{bubbles:true}));
+    _renderMeshCell(tr);
+  }
   function _replaceMeshTerm(tr, oldTerm, newTerm){
     var ta=_meshTa(tr), lines=(ta.value||"").split(/\n/);
     for(var i=0;i<lines.length;i++){ if(lines[i].trim()===String(oldTerm).trim()){ lines[i]=lines[i].replace(oldTerm.trim(), newTerm); break; } }
@@ -2278,7 +2291,13 @@ if (typeof module !== "undefined" && module.exports) {
     else if(r.state==="suggest"){ badge.className="mcbadge entry"; badge.textContent=isEn()?"! not an exact heading":"! 非精準標目"; }
     else { badge.className="mcbadge none"; badge.textContent=isEn()?"✗ not found in MeSH":"✗ MeSH 查無"; }
     badge.style.margin="0";
-    var brow=document.createElement("div"); brow.style.cssText="display:flex;justify-content:space-between;align-items:center;gap:10px;margin:6px 0 2px"; brow.appendChild(badge);
+    var brow=document.createElement("div"); brow.style.cssText="display:flex;justify-content:space-between;align-items:center;gap:10px;margin:6px 0 2px;flex-wrap:wrap"; brow.appendChild(badge);
+    var mdel=document.createElement("button"); mdel.type="button"; mdel.className="mcdel";
+    mdel.setAttribute("aria-label", isEn()?"Remove this heading":"移除此標目");
+    mdel.title=isEn()?"Remove this heading":"移除此標目";
+    mdel.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7 H20"/><path d="M9.5 7 V5.2 Q9.5 4.3 10.4 4.3 H13.6 Q14.5 4.3 14.5 5.2 V7"/><path d="M6.2 7 L7 19.2 Q7.1 20.6 8.5 20.6 H15.5 Q16.9 20.6 17 19.2 L17.8 7"/><path d="M10 10.5 V17 M14 10.5 V17"/></svg>';
+    mdel.onclick=function(){ _removeMeshTerm(tr, rawTerm); _closeMeshCard(); };
+    if(r.state!=="ok") brow.appendChild(mdel);   // 已驗證通過的標目不提供移除，避免誤刪
     if(r.state==="ok"||r.state==="entry"){
       var inc=document.createElement("label"); inc.style.cssText="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#25292D;cursor:pointer;white-space:nowrap";
       var incCb=document.createElement("input"); incCb.type="checkbox"; incCb.style.accentColor="#0f766e"; incCb.checked=!CV_NOEXP_RE.test(rawTerm);
@@ -2297,7 +2316,7 @@ if (typeof module !== "undefined" && module.exports) {
     meshCard.appendChild(brow);
     if(r.state==="entry" && r.official){ var repRow=document.createElement("div"); repRow.style.cssText="display:flex;align-items:center;gap:8px;margin:2px 0 2px"; var repLbl=document.createElement("span"); repLbl.style.cssText="font-size:12.5px;color:#55504B"; repLbl.textContent=isEn()?"Please click":"請點擊"; var rep=document.createElement("button"); rep.className="mcbtn"; rep.textContent=isEn()?"use official MeSH":"改用正式MeSH"; rep.onclick=function(){ _replaceMeshTerm(tr, rawTerm, r.official); _closeMeshCard(); }; repRow.appendChild(repLbl); repRow.appendChild(rep); meshCard.appendChild(repRow); }
     if((r.state==="suggest"||r.state==="none") && r.suggests && r.suggests.length){
-      var ss=document.createElement("div"); ss.className="mcsec"; var sl=document.createElement("div"); sl.className="mclbl"; sl.textContent=isEn()?"Suggestions":"建議標目"; ss.appendChild(sl);
+      var ss=document.createElement("div"); ss.className="mcsec"; var sl=document.createElement("div"); sl.className="mclbl"; sl.textContent=isEn()?"Headings found — click one if it fits":"找到標目，若適用請點選"; ss.appendChild(sl);
       r.suggests.slice(0,8).forEach(function(s){ var a=document.createElement("span"); a.className="mcsug"; a.textContent=s.label; a.onclick=function(){ _replaceMeshTerm(tr, rawTerm, s.label); _closeMeshCard(); }; ss.appendChild(a); });
       meshCard.appendChild(ss);
     }
@@ -2593,7 +2612,7 @@ if (typeof module !== "undefined" && module.exports) {
 
     function labels(){
       var en=isEn();
-      beTa.placeholder=en?"raw terms, one per line":"原始詞，每行一個";
+      beTa.placeholder=beTa.getAttribute("data-ph-ex") || "";   // 只有 P／I 有範例預覽，其餘留白
       goBtn.textContent=en?"Find MeSH":"找 MeSH";
       proxBtn.textContent=en?"→ Proximity":"→ 鄰近字";
       goBtn.title=en?"Match this list against MeSH":"用這份清單比對 MeSH";
@@ -3460,8 +3479,8 @@ if (typeof module !== "undefined" && module.exports) {
     srCount('pico-example','PICO-載入範例');
     srcSel.value="embase_com"; levelSel.value="L1"; refreshLvlNote();
     picoBody.innerHTML="";
-    addRow("P",GDM_EX.P.zh,GDM_EX.P.ft,GDM_EX.P.mesh,GDM_EX.P.emtree,GDM_EX.P.cinahl);
-    addRow("I",GDM_EX.I.zh,GDM_EX.I.ft,GDM_EX.I.mesh,GDM_EX.I.emtree,GDM_EX.I.cinahl);
+    addRow("P",GDM_EX.P.zh,GDM_EX.P.ft,GDM_EX.P.mesh,GDM_EX.P.emtree,GDM_EX.P.cinahl, undefined, undefined, GDM_EX.P.before);
+    addRow("I",GDM_EX.I.zh,GDM_EX.I.ft,GDM_EX.I.mesh,GDM_EX.I.emtree,GDM_EX.I.cinahl, undefined, undefined, GDM_EX.I.before);
     addRow("C","",""); addRow("O","","");
     _exampleActive=true;   // 標記為「剛載入的範例」：清空時可直接清、不需確認
   };
