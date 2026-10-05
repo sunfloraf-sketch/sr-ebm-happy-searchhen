@@ -2437,14 +2437,9 @@ if (typeof module !== "undefined" && module.exports) {
       _meshShield(allOk);   // 全部通過才顯示盾牌✓，否則盾牌X
     });
   }
-  function _showMeshLegend(){
-    var panel=$("#meshVerifyPanel"); if(!panel) return; panel.innerHTML=""; panel.style.display="block";
-    var row=document.createElement("div"); row.className="mvlegend";
-    function lg(sym,cls,txt){ var s=document.createElement("span"); s.className="lg"; var i=document.createElement("b"); i.style.color=cls; i.textContent=sym; s.appendChild(i); s.appendChild(document.createTextNode(" "+txt)); return s; }
-    var hint=document.createElement("span"); hint.style.cssText="font-weight:600;color:#23282D;margin-right:4px"; hint.textContent=isEn()?"Click any term for details; pull in synonyms / narrower terms.":"可點任一詞彙查看詳情、帶入同義詞／狹義詞";
-    row.appendChild(hint);
-    var back=document.createElement("button"); back.className="mvbtn"; back.textContent=isEn()?"MeSH back to editing":"MeSH切回編輯模式"; back.onclick=function(){ Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr){ _meshEditCell(tr); }); panel.style.display="none"; }; row.appendChild(back);
-    panel.appendChild(row);
+  function _showMeshLegend(){   // 驗證後不再顯示任何提示列；要改回編輯請用各欄位自己的「編輯」
+    var panel=$("#meshVerifyPanel"); if(!panel) return;
+    panel.innerHTML=""; panel.style.display="none";
   }
   var _meshValidated=false, _meshDirty=false;
   function _meshSetDirty(d){ _meshDirty=d; var b=$("#meshVerifyHd"); if(b){ if(d){ b.classList.add("dirty"); _meshShield(false); b.title=isEn()?"A MeSH cell was edited — click to re-verify":"有 MeSH 欄位已編輯，請按此重新驗證"; } else { b.classList.remove("dirty"); } } }
