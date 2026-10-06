@@ -2291,7 +2291,7 @@ if (typeof module !== "undefined" && module.exports) {
     else if(r.state==="suggest"){ badge.className="mcbadge entry"; badge.textContent=isEn()?"! not an exact heading":"! 非精準標目"; }
     else { badge.className="mcbadge none"; badge.textContent=isEn()?"✗ not found in MeSH":"✗ MeSH 查無"; }
     badge.style.margin="0";
-    var brow=document.createElement("div"); brow.style.cssText="display:flex;justify-content:space-between;align-items:center;gap:10px;margin:6px 0 2px;flex-wrap:wrap"; brow.appendChild(badge);
+    var brow=document.createElement("div"); brow.style.cssText="display:flex;align-items:center;gap:6px;margin:6px 0 2px;flex-wrap:wrap"; brow.appendChild(badge);
     var mdel=document.createElement("button"); mdel.type="button"; mdel.className="mcdel";
     mdel.setAttribute("aria-label", isEn()?"Remove this heading":"移除此標目");
     mdel.title=isEn()?"Remove this heading":"移除此標目";
@@ -2299,7 +2299,7 @@ if (typeof module !== "undefined" && module.exports) {
     mdel.onclick=function(){ _removeMeshTerm(tr, rawTerm); _closeMeshCard(); };
     if(r.state!=="ok") brow.appendChild(mdel);   // 已驗證通過的標目不提供移除，避免誤刪
     if(r.state==="ok"||r.state==="entry"){
-      var inc=document.createElement("label"); inc.style.cssText="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#25292D;cursor:pointer;white-space:nowrap";
+      var inc=document.createElement("label"); inc.style.cssText="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#25292D;cursor:pointer;white-space:nowrap;margin-left:auto";
       var incCb=document.createElement("input"); incCb.type="checkbox"; incCb.style.accentColor="#0f766e"; incCb.checked=!CV_NOEXP_RE.test(rawTerm);
       inc.title=isEn()?"Checked = include all narrower terms (exploded, default). Uncheck to mark this heading as non-exploded; then add specific narrower terms below.":"預設打勾＝包含所有狹義詞（展開）。取消勾選＝此標目設為「不含狹義詞」，之後可於下方指定加入特定狹義詞。";
       incCb.onchange=function(){
@@ -2316,7 +2316,7 @@ if (typeof module !== "undefined" && module.exports) {
     meshCard.appendChild(brow);
     if(r.state==="entry" && r.official){ var repRow=document.createElement("div"); repRow.style.cssText="display:flex;align-items:center;gap:8px;margin:2px 0 2px"; var repLbl=document.createElement("span"); repLbl.style.cssText="font-size:12.5px;color:#55504B"; repLbl.textContent=isEn()?"Please click":"請點擊"; var rep=document.createElement("button"); rep.className="mcbtn"; rep.textContent=isEn()?"use official MeSH":"改用正式MeSH"; rep.onclick=function(){ _replaceMeshTerm(tr, rawTerm, r.official); _closeMeshCard(); }; repRow.appendChild(repLbl); repRow.appendChild(rep); meshCard.appendChild(repRow); }
     if((r.state==="suggest"||r.state==="none") && r.suggests && r.suggests.length){
-      var ss=document.createElement("div"); ss.className="mcsec"; var sl=document.createElement("div"); sl.className="mclbl"; sl.textContent=isEn()?"Headings found — click one if it fits":"找到標目，若適用請點選"; ss.appendChild(sl);
+      var ss=document.createElement("div"); ss.className="mcsec"; var sl=document.createElement("div"); sl.className="mclbl"; sl.textContent=isEn()?"Click one if it fits":"若適用請點選"; ss.style.marginTop="2px"; ss.appendChild(sl);
       r.suggests.slice(0,8).forEach(function(s){ var a=document.createElement("span"); a.className="mcsug"; a.textContent=s.label; a.onclick=function(){ _replaceMeshTerm(tr, rawTerm, s.label); _closeMeshCard(); }; ss.appendChild(a); });
       meshCard.appendChild(ss);
     }
@@ -2563,10 +2563,13 @@ if (typeof module !== "undefined" && module.exports) {
   }
   function befDedupe(ta){
     if(!ta) return 0;
+    // 運算子與括號行（AND／OR／NOT／NEAR/n／ADJn／Nn／Wn／( )）即使重複也是語法結構，一律保留
+    var SYNTAX=/^[()\s]*(and|or|not|near\/?\d*|adj\d*|n\d+|w\d+|pre\/?\d*|same|with)?[()\s]*$/i;
     var raw=String(ta.value||"").split(/\r?\n/), seen={}, out=[], removed=0;
     raw.forEach(function(line){
       var k=line.trim().toLowerCase().replace(/\s+/g," ");
       if(!k){ out.push(line); return; }           // 空行照留，不動使用者的排版
+      if(SYNTAX.test(k)){ out.push(line); return; }
       if(seen[k]){ removed++; return; }
       seen[k]=1; out.push(line);
     });
@@ -2614,7 +2617,7 @@ if (typeof module !== "undefined" && module.exports) {
       proxBtn.title=en?"Send to the proximity builder":"送到鄰近字分堆組合器";
     }
     labels(); tr._befLabels=labels;
-    befAutoDedupe(beTa); befAutoDedupe(ftTa);
+    befAutoDedupe(beTa);   // 只用在整理前：整理後欄放的是檢索語法，重複的 NEAR/3、OR 等都是結構的一部分
     beTa.addEventListener("input", function(){ if(typeof saveDraftDebounced==="function") saveDraftDebounced(); });
 
     goBtn.onclick=function(){
