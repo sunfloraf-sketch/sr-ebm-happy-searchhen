@@ -2783,7 +2783,8 @@ if (typeof module !== "undefined" && module.exports) {
       var rows=Array.prototype.slice.call(picoBody.querySelectorAll("tr")), idx=rows.indexOf(tr);
       var lab=(tr._get&&tr._get().label)||"";
       var back=encodeURIComponent(idx+":"+lab);
-      window.open("proximity-builder.html?before="+encodeURIComponent(txt)+"&back="+back, "sr_prox");
+      var _eng=(TARGET_BY_ID[srcSel.value]||{}).engine||"";   // 起始資料庫沿用 PICO 這邊的設定
+      window.open("proximity-builder.html?before="+encodeURIComponent(txt)+"&back="+back+(_eng?("&src="+encodeURIComponent(_eng)):""), "sr_prox");
     };
   }
 
@@ -3100,7 +3101,9 @@ if (typeof module !== "undefined" && module.exports) {
   window.addEventListener("pagehide", function(){ saveDraft(); saveSnapshot(); });
   document.addEventListener("visibilitychange", function(){ if(document.visibilityState==="hidden"){ saveDraft(); saveSnapshot(); } });
   // 切到鄰近字組合器（離開前先保存，回來由「送到 PICO」還原並附加）
-  if(toProxBtn) toProxBtn.onclick=function(){ srCount('pico-to-prox','PICO→鄰近字'); saveDraft(); saveSnapshot(); location.href="proximity-builder.html"; };
+  if(toProxBtn) toProxBtn.onclick=function(){ srCount('pico-to-prox','PICO→鄰近字'); saveDraft(); saveSnapshot();
+    var _eng=(TARGET_BY_ID[srcSel.value]||{}).engine||"";
+    location.href="proximity-builder.html"+(_eng?("?src="+encodeURIComponent(_eng)):""); };
   if(restoreBtn) restoreBtn.onclick=function(){ var s=snapshotState(); if(stateNonEmpty(s)){ applyState(s); saveDraft(); restoreBtn.style.display="none"; } };
 
   $("#addRow").onclick=function(){ addRow(""); saveDraftDebounced(); };
@@ -3569,6 +3572,60 @@ if (typeof module !== "undefined" && module.exports) {
   })();
 
   // ---- 核心：自由詞欄位範圍化（重用引擎的 field 節點；PubMed 逐詞展開） ----
+  // ===== 括號內混用鄰近字與 OR 時，自動補上內層括號 =====
+  // 使用者在同義詞欄把一整堆詞包成一個括號、中間放鄰近字運算子時：
+  //   (gestation* / pregnan* / gravid* / NEAR/4 / diabet* / T2DM / NIDDM)
+  // 原樣送進解析器會因為「鄰近字綁得比 OR 緊」而被讀成 gravid* NEAR/4 diabet*（只抓到一組）。
+  // 既然使用者自己把它們包在同一個括號裡，意思就是「左邊整堆 NEAR 右邊整堆」，所以補成：
+  //   ((gestation* OR pregnan* OR gravid*) NEAR/4 (diabet* OR T2DM OR NIDDM))
+  // 只在「括號內」生效；最外層不處理，才不會把 GDM OR (A) NEAR/4 (B) 誤讀成 (GDM) NEAR/4 …
+  // 區段內若已自帶括號（如 (a OR (b NEAR/3 c))），該層就沒有頂層鄰近字運算子，自然不會被動到。
+  function _proxGroupFix(str){
+    var OPX = /^(?:ADJ\d*|NEAR(?:\/\d+)?|NEXT(?:\/\d+)?|PRE\/\d+|W\/\d+|N\/\d+)$/i;
+    var BOOL = /^(?:OR|AND|NOT)$/i;
+    function splitTop(x){                 // 切出同一層的 token：括號群組、引號片語、單字
+      var toks=[], buf="", d=0, q=false, i, c;
+      for(i=0;i<x.length;i++){
+        c=x.charAt(i);
+        if(q){ buf+=c; if(c==='"') q=false; continue; }
+        if(c==='"'){ q=true; buf+=c; continue; }
+        if(c==="("){ if(d===0 && buf.trim()){ toks.push(buf.trim()); buf=""; } d++; buf+=c; continue; }
+        if(c===")"){ d--; buf+=c; if(d<=0){ toks.push(buf.trim()); buf=""; d=0; } continue; }
+        if(d===0 && /\s/.test(c)){ if(buf.trim()) toks.push(buf.trim()); buf=""; continue; }
+        buf+=c;
+      }
+      if(buf.trim()) toks.push(buf.trim());
+      return toks;
+    }
+    function groupProx(inner){
+      var toks=splitTop(inner);
+      if(!toks.some(function(t){ return OPX.test(t); })) return inner;
+      var segs=[], cur=[], ops=[], i;
+      for(i=0;i<toks.length;i++){
+        if(OPX.test(toks[i])){ segs.push(cur); ops.push(toks[i]); cur=[]; }
+        else cur.push(toks[i]);
+      }
+      segs.push(cur);
+      for(i=0;i<segs.length;i++){ if(!segs[i].length) return inner; }   // 運算子在開頭／結尾／連續 → 不動
+      var out=segs.map(function(sg){
+        var txt=sg.join(" ");
+        var hasBool=sg.some(function(t){ return BOOL.test(t); });
+        return hasBool ? ("("+txt+")") : txt;
+      });
+      var res=out[0];
+      for(i=0;i<ops.length;i++) res += " "+ops[i]+" "+out[i+1];
+      return res;
+    }
+    function rebuild(x){
+      return splitTop(x).map(function(t){
+        if(t.charAt(0)==="(" && t.charAt(t.length-1)===")"){
+          return "("+groupProx(rebuild(t.slice(1,-1)))+")";
+        }
+        return t;
+      }).join(" ");
+    }
+    try{ return rebuild(String(str||"")); }catch(e){ return str; }
+  }
   function stripOuterParen(s){ s=(s||"").trim(); if(s[0]!=="("||s[s.length-1]!==")") return s; var depth=0; for(var i=0;i<s.length;i++){ if(s[i]==="(")depth++; else if(s[i]===")"){ depth--; if(depth===0 && i<s.length-1) return s; } } return s.slice(1,-1).trim(); }
   var PM_EXPAND=false, PM_VARIANTS=null;   // PubMed 卡片「使用鄰近字語法（展開群組配對）」狀態
   var EMBASE_EXCL="medline", AIRITI_INC=false;   // Embase.com 排除設定（none／medline／embaseonly）、華藝納入英文片語與切截：改由各自資料庫卡片的勾選控制
@@ -3604,6 +3661,7 @@ if (typeof module !== "undefined" && module.exports) {
     });
     var _joined = _lns[0]||"";
     for(var _i=1;_i<_lns.length;_i++){ _joined += ((_endsOpen(_lns[_i-1])||_startsClose(_lns[_i]))?" ":" OR ") + _lns[_i]; }
+    _joined = _proxGroupFix(_joined);     // 括號內混用鄰近字與 OR → 自動補內層括號
     var parsed = parseQuery(_joined, startDB);
     var node = { t:"field", field:level, child:parsed.ast };
     var warnArr=[];

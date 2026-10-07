@@ -62,14 +62,17 @@
   .stackcol{flex:1 1 0;min-width:150px}
   .stackcol label{display:block;font-weight:600;font-size:13px;margin-bottom:6px;color:var(--brand2)}
   .stackcol textarea{width:100%;min-height:130px;resize:vertical;line-height:1.7;font-family:"SF Mono",Consolas,monospace;font-size:13px}
-  .opmid{display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--ok);font-size:13px;white-space:nowrap;padding:0 2px;align-self:center}
+  .opmid{display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--ok);font-size:12.5px;line-height:1.5;white-space:pre-line;text-align:center;padding:0 4px;align-self:center;cursor:help}
   .splithint{background:#fff4e5;border:1px solid #f0a24b;border-left:5px solid #e67700;border-radius:10px;padding:12px 16px;margin-bottom:14px;color:#7a3d00;font-size:13px}
   .splithint .shh{font-weight:700;font-size:14px;margin-bottom:5px;color:#b34700}
   .splithint p{margin:4px 0}
   .solowrap{margin-top:12px}
   .solowrap input,.solowrap textarea{width:100%;font-family:"SF Mono",Consolas,monospace;font-size:13px}
   .solowrap textarea{min-height:42px;resize:vertical;line-height:1.55}
-  .hint{font-size:12px;color:var(--mut);margin-top:8px}
+  .hint{font-size:12px;color:var(--mut);margin-top:8px;line-height:1.75}
+  /* 懸掛縮排：第二行起對齊「提示：」之後 */
+  .hint[data-zh]{padding-left:3.6em;text-indent:-3.6em}
+  .hint[data-en]{padding-left:2.2em;text-indent:-2.2em}
   .out{background:var(--card);border:1px solid var(--line);border-radius:11px;overflow:hidden;margin-bottom:14px}
   .out h3{margin:0;padding:11px 14px;font-size:14px;background:linear-gradient(180deg,#F4F7F8,#E9EEF1);color:#32383D;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;box-shadow:inset 3px 0 0 var(--deco)}
   .out pre{margin:0;padding:13px 14px;white-space:pre-wrap;word-break:break-word;font-family:"SF Mono",Consolas,monospace;font-size:13px;color:var(--code);background:var(--codebg);min-height:40px}
@@ -141,7 +144,7 @@
   .exn{flex:0 0 auto;font-size:12px;font-weight:700;border-radius:7px;padding:3px 9px;margin-top:1px;white-space:nowrap;background:#F1F2EF;color:#4E5752;border:1px solid #DEE1DC;min-width:82px;text-align:center;box-sizing:border-box}
   .ext b{display:block;font-size:14px;color:var(--sh-ink);line-height:1.4}
   .ext i{display:block;font-style:normal;font-size:12px;color:var(--mut);margin-top:3px;line-height:1.5}
-  .exnote{margin-top:12px;padding:10px 12px;background:#F4F5F3;border:1px solid #DCDFDA;border-radius:10px;font-size:12.5px;color:#4E5752;line-height:1.65}
+  .exnote{margin-top:14px;padding:0;background:transparent;border:0;border-radius:0;font-size:12.5px;color:#4E5752;line-height:1.7}
   .exnote b{display:block;color:var(--sh-green-d);font-size:13px;margin-bottom:2px}
   .tippanel ul{margin:6px 0 0;padding-left:18px;font-size:12.5px;color:#4b5650;line-height:1.65}
   .tippanel li{margin:0 0 6px}
@@ -160,13 +163,13 @@
   .review td.ghd{background:#F4F6F3;font-weight:700;color:var(--sh-green-d)}
   .cmpgl{font-size:11.5px;font-weight:700;color:var(--sh-green-d);margin-top:2px}
   .cmpor{font-size:11px;font-weight:800;color:var(--ok);text-align:center;border-top:1px dashed var(--line);padding-top:4px;margin-top:2px}
-  .cleaninfo{background:#F1F6F3;border:1px solid #CFE0D6;border-left:4px solid var(--sh-green);border-radius:10px;padding:9px 14px;margin:12px 0 0;font-size:12.5px;color:#2F4A3F;line-height:1.65}
+  .cleaninfo{background:transparent;border:0;border-left:3px solid var(--sh-green);border-radius:0;padding:2px 0 2px 12px;margin:12px 0 0;font-size:12.5px;color:#2F4A3F;line-height:1.7}
   .cleaninfo b{color:var(--sh-green-d)}
   .cleaninfo .ci2{margin-top:7px;padding-top:7px;border-top:1px dashed #CFE0D6}
   .cleaninfo .ci2 .sendbtn{margin-left:4px;vertical-align:1px}
   .cleaninfo + .splithint{margin-top:10px}
   #splitHint .splithint{margin:12px 0 0}
-  .cmpwrap{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+  .cmpwrap{margin-top:0;padding-top:0}
   .cmph{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;font-size:12px;color:var(--mut)}
   .cmph b{font-size:14px;color:var(--sh-green-d)}
   /* 未納入：改為可換行的小卡，減少高度 */
@@ -193,20 +196,20 @@
   .cmpcard.cur .gobtn{background:#EEF3F0;border-color:#CFE0D6;color:var(--sh-green-d);box-shadow:none}
   @media(max-width:1000px){main.pxmain{grid-template-columns:1fr}.pxside{position:static}}
   @media(max-width:760px){.cmpgrid{grid-template-columns:1fr}}  /* ===== 可收合區塊（風琴頁）：預設收起，一次只開一個 ===== */
-  details.acc{border:1px solid var(--line, #D9E0E4);border-radius:10px;background:#fff;margin:10px 0}
-  details.acc>summary{list-style:none;cursor:pointer;padding:9px 12px;display:flex;align-items:center;gap:8px;
+  details.acc{border:0;background:transparent;border-radius:0;margin:12px 0}
+  details.acc>summary{list-style:none;cursor:pointer;padding:6px 2px;display:flex;align-items:center;gap:8px;
                       font-size:13px;font-weight:700;color:#25292D;border-radius:10px;user-select:none}
   details.acc>summary::-webkit-details-marker{display:none}
   details.acc>summary::before{content:"";flex:0 0 auto;width:7px;height:7px;margin-right:2px;
                               border-right:2px solid #7d8a93;border-bottom:2px solid #7d8a93;
                               transform:rotate(-45deg);transition:transform .15s}
   details.acc[open]>summary::before{transform:rotate(45deg)}
-  details.acc>summary:hover{background:#F2F5F7}
-  details.acc[open]>summary{border-bottom:1px solid var(--line, #D9E0E4);border-radius:10px 10px 0 0}
+  details.acc>summary:hover{color:#0f766e}
+  details.acc[open]>summary{border-bottom:0;border-radius:0}
   details.acc .accsub{font-weight:600;color:#6b7670;font-size:12px}
-  details.acc>.cmpwrap,details.acc>.review{margin:0;padding:10px 12px 12px}
-  details.acc>.cmpwrap{border:0}
-
+  details.acc>.cmpwrap,details.acc>.review{margin:0;padding:12px 2px 4px;border:0}
+  details.acc>.cmpwrap .cmpgrid{margin-top:0}
+  .panel h2 .h2note{margin-left:10px;font-size:12.5px;font-weight:600;color:var(--mut)}
 </style>
 </head>
 <body>
@@ -263,13 +266,12 @@
         <button class="gobtn" style="background:linear-gradient(180deg,#FBFCFC,#E8EDF0);color:#25292D;border:1px solid #CCD4DA;font-weight:600" onclick="clearProx()"><span data-zh>清空</span><span data-en>Clear</span></button>
       </div>
     </div>
+    <div id="splitHint"></div>
     <details class="acc" id="accCmp" style="display:none"><summary><span class="acct" data-zh>堆數比較</span><span class="acct" data-en>Stack options compared</span><span class="accsub" id="accCmpSub"></span></summary>
     <div class="cmpwrap" id="cmpPanel" style="display:none">
-      <div class="cmph"><b><span data-zh>堆數比較</span><span data-en>Stack options compared</span></b><span><span data-zh>已先套用「推薦」到下方，可改採用其他堆數</span><span data-en>The best fit is applied below — pick another if you prefer</span></span></div>
       <div class="cmpgrid" id="cmpBox"></div>
     </div>
     </details>
-    <div id="splitHint"></div>
     <details class="acc" id="accReview" style="display:none"><summary><span class="acct" data-zh>分群檢視</span><span class="acct" data-en>Grouping review</span><span class="accsub" id="accReviewSub"></span></summary>
     <div class="review" id="review"></div>
     </details>
@@ -277,7 +279,7 @@
   </div>
 
   <div class="panel" id="step2">
-    <h2><span data-zh>② 詞堆（可手動編輯）</span><span data-en>② Stacks (editable)</span></h2>
+    <h2><span data-zh>② 詞堆（可手動編輯）</span><span data-en>② Stacks (editable)</span><span class="h2note"><span data-zh>每行一詞 = OR</span><span data-en>one per line = OR</span></span></h2>
     <div id="stackTip"></div>
     <div class="g1hd"><b><span data-zh>第一組</span><span data-en>Group 1</span></b><span id="g1n"></span></div>
     <div class="stackset" id="stackset"></div>
@@ -414,6 +416,12 @@ window.clearProx=function(){
   lastCmp=null; appliedKey=null; renderStacks2(0); renderCompare();
 };
 function lines(t){return (t||"").split(/[\r\n,]+/).map(function(x){return x.trim();}).filter(Boolean);}
+function opLabel(src, sem, en){   // ② 詞堆中間顯示的白話說明（用使用者選的距離，不是換算後的）
+  var ordered = (typeof orderSel!=="undefined") && orderSel && orderSel.value==="ordered" && ORD_OK[src];
+  if(!sem) return en ? (ordered?"adjacent\nin order":"緊鄰\n（依序）") : (ordered?"緊鄰\n（依序）":"緊鄰");
+  if(en) return (ordered?"in order\nwithin ":"within ")+sem+(ordered?" words":"\nwords");
+  return (ordered?"依序相鄰 ":"相鄰 ")+sem+" 個\n單字內";
+}
 function opFor(src,sem){var p=PROX[src];var N=Math.max(0,sem+(p.off||0));var ordered=orderSel&&orderSel.value==="ordered";if(ordered&&ORD_OK[src])return PROX_ORD[src].replace("%N",N);return p.tpl.replace("%N",N);}
 function ordUnsupported(src){return !!(orderSel&&orderSel.value==="ordered"&&!ORD_OK[src]);}
 function orLump(){ return beforeTa.value.split(/\r?\n/).map(function(x){return x.trim();}).filter(Boolean).map(function(w){ w=w.replace(/,/g," ").replace(/\s+/g," ").trim(); return /\s/.test(w)?('"'+w+'"'):w; }).join(" OR "); }
@@ -492,7 +500,7 @@ function renderStacks(){
   for(var i=0;i<n;i++){
     if(i>0){ var op=document.createElement("div"); op.className="opmid"; op.textContent="NEAR"; stackset.appendChild(op); }
     var col=document.createElement("div"); col.className="stackcol";
-    var lb=document.createElement("label"); lb.innerHTML='<span class="badge '+STACK_COLORS[i]+'">'+(en?"Stack ":"堆")+(i+1)+'</span>'+(en?"one per line = OR":"每行一詞 = OR");
+    var lb=document.createElement("label"); lb.innerHTML='<span class="badge '+STACK_COLORS[i]+'">'+(en?"Stack ":"堆")+(i+1)+'</span>';
     var ta=document.createElement("textarea"); ta.spellcheck=false; ta.value=prev[i]||"";
     ta.addEventListener("input",build);
     col.appendChild(lb); col.appendChild(ta); stackset.appendChild(col);
@@ -892,7 +900,7 @@ function applySplit(res){
   if(gs[1]) renderStacks2(gs[1].n, gs[1].stacks.map(function(st){ return st.map(function(x){return x.disp;}).join("\n"); }));
   else renderStacks2(0);
   soloIn.value=res.solo.join(", ");
-  var html='<b>'+(en?"Grouping review (verify truncation & stacks):":"分群檢視（請核對切截點與分堆）：")+'</b><table>';
+  var html='<table>';
   function plNote(x){ return '<span class="badge bP">'+(en?"Auto plural":"自動複數")+'</span>'+esc(en?("of “"+x.members[0]+"” — delete if not needed"):("由「"+x.members[0]+"」補上，不需要可刪除")); }
   gs.forEach(function(g,gi){
     if(gs.length>1) html+='<tr><td colspan="2" class="ghd">'+(en?("Group "+(gi+1)+" ("+g.n+" stacks)"):("第"+(gi===0?"一":"二")+"組（"+NUMZH[g.n]+"堆）"))+'</td></tr>';
@@ -904,7 +912,7 @@ function applySplit(res){
   html+='</table>';
   reviewEl.innerHTML=html;
   var _rn=(reviewEl.querySelectorAll("tr").length - reviewEl.querySelectorAll("tr .ghd, tr>td.ghd").length);
-  accSync("accReview", true, (isEn()? (_rn+" row(s)") : ("共 "+_rn+" 行")));
+  accSync("accReview", true, (isEn()? (_rn+" row(s) · verify truncation & stacks") : ("共 "+_rn+" 行・請核對切截點與分堆")));
   var hintEl=document.getElementById("splitHint"); hintEl.innerHTML=cleanInfoHtml(res);
   if(!res.grouped && res.n===2 && !res.bip) hintEl.appendChild(bipWarnBox());
   buildRemoved(res.removed);
@@ -972,6 +980,7 @@ function renderCompare(){
   lastCmp.res.forEach(function(r){ if(resKey(r)===appliedKey) _cur=r; if(lastCmp.best===r) _rec=r; });
   var _sub=_cur ? ((en?"in use: ":"目前採用：")+resTitle(_cur,en)) : (_rec ? ((en?"best fit: ":"推薦：")+resTitle(_rec,en)) : "");
   if(_cur && _rec && _cur!==_rec) _sub += (en?(" · best fit: "+resTitle(_rec,en)) : ("・推薦："+resTitle(_rec,en)));
+  _sub += (en ? " · open to switch" : "・可展開改用其他堆數");
   accSync("accCmp", true, _sub);
 }
 
@@ -1063,7 +1072,7 @@ function renderStacks2(n, vals){
   for(var i=0;i<n;i++){
     if(i>0){ var op=document.createElement("div"); op.className="opmid"; op.textContent="NEAR"; set.appendChild(op); }
     var col=document.createElement("div"); col.className="stackcol";
-    var lb=document.createElement("label"); lb.innerHTML='<span class="badge '+STACK_COLORS[i]+'">'+(en?"Stack ":"堆")+(i+1)+'</span>'+(en?"one per line = OR":"每行一詞 = OR");
+    var lb=document.createElement("label"); lb.innerHTML='<span class="badge '+STACK_COLORS[i]+'">'+(en?"Stack ":"堆")+(i+1)+'</span>';
     var ta=document.createElement("textarea"); ta.spellcheck=false; ta.value=prev[i]||"";
     ta.addEventListener("input",build);
     col.appendChild(lb); col.appendChild(ta); set.appendChild(col);
@@ -1175,8 +1184,12 @@ function build(){
   outs.innerHTML="";
   if(typeof updateStackTip==="function") updateStackTip();
   // 更新中間 op 標籤
-  var opTxt = PROX[src].expand ? (en?"proximity":"鄰近") : opFor(src,sem);
-  Array.prototype.forEach.call(document.querySelectorAll(".opmid"),function(e){e.textContent=opTxt;});
+  var opTxt = opLabel(src, sem, en);
+  var opRaw = PROX[src].expand ? (en?"PubMed proximity ("+sem+" words)":("PubMed 鄰近（"+sem+" 單字）")) : opFor(src,sem);
+  Array.prototype.forEach.call(document.querySelectorAll(".opmid"),function(e){
+    e.textContent=opTxt;
+    e.title=(en?"Syntax for this database: ":"此資料庫的語法：")+opRaw;   // 實際運算子移到滑鼠提示
+  });
   // 第一組＋（分組時）第二組，各自 ≥2 個非空堆才成立，最後 OR 合併
   var groups=[stackEls, (typeof stackEls2!=="undefined"?stackEls2:[])].map(function(els){ return els.map(function(t){return lines(t.value);}).filter(function(s){return s.length;}); }).filter(function(g){ return g.length>=2; });
   if(!groups.length) return;
@@ -1207,7 +1220,7 @@ function build(){
     var stacked=plainParen(stackedM), oneline=plainParen(onelineM);
     var ordNote = ordUnsupported(src) ? (en?(DB_LABEL[src]+" has no ordered proximity operator; kept unordered ("+op+")."):(DB_LABEL[src]+" 無『有次序』鄰近運算子，已維持無次序（"+op+"）。")) : null;
     cards.push({title:(en?"Stacked (line break = OR)":"換行整理版（換行＝OR）"),text:stacked,html:boldParen(stackedM),send:oneline,note:ordNote,pico:true,picoFrag:stacked,picoSrc:PICO_SRC[src]});
-    cards.push({title:(en?"One line (OR expanded)":"單行 OR 版"),text:oneline,html:boldParen(onelineM),send:oneline,note:ordNote,conv:true});
+    cards.push({title:(en?"One line":"單行版"),text:oneline,html:boldParen(onelineM),send:oneline,note:ordNote,conv:true});
   }
 
   cards.forEach(function(c){
@@ -1245,6 +1258,11 @@ soloIn.addEventListener("input",build);
 seed();
 updatePicoBar();
 /* 網址帶入：?n=2&before=…（例如從縮寫片語提醒開新分頁） */
+(function(){ try{ var q=new URLSearchParams(location.search); var sv=q.get("src");
+  if(sv && srcSel && Array.prototype.some.call(srcSel.options, function(o){ return o.value===sv; })){
+    srcSel.value=sv; fillDist(); fillOrder(); if(typeof build==="function") build();   // 起始資料庫沿用 PICO 傳來的設定
+  }
+}catch(e){} })();
 (function(){ try{ var q=new URLSearchParams(location.search); var b=q.get("before"); if(!b) return; var n=q.get("n"); if(n&&/^[234]$/.test(n)){ nSel.value=n; renderStacks(); } beforeTa.value=b; autoSplit(); }catch(e){} })();
 
 window.toggleLang=function(){
