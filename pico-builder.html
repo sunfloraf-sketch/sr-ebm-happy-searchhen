@@ -2191,6 +2191,7 @@ if (typeof module !== "undefined" && module.exports) {
     });
   }
   function _rowTas(tr){ return Array.prototype.filter.call(tr.querySelectorAll("textarea"), function(t){ return !t.classList.contains("beftxt"); }); }
+  function _ftTa2(tr){ return _rowTas(tr)[1]; }   // 固定取「整理後」欄，供鄰近字回填使用
   function _ftTa(tr){ if(typeof _ftTargetBefore==="function" && _ftTargetBefore()){ var b=tr.querySelector("textarea.beftxt"); if(b) return b; } return _rowTas(tr)[1]; }   // 整理前欄有顯示就寫進整理前，否則整理後
   function _meshTa(tr){ return _rowTas(tr)[3]; } // MeSH 欄
   function _appendFt(ta, terms){
@@ -2551,12 +2552,11 @@ if (typeof module !== "undefined" && module.exports) {
   //   來源表格本身就有整理前欄時，兩欄各就各位；若整理前欄沒顯示，才併進整理後以免資料遺失。
   function _importSplit(ft, bef){
     ft=String(ft||""); bef=String(bef||"");
-    if(_ftTargetBefore()){
-      if(!bef){ bef=ft; ft=""; }
-    } else if(bef){
-      ft = ft ? (bef+"\n"+ft) : bef; bef="";
-    }
-    return { ft:ft, before:bef };
+    // 來源同時有整理前／整理後兩欄 → 各就各位（整理前欄若沒顯示，匯入後會自動打開）
+    if(bef) return { ft:ft, before:bef };
+    // 來源只有一欄同義詞 → 整理前欄有顯示就放整理前，否則放整理後
+    if(_ftTargetBefore()) return { ft:"", before:ft };
+    return { ft:ft, before:"" };
   }
   function _ftColName(){
     var en=isEn();
@@ -2737,7 +2737,11 @@ if (typeof module !== "undefined" && module.exports) {
 
     proxBtn.onclick=function(){
       var txt=befLines(beTa.value).join("\n"); if(!txt) return;
-      window.open("proximity-builder.html?before="+encodeURIComponent(txt), "sr_prox");
+      // 帶上回填目標（列序號:概念代號），整理完才知道要填回哪一格，而不是新增一列
+      var rows=Array.prototype.slice.call(picoBody.querySelectorAll("tr")), idx=rows.indexOf(tr);
+      var lab=(tr._get&&tr._get().label)||"";
+      var back=encodeURIComponent(idx+":"+lab);
+      window.open("proximity-builder.html?before="+encodeURIComponent(txt)+"&back="+back, "sr_prox");
     };
   }
 
@@ -2882,6 +2886,12 @@ if (typeof module !== "undefined" && module.exports) {
     document.addEventListener("keydown", function(e){ if(e.key==="Escape") close(); });
     function labels(){ btn.title=isEn()?"Show / hide columns":"顯示或隱藏欄位"; }
     labels();
+    window._srShowBefore=function(){        // 匯入帶進整理前內容時，自動把該欄打開，免得資料看不見
+      var cb=document.getElementById("colBef"); if(!cb || cb.checked) return;
+      cb.checked=true; document.body.classList.remove("nobefore");
+      try{ localStorage.setItem("sr_pico_col_before","1"); }catch(e){}
+      sizeCols();
+    };
     window._befRelabel=function(){
       labels();
       if(window._befColLabel) window._befColLabel();
@@ -3043,7 +3053,7 @@ if (typeof module !== "undefined" && module.exports) {
   function offerRestore(){ if(restoreBtn) restoreBtn.style.display = stateNonEmpty(snapshotState()) ? "" : "none"; }
   // 即時暫存（本分頁草稿）；離開分頁時寫快照（供「還原上次」與 PICO↔鄰近字來回）
   picoBody.addEventListener("input", saveDraftDebounced);
-  if(customCombo) customCombo.addEventListener("input", saveDraftDebounced);
+  if(customCombo) customCombo.addEventListener("input", function(){ saveDraftDebounced(); autoRegenDebounced(); });   // 自訂組合異動 → 已生成的檢索策略跟著更新
   srcSel.addEventListener("change", saveDraftDebounced);
   window.addEventListener("pagehide", function(){ saveDraft(); saveSnapshot(); });
   document.addEventListener("visibilitychange", function(){ if(document.visibilityState==="hidden"){ saveDraft(); saveSnapshot(); } });
@@ -3262,8 +3272,11 @@ if (typeof module !== "undefined" && module.exports) {
     if(!filled.length){ warn(en?"Table has no data rows.":"表格沒有資料列。"); return; }
     var pre=serializeState(); if(stateNonEmpty(pre)){ try{ localStorage.setItem(SNAP_KEY, JSON.stringify(pre)); }catch(e){} }  // 貼上前內容 → 供「還原上次」救回
     picoBody.innerHTML="";
+    var _anyBef=false;
     filled.forEach(function(r){ var sp=_importSplit(r.ft, r.before);
+      if(sp.before) _anyBef=true;
       addRow(r.label||"", r.zh||"", sp.ft, r.mesh||"", r.emtree||"", r.cinahl||"", undefined, undefined, sp.before); });
+    if(_anyBef && window._srShowBefore) window._srShowBefore();
     if(!picoBody.querySelector("tr")) seedEmpty();
     saveDraft(); offerRestore();
     var miss=[]; ["ft","mesh","emtree","cinahl"].forEach(function(k){ if(col[k]<0) miss.push(k); });
@@ -3472,13 +3485,16 @@ if (typeof module !== "undefined" && module.exports) {
           return { emtree:buckets.emtree.join("\n"), mesh:buckets.mesh.join("\n"), cinahl:buckets.cinahl.join("\n") };
         }
         picoBody.innerHTML="";
+        var _anyBefDocx=false;
         data.forEach(function(k2){
           var r=rows[k2], g=function(i){ return (i>=0 && r[i]!=null)?r[i]:""; };
           var em=g(ci.emtree), me=g(ci.mesh), cn=g(ci.cinahl);
           if(colorStyle){ var cs=_colorSplit(k2); em=cs.emtree; me=cs.mesh; cn=cs.cinahl; }
           var sp=_importSplit(g(ci.ft), g(ci.before!=null?ci.before:-1));
+          if(sp.before) _anyBefDocx=true;
           addRow(g(ci.concept).replace(/\s+/g," ").trim(), g(ci.zh), sp.ft, me, em, cn, undefined, undefined, sp.before);
         });
+        if(_anyBefDocx && window._srShowBefore) window._srShowBefore();
         recordDocx={ buf:buf, name:(f.name||"SR檢索紀錄表.docx") };   // 保留原檔，供回填下載
         if(typeof updateRecordBtn==="function") updateRecordBtn();
         if(picoWarn) picoWarn.style.display="none";
@@ -4704,8 +4720,32 @@ if (typeof module !== "undefined" && module.exports) {
     var snap=snapshotState(), hadBase=false;
     if(stateNonEmpty(snap)){ applyState(snap); hadBase=true; }
     else { picoBody.innerHTML=""; if(box[0].src && TARGET_BY_ID[box[0].src]) srcSel.value=box[0].src; }
-    var LB=["P","I","C","O"], baseN=picoBody.querySelectorAll("tr").length;
-    box.forEach(function(item,i){ addRow(item.label||LB[baseN+i]||"", item.zh||"", item.ft||"", item.mesh||"", item.emtree||"", item.cinahl||""); });
+    var LB=["P","I","C","O"], baseN=picoBody.querySelectorAll("tr").length, _filledBack=0;
+    function _backRow(back){        // "列序號:概念代號" → 找回原本那一列（序號優先，代號次之）
+      if(!back) return null;
+      var parts=String(back).split(":"), idx=parseInt(parts[0],10), lab=(parts[1]||"").trim();
+      var rows=Array.prototype.slice.call(picoBody.querySelectorAll("tr"));
+      if(!isNaN(idx) && rows[idx]){
+        var r=rows[idx]._get&&rows[idx]._get();
+        if(!lab || !r || (r.label||"")===lab) return rows[idx];
+      }
+      if(lab){ for(var i=0;i<rows.length;i++){ var rr=rows[i]._get&&rows[i]._get(); if(rr&&(rr.label||"")===lab) return rows[i]; } }
+      return null;
+    }
+    box.forEach(function(item,i){
+      var tgt=_backRow(item.back);
+      if(tgt){                       // 回填到原本那一格的整理後（已有內容就接在後面，不覆蓋）
+        var ta=_ftTa2(tgt);
+        if(ta){
+          var cur=(ta.value||"").replace(/\s+$/,"");
+          ta.value = cur ? (cur+"\n"+(item.ft||"")) : (item.ft||"");
+          ta.dispatchEvent(new Event("input",{bubbles:true}));
+          _filledBack++;
+          return;
+        }
+      }
+      addRow(item.label||LB[baseN+i]||"", item.zh||"", item.ft||"", item.mesh||"", item.emtree||"", item.cinahl||"");
+    });
     try{ localStorage.removeItem("sr_pico_inbox"); }catch(e){}   // 消化後清掉，避免下次重複附加
     saveDraft(); saveSnapshot();
     if(picoWarn){
