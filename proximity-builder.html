@@ -192,7 +192,21 @@
   .cmpcard .gobtn{margin-top:auto;padding:7px 12px;font-size:13px}
   .cmpcard.cur .gobtn{background:#EEF3F0;border-color:#CFE0D6;color:var(--sh-green-d);box-shadow:none}
   @media(max-width:1000px){main.pxmain{grid-template-columns:1fr}.pxside{position:static}}
-  @media(max-width:760px){.cmpgrid{grid-template-columns:1fr}}
+  @media(max-width:760px){.cmpgrid{grid-template-columns:1fr}}  /* ===== 可收合區塊（風琴頁）：預設收起，一次只開一個 ===== */
+  details.acc{border:1px solid var(--line, #D9E0E4);border-radius:10px;background:#fff;margin:10px 0}
+  details.acc>summary{list-style:none;cursor:pointer;padding:9px 12px;display:flex;align-items:center;gap:8px;
+                      font-size:13px;font-weight:700;color:#25292D;border-radius:10px;user-select:none}
+  details.acc>summary::-webkit-details-marker{display:none}
+  details.acc>summary::before{content:"";flex:0 0 auto;width:7px;height:7px;margin-right:2px;
+                              border-right:2px solid #7d8a93;border-bottom:2px solid #7d8a93;
+                              transform:rotate(-45deg);transition:transform .15s}
+  details.acc[open]>summary::before{transform:rotate(45deg)}
+  details.acc>summary:hover{background:#F2F5F7}
+  details.acc[open]>summary{border-bottom:1px solid var(--line, #D9E0E4);border-radius:10px 10px 0 0}
+  details.acc .accsub{font-weight:600;color:#6b7670;font-size:12px}
+  details.acc>.cmpwrap,details.acc>.review{margin:0;padding:10px 12px 12px}
+  details.acc>.cmpwrap{border:0}
+
 </style>
 </head>
 <body>
@@ -249,12 +263,16 @@
         <button class="gobtn" style="background:linear-gradient(180deg,#FBFCFC,#E8EDF0);color:#25292D;border:1px solid #CCD4DA;font-weight:600" onclick="clearProx()"><span data-zh>清空</span><span data-en>Clear</span></button>
       </div>
     </div>
+    <details class="acc" id="accCmp" style="display:none"><summary><span class="acct" data-zh>堆數比較</span><span class="acct" data-en>Stack options compared</span><span class="accsub" id="accCmpSub"></span></summary>
     <div class="cmpwrap" id="cmpPanel" style="display:none">
       <div class="cmph"><b><span data-zh>堆數比較</span><span data-en>Stack options compared</span></b><span><span data-zh>已先套用「推薦」到下方，可改採用其他堆數</span><span data-en>The best fit is applied below — pick another if you prefer</span></span></div>
       <div class="cmpgrid" id="cmpBox"></div>
     </div>
+    </details>
     <div id="splitHint"></div>
+    <details class="acc" id="accReview" style="display:none"><summary><span class="acct" data-zh>分群檢視</span><span class="acct" data-en>Grouping review</span><span class="accsub" id="accReviewSub"></span></summary>
     <div class="review" id="review"></div>
+    </details>
     <div id="removedBox"></div>
   </div>
 
@@ -387,7 +405,7 @@ window.clearProx=function(){
   if(soloIn){ soloIn.value=""; soloIn.placeholder=""; }   // 連同 placeholder 一起清（避免殘留灰字 GDM）
   stackEls.forEach(function(t){ t.value=""; });            // 清空各詞堆內容
   removedWords=[];
-  if(reviewEl)reviewEl.innerHTML="";
+  if(reviewEl)reviewEl.innerHTML=""; if(typeof accSync==="function"){ accSync("accReview", false, ""); accSync("accCmp", false, ""); }
   if(removedBox)removedBox.innerHTML="";
   var sh=document.getElementById("splitHint"); if(sh)sh.innerHTML="";
   renderStacks();                                          // 重建空的詞堆（保留堆數）
@@ -885,6 +903,8 @@ function applySplit(res){
   (res.redundant||[]).forEach(function(rd){ var t=rd.via==="group1"?(en?"already covered by group 1":"已由第一組涵蓋"):(en?("redundant — already covered by “"+rd.via+"”"):("冗贅 — 已由「"+rd.via+"」涵蓋")); html+='<tr><td class="k">'+esc(rd.phrase)+'</td><td><span class="badge bC">'+(en?"Skipped":"略過")+'</span>'+esc(t)+'</td></tr>'; });
   html+='</table>';
   reviewEl.innerHTML=html;
+  var _rn=(reviewEl.querySelectorAll("tr").length - reviewEl.querySelectorAll("tr .ghd, tr>td.ghd").length);
+  accSync("accReview", true, (isEn()? (_rn+" row(s)") : ("共 "+_rn+" 行")));
   var hintEl=document.getElementById("splitHint"); hintEl.innerHTML=cleanInfoHtml(res);
   if(!res.grouped && res.n===2 && !res.bip) hintEl.appendChild(bipWarnBox());
   buildRemoved(res.removed);
@@ -901,10 +921,25 @@ function cmpStacksHtml(stacks, opTxt, en){
   });
   return h;
 }
+function accSync(id, show, sub){        // 外層風琴頁跟著內容有無一起顯示；sub 為收起時也看得到的摘要
+  var d=document.getElementById(id); if(!d) return;
+  d.style.display = show ? "" : "none";
+  if(!show) d.open=false;
+  var el=document.getElementById(id+"Sub"); if(el) el.textContent=sub||"";
+}
+function accOnly(openId){               // 風琴頁：開一個就關另一個
+  ["accCmp","accReview"].forEach(function(id){ var d=document.getElementById(id); if(d && id!==openId) d.open=false; });
+}
+(function(){
+  ["accCmp","accReview"].forEach(function(id){
+    var d=document.getElementById(id); if(!d) return;
+    d.addEventListener("toggle", function(){ if(d.open) accOnly(id); });
+  });
+})();
 function renderCompare(){
   var panel=document.getElementById("cmpPanel"), box=document.getElementById("cmpBox");
   if(!panel||!box) return;
-  if(!lastCmp){ panel.style.display="none"; box.innerHTML=""; return; }
+  if(!lastCmp){ panel.style.display="none"; box.innerHTML=""; accSync("accCmp", false, ""); return; }
   panel.style.display="";
   var en=isEn(), src=srcSel.value, sem=parseInt(distSel.value,10); if(isNaN(sem)) sem=3;
   var opTxt=PROX[src].expand?(en?"proximity":"鄰近"):opFor(src,sem);
@@ -933,6 +968,11 @@ function renderCompare(){
     card.appendChild(b);
     box.appendChild(card);
   });
+  var _cur=null, _rec=null;
+  lastCmp.res.forEach(function(r){ if(resKey(r)===appliedKey) _cur=r; if(lastCmp.best===r) _rec=r; });
+  var _sub=_cur ? ((en?"in use: ":"目前採用：")+resTitle(_cur,en)) : (_rec ? ((en?"best fit: ":"推薦：")+resTitle(_rec,en)) : "");
+  if(_cur && _rec && _cur!==_rec) _sub += (en?(" · best fit: "+resTitle(_rec,en)) : ("・推薦："+resTitle(_rec,en)));
+  accSync("accCmp", true, _sub);
 }
 
 function autoSplit(){
