@@ -2546,6 +2546,18 @@ if (typeof module !== "undefined" && module.exports) {
     var th=document.querySelector("th.bef");
     return !!th && !document.body.classList.contains("nobefore");
   }
+  // 匯入（貼上詞表／上傳 Word）時，同義詞要落在哪一欄：
+  //   整理前欄有顯示 → 進整理前（它就是原始詞收集區）；沒顯示 → 進整理後。
+  //   來源表格本身就有整理前欄時，兩欄各就各位；若整理前欄沒顯示，才併進整理後以免資料遺失。
+  function _importSplit(ft, bef){
+    ft=String(ft||""); bef=String(bef||"");
+    if(_ftTargetBefore()){
+      if(!bef){ bef=ft; ft=""; }
+    } else if(bef){
+      ft = ft ? (bef+"\n"+ft) : bef; bef="";
+    }
+    return { ft:ft, before:bef };
+  }
   function _ftColName(){
     var en=isEn();
     return _ftTargetBefore() ? (en?"Before":"整理前") : (en?"After":"整理後");
@@ -3209,16 +3221,17 @@ if (typeof module !== "undefined" && module.exports) {
     return rows;
   }
   function mapCols(hdr){
-    var idx={label:-1,zh:-1,ft:-1,mesh:-1,emtree:-1,cinahl:-1};
+    var idx={label:-1,zh:-1,ft:-1,mesh:-1,emtree:-1,cinahl:-1,before:-1};
     var find=function(re,exclude){ for(var i=0;i<hdr.length;i++){ var s=String(hdr[i]||""); if(!s)continue; if(exclude&&exclude.test(s))continue; if(re.test(s)) return i; } return -1; };
     idx.mesh=find(/mesh/i);
     idx.emtree=find(/emtree/i);
     idx.cinahl=find(/cinahl/i);
     idx.zh=find(/中文|chinese|中譯/i);
     // 自由詞（英文同義詞）：優先「After／處理後」欄；否則英文同義詞欄（排除 Before/處理前、中文欄）；再否則取 Before 欄的右一欄
-    idx.ft=find(/after|處理後|處理過/i);
-    if(idx.ft<0) idx.ft=find(/english|英文|自由詞|同義詞|synonym|free-?text|keyword|term/i, /before|處理前|中文|chinese/i);
-    if(idx.ft<0){ var b=find(/before|處理前/i); if(b>=0 && b+1<hdr.length) idx.ft=b+1; }
+    idx.ft=find(/after|整理後|處理後|處理過/i);
+    if(idx.ft<0) idx.ft=find(/english|英文|自由詞|同義詞|synonym|free-?text|keyword|term/i, /before|整理前|處理前|中文|chinese/i);
+    if(idx.ft<0){ var b=find(/before|整理前|處理前/i); if(b>=0 && b+1<hdr.length) idx.ft=b+1; }
+    idx.before=find(/before|處理前|整理前/i);
     idx.label=find(/pico|主題概念|概念|theme concept|\bconcept\b|切出|cut it out|類別|category|element|欄位/i);
     if(idx.label<0 && idx.zh>0) idx.label=0;   // 概念欄常因表頭垂直合併在此列留空 → 取最左欄
     return idx;
@@ -3245,11 +3258,12 @@ if (typeof module !== "undefined" && module.exports) {
     var _isHdrLike=/^(概念|主題概念|主題|concept|中文同義|chinese|english|自由詞|控制詞|before|after|emtree|mesh|cinahl|範例|example)/i;
     var filled=[];
     data.forEach(function(c){ if(!c.length||c.every(function(x){return !x;}))return; var _lab=String(g(c,col.label)||"").trim(); if(_isHdrLike.test(_lab)) return;  // 略過殘留的表頭／群組列
-      filled.push({label:labClean(g(c,col.label)),zh:toLines(g(c,col.zh),false),ft:toLines(g(c,col.ft),false),mesh:toLines(g(c,col.mesh),true),emtree:toLines(g(c,col.emtree),true),cinahl:toLines(g(c,col.cinahl),true)}); });
+      filled.push({label:labClean(g(c,col.label)),zh:toLines(g(c,col.zh),false),ft:toLines(g(c,col.ft),false),before:toLines(g(c,col.before),false),mesh:toLines(g(c,col.mesh),true),emtree:toLines(g(c,col.emtree),true),cinahl:toLines(g(c,col.cinahl),true)}); });
     if(!filled.length){ warn(en?"Table has no data rows.":"表格沒有資料列。"); return; }
     var pre=serializeState(); if(stateNonEmpty(pre)){ try{ localStorage.setItem(SNAP_KEY, JSON.stringify(pre)); }catch(e){} }  // 貼上前內容 → 供「還原上次」救回
     picoBody.innerHTML="";
-    filled.forEach(function(r){ addRow(r.label||"", r.zh||"", r.ft||"", r.mesh||"", r.emtree||"", r.cinahl||""); });
+    filled.forEach(function(r){ var sp=_importSplit(r.ft, r.before);
+      addRow(r.label||"", r.zh||"", sp.ft, r.mesh||"", r.emtree||"", r.cinahl||"", undefined, undefined, sp.before); });
     if(!picoBody.querySelector("tr")) seedEmpty();
     saveDraft(); offerRestore();
     var miss=[]; ["ft","mesh","emtree","cinahl"].forEach(function(k){ if(col[k]<0) miss.push(k); });
@@ -3423,11 +3437,12 @@ if (typeof module !== "undefined" && module.exports) {
         for(var k=0;k<rowsRaw.length;k++){ if(rowsRaw[k].some(function(c){return /mesh/i.test(c);}) && rowsRaw[k].some(function(c){return /cinahl/i.test(c);})){ hdr=rowsRaw[k]; hi=k; break; } }
         var ci;
         if(hdr){
-          var findIdx=function(re){ for(var j=0;j<hdr.length;j++){ if(re.test(hdr[j]||"")) return j; } return -1; };
+          var findIdx=function(re, exclude){ for(var j=0;j<hdr.length;j++){ var hs=hdr[j]||""; if(exclude&&exclude.test(hs)) continue; if(re.test(hs)) return j; } return -1; };
           ci={ concept:findIdx(/概念|主題|concept/i), zh:findIdx(/中文|chinese/i), mesh:findIdx(/mesh/i), cinahl:findIdx(/cinahl/i) };
           // 自由詞一律取「After／處理後」欄；「Before／處理前」欄不匯入
-          ci.ft=findIdx(/after|處理後/i);
-          if(ci.ft<0) ci.ft=findIdx(/英文同義|english/i);
+          ci.before=findIdx(/before|處理前|整理前/i);
+          ci.ft=findIdx(/after|整理後|處理後/i);
+          if(ci.ft<0) ci.ft=findIdx(/英文同義|english/i, /before|整理前|處理前/i);
           if(ci.ft<0){ var bIdx=findIdx(/before|處理前/i); if(bIdx>=0 && bIdx+1<hdr.length) ci.ft=bIdx+1; }  // 有 Before 但無 After 標籤：取其右一欄
           ci.emtree=findIdx(/emtree/i); if(ci.emtree<0) ci.emtree=(ci.mesh>0)?ci.mesh-1:-1;
           if(ci.concept<0) ci.concept=0;   // 概念固定第 1 欄
@@ -3435,8 +3450,8 @@ if (typeof module !== "undefined" && module.exports) {
           if(ci.ft<0) ci.ft=(maxCols>=7)?3:2;   // 7 欄含 Before/After → After 在第 4 欄
         } else {
           // 找不到表頭：依欄數推定（7 欄含 Before/After，跳過 Before）
-          ci=(maxCols>=7) ? { concept:0, zh:1, ft:3, emtree:4, mesh:5, cinahl:6 }
-                          : { concept:0, zh:1, ft:2, emtree:3, mesh:4, cinahl:5 };
+          ci=(maxCols>=7) ? { concept:0, zh:1, before:2, ft:3, emtree:4, mesh:5, cinahl:6 }
+                          : { concept:0, zh:1, before:-1, ft:2, emtree:3, mesh:4, cinahl:5 };
         }
         var data=[];
         for(var k2=(hi>=0?hi+1:0); k2<rows.length; k2++){ var r=rows[k2], lab=(r[ci.concept]||"").replace(/\s+/g," ").trim(); if(!lab || _SKIP.test(lab)) continue; data.push(k2); }
@@ -3461,7 +3476,8 @@ if (typeof module !== "undefined" && module.exports) {
           var r=rows[k2], g=function(i){ return (i>=0 && r[i]!=null)?r[i]:""; };
           var em=g(ci.emtree), me=g(ci.mesh), cn=g(ci.cinahl);
           if(colorStyle){ var cs=_colorSplit(k2); em=cs.emtree; me=cs.mesh; cn=cs.cinahl; }
-          addRow(g(ci.concept).replace(/\s+/g," ").trim(), g(ci.zh), g(ci.ft), me, em, cn);
+          var sp=_importSplit(g(ci.ft), g(ci.before!=null?ci.before:-1));
+          addRow(g(ci.concept).replace(/\s+/g," ").trim(), g(ci.zh), sp.ft, me, em, cn, undefined, undefined, sp.before);
         });
         recordDocx={ buf:buf, name:(f.name||"SR檢索紀錄表.docx") };   // 保留原檔，供回填下載
         if(typeof updateRecordBtn==="function") updateRecordBtn();
