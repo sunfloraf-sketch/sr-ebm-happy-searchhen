@@ -261,7 +261,13 @@
   .hlopts label{display:flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap}
   .hlopts>span{white-space:nowrap}
   .hlopts input{cursor:pointer;width:15px;height:15px}
-  .inwarn{color:#c0392b;font-size:12.5px;font-weight:600;margin:0 0 10px}
+  .inwarn{color:#8E1B14;font-size:13px;font-weight:600;line-height:1.75;margin:0 0 12px;
+          background:#FDF2F0;border:1px solid #E7BDB6;border-left:5px solid #C0392B;border-radius:8px;
+          padding:10px 13px 10px 14px;box-shadow:0 1px 4px rgba(192,57,43,.10)}
+  .inwarn.flash{animation:srwarnflash .85s ease-out 2}
+  @keyframes srwarnflash{0%,100%{box-shadow:0 1px 4px rgba(192,57,43,.10)}50%{box-shadow:0 0 0 5px rgba(192,57,43,.20)}}
+  /* 有問題的那一格直接標出來 */
+  table.pico td textarea.cellerr{border-color:#C0392B !important;background:#FEF6F5 !important;box-shadow:0 0 0 2px rgba(192,57,43,.13) !important}
   .out pre .hl-fld{color:#0a8f4f;font-weight:600}
   .out pre .hl-cv{color:#d32029;font-weight:600}
   .out pre .hl-px{color:#0f83d6;font-weight:600}
@@ -2191,6 +2197,42 @@ if (typeof module !== "undefined" && module.exports) {
     });
   }
   function _rowTas(tr){ return Array.prototype.filter.call(tr.querySelectorAll("textarea"), function(t){ return !t.classList.contains("beftxt"); }); }
+  // ===== 合併為一串檢索語法：同一概念的 (#1 OR #2) 群組，展開時不再替每一行各包一層括號 =====
+  // 群組本身已有括號、內部又全是 OR，多包一層只會變成 ((A) OR (B))。
+  // 但某一行若自己含有「沒被括號包住的 AND／NOT」，拿掉括號會改變運算優先序 → 那一行仍要包。
+  function _flatTopOp(t, re){        // 這一行有沒有「沒被括號包住」的運算子
+    var str=String(t||""), d=0;
+    for(var i=0;i<str.length;i++){
+      var c=str.charAt(i);
+      if(c==="(") d++;
+      else if(c===")") d--;
+      else if(d===0 && (i===0 || /[\s)]/.test(str.charAt(i-1)))){
+        if(re.test(str.slice(i))) return true;
+      }
+    }
+    return false;
+  }
+  function _flatNeedParen(t){ return _flatTopOp(t, /^(AND|NOT)[\s(]/i); }       // OR 群組內：只有 AND／NOT 需要保護
+  function _flatNeedParenAlone(t){ return _flatTopOp(t, /^(AND|OR|NOT)[\s(]/i); } // 單獨一行接在 AND 鏈上：任何頂層運算子都要包
+  function _flatExpand(ft, qmap, forceFlat){
+    var g=0;
+    while(/#\d+/.test(ft) && g++<50){
+      if(!forceFlat){
+        ft=ft.replace(/\((#\d+(?:\s+OR\s+#\d+)+)\)/gi, function(_m, inner){
+          return "("+inner.split(/\s+OR\s+/i).map(function(tok){
+            var k=tok.replace(/^#/,""), v=(qmap[k]!=null?qmap[k]:tok);
+            return _flatNeedParen(v) ? ("("+v+")") : v;
+          }).join(" OR ")+")";
+        });
+      }
+      ft=ft.replace(/#(\d+)/g, function(_m2,k){
+        var v=(qmap[k]!=null?qmap[k]:("#"+k));
+        if(forceFlat) return v;
+        return "("+v+")";   // 單獨一行（整個概念只有一個區塊）維持一對括號，與有兩個區塊的概念一致
+      });
+    }
+    return ft;
+  }
   function _ftTa2(tr){ return _rowTas(tr)[1]; }   // 固定取「整理後」欄，供鄰近字回填使用
   function _ftTa(tr){ if(typeof _ftTargetBefore==="function" && _ftTargetBefore()){ var b=tr.querySelector("textarea.beftxt"); if(b) return b; } return _rowTas(tr)[1]; }   // 整理前欄有顯示就寫進整理前，否則整理後
   function _meshTa(tr){ return _rowTas(tr)[3]; } // MeSH 欄
@@ -3889,15 +3931,34 @@ if (typeof module !== "undefined" && module.exports) {
       var msgs=[];
       var _cells=function(r){ return [r.ft,r.zh,r.emtree,r.mesh,r.cinahl]; };
       var _unpairedQuote=function(cell){ if(!cell) return false; return String(cell).split(/\r?\n/).some(function(ln){ var n=(ln.replace(/[\u201c\u201d\u201e\u201f\u2033]/g,'"').match(/"/g)||[]).length; return (n%2)===1; }); };
-      var ub=[]; rows.forEach(function(r){ if(_cells(r).some(function(c){return c && inputUnbalanced(c);})) ub.push(r.label); });
+      // 清掉上一輪的格子標記，再重新標（整理前欄不參與產出，不列入檢查）
+      Array.prototype.forEach.call(picoBody.querySelectorAll("textarea.cellerr"), function(t){ t.classList.remove("cellerr"); });
+      var _trs=Array.prototype.slice.call(picoBody.querySelectorAll("tr"));
+      function _markCells(ri, bad){
+        var tr=_trs[ri]; if(!tr) return;
+        var tas=_rowTas(tr);            // [中文, 整理後, Emtree, MeSH, CINAHL]
+        tas.forEach(function(ta){ if(ta && bad(ta.value)) ta.classList.add("cellerr"); });
+      }
+      var ub=[]; rows.forEach(function(r, ri){ if(_cells(r).some(function(c){return c && inputUnbalanced(c);})){ ub.push(r.label); _markCells(ri, function(v){ return v && inputUnbalanced(v); }); } });
       if(ub.length) msgs.push(isEn()?("Unbalanced parentheses: "+ub.join(", ")+" — the number of ( and ) doesn't match."):("圓括弧無法成對："+ub.join("、")+" 概念，請檢查（左、右括號數量不一致）"));
       var _unpairedLines=function(cell){ var _out=[]; if(!cell) return _out; String(cell).split(/\r?\n/).forEach(function(ln){ var _n=(ln.replace(/[“”„‟″]/g,'"').match(/"/g)||[]).length; if((_n%2)===1) _out.push(ln.replace(/[()]/g,"").trim()); }); return _out; };
       var _hesc=function(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); };
-      var uq=[]; rows.forEach(function(r){ var _bad=[]; _cells(r).forEach(function(c){ _unpairedLines(c).forEach(function(b){ _bad.push(b); }); }); if(_bad.length) uq.push(r.label+_bad.map(function(x){return "〈"+_hesc(x)+"〉";}).join("")); });
+      var uq=[]; rows.forEach(function(r, ri){ var _bad=[]; _cells(r).forEach(function(c){ _unpairedLines(c).forEach(function(b){ _bad.push(b); }); }); if(_bad.length) _markCells(ri, function(v){ return _unpairedLines(v).length>0; }); if(_bad.length) uq.push(r.label+_bad.map(function(x){return "〈"+_hesc(x)+"〉";}).join("")); });
       if(uq.length) msgs.push(isEn()?("Unpaired double quote: "+uq.join("; ")):("雙引號未成對："+uq.join("、")+"，請檢查"));
       var lt=[]; rows.forEach(function(r){ if(r.ft && /(^|[\s("'])\*/.test(r.ft)) lt.push(r.label); });
       if(lt.length) msgs.push(isEn()?("Leading truncation (word-initial *) in: "+lt.join(", ")+" — only Cochrane / Scopus / Web of Science support it; the leading * is removed for other databases."):("字頭切截（詞首 *）出現在："+lt.join("、")+" 概念 —— 僅 Cochrane / Scopus / Web of Science 支援，其餘資料庫的詞首 * 已自動移除。"));
-      if(msgs.length){ picoWarn.innerHTML="\u26A0 "+msgs.join("<br>\u26A0 "); picoWarn.style.display="block"; } else picoWarn.style.display="none";
+      if(msgs.length){
+        var _html="\u26A0 "+msgs.join("<br>\u26A0 ");
+        var _isNew=(picoWarn.style.display!=="block") || (picoWarn.innerHTML!==_html);
+        picoWarn.innerHTML=_html; picoWarn.style.display="block";
+        if(_isNew){                      // 只有「新出現／內容變了」才閃一下並捲進視野，打字途中不會一直跳
+          picoWarn.classList.remove("flash"); void picoWarn.offsetWidth; picoWarn.classList.add("flash");
+          try{ picoWarn.scrollIntoView({behavior:"smooth", block:"nearest"}); }catch(e){}
+        }
+      } else {
+        picoWarn.style.display="none"; picoWarn.classList.remove("flash");
+        Array.prototype.forEach.call(picoBody.querySelectorAll("textarea.cellerr"), function(t){ t.classList.remove("cellerr"); });
+      }
     }
     var lvlLabel = level+"　"+(isEn()?({L0:"All fields",L1:"Comprehensive",L2:"Balanced",L3:"Precise"}[level]):({L0:"所有欄位",L1:"完整",L2:"平衡",L3:"精準"}[level]));
     var exportData=[]; RECORD_FILL={};
@@ -3925,9 +3986,9 @@ if (typeof module !== "undefined" && module.exports) {
       if(((cbFlat && cbFlat.checked) || forceFlat) && baseRows.length){
         // 整併為單一長式：把最後一行的 #行號全部展開，串成一條檢索式
         var qmap={}; baseRows.forEach(function(q){ if(q.n!=null) qmap[q.n]=q.text; });
-        var ft = baseRows[baseRows.length-1].text, g=0;
+        var ft = baseRows[baseRows.length-1].text;
         // 華藝概念區塊本身已自成一體（[ALL3]=(...) 或 ([TI]=() OR [KW]=())），展開時不再多包一層括號；其他資料庫維持加括號以保運算優先序
-        while(/#\d+/.test(ft) && g++<50){ ft=ft.replace(/#(\d+)/g, function(_,k){ var v=(qmap[k]!=null?qmap[k]:("#"+k)); return forceFlat ? v : ("("+v+")"); }); }
+        ft=_flatExpand(ft, qmap, forceFlat);
         allRows = [{n:null, text:ft}];
       } else {
         allRows = baseRows;
@@ -4087,7 +4148,7 @@ if (typeof module !== "undefined" && module.exports) {
           var combos = (customCombo && customCombo.value.trim()) ? buildCombos(customCombo.value, bb.conceptRefs, bb.lastNum) : null;
           var tail = (combos && combos.length) ? combos : (bb.finalRow ? [bb.finalRow] : []);
           var baseR = bb.qlines.concat(tail), allR;
-          if(cbFlat && cbFlat.checked && baseR.length){ var qmap={}; baseR.forEach(function(q){ if(q.n!=null) qmap[q.n]=q.text; }); var ft=baseR[baseR.length-1].text,g=0; while(/#\d+/.test(ft)&&g++<50){ ft=ft.replace(/#(\d+)/g,function(_,k){ return "("+(qmap[k]!=null?qmap[k]:("#"+k))+")"; }); } allR=[{n:null,text:ft}]; } else { allR=baseR; }
+          if(cbFlat && cbFlat.checked && baseR.length){ var qmap={}; baseR.forEach(function(q){ if(q.n!=null) qmap[q.n]=q.text; }); var ft=_flatExpand(baseR[baseR.length-1].text, qmap, false); allR=[{n:null,text:ft}]; } else { allR=baseR; }
           allR=_appendFilter(allR, FILTER_SEL, tid);   // 研究設計篩選（可複選）
           return allR;
         };
