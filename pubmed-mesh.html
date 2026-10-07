@@ -348,7 +348,8 @@ function eutils(ep, params){
   return fetch("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"+ep,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body:p.toString(),signal:ctl.signal})
     .then(function(r){ clearTimeout(tm); if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); },function(e){ clearTimeout(tm); throw e; });
 }
-function soft(p){ return p.then(function(v){return v;},function(){return null;}); }
+var apiErrs=[];   // 本次查詢中失敗的 API 請求（用來分辨「連線失敗」與「真的查無」）
+function soft(p){ return p.then(function(v){return v;},function(e){ apiErrs.push(String((e&&e.message)||e)); try{ console.warn("[MeSH API]", e); }catch(_e){} return null; }); }
 // term（同義詞）URI → 所屬正式標目
 function resolveTerms(uris){
   uris=(uris||[]).filter(Boolean).slice(0,8);
@@ -381,6 +382,7 @@ function lookupCandidates(term){
   var key=term.toLowerCase(), enc=encodeURIComponent(term);
   if(_candCache[key]) return Promise.resolve(_candCache[key]);
   var list=[], seen={};
+  apiErrs=[];
   function add(arr, why){ (arr||[]).forEach(function(x){ if(x&&x.dId&&!seen[x.dId]){ seen[x.dId]=1; x.why=why; list.push(x); } }); }
   var pEx=soft(getJSON(LOOKUP+"descriptor?label="+enc+"&match=exact&limit=5")).then(function(a){
     return (a||[]).filter(function(d){return String(d.label||"").toLowerCase()===key;}).map(function(d){return {dId:didOf(d.resource),label:d.label};});
@@ -393,6 +395,7 @@ function lookupCandidates(term){
     return (a||[]).map(function(d){return {dId:didOf(d.resource),label:d.label};});
   });
   return Promise.all([pEx,pEt,pDb,pCt]).then(function(r){
+    if(apiErrs.length>=4){ var err=new Error(apiErrs[0]); err.allFailed=true; throw err; }
     add(r[0],"ex"); add(r[1],"et"); add(r[2],"db"); add(r[3],"ct");
     if(list.length) return list;
     // 都沒有 → 同義詞包含此字（例：clown → Clown Therapy → Laughter Therapy）
@@ -507,9 +510,11 @@ function doLookup(){
     $("picker").hidden=false;
     renderCands();
     pickCand(0);
-  },function(){
+  },function(e){
     $("goBtn").disabled=false;
-    setStatus(S("連線 MeSH API 失敗，請稍後再試。","Could not reach the MeSH API — please try again later."),true);
+    var local=location.protocol==="file:", why=(e&&e.message)||"";
+    setStatus(S("無法連線 MeSH API（"+why+"）。"+(local?"您是直接開啟本機檔案（file://），瀏覽器可能擋下跨網站查詢；請改用 http 開啟（例：在資料夾執行 python -m http.server，再開 http://localhost:8000/pubmed-mesh.html），或使用線上版。":"請確認網路連線後再試。"),
+                "Could not reach the MeSH API ("+why+"). "+(local?"The page is opened as a local file (file://), and the browser may block cross-site requests; open it over http instead (e.g. run python -m http.server in the folder, then open http://localhost:8000/pubmed-mesh.html), or use the online version.":"Please check your connection and try again.")),true);
   });
 }
 function whyLabel(w){
