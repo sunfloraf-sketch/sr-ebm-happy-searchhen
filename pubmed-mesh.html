@@ -94,7 +94,6 @@
   .tree .nm{cursor:pointer;color:var(--sh-ink)}
   .tree .nm:hover{color:var(--sh-green-d);text-decoration:underline}
   .tree .cur .nm{font-weight:800;color:var(--sh-green-d)}
-  .tree .tn{font-size:10.5px;color:#9AA3A0;font-family:"SF Mono",Consolas,monospace}
   .tree .cat{color:var(--mut);font-style:italic}
   .tree .plus{border:1px solid var(--line);background:#fff;color:var(--sh-green-d);border-radius:5px;font-size:11px;line-height:1.2;padding:0 5px;cursor:pointer;margin-left:auto;flex:0 0 auto}
   .tree .plus:hover{border-color:var(--sh-green)}
@@ -721,13 +720,13 @@ function drawTree(tr, ctx){
   tr.trees.forEach(function(t){
     var cat=TREE_CAT[t.tn.charAt(0)], ind=0;
     h+='<div class="treeblk"><ul class="tree">';
-    h+='<li class="cat" style="padding-left:0">'+esc(cat?(isEn()?cat[1]:cat[0]+" "+cat[1]):t.tn.charAt(0))+' ['+esc(t.tn.charAt(0))+']</li>';
-    t.path.forEach(function(p){ ind+=10; h+='<li style="padding-left:'+ind+'px"><span class="nm" data-go="'+esc(p.dId||"")+'" data-label="'+esc(p.label)+'">'+esc(p.label)+'</span> <span class="tn">'+esc(p.tn)+'</span>'+(p.dId?plusBtn(p.dId,p.label):'')+'</li>'; });
+    h+='<li class="cat" style="padding-left:0">'+esc(cat?(isEn()?cat[1]:cat[0]+" "+cat[1]):t.tn.charAt(0))+'</li>';
+    t.path.forEach(function(p){ ind+=10; h+='<li style="padding-left:'+ind+'px"><span class="nm" data-go="'+esc(p.dId||"")+'" data-label="'+esc(p.label)+'">'+esc(p.label)+'</span>'+(p.dId?plusBtn(p.dId,p.label):'')+'</li>'; });
     ind+=10;
-    h+='<li class="cur" style="padding-left:'+ind+'px"><span class="nm">▸ '+esc(ctx.label)+'</span> <span class="tn">'+esc(t.tn)+'</span></li>';
+    h+='<li class="cur" style="padding-left:'+ind+'px"><span class="nm">▸ '+esc(ctx.label)+'</span></li>';
     ind+=14;
     if(!t.kids.length) h+='<li style="padding-left:'+ind+'px" class="sideempty">'+T("（無下位標目）","(no narrower headings)")+'</li>';
-    t.kids.forEach(function(c){ h+='<li style="padding-left:'+ind+'px"><span class="nm" data-go="'+esc(c.dId)+'" data-label="'+esc(c.label)+'">'+esc(c.label)+'</span> <span class="tn">'+esc(c.tn)+'</span>'+plusBtn(c.dId,c.label)+'</li>'; });
+    t.kids.forEach(function(c){ h+='<li style="padding-left:'+ind+'px"><span class="nm" data-go="'+esc(c.dId)+'" data-label="'+esc(c.label)+'">'+esc(c.label)+'</span>'+plusBtn(c.dId,c.label)+'</li>'; });
     h+='</ul></div>';
   });
   if(tr.failed) h+='<p class="sideempty">'+T("上位／下位名稱載入失敗，僅顯示樹狀號。","Could not load broader/narrower names; showing tree numbers only.")+'</p>';
