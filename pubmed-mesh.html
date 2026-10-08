@@ -162,6 +162,7 @@
   .mnm:hover{text-decoration:underline}
   .mrow .x{margin-left:auto;border:0;background:none;color:#9AA3A0;cursor:pointer;font-size:16px;line-height:1;padding:0 3px}
   .mrow .x:hover{color:#9B3B2E}
+  .proxwarn{font-size:12px;color:var(--warn);background:var(--warnbg);border-left:3px solid var(--sh-amber);border-radius:6px;padding:4px 8px;margin-bottom:6px}
   .chips{display:flex;flex-wrap:wrap;gap:4px;max-height:150px;overflow:auto}
   .chip{display:inline-flex;align-items:center;gap:3px;background:#F1F5F2;border:1px solid #D3DFD7;border-radius:12px;padding:1px 4px 1px 9px;font-size:12.5px}
   .chip.multi{background:#FBF6EC;border-color:#EBD9B4}
@@ -217,16 +218,16 @@
   <div class="panel">
     <h2><span data-zh>使用提示</span><span data-en>Tips</span></h2>
     <ul class="tips" data-zh>
-      <li><b>主題詞（含下位詞）[mh]</b> 會自動包含樹狀結構中所有下位（狹義）標目；<b>僅此標目 [mh:noexp]</b> 則不含。<b>主要主題 [majr]</b> 只找以此為文章重點的文獻。</li>
+      <li><b>控制辭彙（含狹義詞）[mh]</b> 會自動包含樹狀結構中所有下位（狹義）標目；<b>不含狹義詞 [mh:noexp]</b> 則只找此標目。<b>重點控制辭彙 [majr]</b> 只找以此為文章重點的文獻。</li>
       <li>Entry Terms 常是倒裝形式（例：Attack, Heart），加入時會自動轉成自然語序 Heart Attack，才能在題名／摘要中比對到。</li>
-      <li><b>鄰近字</b>：每列可設定一次，套用到該列所有兩個字以上的自由詞，例：<code>"hip fracture"[tiab:~3]</code> 會找到 fracture of the hip。PubMed 鄰近字只支援題名［ti］與題名／摘要［tiab］，且不能與截字 * 併用。</li>
+      <li><b>鄰近字</b>：每列可設定一次，套用到該列所有兩個字以上的自由詞，例：<code>"hip fracture"[tiab:~3]</code> 會找到 fracture of the hip。PubMed 鄰近字只支援篇名/摘要 [tiab] 與篇名 [ti]；選所有欄位 [all] 或文字欄位 [tw] 時不套用，且不能與截字 * 併用。</li>
       <li><b>出版類型 [pt]</b>：研究設計欄位加入 Randomized Controlled Trial、Meta-Analysis 等標目時預設為 [pt]（例：<code>"Randomized Controlled Trial"[pt]</code>）。請同時放自由詞（randomized、placebo），以免漏掉尚未標引的新文獻。</li>
       <li>比較（C）若與介入相同概念，通常不必納入 AND 組合，可取消勾選「納入」。</li>
     </ul>
     <ul class="tips" data-en>
-      <li><b>MeSH, incl. narrower [mh]</b> explodes to every narrower heading in the tree; <b>this heading only [mh:noexp]</b> does not. <b>Major topic [majr]</b> finds articles where it is a main focus.</li>
+      <li><b>MeSH (incl. narrower) [mh]</b> explodes to every narrower heading in the tree; <b>no narrower [mh:noexp]</b> searches this heading only. <b>Major MeSH [majr]</b> finds articles where it is a main focus.</li>
       <li>Entry Terms are often inverted (e.g. Attack, Heart); they are automatically converted to natural order (Heart Attack) so they match titles/abstracts.</li>
-      <li><b>Proximity</b>: set once per row; it applies to every multi-word free-text term in that row, e.g. <code>"hip fracture"[tiab:~3]</code> also finds fracture of the hip. PubMed proximity works only in [ti] and [tiab], and not with truncation *.</li>
+      <li><b>Proximity</b>: set once per row; it applies to every multi-word free-text term in that row, e.g. <code>"hip fracture"[tiab:~3]</code> also finds fracture of the hip. PubMed proximity works only in [tiab] and [ti] (not applied with [all] / [tw]), and not with truncation *.</li>
       <li><b>Publication type [pt]</b>: in Study design, headings such as Randomized Controlled Trial or Meta-Analysis default to [pt] (e.g. <code>"Randomized Controlled Trial"[pt]</code>). Add free-text too (randomized, placebo) to catch not-yet-indexed records.</li>
       <li>If the Comparison duplicates the Intervention concept, untick "Include" so it is not ANDed.</li>
     </ul>
@@ -268,11 +269,11 @@ var LVL_NAME={ zh:{all:"所有欄位 [all]", tw:"文字欄位 [tw]", tiab:"篇�
 var OLD_LVL={L0:"all", L1:"tiab", L2:"ti", L3:"ti"};   // 舊版存的 L0～L3 對應到欄位
 // 控制詞彙可選欄位（顯示名稱用白話，後面附 PubMed 代碼）
 var MESH_TAGS=[
-  {v:"mh",          zh:"主題詞・含下位詞 [mh]",           en:"MeSH, incl. narrower [mh]"},
-  {v:"mh:noexp",    zh:"主題詞・僅此標目 [mh:noexp]",     en:"MeSH, this heading only [mh:noexp]"},
-  {v:"majr",        zh:"主要主題・含下位詞 [majr]",       en:"Major topic, incl. narrower [majr]"},
-  {v:"majr:noexp",  zh:"主要主題・僅此標目 [majr:noexp]", en:"Major topic, this heading only [majr:noexp]"},
-  {v:"pt",          zh:"出版類型・研究設計 [pt]",         en:"Publication type [pt]"}
+  {v:"mh",          zh:"控制辭彙（含狹義詞）[mh]",             en:"MeSH (incl. narrower) [mh]"},
+  {v:"majr",        zh:"重點控制辭彙（含狹義詞）[majr]",       en:"Major MeSH (incl. narrower) [majr]"},
+  {v:"mh:noexp",    zh:"控制辭彙（不含狹義詞）[mh:noexp]",     en:"MeSH (no narrower) [mh:noexp]"},
+  {v:"majr:noexp",  zh:"重點控制辭彙（不含狹義詞）[majr:noexp]", en:"Major MeSH (no narrower) [majr:noexp]"},
+  {v:"pt",          zh:"出版類型・研究設計 [pt]",             en:"Publication type [pt]"}
 ];
 // 研究設計列：這些標目同時是 PubMed 出版類型，加入時預設用 [pt]
 var PT_RE=/^(randomized controlled trial|controlled clinical trial|clinical trial(, phase [iv]+)?|pragmatic clinical trial|equivalence trial|multicenter study|observational study|comparative study|meta-analysis|systematic review|review|practice guideline|guideline|case reports|evaluation study|validation study|twin study|clinical study|adaptive clinical trial)$/i;
@@ -647,11 +648,17 @@ function renderRows(){
       fh.innerHTML='<b>'+T("自由詞","Free-text")+'</b> · '+fi.length;
       var lv=document.createElement("select"); lv.className="sm"; lv.title=T("自由詞的檢索欄位","Search field for free-text");
       fillSelect(lv, lvlOpts(), lvlOf(k));
-      lv.addEventListener("change", function(){ st.level=lv.value; save(); renderStrategy(); });
-      var px=document.createElement("select"); px.className="sm"; px.title=T("套用到此列所有兩個字以上的自由詞（PubMed [tiab:~N]；含截字 * 的詞除外）","Applies to every multi-word free-text term in this row (PubMed [tiab:~N]; terms with * excluded)");
+      lv.addEventListener("change", function(){ st.level=lv.value; save(); renderRows(); renderStrategy(); });
+      var px=document.createElement("select"); px.className="sm"; px.title=T("套用到此列所有兩個字以上的自由詞；只在篇名/摘要 [tiab]、篇名 [ti] 有效，含截字 * 的詞除外","Applies to every multi-word free-text term in this row; works only with [tiab] / [ti], terms with * excluded");
       fillSelect(px,[{v:"",zh:"鄰近字：不使用（完整片語）",en:"Proximity: off (exact phrase)"}].concat(PROX_N.map(function(n){return {v:n,zh:"鄰近字：~"+n+" 字內",en:"Proximity: within "+n};})), st.prox||"");
-      px.addEventListener("change", function(){ st.prox=px.value; save(); renderStrategy(); });
+      px.addEventListener("change", function(){ st.prox=px.value; save(); renderRows(); renderStrategy(); });
       fh.appendChild(lv); fh.appendChild(px); colF.appendChild(fh);
+      if(st.prox && !proxOK(lvlOf(k))){
+        var pw=document.createElement("div"); pw.className="proxwarn";
+        pw.textContent=T("「"+LVL_NAME.zh[lvlOf(k)]+"」不支援鄰近字，此列自由詞以完整片語檢索；要用鄰近字請改選篇名/摘要 [tiab] 或篇名 [ti]。",
+                         LVL_NAME.en[lvlOf(k)]+" does not support proximity, so this row searches exact phrases; choose Title/Abstract [tiab] or Title [ti] to use proximity.");
+        colF.appendChild(pw);
+      }
       var chips=document.createElement("div"); chips.className="chips";
       fi.forEach(function(it){
         var ch=document.createElement("span"); ch.className="chip"+(wordCount(it.text)>=2&&!/\*/.test(it.text)?" multi":"");
@@ -773,16 +780,13 @@ function drawEntryList(d, ctx){
 }
 
 // ===== 檢索策略 =====
+function proxOK(lv){ return lv==="tiab"||lv==="ti"; }   // PubMed 鄰近字只支援 [tiab]／[ti]
 function fmt(it, lv, prox){
   var t=it.text;
   if(it.type==="mesh") return '"'+t+'"['+(it.tag||"mh")+']';
-  var f=lv;
-  if(prox && wordCount(t)>=2 && !/\*/.test(t)){
-    // PubMed 鄰近字只支援 [ti]／[tiab]（[all]／[tw] 以 [tiab] 代替）
-    return '"'+t+'"['+(f==="ti"?"ti":"tiab")+':~'+prox+']';
-  }
+  if(prox && proxOK(lv) && wordCount(t)>=2 && !/\*/.test(t)) return '"'+t+'"['+lv+':~'+prox+']';
   var needQ=/\s|[-\/]/.test(t) && !/\*/.test(t);   // 片語加引號；截字（*）不可加引號
-  return (needQ?'"'+t+'"':t)+"["+f+"]";
+  return (needQ?'"'+t+'"':t)+"["+lv+"]";
 }
 var lines=[];
 function buildLines(){
@@ -791,7 +795,7 @@ function buildLines(){
     var st=state.concepts[c.k]; if(!st.items.length) return;
     var lv=lvlOf(c.k);
     var its=st.items.filter(function(i){return i.type==="mesh";}).concat(st.items.filter(function(i){return i.type==="ft";}));
-    n++; lines.push({n:n, k:c.k, label:c.k+" "+conceptName(c.k)+" ("+lv+(st.prox?", ~"+st.prox:"")+")", q:its.map(function(i){return fmt(i,lv,st.prox);}).join(" OR "), on:st.on});
+    n++; lines.push({n:n, k:c.k, label:c.k+" "+conceptName(c.k)+" ("+lv+(st.prox&&proxOK(lv)?", ~"+st.prox:"")+")", q:its.map(function(i){return fmt(i,lv,st.prox);}).join(" OR "), on:st.on});
     if(st.on) used.push(n);
   });
   if(used.length>1){ n++; lines.push({n:n, k:"", label:T("組合","Combine"), q:used.map(function(x){return "#"+x;}).join(" AND "), comb:true}); }
