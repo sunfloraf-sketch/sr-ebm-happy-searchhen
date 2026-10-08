@@ -166,6 +166,9 @@
   .sgi mark{background:#FBF1DE;color:inherit;padding:0 1px;border-radius:2px}
   .sgi .use{color:var(--mut);font-size:13px}
   .sgc{font-size:12px;color:var(--mut);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .ftadd{border:1px dashed var(--sh-green);background:#fff;color:var(--sh-green-d);border-radius:14px;padding:3px 10px;font-size:12.5px;cursor:pointer;font-family:inherit;white-space:nowrap}
+  .ftadd:hover{background:#EEF4F0}
+  .ftadd[hidden]{display:none}
   .sgfree{border-top:1px dashed var(--line);border-radius:0 0 6px 6px;color:var(--sh-green-d)}
   .crow .status{margin-top:4px;font-size:12.5px}
   .rset{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin-top:6px;font-size:12px;color:var(--mut)}
@@ -231,8 +234,8 @@
     <ul class="tips" data-zh>
       <li><b>控制辭彙（含狹義詞）[mh]</b> 會自動包含樹狀結構中所有下位（狹義）標目；<b>不含狹義詞 [mh:noexp]</b> 則只找此標目。<b>重點控制辭彙 [majr]</b> 只找以此為文章重點的文獻。</li>
       <li>Entry Terms 常是倒裝形式（例：Attack, Heart），加入時會自動轉成自然語序 Heart Attack，才能在題名／摘要中比對到。</li>
-      <li><b>鄰近字</b>：每列可設定一次，套用到該列所有兩個字以上的自由詞，例：<code>"hip fracture"[tiab:~3]</code> 會找到 fracture of the hip。PubMed 鄰近字只支援篇名/摘要 [tiab] 與篇名 [ti]；選所有欄位 [all] 或文字欄位 [tw] 時不套用，且不能與截字 * 併用。</li>
-      <li><b>出版類型 [pt]</b>：研究設計欄位加入 Randomized Controlled Trial、Meta-Analysis 等標目時預設為 [pt]（例：<code>"Randomized Controlled Trial"[pt]</code>）。請同時放自由詞（randomized、placebo），以免漏掉尚未標引的新文獻。</li>
+      <li><b>鄰近字</b>：每列可設定一次，套用到該列所有兩個字以上的自由詞彙，例：<code>"hip fracture"[tiab:~3]</code> 會找到 fracture of the hip。PubMed 鄰近字只支援篇名/摘要 [tiab] 與篇名 [ti]；選所有欄位 [all] 或文字欄位 [tw] 時不套用，且不能與截字 * 併用。</li>
+      <li><b>出版類型 [pt]</b>：研究設計欄位加入 Randomized Controlled Trial、Meta-Analysis 等標目時預設為 [pt]（例：<code>"Randomized Controlled Trial"[pt]</code>）。請同時放自由詞彙（randomized、placebo），以免漏掉尚未標引的新文獻。</li>
       <li>比較（C）若與介入相同概念，通常不必納入 AND 組合，可取消勾選「納入」。</li>
     </ul>
     <ul class="tips" data-en>
@@ -273,7 +276,7 @@ var CONCEPTS=[
   {k:"O", zh:"結果", en:"Outcome"},
   {k:"S", zh:"研究設計", en:"Study design"}
 ];
-// 自由詞檢索欄位
+// 自由詞彙檢索欄位
 var LEVELS=["all","tw","tiab","ti"];
 var LVL_NAME={ zh:{all:"所有欄位 [all]", tw:"文字欄位 [tw]", tiab:"篇名/摘要 [tiab]", ti:"篇名 [ti]"},
                en:{all:"All Fields [all]", tw:"Text Word [tw]", tiab:"Title/Abstract [tiab]", ti:"Title [ti]"} };
@@ -414,7 +417,7 @@ function loadTree(dId){
   });
 }
 
-// ===== 自由詞整理 =====
+// ===== 自由詞彙整理 =====
 // 倒裝詞轉自然語序：Attack, Heart → Heart Attack；Diabetes Mellitus, Type 2 → Type 2 Diabetes Mellitus
 function unInvert(s){
   s=String(s).trim();
@@ -544,7 +547,10 @@ var rowQ={}, sugTok={}, sugList={}, sugIdx={}, sugTimer={}, sugTerm={};
 function onType(k){
   clearTimeout(sugTimer[k]);
   var term=ftNorm(rowQ[k]||"");
-  if(term.length<3){ closeSug(k); return; }
+  if(!term){ closeSug(k); return; }
+  sugTok[k]=(sugTok[k]||0)+1; sugTerm[k]=term;
+  if(term.length<3){ sugList[k]=[]; sugIdx[k]=0; drawSug(k); return; }   // 字太短不查 MeSH，只提供加為自由詞彙
+  sugList[k]=null; sugIdx[k]=0; drawSug(k);
   sugTimer[k]=setTimeout(function(){ runSuggest(k, term); }, 300);
 }
 function runSuggest(k, term){
@@ -574,27 +580,28 @@ function drawSug(k){
   var box=$("sg-"+k); if(!box) return;
   var list=sugList[k], term=sugTerm[k]||"", toks=qToks(term);
   box.hidden=false;
-  if(list==null){ box.innerHTML='<div class="sgmsg">'+T("搜尋 MeSH…","Searching MeSH…")+'</div>'; return; }
-  var h=list.length?'':'<div class="sgmsg">'+T("找不到對應的 MeSH 標目。","No matching MeSH heading.")+'</div>';
+  var h=list==null?'<div class="sgmsg">'+T("搜尋 MeSH…","Searching MeSH…")+'</div>':
+        list.length?'':(term.length<3?'<div class="sgmsg">'+T("輸入 3 個字母以上會提示 MeSH 標目","Type 3+ letters for MeSH suggestions")+'</div>':'<div class="sgmsg">'+T("找不到對應的 MeSH 標目。","No matching MeSH heading.")+'</div>');
+  list=list||[];
   h+=list.map(function(c,i){
     var main=c.via?(hl(c.via,toks)+' <span class="use">'+T("使用：","use: ")+'<b>'+esc(c.label)+'</b></span>'):('<b>'+hl(c.label,toks)+'</b>');
     return '<button type="button" class="sgi'+(i===sugIdx[k]?' on':'')+'" data-i="'+i+'"><span class="sgt">'+main+'</span><span class="sgc" id="sgc-'+k+'-'+esc(c.dId)+'">'+(c.count!=null?fmtN(c.count):"")+'</span></button>';
   }).join("");
-  h+='<button type="button" class="sgi sgfree'+(sugIdx[k]===list.length?' on':'')+'" data-i="'+list.length+'"><span class="sgt">＋ '+T("以「","Use \"")+'<i>'+esc(term)+'</i>'+T("」作為自由詞","\" as free-text")+'</span></button>';
+  h+='<button type="button" class="sgi sgfree'+(sugIdx[k]===list.length?' on':'')+'" data-i="'+list.length+'"><span class="sgt">＋ '+T("以「","Use \"")+'<i>'+esc(ftNorm(rowQ[k]||term))+'</i>'+T("」作為自由詞彙","\" as free-text")+'</span></button>';
   box.innerHTML=h;
   box.querySelectorAll(".sgi").forEach(function(b){
     b.addEventListener("mousedown", function(e){ e.preventDefault(); });   // 不讓輸入框先失去焦點
     b.addEventListener("click", function(){ pickSug(k, +b.getAttribute("data-i")); });
   });
 }
-function closeSug(k){ sugTok[k]=(sugTok[k]||0)+1; sugList[k]=[]; var box=$("sg-"+k); if(box){ box.hidden=true; box.innerHTML=""; } }
+function closeSug(k){ clearTimeout(sugTimer[k]); sugTok[k]=(sugTok[k]||0)+1; sugList[k]=[]; var box=$("sg-"+k); if(box){ box.hidden=true; box.innerHTML=""; } }
 function pickSug(k, i){
   var list=sugList[k]||[];
-  if(i<list.length) chooseCand(k, list[i]); else addFt(k, sugTerm[k]||rowQ[k]);
+  if(i<list.length) chooseCand(k, list[i]); else addFt(k, rowQ[k]||sugTerm[k]);
 }
 function onKey(k, e){
-  var list=sugList[k], box=$("sg-"+k), open=box&&!box.hidden&&list;
-  var max=open?list.length:0;
+  var list=sugList[k]||[], box=$("sg-"+k), open=box&&!box.hidden;
+  var max=list.length;
   if(e.key==="ArrowDown"&&open){ e.preventDefault(); sugIdx[k]=Math.min(max,(sugIdx[k]||0)+1); drawSug(k); }
   else if(e.key==="ArrowUp"&&open){ e.preventDefault(); sugIdx[k]=Math.max(0,(sugIdx[k]||0)-1); drawSug(k); }
   else if(e.key==="Escape"){ closeSug(k); }
@@ -686,7 +693,7 @@ function renderRows(){
           function(panel){ fillEntryPanel(panel, k, it); }));
       }
     });
-    // 自由詞標籤（不屬於任何標目的）
+    // 自由詞彙標籤（不屬於任何標目的）
     var dIds={}; mi.forEach(function(m){ if(m.dId) dIds[m.dId]=1; });
     st.items.filter(function(i){ return i.type==="ft" && !(i.from && dIds[i.from]); }).forEach(function(it){
       var sp=document.createElement("span"); sp.className="pill fpill";
@@ -699,31 +706,35 @@ function renderRows(){
     var wrap=document.createElement("div"); wrap.className="qwrap";
     var q=document.createElement("input"); q.type="text"; q.id="q-"+k; q.autocomplete="off"; q.spellcheck=false; q.value=rowQ[k]||"";
     q.placeholder=st.items.length?T("＋ 再加入一個詞","+ add another term"):T("輸入英文檢索詞…","Type an English term…");
-    q.addEventListener("input", function(){ rowQ[k]=q.value; onType(k); });
+    q.addEventListener("input", function(){ rowQ[k]=q.value; onType(k); fa.hidden=!ftNorm(q.value); });
     q.addEventListener("keydown", function(e){ onKey(k,e); });
     q.addEventListener("focus", function(){ state.active=k; document.querySelectorAll(".crow").forEach(function(r){ r.classList.toggle("active", r.id==="row-"+k); }); });
     q.addEventListener("blur", function(){ setTimeout(function(){ closeSug(k); }, 150); });
     var sg=document.createElement("div"); sg.className="sugg"; sg.id="sg-"+k; sg.hidden=true;
-    wrap.appendChild(q); wrap.appendChild(sg); line.appendChild(wrap);
+    var fa=document.createElement("button"); fa.type="button"; fa.className="ftadd"; fa.hidden=!ftNorm(rowQ[k]||"");
+    fa.textContent=T("＋ 加為自由詞彙","+ Add as free-text"); fa.title=T("把輸入框中的字直接加為自由詞彙","Add what you typed as a free-text term");
+    fa.addEventListener("mousedown", function(e){ e.preventDefault(); });
+    fa.addEventListener("click", function(){ addFt(k, rowQ[k]); });
+    wrap.appendChild(q); wrap.appendChild(sg); line.appendChild(wrap); line.appendChild(fa);
     row.appendChild(line);
     var stEl=document.createElement("div"); stEl.className="status"; stEl.id="st-"+k; row.appendChild(stEl);
-    // 自由詞設定（有自由詞時才顯示）
+    // 自由詞彙設定（有自由詞彙時才顯示）
     if(st.items.some(function(i){ return i.type==="ft"; })){
       var rs=document.createElement("div"); rs.className="rset";
-      rs.innerHTML='<span>'+T("自由詞欄位","Free-text field")+'</span>';
+      rs.innerHTML='<span>'+T("自由詞彙欄位","Free-text field")+'</span>';
       var lvs=document.createElement("select"); lvs.className="sm"; fillSelect(lvs, lvlOpts(), lv);
       lvs.addEventListener("change", function(){ st.level=lvs.value; save(); renderRows(); renderStrategy(); });
       rs.appendChild(lvs);
       rs.insertAdjacentHTML("beforeend",'<span>'+T("鄰近字","Proximity")+'</span>');
       var px=document.createElement("select"); px.className="sm";
-      px.title=T("套用到此列所有兩個字以上的自由詞；只在篇名/摘要 [tiab]、篇名 [ti] 有效，含截字 * 的詞除外","Applies to every multi-word free-text term in this row; works only with [tiab] / [ti], terms with * excluded");
+      px.title=T("套用到此列所有兩個字以上的自由詞彙；只在篇名/摘要 [tiab]、篇名 [ti] 有效，含截字 * 的詞除外","Applies to every multi-word free-text term in this row; works only with [tiab] / [ti], terms with * excluded");
       fillSelect(px,[{v:"",zh:"不使用（完整片語）",en:"Off (exact phrase)"}].concat(PROX_N.map(function(n){return {v:n,zh:"~"+n+" 字內",en:"within "+n};})), st.prox||"");
       px.addEventListener("change", function(){ st.prox=px.value; save(); renderRows(); renderStrategy(); });
       rs.appendChild(px);
       row.appendChild(rs);
       if(st.prox && !proxOK(lv)){
         var pw=document.createElement("div"); pw.className="proxwarn";
-        pw.textContent=T("「"+LVL_NAME.zh[lv]+"」不支援鄰近字，此列自由詞以完整片語檢索；要用鄰近字請改選篇名/摘要 [tiab] 或篇名 [ti]。",
+        pw.textContent=T("「"+LVL_NAME.zh[lv]+"」不支援鄰近字，此列自由詞彙以完整片語檢索；要用鄰近字請改選篇名/摘要 [tiab] 或篇名 [ti]。",
                          LVL_NAME.en[lv]+" does not support proximity, so this row searches exact phrases; choose Title/Abstract [tiab] or Title [ti] to use proximity.");
         row.appendChild(pw);
       }
@@ -811,7 +822,7 @@ function drawEntryList(d, ctx){
     el.innerHTML=head+'</h4>'+(d.entries.length?'<div class="sidelist">'+etView(d.entries).map(function(j){ var by=etCoveredBy(d.entries, j, etView(d.entries)); return '<span'+(by>=0?' class="covered"':'')+'>'+esc(etShow(d.entries[j]))+(by>=0?' <span class="inv">'+T("已涵蓋於 ","covered by ")+esc(etShow(d.entries[by]))+'</span>':'')+'</span>';}).join("")+'</div>':'<p class="sideempty">'+T("無","None")+'</p>');
     return;
   }
-  // 已加入此列：顯示哪些 Entry Terms 已帶入為自由詞，可直接勾選增減
+  // 已加入此列：顯示哪些 Entry Terms 已帶入為自由詞彙，可直接勾選增減
   var inCount=0;
   var all=etView(d.entries);
   var list=all.map(function(j){
@@ -821,7 +832,7 @@ function drawEntryList(d, ctx){
     return '<label'+(by>=0?' class="covered"':'')+'><input type="checkbox" data-j="'+j+'"'+(it?" checked":"")+'> '+esc(txt)+(by>=0?' <span class="inv">'+T("已涵蓋於 ","covered by ")+esc(etShow(d.entries[by]))+'</span>':'')+'</label>';
   }).join("");
   el.innerHTML=head+' <span class="inv">'+T("已帶入 ","brought in ")+inCount+'</span></h4>'+
-    '<p class="sideempty" style="margin:0 0 6px">'+T("勾選＝已加入 "+k+" 的自由詞；勾掉即移除。","Ticked = in "+k+"'s free-text; untick to remove.")+'</p>'+
+    '<p class="sideempty" style="margin:0 0 6px">'+T("勾選＝已加入 "+k+" 的自由詞彙；勾掉即移除。","Ticked = in "+k+"'s free-text; untick to remove.")+'</p>'+
     (d.entries.length?'<div class="sidelist">'+list+'</div>':'<p class="sideempty">'+T("此標目沒有 Entry Terms。","This heading has no entry terms.")+'</p>');
   el.querySelectorAll("input[data-j]").forEach(function(cb){ cb.addEventListener("change", function(){
     var e=d.entries[+cb.getAttribute("data-j")], txt=ftNorm(unInvert(e));
