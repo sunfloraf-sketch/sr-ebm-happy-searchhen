@@ -119,8 +119,7 @@
   .tips{font-size:12.5px;color:var(--mut);line-height:1.7;margin:0;padding-left:18px}
   .warnbox{background:var(--warnbg);border-left:4px solid var(--sh-amber);border-radius:8px;padding:8px 12px;font-size:12.5px;color:var(--warn);margin-top:10px}
   .rows{display:flex;flex-direction:column;gap:10px}
-  .crow{border:1px solid var(--sh-line);border-radius:11px;background:var(--sh-paper2);padding:9px 12px}
-  .crow.active{border-color:var(--sh-amber);box-shadow:0 0 0 2px rgba(174,116,48,.15)}
+  .crow{padding:10px 2px;border-bottom:1px solid var(--sh-line)}
   .rhd{display:flex;align-items:center;gap:8px;margin-bottom:8px}
   .rhd .inc{font-size:12px;color:var(--mut);display:flex;gap:4px;align-items:center}
   .qwrap{position:relative;flex:1;min-width:220px}
@@ -140,11 +139,9 @@
   .rdel{border:0;background:none;color:#9AA3A0;cursor:pointer;font-size:17px;line-height:1;padding:0 2px}
   .rdel:hover{color:#9B3B2E}
   .addrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px;color:var(--mut);padding:2px 2px 0}
-  .rhd .eg{font-size:12px;color:var(--mut)}
   .rhd .sp{flex:1}
   .rhd .rc{font-size:12.5px;color:var(--sh-green-d);font-variant-numeric:tabular-nums}
-  .tokline{display:flex;flex-wrap:wrap;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:5px 6px;min-height:42px}
-  .crow.active .tokline{border-color:var(--sh-green)}
+  .tokline{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:2px 0;min-height:34px}
   .qwrap{position:relative;flex:1 1 180px;min-width:160px}
   .qwrap input{width:100%;border:0;outline:0;background:transparent;font-size:14px;padding:5px 4px}
   .pill{position:relative;display:inline-flex;align-items:center;font-size:13px;border-radius:14px;line-height:1.3}
@@ -708,10 +705,8 @@ function renderRows(){
     var k=c.k, st=state.concepts[k], lv=lvlOf(k);
     var row=document.createElement("div"); row.className="crow"+(state.active===k?" active":""); row.id="row-"+k;
     var hd=document.createElement("div"); hd.className="rhd";
-    var eg=TYPES[c.type].eg;
     hd.innerHTML='<input class="kcode" value="'+esc(c.code)+'" maxlength="8" spellcheck="false" title="'+esc(T("點一下可修改代號（例：P1）","Click to rename the code (e.g. P1)"))+'">'+
       '<input class="kname" value="'+esc(conceptName(k))+'" maxlength="40" spellcheck="false" title="'+esc(T("點一下可修改名稱","Click to rename"))+'">'+
-      (eg?'<span class="eg">'+T("例：","e.g. ")+esc(eg)+'</span>':'')+
       '<span class="sp"></span><span class="rc" id="rc-'+k+'"></span>';
     var kc=hd.querySelector(".kcode"), kn=hd.querySelector(".kname");
     kc.style.width=Math.max(2.2,(c.code.length+1.4))+"ch";
@@ -764,7 +759,8 @@ function renderRows(){
     // 輸入框＋即時候選
     var wrap=document.createElement("div"); wrap.className="qwrap";
     var q=document.createElement("input"); q.type="text"; q.id="q-"+k; q.autocomplete="off"; q.spellcheck=false; q.value=rowQ[k]||"";
-    q.placeholder=st.items.length?T("＋ 再加入一個詞","+ add another term"):T("輸入英文檢索詞…","Type an English term…");
+    var eg=TYPES[c.type].eg;
+    q.placeholder=st.items.length?T("＋ 再加入一個詞","+ add another term"):(T("輸入英文檢索詞","Type an English term")+(eg?T("，例："," e.g. ")+eg:"…"));
     q.addEventListener("input", function(){ rowQ[k]=q.value; onType(k); fa.hidden=!ftNorm(q.value); });
     q.addEventListener("keydown", function(e){ onKey(k,e); });
     q.addEventListener("focus", function(){ state.active=k; document.querySelectorAll(".crow").forEach(function(r){ r.classList.toggle("active", r.id==="row-"+k); }); });
