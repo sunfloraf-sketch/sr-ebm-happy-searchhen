@@ -118,22 +118,13 @@
   .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;align-items:center}
   .tips{font-size:12.5px;color:var(--mut);line-height:1.7;margin:0;padding-left:18px}
   .warnbox{background:var(--warnbg);border-left:4px solid var(--sh-amber);border-radius:8px;padding:8px 12px;font-size:12.5px;color:var(--warn);margin-top:10px}
-  .rows{display:flex;flex-direction:column;gap:14px}
-  .crow{border:1px solid var(--sh-line);border-radius:11px;background:var(--sh-paper2);padding:10px 12px}
+  .rows{display:flex;flex-direction:column;gap:10px}
+  .crow{border:1px solid var(--sh-line);border-radius:11px;background:var(--sh-paper2);padding:9px 12px}
   .crow.active{border-color:var(--sh-amber);box-shadow:0 0 0 2px rgba(174,116,48,.15)}
   .rhd{display:flex;align-items:center;gap:8px;margin-bottom:8px}
   .rhd .k{font-weight:800;color:#fff;background:var(--sh-green);border-radius:6px;padding:0 8px;font-size:14px}
   .rhd .t{font-weight:700;font-size:14.5px;flex:1}
   .rhd .inc{font-size:12px;color:var(--mut);display:flex;gap:4px;align-items:center}
-  .rsearch{display:flex;gap:8px;flex-wrap:wrap}
-  .rsearch input{flex:1;min-width:200px;font-size:14px;padding:6px 10px}
-  .crow .status{margin-top:4px;font-size:12.5px;min-height:0}
-  .rgrid{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;margin-top:8px;align-items:stretch}
-  .rgrid .col{border:1px solid var(--sh-line);border-radius:9px;background:#fff;padding:8px 10px;min-width:0}
-  .colhd{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12.5px;color:var(--mut);margin-bottom:6px}
-  .colhd b{color:var(--sh-green-d)}
-  .orsep{align-self:center;font-weight:800;color:var(--sh-amber);font-size:13px;text-align:center}
-  .addft{width:100%;font-size:12.5px !important;padding:4px 7px !important;margin-top:4px}
   .qwrap{position:relative;flex:1;min-width:220px}
   .qwrap input{width:100%;font-size:14px;padding:7px 10px}
   .sugg{position:absolute;left:0;right:0;top:calc(100% + 3px);z-index:30;background:#fff;border:1px solid var(--sh-green);border-radius:9px;box-shadow:0 8px 24px rgba(31,69,56,.16);max-height:340px;overflow:auto;padding:4px}
@@ -142,34 +133,50 @@
   .sgi{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;width:100%;text-align:left;border:0;background:none;border-radius:6px;padding:6px 8px;cursor:pointer;font-family:inherit;font-size:14px;color:var(--ink)}
   .sgi small{color:#7A5617;font-size:12px}
   .sgi:hover,.sgi.on{background:#EEF4F0}
-  .addbar2[hidden],.sugg[hidden]{display:none}
-  .addbar2{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px;padding:8px 10px;border:1px solid var(--sh-amber);border-radius:9px;background:#FFFCF6;font-size:13px}
-  .abl{cursor:help}
-  .abk{font-size:11px;font-weight:700;color:#fff;background:var(--sh-green);border-radius:4px;padding:0 5px}
-  .etdd{position:relative}
-  .etdd summary{cursor:pointer;list-style:none;border:1px solid var(--line);border-radius:6px;padding:3px 9px;background:#fff;font-size:12.5px;user-select:none}
-  .etdd summary::-webkit-details-marker{display:none}
-  .etdd summary::after{content:" ▾";color:var(--mut)}
-  .etdd[open] summary{border-color:var(--sh-green)}
-  .etpanel{position:absolute;z-index:25;top:calc(100% + 4px);left:0;width:min(420px,80vw);background:#fff;border:1px solid var(--sh-green);border-radius:9px;box-shadow:0 8px 24px rgba(31,69,56,.16);padding:8px 10px}
-  .etpanel .etlist{display:flex;flex-direction:column;flex-wrap:nowrap;gap:2px;max-height:220px;overflow:auto;padding:4px 0;margin:4px 0;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line)}
-  .etpanel .etlist label{font-size:13px;display:flex;gap:6px;align-items:baseline;cursor:pointer}
-  .etpanel .opt{margin-top:4px}
-  .mrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:4px 0;border-bottom:1px dotted var(--sh-line)}
-  .mrow:last-child{border-bottom:0}
-  .mrow.focus .mnm{color:var(--sh-amber)}
-  .mnm{font-weight:700;color:var(--sh-green-d);cursor:pointer;flex:1 1 auto;min-width:0}
-  .mnm:hover{text-decoration:underline}
-  .mrow .x{margin-left:auto;border:0;background:none;color:#9AA3A0;cursor:pointer;font-size:16px;line-height:1;padding:0 3px}
-  .mrow .x:hover{color:#9B3B2E}
   .proxwarn{font-size:12px;color:var(--warn);background:var(--warnbg);border-left:3px solid var(--sh-amber);border-radius:6px;padding:4px 8px;margin-bottom:6px}
-  .chips{display:flex;flex-wrap:wrap;gap:4px;max-height:150px;overflow:auto}
-  .chip{display:inline-flex;align-items:center;gap:3px;background:#F1F5F2;border:1px solid #D3DFD7;border-radius:12px;padding:1px 4px 1px 9px;font-size:12.5px}
-  .chip.multi{background:#FBF6EC;border-color:#EBD9B4}
-  .chip button{border:0;background:none;color:#9AA3A0;cursor:pointer;font-size:14px;line-height:1;padding:0 3px}
-  .chip button:hover{color:#9B3B2E}
+  .rhd .eg{font-size:12px;color:var(--mut)}
+  .rhd .sp{flex:1}
+  .rhd .rc{font-size:12.5px;color:var(--sh-green-d);font-variant-numeric:tabular-nums}
+  .tokline{display:flex;flex-wrap:wrap;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:5px 6px;min-height:42px}
+  .crow.active .tokline{border-color:var(--sh-green)}
+  .qwrap{position:relative;flex:1 1 180px;min-width:160px}
+  .qwrap input{width:100%;border:0;outline:0;background:transparent;font-size:14px;padding:5px 4px}
+  .pill{position:relative;display:inline-flex;align-items:center;font-size:13px;border-radius:14px;line-height:1.3}
+  details.pill>summary{list-style:none;cursor:pointer;padding:3px 10px;border-radius:14px;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;user-select:none}
+  details.pill>summary::-webkit-details-marker{display:none}
+  details.pill>summary::after{content:"▾";font-size:10px;opacity:.65}
+  .mpill>summary{background:#FBF1DE;border:1px solid #EBD3A6;color:#5B4A2C}
+  .epill>summary{background:#E5EFF2;border:1px solid #C3D7DD;color:#2C4A55}
+  .fpill{background:#EEF2EF;border:1px solid #D3DFD7;padding:3px 4px 3px 10px;gap:4px}
+  .fpill button{border:0;background:none;color:#9AA3A0;cursor:pointer;font-size:14px;line-height:1;padding:0 3px}
+  .fpill button:hover{color:#9B3B2E}
+  .pdot{width:9px;height:9px;border-radius:50%;border:2px solid var(--sh-amber);display:inline-block}
+  .ptag{font-size:11px;opacity:.75;font-family:"SF Mono",Consolas,monospace}
+  .pillpanel{position:absolute;z-index:25;top:calc(100% + 4px);left:0;width:min(400px,80vw);background:#fff;border:1px solid var(--sh-green);border-radius:9px;box-shadow:0 8px 24px rgba(31,69,56,.16);padding:8px 10px;white-space:normal;color:var(--ink)}
+  .pph{font-size:12px;font-weight:700;color:var(--mut);margin-bottom:4px}
+  .prad{display:flex;gap:6px;align-items:center;font-size:13px;padding:2px 0;cursor:pointer}
+  .ppa{display:flex;gap:14px;margin-top:8px;padding-top:6px;border-top:1px dashed var(--line)}
+  .lnk.danger{color:#9B3B2E}
+  .pillpanel .etlist{display:flex;flex-direction:column;gap:2px;max-height:240px;overflow:auto}
+  .pillpanel .etlist label{font-size:13px;display:flex;gap:6px;align-items:baseline;cursor:pointer}
+  .pillpanel .etlist .covered{color:var(--mut)}
+  .sugg{position:absolute;left:0;top:calc(100% + 8px);width:min(560px,86vw);z-index:30;background:#fff;border:1px solid var(--sh-green);border-radius:9px;box-shadow:0 8px 24px rgba(31,69,56,.16);max-height:360px;overflow:auto;padding:4px}
+  .sgi{display:flex;align-items:baseline;gap:10px;width:100%;text-align:left;border:0;background:none;border-radius:6px;padding:6px 8px;cursor:pointer;font-family:inherit;font-size:14px;color:var(--ink)}
+  .sgt{flex:1;min-width:0}
+  .sgi mark{background:#FBF1DE;color:inherit;padding:0 1px;border-radius:2px}
+  .sgi .use{color:var(--mut);font-size:13px}
+  .sgc{font-size:12px;color:var(--mut);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .sgfree{border-top:1px dashed var(--line);border-radius:0 0 6px 6px;color:var(--sh-green-d)}
+  .crow .status{margin-top:4px;font-size:12.5px}
+  .rset{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin-top:6px;font-size:12px;color:var(--mut)}
+  .rset .proxwarn{margin:0}
+  .totalbar{margin-top:14px;display:flex;flex-direction:column;align-items:center;gap:6px}
+  .totalbtn{display:block;width:100%;text-align:center;background:var(--sh-green);color:#fff;text-decoration:none;font-size:16px;font-weight:700;padding:12px 16px;border-radius:9px}
+  .totalbtn:hover{background:var(--sh-green-d)}
+  .totalbtn.off{background:#B9C4BE;pointer-events:none}
+  .totalbtn b{font-size:18px}
   @media (max-width:980px){ main{grid-template-columns:minmax(0,1fr)} .side{position:static;max-height:none} }
-  @media (max-width:720px){ .rgrid{grid-template-columns:1fr} .orsep{text-align:left} main{padding:14px 16px 30px} header.sh .sh-in{padding:10px 16px} .concepts{grid-template-columns:1fr} }
+  @media (max-width:720px){ main{padding:14px 16px 30px} header.sh .sh-in{padding:10px 16px} .concepts{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
@@ -193,8 +200,12 @@
   <!-- ① PICO + Study Design：每列各自輸入檢索詞 -->
   <div class="panel">
     <h2><span data-zh>① PICO ＋ 研究設計</span><span data-en>① PICO + Study design</span></h2>
-    <div class="sub"><span data-zh>在任一列輸入英文檢索詞，下方會即時列出候選 MeSH 標目；選定後按「加入」，會同時加入控制詞彙與所有 Entry Terms（可在下拉選單取消勾選）。同一列內「控制詞彙 OR 自由詞」，勾選「納入」的列之間以 AND 組合。</span><span data-en>Type an English term in any row and matching MeSH headings appear below it; pick one and click "Add" to add the heading plus all its Entry Terms (untick any in the dropdown). Within a row: MeSH OR free-text; rows ticked "Include" are ANDed.</span></div>
+    <div class="sub"><span data-zh>在任一列輸入英文檢索詞並從候選清單選擇 MeSH 標目，會同時加入控制辭彙與其 Entry Terms；點標籤可調整欄位或增減詞彙。同一列內以 OR 連結，勾選「納入」的列之間以 AND 組合。</span><span data-en>Type an English term in any row and pick a MeSH heading — the heading and its Entry Terms are added together; click a tag to change its field or terms. Terms within a row are ORed; rows ticked "Include" are ANDed.</span></div>
     <div class="rows" id="rows"></div>
+    <div class="totalbar">
+      <a class="totalbtn" id="totalBtn" href="https://pubmed.ncbi.nlm.nih.gov/" target="_blank" rel="noopener"><span id="totalTxt"></span><span id="totalN"></span></a>
+      <label class="opt"><input type="checkbox" id="liveCb"> <span data-zh>即時顯示 PubMed 筆數（會自動將檢索式送至 NCBI E-utilities）</span><span data-en>Live PubMed counts (queries are sent to NCBI E-utilities automatically)</span></label>
+    </div>
   </div>
 
   <!-- ② 檢索策略 -->
@@ -208,10 +219,10 @@
         <button class="btn sm" id="copyBtn"><span data-zh>複製檢索式</span><span data-en>Copy query</span></button>
         <button class="btn sm line" id="copyLinesBtn"><span data-zh>複製逐行策略</span><span data-en>Copy line-by-line</span></button>
         <a class="btn sm line" id="openPm" href="https://pubmed.ncbi.nlm.nih.gov/" target="_blank" rel="noopener" style="text-decoration:none"><span data-zh>在 PubMed 執行 ↗</span><span data-en>Run in PubMed ↗</span></a>
-        <button class="btn sm line" id="countBtn"><span data-zh>估算各行 PubMed 筆數</span><span data-en>Estimate PubMed counts</span></button>
+        <button class="btn sm line" id="countBtn"><span data-zh>更新筆數</span><span data-en>Refresh counts</span></button>
         <button class="btn sm line" id="clearBtn" style="margin-left:auto"><span data-zh>清空全部</span><span data-en>Clear all</span></button>
       </div>
-      <div class="warnbox"><span data-zh>按「估算筆數」時，檢索式才會送到 NCBI E-utilities 官方 API；MeSH 查詢則使用 NLM MeSH API。其他資料只存在您的瀏覽器中。</span><span data-en>Only when you press "Estimate counts" is the query sent to the official NCBI E-utilities API; MeSH lookups use the NLM MeSH API. Everything else stays in your browser.</span></div>
+      <div class="warnbox"><span data-zh>開啟「即時顯示 PubMed 筆數」或按「更新筆數」時，檢索式會送到 NCBI E-utilities 官方 API 計算筆數；MeSH 查詢使用 NLM MeSH API。其他資料只存在您的瀏覽器中。</span><span data-en>With live counts on, or when you press "Refresh counts", queries are sent to the official NCBI E-utilities API to count results; MeSH lookups use the NLM MeSH API. Everything else stays in your browser.</span></div>
     </div>
   </div>
 
@@ -426,17 +437,58 @@ function removeItem(k, it, silent){
   var arr=itemsOf(k), i=arr.indexOf(it); if(i>=0) arr.splice(i,1);
   if(!silent){ save(); renderRows(); renderStrategy(); if(sideCtx) renderSide(); }
 }
+// 移除標目時，連同它帶入的 Entry Terms 一起移除
+function removeHeading(k, it){
+  state.concepts[k].items=itemsOf(k).filter(function(x){ return x!==it && !(x.type==="ft" && it.dId && x.from===it.dId); });
+  if(sideCtx && sideCtx.dId===it.dId){ sideCtx=null; }
+  save(); renderRows(); renderStrategy(); renderSide();
+}
+
+// 倒裝轉正後會重複的 Entry Term（Diabetes, Pregnancy-Induced ＝ Pregnancy-Induced Diabetes）只列一次
+function etShow(e){ return unInvert(e); }
+function etView(entries){ var seen={}, out=[]; entries.forEach(function(e,j){ var k=ftNorm(etShow(e)).toLowerCase(); if(!seen[k]){ seen[k]=1; out.push(j); } }); return out; }
+// 被涵蓋的 Entry Term：較短的詞整段出現在較長的詞裡（Gestational Diabetes 涵蓋 Gestational Diabetes Mellitus），
+// 片語檢索時短詞已能找到長詞的文獻，長詞多餘 → 加入時略過（在 Entry Terms 標籤中以灰字註明，可再勾回）
+function etWords(e){ return " "+ftNorm(etShow(e)).toLowerCase().replace(/[\s\-]+/g," ")+" "; }
+function etCovers(a, b){ var wa=etWords(a), wb=etWords(b); return wa!==wb && wb.indexOf(wa)>=0; }   // a 是否涵蓋 b
+function etCoveredBy(entries, j, pool){ var hit=-1; pool.forEach(function(i){ if(hit<0 && i!==j && etCovers(entries[i], entries[j])) hit=i; }); return hit; }
+function etVisible(s){ var all=etView(s.d.entries), on=all.filter(function(j){ return s.checks[j]; }); return all.filter(function(j){ return etCoveredBy(s.d.entries, j, on)<0; }); }
 
 // ===== 每列的狀態訊息：同時記住中英文，切換語言時跟著換 =====
 function S(zh,en){ return {zh:zh,en:en}; }
 var rowStatus={};
-function setStatus(k, msg, err){ rowStatus[k]=msg?{msg:msg,err:!!err}:null; drawStatus(k); }
-function drawStatus(k){ var el=$("st-"+k); if(!el) return; var m=rowStatus[k]; el.textContent=m?(isEn()?m.msg.en:m.msg.zh):""; el.className="status"+(m&&m.err?" err":""); }
+var stTimer={};
+function setStatus(k, msg, err){
+  rowStatus[k]=msg?{msg:msg,err:!!err}:null; drawStatus(k);
+  clearTimeout(stTimer[k]);
+  if(msg && !err) stTimer[k]=setTimeout(function(){ if(rowStatus[k] && rowStatus[k].msg===msg){ rowStatus[k]=null; drawStatus(k); } }, 4000);
+}
+function drawStatus(k){ var el=$("st-"+k); if(!el) return; var m=rowStatus[k]; el.textContent=m?(isEn()?m.msg.en:m.msg.zh):""; el.className="status"+(m&&m.err?" err":""); el.hidden=!m; }
 function connMsg(e){
   var local=location.protocol==="file:", why=(e&&e.message)||"";
   return S("無法連線 MeSH API（"+why+"）。"+(local?"若在 App 內預覽，請下載後用 Chrome／Edge 開啟。":"請確認網路連線後再試。"),
            "Could not reach the MeSH API ("+why+"). "+(local?"If previewing inside an app, download the file and open it in Chrome / Edge.":"Please check your connection and try again."));
 }
+
+// ===== PubMed 筆數（NCBI E-utilities）：依序送出、每次間隔 350ms（未帶 API key 限每秒 3 次），結果快取 =====
+var countCache={}, countJobs=[], countBusy=false;
+function getCount(q, front, alive){
+  if(q in countCache) return Promise.resolve(countCache[q]);
+  return new Promise(function(res){ var job={q:q,res:res,alive:alive}; if(front) countJobs.unshift(job); else countJobs.push(job); pumpCount(); });
+}
+function pumpCount(){
+  if(countBusy||!countJobs.length) return;
+  var job=countJobs.shift();
+  if(job.q in countCache){ job.res(countCache[job.q]); pumpCount(); return; }
+  if(job.alive && !job.alive()){ job.res(null); pumpCount(); return; }   // 已過時（例：候選清單已換掉）就略過
+  countBusy=true;
+  eutils("esearch.fcgi",{db:"pubmed",term:job.q,retmode:"json",retmax:"0"}).then(function(j){
+    var c=j&&j.esearchresult&&j.esearchresult.count; c=(c!=null)?+c:null; if(c!=null) countCache[job.q]=c; return c;
+  },function(){ return null; }).then(function(c){ job.res(c); setTimeout(function(){ countBusy=false; pumpCount(); },350); });
+}
+function fmtN(c){ return c==null?"—":Number(c).toLocaleString(); }
+var LIVE_KEY="sr_pubmed_mesh_live", live=true;
+try{ live=localStorage.getItem(LIVE_KEY)!=="0"; }catch(e){}
 
 // ===== 輸入時即時提示候選 MeSH 標目 =====
 // 同時查「標目名稱」與「Entry Term」，例：gestational diabet → Diabetes, Gestational（Entry Term：Gestational Diabetes）
@@ -465,12 +517,12 @@ function suggest(term){
       return termsToDesc(ts);
     });
   return Promise.all([pD,pT]).then(function(r){
-    if(apiErrs.length && !(r[0]||[]).length && !(r[1]||[]).length && apiErrs.length>=4){ throw new Error(apiErrs[0]); }
+    if(apiErrs.length>=4 && !(r[0]||[]).length && !(r[1]||[]).length){ throw new Error(apiErrs[0]); }
     var seen={}, out=[];
     (r[0]||[]).concat(r[1]||[]).forEach(function(x){
       if(!x.dId) return;
-      if(seen[x.dId]){ if(x.via && !seen[x.dId].via && x.via.toLowerCase()!==seen[x.dId].label.toLowerCase()) seen[x.dId].via=x.via; return; }
-      if(x.via && x.via.toLowerCase()===x.label.toLowerCase()) x.via="";
+      if(seen[x.dId]){ if(x.via && !seen[x.dId].via && !pfxOK(seen[x.dId].label,toks)) seen[x.dId].via=x.via; return; }   // 標目名稱本身就對得上 → 不必再顯示 Entry Term
+      if(x.via && (x.via.toLowerCase()===x.label.toLowerCase() || pfxOK(x.label,toks))) x.via="";
       seen[x.dId]=x; out.push(x);
     });
     // 排序：完全相同 → 開頭相同 → 每個字都對得上 → 其他；同級以字數少者優先
@@ -488,7 +540,7 @@ function suggest(term){
     });
   });
 }
-var rowQ={}, sugTok={}, sugList={}, sugIdx={}, sugTimer={};
+var rowQ={}, sugTok={}, sugList={}, sugIdx={}, sugTimer={}, sugTerm={};
 function onType(k){
   clearTimeout(sugTimer[k]);
   var term=ftNorm(rowQ[k]||"");
@@ -497,206 +549,206 @@ function onType(k){
 }
 function runSuggest(k, term){
   var tok=sugTok[k]=(sugTok[k]||0)+1;
-  var box=$("sg-"+k); if(box){ box.hidden=false; box.innerHTML='<div class="sgmsg">'+T("搜尋 MeSH…","Searching MeSH…")+'</div>'; }
+  sugTerm[k]=term; sugList[k]=null; sugIdx[k]=0; drawSug(k);
   suggest(term).then(function(list){
     if(sugTok[k]!==tok) return;
-    sugList[k]=list; sugIdx[k]=list.length?0:-1; drawSug(k, term);
-    setStatus(k,null);
+    sugList[k]=list; sugIdx[k]=0; drawSug(k); setStatus(k,null);
+    // 每個候選標目的 PubMed 筆數（依序補上）
+    list.forEach(function(c){
+      getCount('"'+c.label+'"[mh]', false, function(){ return sugTok[k]===tok; }).then(function(n){
+        if(sugTok[k]!==tok) return; c.count=n; var el=$("sgc-"+k+"-"+c.dId); if(el) el.textContent=fmtN(n);
+      });
+    });
   },function(e){
     if(sugTok[k]!==tok) return;
     closeSug(k); setStatus(k, connMsg(e), true);
   });
 }
-function drawSug(k, term){
+// 標出輸入的字
+function hl(text, toks){
+  var h=esc(text);
+  toks.forEach(function(t){ if(t.length<2) return; h=h.replace(new RegExp("(^|[^a-z0-9])("+t.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+")","ig"), "$1<mark>$2</mark>"); });
+  return h;
+}
+function drawSug(k){
   var box=$("sg-"+k); if(!box) return;
-  var list=sugList[k]||[];
+  var list=sugList[k], term=sugTerm[k]||"", toks=qToks(term);
   box.hidden=false;
-  if(!list.length){ box.innerHTML='<div class="sgmsg">'+T("找不到對應的 MeSH 標目，可換個寫法，或按「只加入為自由詞」。","No matching MeSH heading — try another wording, or use \"Free-text only\".")+'</div>'; return; }
-  box.innerHTML='<div class="sghd">'+T("選擇適合的 MeSH 控制詞彙","Pick the matching MeSH heading")+'</div>'+list.map(function(c,i){
-    return '<button type="button" class="sgi'+(i===sugIdx[k]?' on':'')+'" data-i="'+i+'"><b>'+esc(c.label)+'</b>'+
-      (c.via?'<small>'+T("Entry Term：","Entry term: ")+esc(c.via)+'</small>':'')+'</button>';
+  if(list==null){ box.innerHTML='<div class="sgmsg">'+T("搜尋 MeSH…","Searching MeSH…")+'</div>'; return; }
+  var h=list.length?'':'<div class="sgmsg">'+T("找不到對應的 MeSH 標目。","No matching MeSH heading.")+'</div>';
+  h+=list.map(function(c,i){
+    var main=c.via?(hl(c.via,toks)+' <span class="use">'+T("使用：","use: ")+'<b>'+esc(c.label)+'</b></span>'):('<b>'+hl(c.label,toks)+'</b>');
+    return '<button type="button" class="sgi'+(i===sugIdx[k]?' on':'')+'" data-i="'+i+'"><span class="sgt">'+main+'</span><span class="sgc" id="sgc-'+k+'-'+esc(c.dId)+'">'+(c.count!=null?fmtN(c.count):"")+'</span></button>';
   }).join("");
+  h+='<button type="button" class="sgi sgfree'+(sugIdx[k]===list.length?' on':'')+'" data-i="'+list.length+'"><span class="sgt">＋ '+T("以「","Use \"")+'<i>'+esc(term)+'</i>'+T("」作為自由詞","\" as free-text")+'</span></button>';
+  box.innerHTML=h;
   box.querySelectorAll(".sgi").forEach(function(b){
     b.addEventListener("mousedown", function(e){ e.preventDefault(); });   // 不讓輸入框先失去焦點
-    b.addEventListener("click", function(){ chooseCand(k, list[+b.getAttribute("data-i")]); });
+    b.addEventListener("click", function(){ pickSug(k, +b.getAttribute("data-i")); });
   });
 }
 function closeSug(k){ sugTok[k]=(sugTok[k]||0)+1; sugList[k]=[]; var box=$("sg-"+k); if(box){ box.hidden=true; box.innerHTML=""; } }
+function pickSug(k, i){
+  var list=sugList[k]||[];
+  if(i<list.length) chooseCand(k, list[i]); else addFt(k, sugTerm[k]||rowQ[k]);
+}
 function onKey(k, e){
-  var list=sugList[k]||[], box=$("sg-"+k), open=box&&!box.hidden&&list.length;
-  if(e.key==="ArrowDown"&&open){ e.preventDefault(); sugIdx[k]=Math.min(list.length-1,(sugIdx[k]||0)+1); drawSug(k); }
+  var list=sugList[k], box=$("sg-"+k), open=box&&!box.hidden&&list;
+  var max=open?list.length:0;
+  if(e.key==="ArrowDown"&&open){ e.preventDefault(); sugIdx[k]=Math.min(max,(sugIdx[k]||0)+1); drawSug(k); }
   else if(e.key==="ArrowUp"&&open){ e.preventDefault(); sugIdx[k]=Math.max(0,(sugIdx[k]||0)-1); drawSug(k); }
   else if(e.key==="Escape"){ closeSug(k); }
   else if(e.key==="Enter"){
     e.preventDefault();
-    if(open && sugIdx[k]>=0) chooseCand(k, list[sugIdx[k]]);
-    else { var term=ftNorm(rowQ[k]||""); if(term) { clearTimeout(sugTimer[k]); runSuggest(k, term); } }
+    if(open) pickSug(k, sugIdx[k]||0);
+    else { var term=ftNorm(rowQ[k]||""); if(term){ clearTimeout(sugTimer[k]); runSuggest(k, term); } }
   }
 }
+function focusRow(k){ var q=$("q-"+k); if(q) q.focus(); }
 
-// ===== 選定標目後的精簡加入列：標目＋欄位 OR Entry Terms（下拉勾選，預設全選）＋加入 =====
-var sel={};   // sel[k]={c, d, tag, checks, useOrig, query}
+// ===== 選定標目：直接加入標目與 Entry Terms（被較短詞涵蓋的長詞自動略過） =====
 function chooseCand(k, c){
-  closeSug(k); state.active=k;
-  var s=sel[k]={c:c, d:null, tag:defMeshTag(k,c.label), checks:{}, useOrig:false, query:ftNorm(rowQ[k]||"")};
-  renderAddBar(k);
-  showSide(c.dId, c.label, k, true);
-  loadDetail(c).then(function(d){ if(sel[k]!==s) return; s.d=d; d.entries.forEach(function(_e,j){ s.checks[j]=true; }); renderAddBar(k); },
-                     function(){ if(sel[k]!==s) return; s.d={entries:[],scope:"",trees:[]}; renderAddBar(k); });
-}
-// 倒裝轉正後會重複的 Entry Term（Diabetes, Pregnancy-Induced ＝ Pregnancy-Induced Diabetes）只列一次
-function etShow(e){ return unInvert(e); }
-function etView(entries){ var seen={}, out=[]; entries.forEach(function(e,j){ var k=ftNorm(etShow(e)).toLowerCase(); if(!seen[k]){ seen[k]=1; out.push(j); } }); return out; }
-// 被涵蓋的 Entry Term：較短的詞整段出現在較長的詞裡（Gestational Diabetes 涵蓋 Gestational Diabetes Mellitus），
-// 片語檢索時短詞已能找到長詞的文獻，長詞多餘 → 下拉清單不顯示、也不加入（短詞取消勾選時長詞會再出現）
-function etWords(e){ return " "+ftNorm(etShow(e)).toLowerCase().replace(/[\s\-]+/g," ")+" "; }
-function etCovers(a, b){ var wa=etWords(a), wb=etWords(b); return wa!==wb && wb.indexOf(wa)>=0; }   // a 是否涵蓋 b
-function etCoveredBy(entries, j, pool){ var hit=-1; pool.forEach(function(i){ if(hit<0 && i!==j && etCovers(entries[i], entries[j])) hit=i; }); return hit; }
-function etVisible(s){ var all=etView(s.d.entries), on=all.filter(function(j){ return s.checks[j]; }); return all.filter(function(j){ return etCoveredBy(s.d.entries, j, on)<0; }); }
-function etCount(s){ return s.d?etVisible(s).filter(function(j){ return s.checks[j]; }).length:0; }
-function renderAddBar(k){
-  var bar=$("ab-"+k); if(!bar) return;
-  var s=sel[k];
-  if(!s){ bar.hidden=true; bar.innerHTML=""; return; }
-  var wasOpen=!!(bar.querySelector("details.etdd")&&bar.querySelector("details.etdd").open);
-  bar.hidden=false;
-  var c=s.c, d=s.d;
-  bar.innerHTML='<span class="abl" title="'+esc((d&&d.scope)||"")+'"><span class="abk">MeSH</span> <b>'+esc(c.label)+'</b></span>'+
-    '<select class="sm" data-f="tag"></select>'+
-    '<span class="orsep">OR</span>'+
-    '<details class="etdd"><summary title="'+esc(T("倒裝詞已自動轉為自然語序，才能在題名／摘要中比對到（例：Attack, Heart → Heart Attack）","Inverted entry terms are converted to natural word order so they match titles/abstracts (e.g. Attack, Heart → Heart Attack)"))+'">'+(d?('Entry Terms ✓ '+etCount(s)+'/'+etVisible(s).length):T("載入 Entry Terms…","Loading entry terms…"))+'</summary><div class="etpanel"></div></details>'+
-    '<button type="button" class="btn sm" data-act="add"'+(d?'':' disabled')+'>'+T("加入","Add")+'</button>'+
-    '<button type="button" class="lnk" data-act="cancel">'+T("取消","Cancel")+'</button>';
-  var ts=bar.querySelector('select[data-f="tag"]'); fillSelect(ts, MESH_TAGS, s.tag); ts.addEventListener("change", function(){ s.tag=ts.value; });
-  bar.querySelector('[data-act="cancel"]').addEventListener("click", function(){ sel[k]=null; renderAddBar(k); });
-  bar.querySelector('[data-act="add"]').addEventListener("click", function(){ addSelected(k); });
-  if(!d) return;
-  var dd=bar.querySelector("details.etdd"), panel=dd.querySelector(".etpanel");
-  if(wasOpen) dd.open=true;
-  panel.innerHTML='<div class="etbar"><button type="button" class="lnk" data-all="1">'+T("全選","All")+'</button> <button type="button" class="lnk" data-all="0">'+T("全不選","None")+'</button></div>'+
-    '<div class="etlist">'+(d.entries.length?etVisible(s).map(function(j){
-      var show=etShow(d.entries[j]);
-      return '<label><input type="checkbox" data-j="'+j+'"'+(s.checks[j]?" checked":"")+'> '+esc(show)+'</label>';
-    }).join(""):'<span class="empty">'+T("此標目沒有 Entry Terms。","No entry terms.")+'</span>')+'</div>'+
-    '<label class="opt"><input type="checkbox" data-f="orig"'+(s.useOrig?" checked":"")+'> '+T("原輸入詞「","Your term \"")+esc(s.query)+T("」也加入","\" too")+'</label>';
-  var sum=dd.querySelector("summary");
-  function upd(){ sum.textContent='Entry Terms ✓ '+etCount(s)+'/'+etVisible(s).length; }
-  panel.querySelectorAll("input[data-j]").forEach(function(cb){ cb.addEventListener("change", function(){ s.checks[cb.getAttribute("data-j")]=cb.checked; renderAddBar(k); }); });
-  panel.querySelectorAll("[data-all]").forEach(function(b){ b.addEventListener("click", function(){ var on=b.getAttribute("data-all")==="1"; d.entries.forEach(function(_e,j){ s.checks[j]=on; }); renderAddBar(k); }); });
-  panel.querySelector('[data-f="orig"]').addEventListener("change", function(){ s.useOrig=this.checked; });
-}
-function addSelected(k){
-  var s=sel[k], c=s.c, d=s.d, arr=[{type:"mesh", text:c.label, dId:c.dId, tag:s.tag}];
-  var fts=[];
-  if(s.useOrig && s.query) fts.push({t:s.query, from:""});
-  etVisible(s).forEach(function(j){ if(s.checks[j]){ var e=d.entries[j]; fts.push({t:unInvert(e), from:c.dId, orig:e}); } });
-  var seen={};
-  fts.forEach(function(f){ var t=ftNorm(f.t), lk=t.toLowerCase(); if(t && !seen[lk]){ seen[lk]=1; arr.push({type:"ft", text:t, from:f.from, orig:f.orig||""}); } });
-  sel[k]=null; rowQ[k]="";
-  var n=addItems(k, arr);
-  setStatus(k, S("已加入 "+n+" 個詞（MeSH＋Entry Terms）。","Added "+n+" term(s) (MeSH + entry terms)."));
+  closeSug(k); state.active=k; rowQ[k]="";
+  if(findItem(k,"mesh",c.label)){ setStatus(k, S("「"+c.label+"」已在這一列。","\""+c.label+"\" is already in this row.")); renderRows(); focusRow(k); return; }
+  addItems(k,[{type:"mesh", text:c.label, dId:c.dId, tag:defMeshTag(k,c.label)}]);
+  focusRow(k);
   showSide(c.dId, c.label, k);
-  var q=$("q-"+k); if(q) q.focus();
+  loadDetail(c).then(function(d){
+    var s={d:d, checks:{}}; d.entries.forEach(function(_e,j){ s.checks[j]=true; });
+    var arr=etVisible(s).map(function(j){ return {type:"ft", text:ftNorm(unInvert(d.entries[j])), from:c.dId}; });
+    var n=addItems(k, arr);
+    if(sideCtx && sideCtx.dId===c.dId) renderSide();   // 右側 Entry Terms 清單更新勾選狀態
+    setStatus(k, S("已加入「"+c.label+"」與 "+n+" 個 Entry Terms。","Added \""+c.label+"\" and "+n+" entry terms."));
+    focusRow(k);
+  },function(){ setStatus(k, S("已加入「"+c.label+"」；Entry Terms 載入失敗。","Added \""+c.label+"\"; could not load entry terms."), true); });
 }
-function addFtOnly(k){
-  var term=ftNorm(rowQ[k]||"");
-  if(!term){ setStatus(k, S("請先輸入一個檢索詞。","Please enter a term first."), true); return; }
-  closeSug(k); sel[k]=null; rowQ[k]="";
+function addFt(k, term){
+  term=ftNorm(term||"");
+  if(!term) return;
+  closeSug(k); rowQ[k]="";
   var n=addItems(k,[{type:"ft", text:term, from:""}]);
-  setStatus(k, n?S("已將「"+term+"」加入為自由詞。","Added \""+term+"\" as free-text."):S("此詞已在這一列中。","That term is already in this row."));
-  var q=$("q-"+k); if(q) q.focus();
+  setStatus(k, n?null:S("此詞已在這一列中。","That term is already in this row."));
+  focusRow(k);
 }
 
-// ===== PICO 各列 =====
+// ===== PICO 各列：標籤＋輸入框同一行（類似 Embase PICO） =====
+var openPill=null;   // 目前展開的標籤下拉（重畫後保持展開）
+document.addEventListener("click", function(e){
+  if(!openPill) return;
+  if(e.target.closest && e.target.closest("details.pill")) return;
+  openPill=null; document.querySelectorAll("details.pill[open]").forEach(function(d){ d.open=false; });
+});
+function pillDetails(id, cls, summaryHTML, fillPanel){
+  var d=document.createElement("details"); d.className="pill "+cls; d.setAttribute("data-pid", id);
+  d.innerHTML='<summary>'+summaryHTML+'</summary><div class="pillpanel"></div>';
+  var panel=d.querySelector(".pillpanel");
+  d.addEventListener("toggle", function(){
+    if(d.open){ openPill=id; document.querySelectorAll("details.pill[open]").forEach(function(o){ if(o!==d) o.open=false; }); fillPanel(panel); }
+    else if(openPill===id) openPill=null;
+  });
+  if(openPill===id){ d.open=true; fillPanel(panel); }
+  return d;
+}
+function tagShort(v){ return "["+v+"]"; }
 function renderRows(){
   var box=$("rows"); box.innerHTML="";
   CONCEPTS.forEach(function(c){
-    var k=c.k, st=state.concepts[k];
+    var k=c.k, st=state.concepts[k], lv=lvlOf(k);
     var row=document.createElement("div"); row.className="crow"+(state.active===k?" active":""); row.id="row-"+k;
     var hd=document.createElement("div"); hd.className="rhd";
-    hd.innerHTML='<span class="k">'+k+'</span><span class="t">'+esc(isEn()?c.en:c.zh)+'</span>';
-    var inc=document.createElement("label"); inc.className="inc"; inc.innerHTML='<input type="checkbox"'+(st.on?" checked":"")+'> '+T("納入 AND 組合","Include in AND");
+    hd.innerHTML='<span class="k">'+k+'</span><span class="t">'+esc(isEn()?c.en:c.zh)+'</span>'+
+      '<span class="eg">'+T("例：","e.g. ")+({P:"gestational diabetes",I:"exercise",C:"placebo",O:"pain",S:"randomized controlled trial"}[k])+'</span>'+
+      '<span class="sp"></span><span class="rc" id="rc-'+k+'"></span>';
+    var inc=document.createElement("label"); inc.className="inc"; inc.innerHTML='<input type="checkbox"'+(st.on?" checked":"")+'> '+T("納入","Include");
+    inc.title=T("納入 AND 組合","Include in the AND combination");
     inc.querySelector("input").addEventListener("change", function(){ st.on=this.checked; save(); renderStrategy(); });
     hd.appendChild(inc); row.appendChild(hd);
-    // 輸入＋即時候選
-    var sr=document.createElement("div"); sr.className="rsearch";
+    // 標籤列
+    var line=document.createElement("div"); line.className="tokline";
+    var mi=st.items.filter(function(i){return i.type==="mesh";});
+    mi.forEach(function(it){
+      // 標目標籤
+      line.appendChild(pillDetails(k+"|m|"+it.text, "mpill",
+        '<span class="pdot"></span>'+esc(it.text)+' <span class="ptag">'+esc(tagShort(it.tag||"mh"))+'</span>',
+        function(panel){
+          panel.innerHTML='<div class="pph">'+T("控制辭彙欄位","MeSH field")+'</div>'+MESH_TAGS.map(function(t){
+            return '<label class="prad"><input type="radio" name="mt-'+k+'-'+esc(it.text)+'" value="'+t.v+'"'+((it.tag||"mh")===t.v?" checked":"")+'> '+esc(isEn()?t.en:t.zh)+'</label>';
+          }).join("")+'<div class="ppa"><button type="button" class="lnk" data-a="tree">'+T("檢視上下位結構","Show hierarchy")+'</button><button type="button" class="lnk danger" data-a="rm">'+T("移除（含其 Entry Terms）","Remove (with its entry terms)")+'</button></div>';
+          panel.querySelectorAll("input[type=radio]").forEach(function(r){ r.addEventListener("change", function(){ it.tag=r.value; save(); renderRows(); renderStrategy(); }); });
+          panel.querySelector('[data-a="tree"]').addEventListener("click", function(){ openPill=null; if(it.dId) showSide(it.dId, it.text, k); else resolveAndShow(k,it); });
+          panel.querySelector('[data-a="rm"]').addEventListener("click", function(){ openPill=null; removeHeading(k,it); });
+        }));
+      // Entry Terms 標籤
+      if(it.dId){
+        var n=st.items.filter(function(x){ return x.type==="ft" && x.from===it.dId; }).length;
+        line.appendChild(pillDetails(k+"|e|"+it.dId, "epill",
+          T("已帶入 "+n+" 個 Entry Terms",n+" Entry Terms added")+' <span class="ptag">'+esc(tagShort(lv)+(st.prox&&proxOK(lv)?"~"+st.prox:""))+'</span>',
+          function(panel){ fillEntryPanel(panel, k, it); }));
+      }
+    });
+    // 自由詞標籤（不屬於任何標目的）
+    var dIds={}; mi.forEach(function(m){ if(m.dId) dIds[m.dId]=1; });
+    st.items.filter(function(i){ return i.type==="ft" && !(i.from && dIds[i.from]); }).forEach(function(it){
+      var sp=document.createElement("span"); sp.className="pill fpill";
+      sp.innerHTML=esc(it.text)+' <span class="ptag">'+esc(tagShort(lv))+'</span>';
+      var x=document.createElement("button"); x.type="button"; x.textContent="×"; x.title=T("移除","Remove");
+      x.addEventListener("click", function(){ removeItem(k,it); });
+      sp.appendChild(x); line.appendChild(sp);
+    });
+    // 輸入框＋即時候選
     var wrap=document.createElement("div"); wrap.className="qwrap";
     var q=document.createElement("input"); q.type="text"; q.id="q-"+k; q.autocomplete="off"; q.spellcheck=false; q.value=rowQ[k]||"";
-    q.placeholder=T("輸入英文檢索詞，例：","Type an English term, e.g. ")+({P:"gestational diabetes",I:"exercise",C:"placebo",O:"pain",S:"randomized controlled trial"}[k]);
+    q.placeholder=st.items.length?T("＋ 再加入一個詞","+ add another term"):T("輸入英文檢索詞…","Type an English term…");
     q.addEventListener("input", function(){ rowQ[k]=q.value; onType(k); });
     q.addEventListener("keydown", function(e){ onKey(k,e); });
     q.addEventListener("focus", function(){ state.active=k; document.querySelectorAll(".crow").forEach(function(r){ r.classList.toggle("active", r.id==="row-"+k); }); });
     q.addEventListener("blur", function(){ setTimeout(function(){ closeSug(k); }, 150); });
     var sg=document.createElement("div"); sg.className="sugg"; sg.id="sg-"+k; sg.hidden=true;
-    wrap.appendChild(q); wrap.appendChild(sg); sr.appendChild(wrap);
-    var fo=document.createElement("button"); fo.type="button"; fo.className="btn sm line"; fo.textContent=T("只加入為自由詞","Free-text only");
-    fo.addEventListener("click", function(){ addFtOnly(k); });
-    sr.appendChild(fo); row.appendChild(sr);
+    wrap.appendChild(q); wrap.appendChild(sg); line.appendChild(wrap);
+    row.appendChild(line);
     var stEl=document.createElement("div"); stEl.className="status"; stEl.id="st-"+k; row.appendChild(stEl);
-    var ab=document.createElement("div"); ab.className="addbar2"; ab.id="ab-"+k; ab.hidden=true; row.appendChild(ab);
-    // 控制詞彙 OR 自由詞
-    var mi=st.items.filter(function(i){return i.type==="mesh";}), fi=st.items.filter(function(i){return i.type==="ft";});
-    if(mi.length||fi.length){
-      var grid=document.createElement("div"); grid.className="rgrid";
-      var colM=document.createElement("div"); colM.className="col";
-      colM.innerHTML='<div class="colhd"><b>'+T("控制詞彙 MeSH","MeSH")+'</b> · '+mi.length+'</div>';
-      if(!mi.length) colM.insertAdjacentHTML("beforeend",'<div class="empty">'+T("（無）","(none)")+'</div>');
-      mi.forEach(function(it){ colM.appendChild(meshRow(k,it)); });
-      var or=document.createElement("div"); or.className="orsep"; or.textContent="OR";
-      var colF=document.createElement("div"); colF.className="col";
-      var fh=document.createElement("div"); fh.className="colhd";
-      fh.innerHTML='<b>'+T("自由詞","Free-text")+'</b> · '+fi.length;
-      var lv=document.createElement("select"); lv.className="sm"; lv.title=T("自由詞的檢索欄位","Search field for free-text");
-      fillSelect(lv, lvlOpts(), lvlOf(k));
-      lv.addEventListener("change", function(){ st.level=lv.value; save(); renderRows(); renderStrategy(); });
-      var px=document.createElement("select"); px.className="sm"; px.title=T("套用到此列所有兩個字以上的自由詞；只在篇名/摘要 [tiab]、篇名 [ti] 有效，含截字 * 的詞除外","Applies to every multi-word free-text term in this row; works only with [tiab] / [ti], terms with * excluded");
-      fillSelect(px,[{v:"",zh:"鄰近字：不使用（完整片語）",en:"Proximity: off (exact phrase)"}].concat(PROX_N.map(function(n){return {v:n,zh:"鄰近字：~"+n+" 字內",en:"Proximity: within "+n};})), st.prox||"");
+    // 自由詞設定（有自由詞時才顯示）
+    if(st.items.some(function(i){ return i.type==="ft"; })){
+      var rs=document.createElement("div"); rs.className="rset";
+      rs.innerHTML='<span>'+T("自由詞欄位","Free-text field")+'</span>';
+      var lvs=document.createElement("select"); lvs.className="sm"; fillSelect(lvs, lvlOpts(), lv);
+      lvs.addEventListener("change", function(){ st.level=lvs.value; save(); renderRows(); renderStrategy(); });
+      rs.appendChild(lvs);
+      rs.insertAdjacentHTML("beforeend",'<span>'+T("鄰近字","Proximity")+'</span>');
+      var px=document.createElement("select"); px.className="sm";
+      px.title=T("套用到此列所有兩個字以上的自由詞；只在篇名/摘要 [tiab]、篇名 [ti] 有效，含截字 * 的詞除外","Applies to every multi-word free-text term in this row; works only with [tiab] / [ti], terms with * excluded");
+      fillSelect(px,[{v:"",zh:"不使用（完整片語）",en:"Off (exact phrase)"}].concat(PROX_N.map(function(n){return {v:n,zh:"~"+n+" 字內",en:"within "+n};})), st.prox||"");
       px.addEventListener("change", function(){ st.prox=px.value; save(); renderRows(); renderStrategy(); });
-      fh.appendChild(lv); fh.appendChild(px); colF.appendChild(fh);
-      if(st.prox && !proxOK(lvlOf(k))){
+      rs.appendChild(px);
+      row.appendChild(rs);
+      if(st.prox && !proxOK(lv)){
         var pw=document.createElement("div"); pw.className="proxwarn";
-        pw.textContent=T("「"+LVL_NAME.zh[lvlOf(k)]+"」不支援鄰近字，此列自由詞以完整片語檢索；要用鄰近字請改選篇名/摘要 [tiab] 或篇名 [ti]。",
-                         LVL_NAME.en[lvlOf(k)]+" does not support proximity, so this row searches exact phrases; choose Title/Abstract [tiab] or Title [ti] to use proximity.");
-        colF.appendChild(pw);
+        pw.textContent=T("「"+LVL_NAME.zh[lv]+"」不支援鄰近字，此列自由詞以完整片語檢索；要用鄰近字請改選篇名/摘要 [tiab] 或篇名 [ti]。",
+                         LVL_NAME.en[lv]+" does not support proximity, so this row searches exact phrases; choose Title/Abstract [tiab] or Title [ti] to use proximity.");
+        row.appendChild(pw);
       }
-      var chips=document.createElement("div"); chips.className="chips";
-      fi.forEach(function(it){
-        var ch=document.createElement("span"); ch.className="chip"+(wordCount(it.text)>=2&&!/\*/.test(it.text)?" multi":"");
-        ch.title=wordCount(it.text)>=2?T("兩個字以上：套用鄰近字設定","Multi-word: proximity applies"):"";
-        ch.textContent=it.text;
-        var x=document.createElement("button"); x.type="button"; x.textContent="×"; x.title=T("移除","Remove");
-        x.addEventListener("click", function(){ removeItem(k,it); });
-        ch.appendChild(x); chips.appendChild(ch);
-      });
-      colF.appendChild(chips);
-      var addIn=document.createElement("input"); addIn.type="text"; addIn.className="addft"; addIn.placeholder=T("＋ 手動新增自由詞，按 Enter","+ Add free-text, press Enter");
-      addIn.addEventListener("keydown", function(e){ if(e.key==="Enter"){ var v=ftNorm(addIn.value); if(v){ addItems(k,[{type:"ft",text:v,from:""}]); var n=$("row-"+k); if(n){ var a=n.querySelector(".addft"); if(a) a.focus(); } } } });
-      colF.appendChild(addIn);
-      grid.appendChild(colM); grid.appendChild(or); grid.appendChild(colF);
-      row.appendChild(grid);
     }
     box.appendChild(row);
-    drawStatus(k); renderAddBar(k);
+    drawStatus(k);
   });
+  drawCounts();
 }
-function meshRow(k, it){
-  var row=document.createElement("div"); row.className="mrow"+(sideCtx&&sideCtx.k===k&&sideCtx.dId===it.dId?" focus":"");
-  var nm=document.createElement("span"); nm.className="mnm"; nm.textContent=it.text; nm.title=T("在右側檢視上下位結構","Show hierarchy on the right");
-  nm.addEventListener("click", function(){ if(it.dId) showSide(it.dId, it.text, k); else resolveAndShow(k,it); });
-  row.appendChild(nm);
-  var tag=document.createElement("select"); tag.className="sm"; tag.title=T("切換檢索欄位","Switch search field");
-  fillSelect(tag, MESH_TAGS, it.tag||"mh");
-  tag.addEventListener("change", function(){ it.tag=tag.value; save(); renderStrategy(); });
-  row.appendChild(tag);
-  var n=itemsOf(k).filter(function(x){return x.type==="ft"&&x.from&&x.from===it.dId;}).length;
-  var eb=document.createElement("button"); eb.type="button"; eb.className="etbtn";
-  eb.textContent="Entry Terms · "+n; eb.title=T("在右側檢視與增減帶入的 Entry Terms","Review / edit brought-in entry terms on the right");
-  eb.addEventListener("click", function(){ if(it.dId) showSide(it.dId, it.text, k); else resolveAndShow(k,it); });
-  row.appendChild(eb);
-  var x=document.createElement("button"); x.type="button"; x.className="x"; x.textContent="×"; x.title=T("移除","Remove");
-  x.addEventListener("click", function(){ removeItem(k,it); });
-  row.appendChild(x);
-  return row;
+// Entry Terms 標籤展開：勾選＝已加入；被較短詞涵蓋的長詞以灰字註明
+function fillEntryPanel(panel, k, it){
+  var d=_detCache[it.dId];
+  if(!d){ panel.innerHTML='<div class="sgmsg">'+T("載入 Entry Terms…","Loading entry terms…")+'</div>'; loadDetail({dId:it.dId,label:it.text}).then(function(){ if(openPill===k+"|e|"+it.dId) fillEntryPanel(panel,k,it); }); return; }
+  var all=etView(d.entries);
+  panel.innerHTML='<div class="pph" title="'+esc(T("倒裝詞已自動轉為自然語序，才能在題名／摘要中比對到（例：Attack, Heart → Heart Attack）","Inverted entry terms are converted to natural word order (e.g. Attack, Heart → Heart Attack)"))+'">Entry Terms · '+all.length+'</div>'+
+    '<div class="etlist">'+(all.length?all.map(function(j){
+      var txt=ftNorm(etShow(d.entries[j])), on=!!findItem(k,"ft",txt), by=etCoveredBy(d.entries, j, all);
+      return '<label'+(by>=0?' class="covered"':'')+'><input type="checkbox" data-j="'+j+'"'+(on?" checked":"")+'> '+esc(txt)+(by>=0?' <span class="inv">'+T("已涵蓋於 ","covered by ")+esc(etShow(d.entries[by]))+'</span>':'')+'</label>';
+    }).join(""):'<span class="empty">'+T("此標目沒有 Entry Terms。","No entry terms.")+'</span>')+'</div>';
+  panel.querySelectorAll("input[data-j]").forEach(function(cb){ cb.addEventListener("change", function(){
+    var txt=ftNorm(etShow(d.entries[+cb.getAttribute("data-j")]));
+    if(cb.checked) addItems(k,[{type:"ft", text:txt, from:it.dId}]);
+    else { var x=findItem(k,"ft",txt); if(x) removeItem(k,x); }
+    if(sideCtx) renderSide();
+  }); });
 }
 // 手動輸入的 MeSH（沒有 D 編號）→ 先查到編號再顯示
 function resolveAndShow(k,it){
@@ -802,6 +854,7 @@ function buildLines(){
   var parts=lines.filter(function(l){return !l.comb && l.on;}).map(function(l){return "("+l.q+")";});
   return parts.length>1?parts.join("\nAND\n"):(parts[0]?parts[0].slice(1,-1):"");
 }
+function fullQuery(){ return ($("finalQ").value||"").replace(/\s*\n\s*/g," ").trim(); }
 function renderStrategy(){
   var full=buildLines(), w=$("stratWrap");
   if(!lines.length){ w.innerHTML='<div class="empty">'+T("尚未加入任何檢索詞。","No terms added yet.")+'</div>'; }
@@ -811,21 +864,35 @@ function renderStrategy(){
     }).join("")+'</tbody></table>';
   }
   $("finalQ").value=full;
-  var oneLine=full.replace(/\s*\n\s*/g," ");
-  $("openPm").href=oneLine?"https://pubmed.ncbi.nlm.nih.gov/?term="+encodeURIComponent(oneLine):"https://pubmed.ncbi.nlm.nih.gov/";
+  var oneLine=fullQuery(), url=oneLine?"https://pubmed.ncbi.nlm.nih.gov/?term="+encodeURIComponent(oneLine):"https://pubmed.ncbi.nlm.nih.gov/";
+  $("openPm").href=url; $("totalBtn").href=url;
+  drawCounts(); scheduleCounts();
 }
 function expandLine(l){ return l.comb ? l.q.replace(/#(\d+)/g,function(_m,k){ var t=lines.filter(function(x){return x.n===+k;})[0]; return t?"("+t.q+")":_m; }) : l.q; }
-function countAll(){
-  if(!lines.length) return;
-  var b=$("countBtn"); b.disabled=true;
-  lines.reduce(function(p,l){
-    return p.then(function(){
-      var cell=$("cnt"+l.n); if(cell) cell.textContent="…";
-      return eutils("esearch.fcgi",{db:"pubmed",term:expandLine(l),retmode:"json",retmax:"0"}).then(function(j){
-        var c=j&&j.esearchresult&&j.esearchresult.count; if(cell) cell.textContent=c!=null?Number(c).toLocaleString():"—";
-      },function(){ if(cell) cell.textContent=T("失敗","failed"); }).then(function(){ return new Promise(function(r){setTimeout(r,400);}); });   // 未帶 API key 時 NCBI 限每秒 3 次
-    });
-  },Promise.resolve()).then(function(){ b.disabled=false; });
+// 把快取中的筆數畫到：各列標題、策略表、底部「在 PubMed 顯示 N 筆結果」
+function drawCounts(){
+  CONCEPTS.forEach(function(c){
+    var el=$("rc-"+c.k); if(!el) return;
+    var l=lines.filter(function(x){ return x.k===c.k; })[0];
+    el.textContent=(live && l && (l.q in countCache))?fmtN(countCache[l.q])+T(" 筆"," records"):"";
+  });
+  lines.forEach(function(l){ var cell=$("cnt"+l.n), q=expandLine(l); if(cell) cell.textContent=(q in countCache)?fmtN(countCache[q]):""; });
+  var fq=fullQuery(), tn=$("totalN"), tb=$("totalBtn");
+  if(!fq){ tn.textContent=""; tb.classList.add("off"); $("totalTxt").textContent=T("加入檢索詞後即可在 PubMed 執行","Add terms to run in PubMed"); return; }
+  tb.classList.remove("off");
+  if(live && (fq in countCache)) $("totalTxt").innerHTML=T("在 PubMed 顯示 <b>"+fmtN(countCache[fq])+"</b> 筆結果 ↗","Show <b>"+fmtN(countCache[fq])+"</b> results in PubMed ↗");
+  else $("totalTxt").innerHTML=live?T("計算筆數中… · 在 PubMed 執行 ↗","Counting… · Run in PubMed ↗"):T("在 PubMed 執行 ↗","Run in PubMed ↗");
+}
+var countTimer=null, countRun=0;
+function scheduleCounts(){
+  clearTimeout(countTimer);
+  if(!live) return;
+  countTimer=setTimeout(function(){ runCounts(true); }, 800);
+}
+function runCounts(front){
+  var run=++countRun, alive=function(){ return countRun===run; };
+  var qs=[fullQuery()].concat(lines.map(expandLine)).filter(Boolean);
+  qs.reverse().forEach(function(q){ getCount(q, front, alive).then(function(){ if(countRun===run) drawCounts(); }); });   // 反轉後逐一插到最前面 → 送出順序仍是總筆數優先
 }
 function copyText(txt, btn){
   var o=btn.innerHTML;
@@ -837,8 +904,10 @@ function copyText(txt, btn){
 // ===== 綁定 =====
 $("copyBtn").addEventListener("click", function(){ copyText($("finalQ").value.replace(/\s*\n\s*/g," "), this); });
 $("copyLinesBtn").addEventListener("click", function(){ copyText(lines.map(function(l){return "#"+l.n+"\t"+l.q;}).join("\n"), this); });
-$("countBtn").addEventListener("click", countAll);
-$("clearBtn").addEventListener("click", function(){ if(!confirm(T("確定清空所有欄位？","Clear all fields?"))) return; CONCEPTS.forEach(function(c){ state.concepts[c.k].items=[]; }); sel={}; rowStatus={}; save(); renderRows(); renderStrategy(); sideCtx=null; renderSide(); });
+$("countBtn").addEventListener("click", function(){ runCounts(true); });
+var liveCb=$("liveCb"); liveCb.checked=live;
+liveCb.addEventListener("change", function(){ live=liveCb.checked; try{ localStorage.setItem(LIVE_KEY, live?"1":"0"); }catch(e){} drawCounts(); if(live) runCounts(true); });
+$("clearBtn").addEventListener("click", function(){ if(!confirm(T("確定清空所有欄位？","Clear all fields?"))) return; CONCEPTS.forEach(function(c){ state.concepts[c.k].items=[]; }); rowStatus={}; save(); renderRows(); renderStrategy(); sideCtx=null; renderSide(); });
 
 function renderAll(){ renderRows(); renderStrategy(); renderSide(); }
 window.toggleLang=function(){
