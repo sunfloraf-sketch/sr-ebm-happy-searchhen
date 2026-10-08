@@ -261,11 +261,11 @@ var CONCEPTS=[
   {k:"O", zh:"結果", en:"Outcome"},
   {k:"S", zh:"研究設計", en:"Study design"}
 ];
-// 自由詞檢索層級：與 PICO 檢索策略產生器的 PubMed 對應一致（L0 所有欄位、L1 完整、L2 平衡、L3 精準）
-var LEVELS=["L0","L1","L2","L3"];
-var LVL_NAME={ zh:{L0:"L0 所有欄位（最廣）",L1:"L1 完整（SR 適用）",L2:"L2 平衡（偏精準）",L3:"L3 精準"},
-               en:{L0:"L0 All fields (broadest)",L1:"L1 Comprehensive (SR)",L2:"L2 Balanced",L3:"L3 Precise"} };
-var FT_BY_LVL={L0:"all", L1:"tiab", L2:"ti", L3:"ti"};
+// 自由詞檢索欄位
+var LEVELS=["all","tw","tiab","ti"];
+var LVL_NAME={ zh:{all:"所有欄位 [all]", tw:"文字欄位 [tw]", tiab:"篇名/摘要 [tiab]", ti:"篇名 [ti]"},
+               en:{all:"All Fields [all]", tw:"Text Word [tw]", tiab:"Title/Abstract [tiab]", ti:"Title [ti]"} };
+var OLD_LVL={L0:"all", L1:"tiab", L2:"ti", L3:"ti"};   // 舊版存的 L0～L3 對應到欄位
 // 控制詞彙可選欄位（顯示名稱用白話，後面附 PubMed 代碼）
 var MESH_TAGS=[
   {v:"mh",          zh:"主題詞・含下位詞 [mh]",           en:"MeSH, incl. narrower [mh]"},
@@ -282,7 +282,7 @@ var PROX_N=["0","1","2","3","4","5","6","8","10"];
 // ===== 狀態（存在瀏覽器本機，僅為方便） =====
 var STORE="sr_pubmed_mesh_v4";
 var state={active:"P", concepts:{}};
-CONCEPTS.forEach(function(c){ state.concepts[c.k]={on:c.k!=="C", level:"L1", prox:"", items:[]}; });
+CONCEPTS.forEach(function(c){ state.concepts[c.k]={on:c.k!=="C", level:"tiab", prox:"", items:[]}; });
 try{ var sv=JSON.parse(localStorage.getItem(STORE)||"null"); if(sv&&sv.concepts){ CONCEPTS.forEach(function(c){ if(sv.concepts[c.k]) state.concepts[c.k]=sv.concepts[c.k]; }); } }catch(e){}
 function save(){ try{ localStorage.setItem(STORE, JSON.stringify(state)); }catch(e){} }
 
@@ -293,8 +293,8 @@ function fillSelect(sel, opts, val){
 }
 function tagName(list, v){ var o=list.filter(function(x){return x.v===v;})[0]; return o?(isEn()?o.en:o.zh):v; }
 function conceptName(k){ var c=CONCEPTS.filter(function(x){return x.k===k;})[0]; return c?(isEn()?c.en:c.zh):k; }
-function lvlOf(k){ var L=state.concepts[k].level; return LEVELS.indexOf(L)>=0?L:"L1"; }
-function lvlOpts(){ return LEVELS.map(function(L){return {v:L,zh:LVL_NAME.zh[L]+" → ["+FT_BY_LVL[L]+"]",en:LVL_NAME.en[L]+" → ["+FT_BY_LVL[L]+"]"};}); }
+function lvlOf(k){ var L=state.concepts[k].level; L=OLD_LVL[L]||L; return LEVELS.indexOf(L)>=0?L:"tiab"; }
+function lvlOpts(){ return LEVELS.map(function(L){return {v:L,zh:LVL_NAME.zh[L],en:LVL_NAME.en[L]};}); }
 
 // ===== MeSH API（NLM MeSH RDF Lookup + SPARQL；後備 NCBI E-utilities db=mesh） =====
 var LOOKUP="https://id.nlm.nih.gov/mesh/lookup/", MESH_URI="http://id.nlm.nih.gov/mesh/";
@@ -645,7 +645,7 @@ function renderRows(){
       var colF=document.createElement("div"); colF.className="col";
       var fh=document.createElement("div"); fh.className="colhd";
       fh.innerHTML='<b>'+T("自由詞","Free-text")+'</b> · '+fi.length;
-      var lv=document.createElement("select"); lv.className="sm"; lv.title=T("自由詞檢索層級（與 PICO 檢索策略產生器相同）","Free-text search level (same as the PICO Strategy Builder)");
+      var lv=document.createElement("select"); lv.className="sm"; lv.title=T("自由詞的檢索欄位","Search field for free-text");
       fillSelect(lv, lvlOpts(), lvlOf(k));
       lv.addEventListener("change", function(){ st.level=lv.value; save(); renderStrategy(); });
       var px=document.createElement("select"); px.className="sm"; px.title=T("套用到此列所有兩個字以上的自由詞（PubMed [tiab:~N]；含截字 * 的詞除外）","Applies to every multi-word free-text term in this row (PubMed [tiab:~N]; terms with * excluded)");
@@ -776,9 +776,9 @@ function drawEntryList(d, ctx){
 function fmt(it, lv, prox){
   var t=it.text;
   if(it.type==="mesh") return '"'+t+'"['+(it.tag||"mh")+']';
-  var f=FT_BY_LVL[lv];
+  var f=lv;
   if(prox && wordCount(t)>=2 && !/\*/.test(t)){
-    // PubMed 鄰近字只支援 [ti]／[tiab]（[all] 以 [tiab] 代替）
+    // PubMed 鄰近字只支援 [ti]／[tiab]（[all]／[tw] 以 [tiab] 代替）
     return '"'+t+'"['+(f==="ti"?"ti":"tiab")+':~'+prox+']';
   }
   var needQ=/\s|[-\/]/.test(t) && !/\*/.test(t);   // 片語加引號；截字（*）不可加引號
