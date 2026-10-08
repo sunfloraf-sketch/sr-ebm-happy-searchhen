@@ -206,7 +206,7 @@
   <!-- ① PICO + Study Design：每列各自輸入檢索詞 -->
   <div class="panel">
     <h2><span data-zh>① PICO ＋ 研究設計</span><span data-en>① PICO + Study design</span></h2>
-    <div class="sub"><span data-zh>在任一列輸入英文檢索詞並從候選清單選擇 MeSH 標目，會同時加入控制辭彙與其 Entry Terms；點標籤可調整欄位或增減詞彙。同一列內以 OR 連結，勾選「納入」的列之間以 AND 組合。PICO 只是引導框架：列的代號（如 P1）與名稱可直接點選修改，也可新增或刪除概念列。</span><span data-en>Type an English term in any row and pick a MeSH heading — the heading and its Entry Terms are added together; click a tag to change its field or terms. Terms within a row are ORed; rows ticked "Include" are ANDed. PICO is only a guide: click a row's code (e.g. P1) or name to rename it, and add or delete rows as needed.</span></div>
+    <div class="sub"><span data-zh>在任一列輸入英文檢索詞並從候選清單選擇 MeSH 標目，會同時加入控制辭彙與其 Entry Terms；點標籤可調整欄位或增減詞彙。同一列內以 OR 連結，右上角有勾選的列（加入檢索策略）之間以 AND 組合。PICO 只是引導框架：列的代號（如 P1）與名稱可直接點選修改，也可新增或刪除概念列。</span><span data-en>Type an English term in any row and pick a MeSH heading — the heading and its Entry Terms are added together; click a tag to change its field or terms. Terms within a row are ORed; rows ticked at the top right (added to the strategy) are ANDed. PICO is only a guide: click a row's code (e.g. P1) or name to rename it, and add or delete rows as needed.</span></div>
     <div class="rows" id="rows"></div>
     <div class="totalbar">
       <a class="totalbtn" id="totalBtn" href="https://pubmed.ncbi.nlm.nih.gov/" target="_blank" rel="noopener"><span id="totalTxt"></span><span id="totalN"></span></a>
@@ -239,14 +239,14 @@
       <li>Entry Terms 常是倒裝形式（例：Attack, Heart），加入時會自動轉成自然語序 Heart Attack，才能在題名／摘要中比對到。</li>
       <li><b>鄰近字</b>：每列可設定一次，套用到該列所有兩個字以上的自由詞彙，例：<code>"hip fracture"[tiab:~3]</code> 會找到 fracture of the hip。PubMed 鄰近字只支援篇名/摘要 [tiab] 與篇名 [ti]；選所有欄位 [all] 或文字欄位 [tw] 時不套用，且不能與截字 * 併用。</li>
       <li><b>出版類型 [pt]</b>：研究設計欄位加入 Randomized Controlled Trial、Meta-Analysis 等標目時預設為 [pt]（例：<code>"Randomized Controlled Trial"[pt]</code>）。請同時放自由詞彙（randomized、placebo），以免漏掉尚未標引的新文獻。</li>
-      <li>比較（C）若與介入相同概念，通常不必納入 AND 組合，可取消勾選「納入」。</li>
+      <li>比較（C）若與介入相同概念，通常不必納入 AND 組合，可取消該列右上角的勾選。</li>
     </ul>
     <ul class="tips" data-en>
       <li><b>MeSH (incl. narrower) [mh]</b> explodes to every narrower heading in the tree; <b>no narrower [mh:noexp]</b> searches this heading only. <b>Major MeSH [majr]</b> finds articles where it is a main focus.</li>
       <li>Entry Terms are often inverted (e.g. Attack, Heart); they are automatically converted to natural order (Heart Attack) so they match titles/abstracts.</li>
       <li><b>Proximity</b>: set once per row; it applies to every multi-word free-text term in that row, e.g. <code>"hip fracture"[tiab:~3]</code> also finds fracture of the hip. PubMed proximity works only in [tiab] and [ti] (not applied with [all] / [tw]), and not with truncation *.</li>
       <li><b>Publication type [pt]</b>: in Study design, headings such as Randomized Controlled Trial or Meta-Analysis default to [pt] (e.g. <code>"Randomized Controlled Trial"[pt]</code>). Add free-text too (randomized, placebo) to catch not-yet-indexed records.</li>
-      <li>If the Comparison duplicates the Intervention concept, untick "Include" so it is not ANDed.</li>
+      <li>If the Comparison duplicates the Intervention concept, untick the box at the top right of that row so it is not ANDed.</li>
     </ul>
   </div>
 </div>
@@ -714,8 +714,8 @@ function renderRows(){
     kc.addEventListener("change", function(){ var v=kc.value.replace(/\s+/g,"").slice(0,8); if(!v){ kc.value=c.code; return; } c.code=v; save(); renderRows(); renderStrategy(); if(sideCtx) renderSide(); });
     kn.addEventListener("change", function(){ var v=kn.value.replace(/\s+/g," ").trim(); var dft=isEn()?TYPES[c.type].en:TYPES[c.type].zh; c.name=(v&&v!==dft)?v:""; save(); renderRows(); renderStrategy(); if(sideCtx) renderSide(); });
     [kc,kn].forEach(function(el){ el.addEventListener("keydown", function(e){ if(e.key==="Enter") el.blur(); }); });
-    var inc=document.createElement("label"); inc.className="inc"; inc.innerHTML='<input type="checkbox"'+(st.on?" checked":"")+'> '+T("納入","Include");
-    inc.title=T("納入 AND 組合","Include in the AND combination");
+    var inc=document.createElement("label"); inc.className="inc"; inc.innerHTML='<input type="checkbox"'+(st.on?" checked":"")+'>';
+    inc.title=T("加入檢索策略","Add to search strategy");
     inc.querySelector("input").addEventListener("change", function(){ st.on=this.checked; save(); renderStrategy(); });
     hd.appendChild(inc);
     if(CONCEPTS.length>1){
