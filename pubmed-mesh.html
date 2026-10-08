@@ -122,8 +122,6 @@
   .crow{border:1px solid var(--sh-line);border-radius:11px;background:var(--sh-paper2);padding:9px 12px}
   .crow.active{border-color:var(--sh-amber);box-shadow:0 0 0 2px rgba(174,116,48,.15)}
   .rhd{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-  .rhd .k{font-weight:800;color:#fff;background:var(--sh-green);border-radius:6px;padding:0 8px;font-size:14px}
-  .rhd .t{font-weight:700;font-size:14.5px;flex:1}
   .rhd .inc{font-size:12px;color:var(--mut);display:flex;gap:4px;align-items:center}
   .qwrap{position:relative;flex:1;min-width:220px}
   .qwrap input{width:100%;font-size:14px;padding:7px 10px}
@@ -134,6 +132,14 @@
   .sgi small{color:#7A5617;font-size:12px}
   .sgi:hover,.sgi.on{background:#EEF4F0}
   .proxwarn{font-size:12px;color:var(--warn);background:var(--warnbg);border-left:3px solid var(--sh-amber);border-radius:6px;padding:4px 8px;margin-bottom:6px}
+  .kcode{font-weight:800;color:#fff;background:var(--sh-green);border:0;border-radius:6px;padding:1px 4px;font-size:14px;text-align:center;font-family:inherit;min-width:2.2ch}
+  .kcode:focus{outline:2px solid var(--sh-amber);background:var(--sh-green-d)}
+  .kname{font-weight:700;font-size:14.5px;color:var(--ink);border:1px solid transparent;background:transparent;border-radius:6px;padding:1px 5px;font-family:inherit;width:11em;min-width:6em}
+  .kname:hover{border-color:var(--line)}
+  .kname:focus{border-color:var(--sh-green);background:#fff;outline:0}
+  .rdel{border:0;background:none;color:#9AA3A0;cursor:pointer;font-size:17px;line-height:1;padding:0 2px}
+  .rdel:hover{color:#9B3B2E}
+  .addrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px;color:var(--mut);padding:2px 2px 0}
   .rhd .eg{font-size:12px;color:var(--mut)}
   .rhd .sp{flex:1}
   .rhd .rc{font-size:12.5px;color:var(--sh-green-d);font-variant-numeric:tabular-nums}
@@ -203,7 +209,7 @@
   <!-- ① PICO + Study Design：每列各自輸入檢索詞 -->
   <div class="panel">
     <h2><span data-zh>① PICO ＋ 研究設計</span><span data-en>① PICO + Study design</span></h2>
-    <div class="sub"><span data-zh>在任一列輸入英文檢索詞並從候選清單選擇 MeSH 標目，會同時加入控制辭彙與其 Entry Terms；點標籤可調整欄位或增減詞彙。同一列內以 OR 連結，勾選「納入」的列之間以 AND 組合。</span><span data-en>Type an English term in any row and pick a MeSH heading — the heading and its Entry Terms are added together; click a tag to change its field or terms. Terms within a row are ORed; rows ticked "Include" are ANDed.</span></div>
+    <div class="sub"><span data-zh>在任一列輸入英文檢索詞並從候選清單選擇 MeSH 標目，會同時加入控制辭彙與其 Entry Terms；點標籤可調整欄位或增減詞彙。同一列內以 OR 連結，勾選「納入」的列之間以 AND 組合。PICO 只是引導框架：列的代號（如 P1）與名稱可直接點選修改，也可新增或刪除概念列。</span><span data-en>Type an English term in any row and pick a MeSH heading — the heading and its Entry Terms are added together; click a tag to change its field or terms. Terms within a row are ORed; rows ticked "Include" are ANDed. PICO is only a guide: click a row's code (e.g. P1) or name to rename it, and add or delete rows as needed.</span></div>
     <div class="rows" id="rows"></div>
     <div class="totalbar">
       <a class="totalbtn" id="totalBtn" href="https://pubmed.ncbi.nlm.nih.gov/" target="_blank" rel="noopener"><span id="totalTxt"></span><span id="totalN"></span></a>
@@ -269,13 +275,17 @@ function $(id){ return document.getElementById(id); }
 function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
 
 // ===== 欄位定義 =====
-var CONCEPTS=[
-  {k:"P", zh:"族群／問題", en:"Population / Problem"},
-  {k:"I", zh:"介入／暴露", en:"Intervention / Exposure"},
-  {k:"C", zh:"比較", en:"Comparison"},
-  {k:"O", zh:"結果", en:"Outcome"},
-  {k:"S", zh:"研究設計", en:"Study design"}
-];
+// PICO 只是引導框架：概念列可新增、刪除、改代號（P → P1）與名稱
+var TYPES={
+  P:{zh:"族群／問題", en:"Population / Problem", eg:"gestational diabetes"},
+  I:{zh:"介入／暴露", en:"Intervention / Exposure", eg:"exercise"},
+  C:{zh:"比較", en:"Comparison", eg:"placebo"},
+  O:{zh:"結果", en:"Outcome", eg:"pain"},
+  S:{zh:"研究設計", en:"Study design", eg:"randomized controlled trial"},
+  X:{zh:"其他概念", en:"Other concept", eg:""}
+};
+var DEF_ROWS=["P","I","C","O","S"].map(function(t){ return {k:t, type:t, code:t, name:""}; });
+var CONCEPTS=DEF_ROWS.map(function(d){ return {k:d.k, type:d.type, code:d.code, name:d.name}; });   // k＝內部 id（不變）；code／name＝可編輯的顯示代號與名稱
 // 自由詞彙檢索欄位
 var LEVELS=["all","tw","tiab","ti"];
 var LVL_NAME={ zh:{all:"所有欄位 [all]", tw:"文字欄位 [tw]", tiab:"篇名/摘要 [tiab]", ti:"篇名 [ti]"},
@@ -291,15 +301,22 @@ var MESH_TAGS=[
 ];
 // 研究設計列：這些標目同時是 PubMed 出版類型，加入時預設用 [pt]
 var PT_RE=/^(randomized controlled trial|controlled clinical trial|clinical trial(, phase [iv]+)?|pragmatic clinical trial|equivalence trial|multicenter study|observational study|comparative study|meta-analysis|systematic review|review|practice guideline|guideline|case reports|evaluation study|validation study|twin study|clinical study|adaptive clinical trial)$/i;
-function defMeshTag(k, label){ return (k==="S" && PT_RE.test(label))?"pt":"mh"; }
+function defMeshTag(k, label){ return (typeOf(k)==="S" && PT_RE.test(label))?"pt":"mh"; }
 var PROX_N=["0","1","2","3","4","5","6","8","10"];
 
 // ===== 狀態（存在瀏覽器本機，僅為方便） =====
 var STORE="sr_pubmed_mesh_v4";
+function newRowState(type){ return {on:type!=="C", level:"tiab", prox:"", items:[]}; }
 var state={active:"P", concepts:{}};
-CONCEPTS.forEach(function(c){ state.concepts[c.k]={on:c.k!=="C", level:"tiab", prox:"", items:[]}; });
-try{ var sv=JSON.parse(localStorage.getItem(STORE)||"null"); if(sv&&sv.concepts){ CONCEPTS.forEach(function(c){ if(sv.concepts[c.k]) state.concepts[c.k]=sv.concepts[c.k]; }); } }catch(e){}
-function save(){ try{ localStorage.setItem(STORE, JSON.stringify(state)); }catch(e){} }
+CONCEPTS.forEach(function(c){ state.concepts[c.k]=newRowState(c.type); });
+try{ var sv=JSON.parse(localStorage.getItem(STORE)||"null");
+  if(sv&&sv.concepts){
+    if(Array.isArray(sv.defs) && sv.defs.length) CONCEPTS=sv.defs.filter(function(d){ return d && d.k && TYPES[d.type]; });
+    CONCEPTS.forEach(function(c){ state.concepts[c.k]=sv.concepts[c.k]||newRowState(c.type); });
+  } }catch(e){}
+if(!CONCEPTS.length){ CONCEPTS=DEF_ROWS.slice(); CONCEPTS.forEach(function(c){ state.concepts[c.k]=newRowState(c.type); }); }
+state.active=CONCEPTS[0].k;
+function save(){ state.defs=CONCEPTS; try{ localStorage.setItem(STORE, JSON.stringify(state)); }catch(e){} }
 
 function fillSelect(sel, opts, val){
   sel.innerHTML="";
@@ -307,7 +324,35 @@ function fillSelect(sel, opts, val){
   if(val!=null) sel.value=val;
 }
 function tagName(list, v){ var o=list.filter(function(x){return x.v===v;})[0]; return o?(isEn()?o.en:o.zh):v; }
-function conceptName(k){ var c=CONCEPTS.filter(function(x){return x.k===k;})[0]; return c?(isEn()?c.en:c.zh):k; }
+function defOf(k){ return CONCEPTS.filter(function(x){return x.k===k;})[0]; }
+function typeOf(k){ var c=defOf(k); return c?c.type:""; }
+function codeOf(k){ var c=defOf(k); return c?c.code:k; }
+function conceptName(k){ var c=defOf(k); if(!c) return k; return c.name || (isEn()?TYPES[c.type].en:TYPES[c.type].zh); }
+// 新增概念列：同類型已有一列且代號就是 P → 先改名為 P1，新列為 P2
+function addRow(type){
+  var same=CONCEPTS.filter(function(c){ return c.type===type; });
+  if(same.length===1 && same[0].code===type) same[0].code=type+"1";
+  var used={}; CONCEPTS.forEach(function(c){ used[c.code]=1; });
+  var n=same.length+1, code=(same.length||type==="X")?type+n:type;
+  while(used[code]){ n++; code=type+n; }
+  var k="r"+Date.now().toString(36)+Math.floor(Math.random()*1000);
+  var def={k:k, type:type, code:code, name:""};
+  var last=-1; CONCEPTS.forEach(function(c,i){ if(c.type===type) last=i; });
+  if(last<0){ var si=-1; CONCEPTS.forEach(function(c,i){ if(c.type==="S" && si<0) si=i; }); last=(type!=="S" && si>=0)?si-1:CONCEPTS.length-1; }
+  CONCEPTS.splice(last+1,0,def);
+  state.concepts[k]=newRowState(type); state.active=k;
+  save(); renderRows(); renderStrategy();
+  var q=$("q-"+k); if(q) q.focus();
+}
+function deleteRow(k){
+  if(CONCEPTS.length<=1) return;
+  var st=state.concepts[k];
+  if(st && st.items.length && !confirm(T("刪除「"+codeOf(k)+" "+conceptName(k)+"」及其中的 "+st.items.length+" 個詞？","Delete \""+codeOf(k)+" "+conceptName(k)+"\" and its "+st.items.length+" term(s)?"))) return;
+  CONCEPTS=CONCEPTS.filter(function(c){ return c.k!==k; }); delete state.concepts[k];
+  if(state.active===k) state.active=CONCEPTS[0].k;
+  if(sideCtx && sideCtx.k===k) sideCtx=null;
+  save(); renderRows(); renderStrategy(); renderSide();
+}
 function lvlOf(k){ var L=state.concepts[k].level; L=OLD_LVL[L]||L; return LEVELS.indexOf(L)>=0?L:"tiab"; }
 function lvlOpts(){ return LEVELS.map(function(L){return {v:L,zh:LVL_NAME.zh[L],en:LVL_NAME.en[L]};}); }
 
@@ -663,13 +708,27 @@ function renderRows(){
     var k=c.k, st=state.concepts[k], lv=lvlOf(k);
     var row=document.createElement("div"); row.className="crow"+(state.active===k?" active":""); row.id="row-"+k;
     var hd=document.createElement("div"); hd.className="rhd";
-    hd.innerHTML='<span class="k">'+k+'</span><span class="t">'+esc(isEn()?c.en:c.zh)+'</span>'+
-      '<span class="eg">'+T("例：","e.g. ")+({P:"gestational diabetes",I:"exercise",C:"placebo",O:"pain",S:"randomized controlled trial"}[k])+'</span>'+
+    var eg=TYPES[c.type].eg;
+    hd.innerHTML='<input class="kcode" value="'+esc(c.code)+'" maxlength="8" spellcheck="false" title="'+esc(T("點一下可修改代號（例：P1）","Click to rename the code (e.g. P1)"))+'">'+
+      '<input class="kname" value="'+esc(conceptName(k))+'" maxlength="40" spellcheck="false" title="'+esc(T("點一下可修改名稱","Click to rename"))+'">'+
+      (eg?'<span class="eg">'+T("例：","e.g. ")+esc(eg)+'</span>':'')+
       '<span class="sp"></span><span class="rc" id="rc-'+k+'"></span>';
+    var kc=hd.querySelector(".kcode"), kn=hd.querySelector(".kname");
+    kc.style.width=Math.max(2.2,(c.code.length+1.4))+"ch";
+    kc.addEventListener("input", function(){ kc.style.width=Math.max(2.2,(kc.value.length+1.4))+"ch"; });
+    kc.addEventListener("change", function(){ var v=kc.value.replace(/\s+/g,"").slice(0,8); if(!v){ kc.value=c.code; return; } c.code=v; save(); renderRows(); renderStrategy(); if(sideCtx) renderSide(); });
+    kn.addEventListener("change", function(){ var v=kn.value.replace(/\s+/g," ").trim(); var dft=isEn()?TYPES[c.type].en:TYPES[c.type].zh; c.name=(v&&v!==dft)?v:""; save(); renderRows(); renderStrategy(); if(sideCtx) renderSide(); });
+    [kc,kn].forEach(function(el){ el.addEventListener("keydown", function(e){ if(e.key==="Enter") el.blur(); }); });
     var inc=document.createElement("label"); inc.className="inc"; inc.innerHTML='<input type="checkbox"'+(st.on?" checked":"")+'> '+T("納入","Include");
     inc.title=T("納入 AND 組合","Include in the AND combination");
     inc.querySelector("input").addEventListener("change", function(){ st.on=this.checked; save(); renderStrategy(); });
-    hd.appendChild(inc); row.appendChild(hd);
+    hd.appendChild(inc);
+    if(CONCEPTS.length>1){
+      var del=document.createElement("button"); del.type="button"; del.className="rdel"; del.textContent="×"; del.title=T("刪除此概念列","Delete this row");
+      del.addEventListener("click", function(){ deleteRow(k); });
+      hd.appendChild(del);
+    }
+    row.appendChild(hd);
     // 標籤列
     var line=document.createElement("div"); line.className="tokline";
     var mi=st.items.filter(function(i){return i.type==="mesh";});
@@ -742,6 +801,15 @@ function renderRows(){
     box.appendChild(row);
     drawStatus(k);
   });
+  var ar=document.createElement("div"); ar.className="addrow";
+  ar.innerHTML='<span>'+T("＋ 新增概念列：","+ Add a row:")+'</span>';
+  ["P","I","C","O","S","X"].forEach(function(t){
+    var b=document.createElement("button"); b.type="button"; b.className="btn sm line";
+    b.textContent=t==="X"?T("其他","Other"):t; b.title=isEn()?TYPES[t].en:TYPES[t].zh;
+    b.addEventListener("click", function(){ addRow(t); });
+    ar.appendChild(b);
+  });
+  box.appendChild(ar);
   drawCounts();
 }
 // Entry Terms 標籤展開：勾選＝已加入；被較短詞涵蓋的長詞以灰字註明
@@ -780,13 +848,13 @@ function renderSide(){
     return;
   }
   var ctx=sideCtx, tok=++sideTok;
-  side.innerHTML='<h2>'+esc(ctx.label)+'</h2><div class="meta">'+esc(ctx.k+" "+conceptName(ctx.k))+'</div><div id="sideTree" class="sideempty">'+T("載入上下位結構…","Loading hierarchy…")+'</div><div class="sidesec" id="sideEt"></div>';
+  side.innerHTML='<h2>'+esc(ctx.label)+'</h2><div class="meta">'+esc(codeOf(ctx.k)+" "+conceptName(ctx.k))+'</div><div id="sideTree" class="sideempty">'+T("載入上下位結構…","Loading hierarchy…")+'</div><div class="sidesec" id="sideEt"></div>';
   loadTree(ctx.dId).then(function(tr){ if(tok===sideTok) drawTree(tr, ctx); }, function(){ if(tok===sideTok) $("sideTree").textContent=T("無法載入上下位結構。","Could not load the hierarchy."); });
   loadDetail({dId:ctx.dId,label:ctx.label}).then(function(d){ if(tok===sideTok) drawEntryList(d, ctx); });
 }
 function plusBtn(dId, label){
   var k=sideTarget(), on=!!findItem(k,"mesh",label);
-  return '<button class="plus'+(on?' on':'')+'" data-add="'+esc(dId)+'" data-label="'+esc(label)+'" title="'+esc(on?T("已在 ","Already in ")+k:T("加入到 ","Add to ")+k+" "+conceptName(k))+'">'+(on?"✓":"+ "+k)+'</button>';
+  return '<button class="plus'+(on?' on':'')+'" data-add="'+esc(dId)+'" data-label="'+esc(label)+'" title="'+esc(on?T("已在 ","Already in ")+codeOf(k):T("加入到 ","Add to ")+codeOf(k)+" "+conceptName(k))+'">'+(on?"✓":"+ "+esc(codeOf(k)))+'</button>';
 }
 function drawTree(tr, ctx){
   var el=$("sideTree"); el.className="";
@@ -832,7 +900,7 @@ function drawEntryList(d, ctx){
     return '<label'+(by>=0?' class="covered"':'')+'><input type="checkbox" data-j="'+j+'"'+(it?" checked":"")+'> '+esc(txt)+(by>=0?' <span class="inv">'+T("已涵蓋於 ","covered by ")+esc(etShow(d.entries[by]))+'</span>':'')+'</label>';
   }).join("");
   el.innerHTML=head+' <span class="inv">'+T("已帶入 ","brought in ")+inCount+'</span></h4>'+
-    '<p class="sideempty" style="margin:0 0 6px">'+T("勾選＝已加入 "+k+" 的自由詞彙；勾掉即移除。","Ticked = in "+k+"'s free-text; untick to remove.")+'</p>'+
+    '<p class="sideempty" style="margin:0 0 6px">'+T("勾選＝已加入 "+codeOf(k)+" 的自由詞彙；勾掉即移除。","Ticked = in "+codeOf(k)+"'s free-text; untick to remove.")+'</p>'+
     (d.entries.length?'<div class="sidelist">'+list+'</div>':'<p class="sideempty">'+T("此標目沒有 Entry Terms。","This heading has no entry terms.")+'</p>');
   el.querySelectorAll("input[data-j]").forEach(function(cb){ cb.addEventListener("change", function(){
     var e=d.entries[+cb.getAttribute("data-j")], txt=ftNorm(unInvert(e));
@@ -858,7 +926,7 @@ function buildLines(){
     var st=state.concepts[c.k]; if(!st.items.length) return;
     var lv=lvlOf(c.k);
     var its=st.items.filter(function(i){return i.type==="mesh";}).concat(st.items.filter(function(i){return i.type==="ft";}));
-    n++; lines.push({n:n, k:c.k, label:c.k+" "+conceptName(c.k)+" ("+lv+(st.prox&&proxOK(lv)?", ~"+st.prox:"")+")", q:its.map(function(i){return fmt(i,lv,st.prox);}).join(" OR "), on:st.on});
+    n++; lines.push({n:n, k:c.k, label:c.code+" "+conceptName(c.k)+" ("+lv+(st.prox&&proxOK(lv)?", ~"+st.prox:"")+")", q:its.map(function(i){return fmt(i,lv,st.prox);}).join(" OR "), on:st.on});
     if(st.on) used.push(n);
   });
   if(used.length>1){ n++; lines.push({n:n, k:"", label:T("組合","Combine"), q:used.map(function(x){return "#"+x;}).join(" AND "), comb:true}); }
