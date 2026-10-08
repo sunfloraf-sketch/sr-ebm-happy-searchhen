@@ -217,14 +217,14 @@
     <h2><span data-zh>使用提示</span><span data-en>Tips</span></h2>
     <ul class="tips" data-zh>
       <li><b>主題詞（含下位詞）[mh]</b> 會自動包含樹狀結構中所有下位（狹義）標目；<b>僅此標目 [mh:noexp]</b> 則不含。<b>主要主題 [majr]</b> 只找以此為文章重點的文獻。</li>
-      <li>Entry Terms 常是倒裝形式（例：Attack, Heart），勾選「倒裝詞轉為自然語序」後會轉成 Heart Attack，才能在題名／摘要中比對到。</li>
+      <li>Entry Terms 常是倒裝形式（例：Attack, Heart），加入時會自動轉成自然語序 Heart Attack，才能在題名／摘要中比對到。</li>
       <li><b>鄰近字</b>：每列可設定一次，套用到該列所有兩個字以上的自由詞，例：<code>"hip fracture"[tiab:~3]</code> 會找到 fracture of the hip。PubMed 鄰近字只支援題名［ti］與題名／摘要［tiab］，且不能與截字 * 併用。</li>
       <li><b>出版類型 [pt]</b>：研究設計欄位加入 Randomized Controlled Trial、Meta-Analysis 等標目時預設為 [pt]（例：<code>"Randomized Controlled Trial"[pt]</code>）。請同時放自由詞（randomized、placebo），以免漏掉尚未標引的新文獻。</li>
       <li>比較（C）若與介入相同概念，通常不必納入 AND 組合，可取消勾選「納入」。</li>
     </ul>
     <ul class="tips" data-en>
       <li><b>MeSH, incl. narrower [mh]</b> explodes to every narrower heading in the tree; <b>this heading only [mh:noexp]</b> does not. <b>Major topic [majr]</b> finds articles where it is a main focus.</li>
-      <li>Entry Terms are often inverted (e.g. Attack, Heart). With "Un-invert entry terms" ticked they become Heart Attack, so they match titles/abstracts.</li>
+      <li>Entry Terms are often inverted (e.g. Attack, Heart); they are automatically converted to natural order (Heart Attack) so they match titles/abstracts.</li>
       <li><b>Proximity</b>: set once per row; it applies to every multi-word free-text term in that row, e.g. <code>"hip fracture"[tiab:~3]</code> also finds fracture of the hip. PubMed proximity works only in [ti] and [tiab], and not with truncation *.</li>
       <li><b>Publication type [pt]</b>: in Study design, headings such as Randomized Controlled Trial or Meta-Analysis default to [pt] (e.g. <code>"Randomized Controlled Trial"[pt]</code>). Add free-text too (randomized, placebo) to catch not-yet-indexed records.</li>
       <li>If the Comparison duplicates the Intervention concept, untick "Include" so it is not ANDed.</li>
@@ -280,9 +280,9 @@ var PROX_N=["0","1","2","3","4","5","6","8","10"];
 
 // ===== 狀態（存在瀏覽器本機，僅為方便） =====
 var STORE="sr_pubmed_mesh_v4";
-var state={unInvert:true, active:"P", concepts:{}};
+var state={active:"P", concepts:{}};
 CONCEPTS.forEach(function(c){ state.concepts[c.k]={on:c.k!=="C", level:"L1", prox:"", items:[]}; });
-try{ var sv=JSON.parse(localStorage.getItem(STORE)||"null"); if(sv&&sv.concepts){ CONCEPTS.forEach(function(c){ if(sv.concepts[c.k]) state.concepts[c.k]=sv.concepts[c.k]; }); if(typeof sv.unInvert==="boolean") state.unInvert=sv.unInvert; } }catch(e){}
+try{ var sv=JSON.parse(localStorage.getItem(STORE)||"null"); if(sv&&sv.concepts){ CONCEPTS.forEach(function(c){ if(sv.concepts[c.k]) state.concepts[c.k]=sv.concepts[c.k]; }); } }catch(e){}
 function save(){ try{ localStorage.setItem(STORE, JSON.stringify(state)); }catch(e){} }
 
 function fillSelect(sel, opts, val){
@@ -543,7 +543,7 @@ function chooseCand(k, c){
                      function(){ if(sel[k]!==s) return; s.d={entries:[],scope:"",trees:[]}; renderAddBar(k); });
 }
 // 倒裝轉正後會重複的 Entry Term（Diabetes, Pregnancy-Induced ＝ Pregnancy-Induced Diabetes）只列一次
-function etShow(e){ return state.unInvert?unInvert(e):e; }
+function etShow(e){ return unInvert(e); }
 function etView(entries){ var seen={}, out=[]; entries.forEach(function(e,j){ var k=ftNorm(etShow(e)).toLowerCase(); if(!seen[k]){ seen[k]=1; out.push(j); } }); return out; }
 function etCount(s){ return s.d?etView(s.d.entries).filter(function(j){ return s.checks[j]; }).length:0; }
 function renderAddBar(k){
@@ -556,7 +556,7 @@ function renderAddBar(k){
   bar.innerHTML='<span class="abl" title="'+esc((d&&d.scope)||"")+'"><span class="abk">MeSH</span> <b>'+esc(c.label)+'</b></span>'+
     '<select class="sm" data-f="tag"></select>'+
     '<span class="orsep">OR</span>'+
-    '<details class="etdd"><summary>'+(d?('Entry Terms ✓ '+etCount(s)+'/'+etView(d.entries).length):T("載入 Entry Terms…","Loading entry terms…"))+'</summary><div class="etpanel"></div></details>'+
+    '<details class="etdd"><summary title="'+esc(T("倒裝詞已自動轉為自然語序，才能在題名／摘要中比對到（例：Attack, Heart → Heart Attack）","Inverted entry terms are converted to natural word order so they match titles/abstracts (e.g. Attack, Heart → Heart Attack)"))+'">'+(d?('Entry Terms ✓ '+etCount(s)+'/'+etView(d.entries).length):T("載入 Entry Terms…","Loading entry terms…"))+'</summary><div class="etpanel"></div></details>'+
     '<button type="button" class="btn sm" data-act="add"'+(d?'':' disabled')+'>'+T("加入","Add")+'</button>'+
     '<button type="button" class="lnk" data-act="cancel">'+T("取消","Cancel")+'</button>';
   var ts=bar.querySelector('select[data-f="tag"]'); fillSelect(ts, MESH_TAGS, s.tag); ts.addEventListener("change", function(){ s.tag=ts.value; });
@@ -570,20 +570,18 @@ function renderAddBar(k){
       var show=etShow(d.entries[j]);
       return '<label><input type="checkbox" data-j="'+j+'"'+(s.checks[j]?" checked":"")+'> '+esc(show)+'</label>';
     }).join(""):'<span class="empty">'+T("此標目沒有 Entry Terms。","No entry terms.")+'</span>')+'</div>'+
-    '<label class="opt"><input type="checkbox" data-f="orig"'+(s.useOrig?" checked":"")+'> '+T("原輸入詞「","Your term \"")+esc(s.query)+T("」也加入","\" too")+'</label>'+
-    '<label class="opt"><input type="checkbox" data-f="inv"'+(state.unInvert?" checked":"")+'> '+T("倒裝詞轉為自然語序（Attack, Heart → Heart Attack）","Un-invert (Attack, Heart → Heart Attack)")+'</label>';
+    '<label class="opt"><input type="checkbox" data-f="orig"'+(s.useOrig?" checked":"")+'> '+T("原輸入詞「","Your term \"")+esc(s.query)+T("」也加入","\" too")+'</label>';
   var sum=dd.querySelector("summary");
   function upd(){ sum.textContent='Entry Terms ✓ '+etCount(s)+'/'+etView(d.entries).length; }
   panel.querySelectorAll("input[data-j]").forEach(function(cb){ cb.addEventListener("change", function(){ s.checks[cb.getAttribute("data-j")]=cb.checked; upd(); }); });
   panel.querySelectorAll("[data-all]").forEach(function(b){ b.addEventListener("click", function(){ var on=b.getAttribute("data-all")==="1"; d.entries.forEach(function(_e,j){ s.checks[j]=on; }); panel.querySelectorAll("input[data-j]").forEach(function(cb){ cb.checked=on; }); upd(); }); });
   panel.querySelector('[data-f="orig"]').addEventListener("change", function(){ s.useOrig=this.checked; });
-  panel.querySelector('[data-f="inv"]').addEventListener("change", function(){ state.unInvert=this.checked; save(); renderAddBar(k); });
 }
 function addSelected(k){
   var s=sel[k], c=s.c, d=s.d, arr=[{type:"mesh", text:c.label, dId:c.dId, tag:s.tag}];
   var fts=[];
   if(s.useOrig && s.query) fts.push({t:s.query, from:""});
-  d.entries.forEach(function(e,j){ if(s.checks[j]) fts.push({t:state.unInvert?unInvert(e):e, from:c.dId, orig:e}); });
+  d.entries.forEach(function(e,j){ if(s.checks[j]) fts.push({t:unInvert(e), from:c.dId, orig:e}); });
   var seen={};
   fts.forEach(function(f){ var t=ftNorm(f.t), lk=t.toLowerCase(); if(t && !seen[lk]){ seen[lk]=1; arr.push({type:"ft", text:t, from:f.from, orig:f.orig||""}); } });
   sel[k]=null; rowQ[k]="";
@@ -650,7 +648,7 @@ function renderRows(){
       var chips=document.createElement("div"); chips.className="chips";
       fi.forEach(function(it){
         var ch=document.createElement("span"); ch.className="chip"+(wordCount(it.text)>=2&&!/\*/.test(it.text)?" multi":"");
-        ch.title=(it.orig&&it.orig!==it.text?"Entry Term: "+it.orig:"")+(wordCount(it.text)>=2?(it.orig?"\n":"")+T("兩個字以上：套用鄰近字設定","Multi-word: proximity applies"):"");
+        ch.title=wordCount(it.text)>=2?T("兩個字以上：套用鄰近字設定","Multi-word: proximity applies"):"";
         ch.textContent=it.text;
         var x=document.createElement("button"); x.type="button"; x.textContent="×"; x.title=T("移除","Remove");
         x.addEventListener("click", function(){ removeItem(k,it); });
@@ -752,13 +750,13 @@ function drawEntryList(d, ctx){
   var list=etView(d.entries).map(function(j){
     var e=d.entries[j], txt=etShow(e), it=findItem(k,"ft",ftNorm(txt))||findItem(k,"ft",ftNorm(e));
     if(it) inCount++;
-    return '<label><input type="checkbox" data-j="'+j+'"'+(it?" checked":"")+'> '+esc(txt)+(txt!==e?' <span class="inv">('+esc(e)+')</span>':'')+'</label>';
+    return '<label><input type="checkbox" data-j="'+j+'"'+(it?" checked":"")+'> '+esc(txt)+'</label>';
   }).join("");
   el.innerHTML=head+' <span class="inv">'+T("已帶入 ","brought in ")+inCount+'</span></h4>'+
     '<p class="sideempty" style="margin:0 0 6px">'+T("勾選＝已加入 "+k+" 的自由詞；勾掉即移除。","Ticked = in "+k+"'s free-text; untick to remove.")+'</p>'+
     (d.entries.length?'<div class="sidelist">'+list+'</div>':'<p class="sideempty">'+T("此標目沒有 Entry Terms。","This heading has no entry terms.")+'</p>');
   el.querySelectorAll("input[data-j]").forEach(function(cb){ cb.addEventListener("change", function(){
-    var e=d.entries[+cb.getAttribute("data-j")], txt=ftNorm(state.unInvert?unInvert(e):e);
+    var e=d.entries[+cb.getAttribute("data-j")], txt=ftNorm(unInvert(e));
     if(cb.checked) addItems(k,[{type:"ft", text:txt, tag:"", prox:"", from:ctx.dId, orig:e}]);
     else { var it=findItem(k,"ft",txt)||findItem(k,"ft",ftNorm(e)); if(it) removeItem(k,it,true); save(); renderRows(); renderStrategy(); }
     drawEntryList(d, ctx);
