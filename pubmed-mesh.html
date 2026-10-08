@@ -141,7 +141,6 @@
   .sgmsg{font-size:13px;color:var(--mut);padding:8px}
   .sgi{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;width:100%;text-align:left;border:0;background:none;border-radius:6px;padding:6px 8px;cursor:pointer;font-family:inherit;font-size:14px;color:var(--ink)}
   .sgi small{color:#7A5617;font-size:12px}
-  .sgi .tn{margin-left:auto;font-size:11px;color:#9AA3A0;font-family:"SF Mono",Consolas,monospace}
   .sgi:hover,.sgi.on{background:#EEF4F0}
   .addbar2[hidden],.sugg[hidden]{display:none}
   .addbar2{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px;padding:8px 10px;border:1px solid var(--sh-amber);border-radius:9px;background:#FFFCF6;font-size:13px}
@@ -514,7 +513,7 @@ function drawSug(k, term){
   if(!list.length){ box.innerHTML='<div class="sgmsg">'+T("找不到對應的 MeSH 標目，可換個寫法，或按「只加入為自由詞」。","No matching MeSH heading — try another wording, or use \"Free-text only\".")+'</div>'; return; }
   box.innerHTML='<div class="sghd">'+T("選擇適合的 MeSH 控制詞彙","Pick the matching MeSH heading")+'</div>'+list.map(function(c,i){
     return '<button type="button" class="sgi'+(i===sugIdx[k]?' on':'')+'" data-i="'+i+'"><b>'+esc(c.label)+'</b>'+
-      (c.via?'<small>'+T("Entry Term：","Entry term: ")+esc(c.via)+'</small>':'')+'<span class="tn">'+esc(c.dId)+'</span></button>';
+      (c.via?'<small>'+T("Entry Term：","Entry term: ")+esc(c.via)+'</small>':'')+'</button>';
   }).join("");
   box.querySelectorAll(".sgi").forEach(function(b){
     b.addEventListener("mousedown", function(e){ e.preventDefault(); });   // 不讓輸入框先失去焦點
@@ -707,7 +706,7 @@ function renderSide(){
     return;
   }
   var ctx=sideCtx, tok=++sideTok;
-  side.innerHTML='<h2>'+esc(ctx.label)+'</h2><div class="meta">'+esc(ctx.dId)+' · '+esc(ctx.k+" "+conceptName(ctx.k))+'</div><div id="sideTree" class="sideempty">'+T("載入上下位結構…","Loading hierarchy…")+'</div><div class="sidesec" id="sideEt"></div>';
+  side.innerHTML='<h2>'+esc(ctx.label)+'</h2><div class="meta">'+esc(ctx.k+" "+conceptName(ctx.k))+'</div><div id="sideTree" class="sideempty">'+T("載入上下位結構…","Loading hierarchy…")+'</div><div class="sidesec" id="sideEt"></div>';
   loadTree(ctx.dId).then(function(tr){ if(tok===sideTok) drawTree(tr, ctx); }, function(){ if(tok===sideTok) $("sideTree").textContent=T("無法載入上下位結構。","Could not load the hierarchy."); });
   loadDetail({dId:ctx.dId,label:ctx.label}).then(function(d){ if(tok===sideTok) drawEntryList(d, ctx); });
 }
