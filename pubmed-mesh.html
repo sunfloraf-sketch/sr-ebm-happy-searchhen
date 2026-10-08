@@ -440,21 +440,32 @@ function connMsg(e){
 
 // ===== 輸入時即時提示候選 MeSH 標目 =====
 // 同時查「標目名稱」與「Entry Term」，例：gestational diabet → Diabetes, Gestational（Entry Term：Gestational Diabetes）
-var sugTok={};
+// NLM 的 contains 以「完整單字」比對，打到一半的字（gestational dia）會比不到，所以另外：
+//   ① startswith 前綴比對整串；② 用已打完的字查，再以「每個字都是標籤中某字的開頭」過濾；③ 仍不足 → MeSH Database 截字 dia*
+function qToks(s){ return String(s||"").toLowerCase().split(/[^a-z0-9]+/).filter(Boolean); }
+function pfxOK(label, toks){ var lt=qToks(label); return toks.every(function(t){ return lt.some(function(w){ return w.indexOf(t)===0; }); }); }
+function lookupD(q, match, n){ return soft(getJSON(LOOKUP+"descriptor?label="+encodeURIComponent(q)+"&match="+match+"&limit="+n)).then(function(a){ return (a||[]).map(function(d){ return {dId:didOf(d.resource), label:d.label}; }); }); }
+function lookupT(q, match, n){ return soft(getJSON(LOOKUP+"term?label="+encodeURIComponent(q)+"&match="+match+"&limit="+n)).then(function(a){ return a||[]; }); }
+function termsToDesc(ts){
+  var lab={}; ts.forEach(function(t){ lab[t.resource]=t.label; });
+  var uris=Object.keys(lab).slice(0,8);
+  if(!uris.length) return Promise.resolve([]);
+  return soft(resolveTerms(uris)).then(function(rs){ return (rs||[]).map(function(x){ x.via=lab[x.t]||""; return x; }); });
+}
 function suggest(term){
-  var enc=encodeURIComponent(term), key=term.toLowerCase();
+  var key=term.toLowerCase(), toks=qToks(term);
   apiErrs=[];
-  var pD=soft(getJSON(LOOKUP+"descriptor?label="+enc+"&match=contains&limit=10")).then(function(a){
-    return (a||[]).map(function(d){ return {dId:didOf(d.resource), label:d.label}; });
-  });
-  var pT=soft(getJSON(LOOKUP+"term?label="+enc+"&match=contains&limit=12")).then(function(a){
-    a=a||[]; var lab={}; a.forEach(function(t){ lab[t.resource]=t.label; });
-    return soft(resolveTerms(a.map(function(t){return t.resource;}))).then(function(rs){
-      return (rs||[]).map(function(x){ x.via=lab[x.t]||""; return x; });
+  var whole=toks.slice(0,-1).sort(function(a,b){ return b.length-a.length; })[0];   // 已打完的字中最長的一個
+  var pD=Promise.all([lookupD(term,"startswith",10), lookupD(term,"contains",10), whole?lookupD(whole,"contains",60):Promise.resolve([])])
+    .then(function(r){ return r[0].concat(r[1], r[2].filter(function(d){ return pfxOK(d.label,toks); })); });
+  var pT=Promise.all([lookupT(term,"startswith",10), lookupT(term,"contains",10), whole?lookupT(whole,"contains",80):Promise.resolve([])])
+    .then(function(r){
+      var seen={}, ts=[];
+      r[0].concat(r[1], r[2].filter(function(t){ return pfxOK(t.label,toks); })).forEach(function(t){ if(t.resource&&!seen[t.resource]){ seen[t.resource]=1; ts.push(t); } });
+      return termsToDesc(ts);
     });
-  });
   return Promise.all([pD,pT]).then(function(r){
-    if(apiErrs.length>=2){ var err=new Error(apiErrs[0]); throw err; }
+    if(apiErrs.length && !(r[0]||[]).length && !(r[1]||[]).length && apiErrs.length>=4){ throw new Error(apiErrs[0]); }
     var seen={}, out=[];
     (r[0]||[]).concat(r[1]||[]).forEach(function(x){
       if(!x.dId) return;
@@ -462,16 +473,22 @@ function suggest(term){
       if(x.via && x.via.toLowerCase()===x.label.toLowerCase()) x.via="";
       seen[x.dId]=x; out.push(x);
     });
-    // 排序：完全相同 → 開頭相同 → 其他；同級以字數少者優先
+    // 排序：完全相同 → 開頭相同 → 每個字都對得上 → 其他；同級以字數少者優先
     function score(x){ var a=x.label.toLowerCase(), b=(x.via||"").toLowerCase();
-      if(a===key||b===key) return 0; if(a.indexOf(key)===0||b.indexOf(key)===0) return 1; return 2; }
+      if(a===key||b===key) return 0; if(a.indexOf(key)===0||b.indexOf(key)===0) return 1;
+      if(pfxOK(a,toks)||(b&&pfxOK(b,toks))) return 2; return 3; }
     out.sort(function(a,b){ return score(a)-score(b) || a.label.length-b.label.length; });
-    if(out.length) return out.slice(0,10);
-    // NLM 比不到 → MeSH Database（分詞搜尋）
-    return soft(meshDb(term, 8)).then(function(ms){ return ms||[]; });
+    if(out.length>=3) return out.slice(0,10);
+    // 太少 → MeSH Database（NCBI）以截字補足：gestational dia → gestational dia*
+    var last=toks[toks.length-1]||"";
+    var q=toks.length?toks.slice(0,-1).concat(last.length>=3?[last+"*"]:[last]).join(" "):term;
+    return soft(meshDb(q, 8)).then(function(ms){
+      (ms||[]).forEach(function(x){ if(x.dId&&!seen[x.dId]){ seen[x.dId]=x; out.push(x); } });
+      return out.slice(0,10);
+    });
   });
 }
-var rowQ={}, sugList={}, sugIdx={}, sugTimer={};
+var rowQ={}, sugTok={}, sugList={}, sugIdx={}, sugTimer={};
 function onType(k){
   clearTimeout(sugTimer[k]);
   var term=ftNorm(rowQ[k]||"");
