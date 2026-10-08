@@ -104,6 +104,7 @@
   .sidesec h4{margin:0 0 6px;font-size:13px;color:var(--sh-green-d);display:flex;gap:8px;align-items:center}
   .sidelist{display:flex;flex-direction:column;gap:2px;font-size:13px}
   .sidelist label{display:flex;gap:6px;align-items:baseline;cursor:pointer}
+  .sidelist .covered{color:var(--mut)}
   .sideempty{font-size:12.5px;color:var(--mut)}
 
   table.strat{border-collapse:collapse;width:100%;font-size:13px}
@@ -545,7 +546,13 @@ function chooseCand(k, c){
 // 倒裝轉正後會重複的 Entry Term（Diabetes, Pregnancy-Induced ＝ Pregnancy-Induced Diabetes）只列一次
 function etShow(e){ return unInvert(e); }
 function etView(entries){ var seen={}, out=[]; entries.forEach(function(e,j){ var k=ftNorm(etShow(e)).toLowerCase(); if(!seen[k]){ seen[k]=1; out.push(j); } }); return out; }
-function etCount(s){ return s.d?etView(s.d.entries).filter(function(j){ return s.checks[j]; }).length:0; }
+// 被涵蓋的 Entry Term：較短的詞整段出現在較長的詞裡（Gestational Diabetes 涵蓋 Gestational Diabetes Mellitus），
+// 片語檢索時短詞已能找到長詞的文獻，長詞多餘 → 下拉清單不顯示、也不加入（短詞取消勾選時長詞會再出現）
+function etWords(e){ return " "+ftNorm(etShow(e)).toLowerCase().replace(/[\s\-]+/g," ")+" "; }
+function etCovers(a, b){ var wa=etWords(a), wb=etWords(b); return wa!==wb && wb.indexOf(wa)>=0; }   // a 是否涵蓋 b
+function etCoveredBy(entries, j, pool){ var hit=-1; pool.forEach(function(i){ if(hit<0 && i!==j && etCovers(entries[i], entries[j])) hit=i; }); return hit; }
+function etVisible(s){ var all=etView(s.d.entries), on=all.filter(function(j){ return s.checks[j]; }); return all.filter(function(j){ return etCoveredBy(s.d.entries, j, on)<0; }); }
+function etCount(s){ return s.d?etVisible(s).filter(function(j){ return s.checks[j]; }).length:0; }
 function renderAddBar(k){
   var bar=$("ab-"+k); if(!bar) return;
   var s=sel[k];
@@ -556,7 +563,7 @@ function renderAddBar(k){
   bar.innerHTML='<span class="abl" title="'+esc((d&&d.scope)||"")+'"><span class="abk">MeSH</span> <b>'+esc(c.label)+'</b></span>'+
     '<select class="sm" data-f="tag"></select>'+
     '<span class="orsep">OR</span>'+
-    '<details class="etdd"><summary title="'+esc(T("倒裝詞已自動轉為自然語序，才能在題名／摘要中比對到（例：Attack, Heart → Heart Attack）","Inverted entry terms are converted to natural word order so they match titles/abstracts (e.g. Attack, Heart → Heart Attack)"))+'">'+(d?('Entry Terms ✓ '+etCount(s)+'/'+etView(d.entries).length):T("載入 Entry Terms…","Loading entry terms…"))+'</summary><div class="etpanel"></div></details>'+
+    '<details class="etdd"><summary title="'+esc(T("倒裝詞已自動轉為自然語序，才能在題名／摘要中比對到（例：Attack, Heart → Heart Attack）","Inverted entry terms are converted to natural word order so they match titles/abstracts (e.g. Attack, Heart → Heart Attack)"))+'">'+(d?('Entry Terms ✓ '+etCount(s)+'/'+etVisible(s).length):T("載入 Entry Terms…","Loading entry terms…"))+'</summary><div class="etpanel"></div></details>'+
     '<button type="button" class="btn sm" data-act="add"'+(d?'':' disabled')+'>'+T("加入","Add")+'</button>'+
     '<button type="button" class="lnk" data-act="cancel">'+T("取消","Cancel")+'</button>';
   var ts=bar.querySelector('select[data-f="tag"]'); fillSelect(ts, MESH_TAGS, s.tag); ts.addEventListener("change", function(){ s.tag=ts.value; });
@@ -566,22 +573,22 @@ function renderAddBar(k){
   var dd=bar.querySelector("details.etdd"), panel=dd.querySelector(".etpanel");
   if(wasOpen) dd.open=true;
   panel.innerHTML='<div class="etbar"><button type="button" class="lnk" data-all="1">'+T("全選","All")+'</button> <button type="button" class="lnk" data-all="0">'+T("全不選","None")+'</button></div>'+
-    '<div class="etlist">'+(d.entries.length?etView(d.entries).map(function(j){
+    '<div class="etlist">'+(d.entries.length?etVisible(s).map(function(j){
       var show=etShow(d.entries[j]);
       return '<label><input type="checkbox" data-j="'+j+'"'+(s.checks[j]?" checked":"")+'> '+esc(show)+'</label>';
     }).join(""):'<span class="empty">'+T("此標目沒有 Entry Terms。","No entry terms.")+'</span>')+'</div>'+
     '<label class="opt"><input type="checkbox" data-f="orig"'+(s.useOrig?" checked":"")+'> '+T("原輸入詞「","Your term \"")+esc(s.query)+T("」也加入","\" too")+'</label>';
   var sum=dd.querySelector("summary");
-  function upd(){ sum.textContent='Entry Terms ✓ '+etCount(s)+'/'+etView(d.entries).length; }
-  panel.querySelectorAll("input[data-j]").forEach(function(cb){ cb.addEventListener("change", function(){ s.checks[cb.getAttribute("data-j")]=cb.checked; upd(); }); });
-  panel.querySelectorAll("[data-all]").forEach(function(b){ b.addEventListener("click", function(){ var on=b.getAttribute("data-all")==="1"; d.entries.forEach(function(_e,j){ s.checks[j]=on; }); panel.querySelectorAll("input[data-j]").forEach(function(cb){ cb.checked=on; }); upd(); }); });
+  function upd(){ sum.textContent='Entry Terms ✓ '+etCount(s)+'/'+etVisible(s).length; }
+  panel.querySelectorAll("input[data-j]").forEach(function(cb){ cb.addEventListener("change", function(){ s.checks[cb.getAttribute("data-j")]=cb.checked; renderAddBar(k); }); });
+  panel.querySelectorAll("[data-all]").forEach(function(b){ b.addEventListener("click", function(){ var on=b.getAttribute("data-all")==="1"; d.entries.forEach(function(_e,j){ s.checks[j]=on; }); renderAddBar(k); }); });
   panel.querySelector('[data-f="orig"]').addEventListener("change", function(){ s.useOrig=this.checked; });
 }
 function addSelected(k){
   var s=sel[k], c=s.c, d=s.d, arr=[{type:"mesh", text:c.label, dId:c.dId, tag:s.tag}];
   var fts=[];
   if(s.useOrig && s.query) fts.push({t:s.query, from:""});
-  d.entries.forEach(function(e,j){ if(s.checks[j]) fts.push({t:unInvert(e), from:c.dId, orig:e}); });
+  etVisible(s).forEach(function(j){ if(s.checks[j]){ var e=d.entries[j]; fts.push({t:unInvert(e), from:c.dId, orig:e}); } });
   var seen={};
   fts.forEach(function(f){ var t=ftNorm(f.t), lk=t.toLowerCase(); if(t && !seen[lk]){ seen[lk]=1; arr.push({type:"ft", text:t, from:f.from, orig:f.orig||""}); } });
   sel[k]=null; rowQ[k]="";
@@ -742,15 +749,17 @@ function drawEntryList(d, ctx){
   var head='<h4>Entry Terms · '+etView(d.entries).length;
   // 還沒加入此列（查詢中、或瀏覽上下位）：只列出清單
   if(ctx.fromPick || !findItem(k,"mesh",ctx.label)){
-    el.innerHTML=head+'</h4>'+(d.entries.length?'<div class="sidelist">'+etView(d.entries).map(function(j){return '<span>'+esc(etShow(d.entries[j]))+'</span>';}).join("")+'</div>':'<p class="sideempty">'+T("無","None")+'</p>');
+    el.innerHTML=head+'</h4>'+(d.entries.length?'<div class="sidelist">'+etView(d.entries).map(function(j){ var by=etCoveredBy(d.entries, j, etView(d.entries)); return '<span'+(by>=0?' class="covered"':'')+'>'+esc(etShow(d.entries[j]))+(by>=0?' <span class="inv">'+T("已涵蓋於 ","covered by ")+esc(etShow(d.entries[by]))+'</span>':'')+'</span>';}).join("")+'</div>':'<p class="sideempty">'+T("無","None")+'</p>');
     return;
   }
   // 已加入此列：顯示哪些 Entry Terms 已帶入為自由詞，可直接勾選增減
   var inCount=0;
-  var list=etView(d.entries).map(function(j){
+  var all=etView(d.entries);
+  var list=all.map(function(j){
     var e=d.entries[j], txt=etShow(e), it=findItem(k,"ft",ftNorm(txt))||findItem(k,"ft",ftNorm(e));
     if(it) inCount++;
-    return '<label><input type="checkbox" data-j="'+j+'"'+(it?" checked":"")+'> '+esc(txt)+'</label>';
+    var by=etCoveredBy(d.entries, j, all);
+    return '<label'+(by>=0?' class="covered"':'')+'><input type="checkbox" data-j="'+j+'"'+(it?" checked":"")+'> '+esc(txt)+(by>=0?' <span class="inv">'+T("已涵蓋於 ","covered by ")+esc(etShow(d.entries[by]))+'</span>':'')+'</label>';
   }).join("");
   el.innerHTML=head+' <span class="inv">'+T("已帶入 ","brought in ")+inCount+'</span></h4>'+
     '<p class="sideempty" style="margin:0 0 6px">'+T("勾選＝已加入 "+k+" 的自由詞；勾掉即移除。","Ticked = in "+k+"'s free-text; untick to remove.")+'</p>'+
