@@ -201,6 +201,7 @@
   .crow .status{margin-top:4px;font-size:12.5px;padding-left:17px}
   .rset{display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:12px;color:var(--mut);margin-right:10px}
   .pxlab{margin-left:14px}
+  .fldlab{margin-right:2px}
   .crow>.proxwarn{margin-top:6px;text-align:right}
   .rset .proxwarn{margin:0}
   .bottombar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin-top:2px}
@@ -830,7 +831,7 @@ function buildRow(c){
       if(it.dId){
         var n=st.items.filter(function(x){ return x.type==="ft" && x.from===it.dId; }).length;
         grp.appendChild(pillDetails(k+"|e|"+it.dId, "epill",
-          T(n+"個同義詞",n+" synonyms")+' <span class="ptag">'+esc(tagShort(lv)+(st.prox&&proxOK(lv)?"~"+st.prox:""))+'</span>',
+          T(n+"個同義詞",n+" synonyms"),
           function(panel){ fillEntryPanel(panel, k, it); }));
       }
     });
@@ -838,7 +839,7 @@ function buildRow(c){
     var dIds={}; mi.forEach(function(m){ if(m.dId) dIds[m.dId]=1; });
     st.items.filter(function(i){ return i.type==="ft" && !(i.from && dIds[i.from]); }).forEach(function(it){
       var sp=document.createElement("span"); sp.className="pill fpill";
-      sp.innerHTML=esc(it.text)+' <span class="ptag">'+esc(tagShort(lv))+'</span>';
+      sp.textContent=it.text;
       var x=document.createElement("button"); x.type="button"; x.textContent="×"; x.title=T("移除","Remove");
       x.addEventListener("click", function(){ removeItem(k,it); });
       sp.appendChild(x); line.appendChild(sp);
@@ -862,6 +863,7 @@ function buildRow(c){
     // 自由詞彙設定（有自由詞彙時才顯示）
     if(st.items.some(function(i){ return i.type==="ft"; })){
       var rs=document.createElement("div"); rs.className="rset";
+      rs.insertAdjacentHTML("beforeend",'<span class="fldlab">'+T("同義詞欄位：","Synonym field:")+'</span>');
       var lvs=document.createElement("select"); lvs.className="sm"; fillSelect(lvs, lvlOpts(), lv); lvs.title=T("同義詞欄位","Synonym field");
       lvs.addEventListener("change", function(){ st.level=lvs.value; save(); renderRows(); renderStrategy(); });
       rs.appendChild(lvs);
