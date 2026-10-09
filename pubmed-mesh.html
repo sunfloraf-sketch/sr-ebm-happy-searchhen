@@ -120,7 +120,7 @@
   .warnbox{background:var(--warnbg);border-left:4px solid var(--sh-amber);border-radius:8px;padding:8px 12px;font-size:12.5px;color:var(--warn);margin-top:10px}
   .rows{display:flex;flex-direction:column;gap:10px}
   .crow{padding:10px 2px 10px 10px;border-bottom:1px solid var(--sh-line);border-left:3px solid transparent;transition:border-color .15s}
-  .crow.active{border-left-color:var(--sh-amber)}   /* 目前正在操作的列 */
+  .crow.active{border-left-color:var(--sh-green)}   /* 目前正在操作的列 */
   .rhd{display:flex;align-items:center;gap:8px;margin-bottom:8px}
   .rhd .inc{font-size:12px;color:var(--mut);display:flex;gap:4px;align-items:center}
   .qwrap{position:relative;flex:1;min-width:220px}
@@ -145,6 +145,7 @@
   .rdel{border:0;background:none;color:#9AA3A0;cursor:pointer;font-size:17px;line-height:1;padding:0 2px}
   .rdel:hover{color:#9B3B2E}
   .rhd .inc input,#liveCb{accent-color:#9DB8AA;width:15px;height:15px;cursor:pointer}
+  .hdtag{font-size:10.5px;color:#7A5617;background:#FBF1DE;border-radius:4px;padding:0 4px}
   .ppsep{color:var(--line)}
   .sdhd{margin-top:14px;padding:6px 2px 2px;font-size:13px;font-weight:700;color:var(--sh-green-d);border-top:2px solid var(--sh-line)}
   .addrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px;color:var(--mut);padding:2px 2px 0}
@@ -153,6 +154,7 @@
   .tokline{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:2px 0 2px 17px;min-height:34px}   /* 左側與代號（P）對齊 */
   .qwrap{position:relative;flex:1 1 180px;min-width:160px}
   .qwrap input{width:100%;border:0;outline:0;background:transparent;font-size:14px;padding:5px 4px}
+  .qwrap input::placeholder{color:#8A948F;font-size:16px}
   .pill{position:relative;display:inline-flex;align-items:center;font-size:13px;border-radius:14px;line-height:1.3}
   details.pill>summary{list-style:none;cursor:pointer;padding:3px 10px;border-radius:14px;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;user-select:none}
   details.pill>summary::-webkit-details-marker{display:none}
@@ -518,6 +520,7 @@ function removeHeading(k, it, withSyn){
 
 // 倒裝轉正後會重複的 Entry Term（Diabetes, Pregnancy-Induced ＝ Pregnancy-Induced Diabetes）只列一次
 function etShow(e){ return unInvert(e); }
+function synList(label, d){ return [label].concat((d&&d.entries)||[]); }   // 同義詞選項：標目本身（自然語序）排第一，其後為 Entry Terms
 function etView(entries){ var seen={}, out=[]; entries.forEach(function(e,j){ var k=ftNorm(etShow(e)).toLowerCase(); if(!seen[k]){ seen[k]=1; out.push(j); } }); return out; }
 // 被涵蓋的 Entry Term：較短的詞整段出現在較長的詞裡（Gestational Diabetes 涵蓋 Gestational Diabetes Mellitus），
 // 片語檢索時短詞已能找到長詞的文獻，長詞多餘 → 加入時略過（在 Entry Terms 標籤中以灰字註明，可再勾回）
@@ -690,8 +693,8 @@ function chooseCand(k, c){
   focusRow(k);
   showSide(c.dId, c.label, k);
   loadDetail(c).then(function(d){
-    var s={d:d, checks:{}}; d.entries.forEach(function(_e,j){ s.checks[j]=true; });
-    var arr=etVisible(s).map(function(j){ return {type:"ft", text:ftNorm(unInvert(d.entries[j])), from:c.dId}; });
+    var s={d:{entries:synList(c.label,d)}, checks:{}}; s.d.entries.forEach(function(_e,j){ s.checks[j]=true; });
+    var arr=etVisible(s).map(function(j){ return {type:"ft", text:ftNorm(unInvert(s.d.entries[j])), from:c.dId}; });
     var n=addItems(k, arr);
     if(sideCtx && sideCtx.dId===c.dId) renderSide();   // 右側 Entry Terms 清單更新勾選狀態
     focusRow(k);
@@ -828,7 +831,7 @@ function buildRow(c){
     // 輸入框＋即時候選
     var wrap=document.createElement("div"); wrap.className="qwrap";
     var q=document.createElement("input"); q.type="text"; q.id="q-"+k; q.autocomplete="off"; q.spellcheck=false; q.value=rowQ[k]||"";
-    q.placeholder="";
+    q.placeholder="+";
     q.addEventListener("input", function(){ rowQ[k]=q.value; onType(k); fa.hidden=!ftNorm(q.value); });
     q.addEventListener("keydown", function(e){ onKey(k,e); });
     q.addEventListener("focus", function(){ state.active=k; document.querySelectorAll(".crow").forEach(function(r){ r.classList.toggle("active", r.id==="row-"+k); }); });
@@ -868,12 +871,13 @@ function buildRow(c){
 function fillEntryPanel(panel, k, it){
   var d=_detCache[it.dId];
   if(!d){ panel.innerHTML='<div class="sgmsg">'+T("載入同義詞…","Loading synonyms…")+'</div>'; loadDetail({dId:it.dId,label:it.text}).then(function(){ if(openPill===k+"|e|"+it.dId) fillEntryPanel(panel,k,it); }); return; }
+  d={entries:synList(it.text,d)};
   var all=etView(d.entries);
   var vis=all.filter(function(j){ return etCoveredBy(d.entries, j, all)<0; });   // 被較短詞涵蓋的長詞不顯示（右側面板仍列出原始清單）
   panel.title=T("倒裝詞已自動轉為自然語序，才能在題名／摘要中比對到（例：Attack, Heart → Heart Attack）","Inverted entry terms are converted to natural word order (e.g. Attack, Heart → Heart Attack)");
   panel.innerHTML='<div class="etlist">'+(vis.length?vis.map(function(j){
       var txt=ftNorm(etShow(d.entries[j])), on=!!findItem(k,"ft",txt);
-      return '<label><input type="checkbox" data-j="'+j+'"'+(on?" checked":"")+'> '+esc(txt)+'</label>';
+      return '<label><input type="checkbox" data-j="'+j+'"'+(on?" checked":"")+'> '+esc(txt)+(j===0?' <span class="hdtag">'+T("標目","heading")+'</span>':'')+'</label>';
     }).join(""):'<span class="empty">'+T("此標目沒有同義詞。","No synonyms.")+'</span>')+'</div>';
   panel.querySelectorAll("input[data-j]").forEach(function(cb){ cb.addEventListener("change", function(){
     var txt=ftNorm(etShow(d.entries[+cb.getAttribute("data-j")]));
