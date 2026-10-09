@@ -297,8 +297,9 @@
 </main>
 
 <footer class="shfoot"><div class="shfoot-in">
-  <p><span data-zh>此工具為純網頁程式，未使用到AI運作。MeSH 查詢使用 NLM MeSH API 與 NCBI E-utilities；建議的標目與 Entry Terms 僅供參考，請務必人工核對。</span>
-    <span data-en>A pure web-based tool with no AI. MeSH lookups use the NLM MeSH API and NCBI E-utilities; suggested headings and entry terms are only a starting point — always verify them.</span></p>
+  <p><span data-zh>PubMed 與 MeSH 資料來源：美國國家醫學圖書館（U.S. National Library of Medicine, NLM）及美國國家生物技術資訊中心（National Center for Biotechnology Information, NCBI）。本工具使用 NLM MeSH 服務及 NCBI E-utilities API 存取 MeSH 與 PubMed 資料。SR × EBM Happy SearchHen 為獨立開發之檢索輔助工具，與 NLM、NCBI 或 NIH 無隸屬關係，亦未獲其認可、贊助或背書。</span>
+    <span data-en>PubMed and MeSH data are provided by the U.S. National Library of Medicine (NLM) and the National Center for Biotechnology Information (NCBI). This tool uses NLM MeSH services and the NCBI E-utilities API to access MeSH and PubMed data. SR × EBM Happy SearchHen is an independently developed search-support tool and is not affiliated with, sponsored by, or endorsed by NLM, NCBI, or NIH.</span></p>
+  <p>Courtesy of the U.S. National Library of Medicine.</p>
   <p><span data-zh>工具引用：方靜如，SR x EBM Happy SearchHen 搜尋策略生成雞。<br>Fang CJ, SR x EBM Happy SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/</a></span>
     <span data-en>Cite this tool: Fang CJ, SR x EBM Happy SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/</a></span></p>
   <div class="frow"><span class="brandline">SR × EBM Happy SearchHen　搜尋策略生成雞</span><span>© 2026 Ching-Ju Fang · All rights reserved · <a href="https://github.com/sunfloraf-sketch/sr-ebm-happy-searchhen/blob/main/LICENSE" target="_blank" rel="noopener"><span data-zh>使用條款</span><span data-en>Terms of use</span></a></span></div>
@@ -421,8 +422,10 @@ function getJSON(url){
 }
 function sparql(q, n, inf){ return getJSON("https://id.nlm.nih.gov/mesh/sparql?format=JSON&inference="+(inf===false?"false":"true")+"&limit="+(n||20)+"&query="+encodeURIComponent(q)); }
 function rows(j){ return (j&&j.results&&j.results.bindings)||[]; }
+// NCBI E-utilities 政策：請求需附 tool 與 email（開發者聯絡用，見 ncbi.nlm.nih.gov/home/about/policies）；email 分段組合，降低被爬蟲擷取
+var NCBI_EMAIL=["happysearchhen","gmail.com"].join("@");
 function eutils(ep, params){
-  var p=new URLSearchParams(params); p.set("tool","sr_search_toolkit");
+  var p=new URLSearchParams(params); p.set("tool","sr_search_toolkit"); p.set("email",NCBI_EMAIL);
   return withTimeout(fetch("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"+ep,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body:p.toString()})
     .then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); }));
 }
