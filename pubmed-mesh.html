@@ -202,9 +202,14 @@
   .ftadd[hidden]{display:none}
   .sgfree{border-top:1px dashed var(--line);border-radius:0 0 6px 6px;color:var(--sh-green-d)}
   .crow .status{margin-top:4px;font-size:12.5px;padding-left:17px}
-  .rset{display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:12px;color:var(--mut);margin-right:10px}
-  .pxlab{margin-left:14px}
+  .rset{display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:13.5px;color:#3A3F3C;margin-right:12px}
+  .pxlab{margin-left:16px}
   .fldlab{margin-right:2px}
+  /* 列標題的兩個選單：無框、淺色底、簡單箭頭 */
+  select.chipsel{-webkit-appearance:none;appearance:none;border:0;border-radius:4px;font-family:inherit;font-size:13.5px;color:#2A2A2A;padding:2px 22px 2px 7px;cursor:pointer;background:#EEEEEE url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23444' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right 7px center/9px 6px no-repeat;min-width:0}
+  select.chipsel.fld{background-color:#E1EFE5}
+  select.chipsel:hover{filter:brightness(.97)}
+  select.chipsel:focus-visible{outline:2px solid var(--sh-green);outline-offset:1px}
   .crow>.proxwarn{margin-top:6px;text-align:right}
   .rset .proxwarn{margin:0}
   .bottombar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin-top:2px}
@@ -867,11 +872,11 @@ function buildRow(c){
     if(st.items.some(function(i){ return i.type==="ft"; })){
       var rs=document.createElement("div"); rs.className="rset";
       rs.insertAdjacentHTML("beforeend",'<span class="fldlab">'+T("同義詞欄位：","Synonym field:")+'</span>');
-      var lvs=document.createElement("select"); lvs.className="sm"; fillSelect(lvs, lvlOpts(), lv); lvs.title=T("同義詞欄位","Synonym field");
+      var lvs=document.createElement("select"); lvs.className="chipsel fld"; fillSelect(lvs, lvlOpts(), lv); lvs.title=T("同義詞欄位","Synonym field");
       lvs.addEventListener("change", function(){ st.level=lvs.value; save(); renderRows(); renderStrategy(); });
       rs.appendChild(lvs);
       rs.insertAdjacentHTML("beforeend",'<span class="pxlab">'+T("鄰近字：","Proximity:")+'</span>');
-      var px=document.createElement("select"); px.className="sm";
+      var px=document.createElement("select"); px.className="chipsel prx";
       px.title=T("套用到此列所有兩個字以上的自由詞彙；只在篇名/摘要 [tiab]、篇名 [ti] 有效，含截字 * 的詞除外","Applies to every multi-word free-text term in this row; works only with [tiab] / [ti], terms with * excluded");
       fillSelect(px,[{v:"",zh:"預設採片語",en:"Phrase (default)"}].concat(PROX_N.map(function(n){return {v:n,zh:"~"+n+"字內",en:"within "+n};})), st.prox||"");
       px.addEventListener("change", function(){ st.prox=px.value; save(); renderRows(); renderStrategy(); });
