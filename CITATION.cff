@@ -1,12 +1,15 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
-title: "SR / EBM Search Toolkit: Proximity Builder, PICO Strategy Builder, and Search Syntax Converter"
+title: "SR / EBM Search Toolkit: Proximity Builder, PICO Strategy Builder, Search Syntax Converter, and PubMed Light"
 abstract: >-
-  A set of three browser-based tools for systematic-review literature searching:
+  A set of four browser-based tools for systematic-review literature searching:
   a Proximity Builder that assembles adjacency/near fragments from synonym stacks,
   a PICO Strategy Builder that generates line-numbered strategies with controlled
-  vocabulary mapping, and a Search Syntax Converter that translates a query across
-  seven databases/platforms. All tools run entirely in the browser.
+  vocabulary mapping, a Search Syntax Converter that translates a query across
+  seven databases/platforms, and PubMed Light, which builds PubMed searches row by
+  row with MeSH suggestions, one-click synonyms (Entry Terms), hierarchy browsing
+  and live PubMed counts. All tools run in the browser; only MeSH lookups and PubMed
+  counts are sent to the official NLM MeSH services and NCBI E-utilities API.
 type: software
 authors:
   - given-names: Ching-Ju
@@ -25,6 +28,8 @@ keywords:
   - PICO
   - controlled vocabulary
   - MeSH
+  - PubMed
+  - entry terms
   - Emtree
   - proximity operators
   - bibliographic databases
