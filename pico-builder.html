@@ -536,6 +536,7 @@
       <a class="sh-link toolbtn active" href="pico-builder.html" aria-current="page"><span data-zh>PICO 檢索策略產生器</span><span data-en>PICO Strategy Builder</span></a>
       <a class="sh-link toolbtn" href="syntax-converter.html"><span data-zh>資料庫檢索語法轉換器</span><span data-en>Syntax Converter</span></a>
       <a class="sh-link toolbtn" href="proximity-builder.html"><span data-zh>鄰近字分堆組合器</span><span data-en>Proximity Builder</span></a>
+      <a class="sh-link toolbtn" href="pubmed-light.html">PubMed Light ✦</a>
     </nav>
     <button class="sh-lang" id="langBtn" onclick="toggleLang()">English</button>
   </div>
@@ -2135,7 +2136,8 @@ if (typeof module !== "undefined" && module.exports) {
   // MeSH Database 搜尋（NCBI E-utilities, db=mesh）：與 MeSH Database 網頁同一個引擎，會分詞比對
   // 例：pregnancy diabetes → Pregnancy in Diabetics（整串比對找不到，分詞才找得到）
   function _eutils(ep, params){
-    var p=new URLSearchParams(params); p.set("tool","sr_search_toolkit");
+    // NCBI E-utilities 政策：請求需附 tool 與 email（開發者聯絡用，見 ncbi.nlm.nih.gov/home/about/policies）；email 分段組合，降低被爬蟲擷取
+    var p=new URLSearchParams(params); p.set("tool","sr_search_toolkit"); p.set("email",["happysearchhen","gmail.com"].join("@"));
     var ctl=new AbortController(), timer=setTimeout(function(){ctl.abort();},20000);
     return fetch("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"+ep,{
       method:"POST", headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},
@@ -3956,7 +3958,7 @@ if (typeof module !== "undefined" && module.exports) {
 
   async function fetchPubmedCount(query, email){
     var params=new URLSearchParams({db:"pubmed",term:query,rettype:"count",retmode:"json",tool:"sr_search_toolkit"});
-    if(email) params.set("email",email);
+    params.set("email", email || ["happysearchhen","gmail.com"].join("@"));   // NCBI E-utilities 政策：附開發者聯絡 email（分段組合，降低被爬蟲擷取）
     var ctl=new AbortController(), timer=setTimeout(function(){ctl.abort();},30000);
     try{
       var res=await fetch("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi",{
