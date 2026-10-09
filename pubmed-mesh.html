@@ -105,6 +105,7 @@
   .sidelist{display:flex;flex-direction:column;gap:2px;font-size:13px}
   .sidelist label{display:flex;gap:6px;align-items:baseline;cursor:pointer}
   .sidelist .covered{color:var(--mut)}
+  .sidelist label input,.pillpanel .etlist label input{flex:0 0 auto;align-self:center}
   .sideempty{font-size:12.5px;color:var(--mut)}
 
   table.strat{border-collapse:collapse;width:100%;font-size:13px}
@@ -153,9 +154,9 @@
   .rdel{border:0;background:none;color:#9AA3A0;cursor:pointer;font-size:17px;line-height:1;padding:0 2px}
   .rdel:hover{color:#9B3B2E}
   /* 勾選框：淺灰綠底＋白色勾（自繪，瀏覽器預設在淺色底會畫深色勾） */
-  .rhd .inc input,#liveCb{-webkit-appearance:none;appearance:none;width:15px;height:15px;margin:0;border:1.5px solid #93B2A2;border-radius:3px;background:#fff;cursor:pointer;vertical-align:-3px}
-  .rhd .inc input:checked,#liveCb:checked{background:#93B2A2 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 6.3 5 8.6 9.6 3.6' fill='none' stroke='%23fff' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px 12px no-repeat}
-  .rhd .inc input:focus-visible,#liveCb:focus-visible{outline:2px solid var(--sh-green);outline-offset:1px}
+  .rhd .inc input,#liveCb,.sidelist input[type=checkbox],.pillpanel .etlist input[type=checkbox]{-webkit-appearance:none;appearance:none;width:15px;height:15px;margin:0;border:1.5px solid #93B2A2;border-radius:3px;background:#fff;cursor:pointer;vertical-align:-3px}
+  .rhd .inc input:checked,#liveCb:checked,.sidelist input[type=checkbox]:checked,.pillpanel .etlist input[type=checkbox]:checked{background:#93B2A2 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 6.3 5 8.6 9.6 3.6' fill='none' stroke='%23fff' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px 12px no-repeat}
+  .rhd .inc input:focus-visible,#liveCb:focus-visible,.sidelist input[type=checkbox]:focus-visible,.pillpanel .etlist input[type=checkbox]:focus-visible{outline:2px solid var(--sh-green);outline-offset:1px}
   .hdtag{font-size:10.5px;color:#7A5617;background:#FBF1DE;border-radius:4px;padding:0 4px}
   .ppsep{color:var(--line)}
   .sdhd{margin-top:14px;padding:6px 2px 2px;font-size:13px;font-weight:700;color:var(--sh-green-d);border-top:2px solid var(--sh-line)}
@@ -981,7 +982,7 @@ function drawEntryList(d, ctx){
     return '<label'+(by>=0?' class="covered"':'')+'><input type="checkbox" data-j="'+j+'"'+(it?" checked":"")+'> '+esc(txt)+(by>=0?' <span class="inv">'+T("已涵蓋於 ","covered by ")+esc(etShow(d.entries[by]))+'</span>':'')+'</label>';
   }).join("");
   el.innerHTML=head+' <span class="inv">'+T("已帶入 ","brought in ")+inCount+'</span></h4>'+
-    '<p class="sideempty" style="margin:0 0 6px">'+T("勾選＝已加入 "+codeOf(k)+" 的自由詞彙；勾掉即移除。","Ticked = in "+codeOf(k)+"'s free-text; untick to remove.")+'</p>'+
+    '<p class="sideempty" style="margin:0 0 6px">'+T("勾選＝已加入 "+codeOf(k)+" 的同義詞。","Ticked = added to "+codeOf(k)+"'s synonyms.")+'</p>'+
     (d.entries.length?'<div class="sidelist">'+list+'</div>':'<p class="sideempty">'+T("此標目沒有 Entry Terms。","This heading has no entry terms.")+'</p>');
   el.querySelectorAll("input[data-j]").forEach(function(cb){ cb.addEventListener("change", function(){
     var e=d.entries[+cb.getAttribute("data-j")], txt=ftNorm(unInvert(e));
