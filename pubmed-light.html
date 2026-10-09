@@ -733,12 +733,15 @@ function chooseCand(k, c){
   addItems(k,[{type:"mesh", text:c.label, dId:c.dId, tag:defMeshTag(k,c.label)}]);
   focusRow(k);
   showSide(c.dId, c.label, k);
-  loadDetail(c).then(function(d){
+  addSynonyms(k, c).then(function(){ focusRow(k); });
+}
+// 加入標目的同義詞（標目本身＋Entry Terms，被較短詞涵蓋的長詞略過）：候選清單與右側「+ P」共用
+function addSynonyms(k, c){
+  return loadDetail(c).then(function(d){
     var s={d:{entries:synList(c.label,d)}, checks:{}}; s.d.entries.forEach(function(_e,j){ s.checks[j]=true; });
     var arr=etVisible(s).map(function(j){ return {type:"ft", text:ftNorm(unInvert(s.d.entries[j])), from:c.dId}; });
-    var n=addItems(k, arr);
-    if(sideCtx && sideCtx.dId===c.dId) renderSide();   // 右側 Entry Terms 清單更新勾選狀態
-    focusRow(k);
+    addItems(k, arr);
+    if(sideCtx) renderSide();   // 右側清單更新勾選狀態
   },function(){ setStatus(k, S("「"+c.label+"」的同義詞載入失敗。","Could not load synonyms for \""+c.label+"\"."), true); });
 }
 function addFt(k, term){
@@ -973,8 +976,10 @@ function bindTreeActions(el, ctx){
   el.querySelectorAll(".nm[data-go]").forEach(function(n){ var d=n.getAttribute("data-go"); if(d) n.addEventListener("click", function(){ showSide(d, n.getAttribute("data-label"), ctx.k, !findItem(ctx.k,"mesh",n.getAttribute("data-label"))); }); });
   el.querySelectorAll(".plus[data-add]").forEach(function(b){ if(b.classList.contains("on")) return; b.addEventListener("click", function(){
     var k=sideTarget(), lab=b.getAttribute("data-label");
-    addItems(k,[{type:"mesh", text:lab, dId:b.getAttribute("data-add"), tag:defMeshTag(k,lab)}]);
+    var dId=b.getAttribute("data-add");
+    addItems(k,[{type:"mesh", text:lab, dId:dId, tag:defMeshTag(k,lab)}]);
     renderSide();
+    addSynonyms(k, {dId:dId, label:lab});   // 預設一併帶入其同義詞
   }); });
 }
 function drawSeeAlso(list, ctx){
