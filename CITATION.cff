@@ -12,9 +12,9 @@ authors:
   - given-names: Ching-Ju
     family-names: Fang
     email: sunflora.f@gmail.com
-version: "3.2.6"
+version: "3.2.7"
 doi: "10.5281/zenodo.21960702"
-date-released: "2026-10-05"
+date-released: "2026-10-09"
 license-url: "https://github.com/sunfloraf-sketch/sr-ebm-happy-searchhen/blob/main/LICENSE"
 repository-code: "https://github.com/sunfloraf-sketch/sr-ebm-happy-searchhen"
 url: "https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/"
