@@ -78,6 +78,12 @@
   .art .scene .hen-c{opacity:0}
   .art .scene:hover .hen-a{opacity:0}
   .art .scene:hover .hen-c{opacity:1}
+  /* 工具 4 插圖：滑鼠移過時，小雞換成微蹲、作勢往前跑 */
+  .card.c4 .hen-std,.card.c4 .hen-run{transition:opacity .25s ease}
+  .card.c4 .hen-run{opacity:0}
+  .card.c4:hover .hen-std,.card.c4:focus-within .hen-std{opacity:0}
+  .card.c4:hover .hen-run,.card.c4:focus-within .hen-run{opacity:1}
+  @media(prefers-reduced-motion:reduce){.card.c4 .hen-std,.card.c4 .hen-run{transition:none}}
   .eggrow{display:flex;flex-wrap:wrap;gap:9px 10px;justify-content:center;margin-top:6px;max-width:470px}
   .egg{display:inline-flex;align-items:center;justify-content:center;text-align:center;
     width:92px;height:62px;background:radial-gradient(120% 120% at 50% 20%, #FCF7EA 0%, var(--egg) 70%);
@@ -533,7 +539,8 @@
         <div class="chead"><div class="cnum">4</div><h3>PubMed Light ✦</h3></div>
         <div class="cart"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 202" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 <ellipse cx="84" cy="177" rx="58" ry="4" fill="#EEF0E8"/>
-<!-- hen with a magnifier -->
+<!-- hen: standing (default) / crouched, about to run (on hover) -->
+<g class="hen-std">
 <path d="M70 52 C64 44 69 38 76 43 C74 31 85 29 89 39 C96 32 103 38 99 48" fill="#C18469" stroke="#A96D55" stroke-width="1.3"/>
 <path d="M73 146 L71 168 M89 146 L91 168 M71 168 L64 173 M71 168 L71 174 M71 168 L77 173 M91 168 L85 173 M91 168 L91 174 M91 168 L98 173" stroke="#B4945B" stroke-width="1.8"/>
 <path d="M60 84 C54 64 64 46 82 46 C100 45 110 60 107 76 C124 93 124 118 113 140 C98 160 66 162 52 140 C40 120 44 98 60 84Z" fill="#FCFAF3" stroke="#527060" stroke-width="1.7"/>
@@ -548,6 +555,26 @@
 <path d="M128 99 L114 115" stroke="#527060" stroke-width="4.5"/>
 <path d="M101 96 C110 94 120 100 123 108 C125 114 121 119 116 118 C120 122 116 127 111 124 C105 121 100 112 99 104Z" fill="#F7F5EB" stroke="#527060" stroke-width="1.5"/>
 <path d="M107 104 Q112 106 114 111" stroke="#B2BFAC" stroke-width="1.2"/>
+</g>
+<g class="hen-run">
+<path d="M18 104 L36 104 M12 120 L34 120 M20 136 L36 136" stroke="#C9D3CB" stroke-width="2"/>
+<path d="M75 146 L82 158 L74 167 M74 167 L67 170 M74 167 L72 173 M74 167 L79 172 M90 146 L99 157 L93 167 M93 167 L86 170 M93 167 L92 173 M93 167 L99 171" stroke="#B4945B" stroke-width="1.8"/>
+<g transform="translate(6 12) rotate(14 84 150) scale(1 .94)">
+<path d="M70 52 C64 44 69 38 76 43 C74 31 85 29 89 39 C96 32 103 38 99 48" fill="#C18469" stroke="#A96D55" stroke-width="1.3"/>
+<path d="M60 84 C54 64 64 46 82 46 C100 45 110 60 107 76 C124 93 124 118 113 140 C98 160 66 162 52 140 C40 120 44 98 60 84Z" fill="#FCFAF3" stroke="#527060" stroke-width="1.7"/>
+<path d="M105 66 Q115 69 118 74 Q111 78 105 77" fill="#D9AE68" stroke="#B4945B" stroke-width="1.1"/>
+<circle cx="91" cy="64" r="2.6" fill="#527060"/>
+<ellipse cx="94" cy="77" rx="5" ry="2.7" fill="#E9B7A4" opacity=".65"/>
+<path d="M58 108 C46 112 44 128 52 136 C58 140 66 134 68 126" fill="#F7F5EB" stroke="#527060" stroke-width="1.5"/>
+<!-- right wing holds the magnifier -->
+<circle cx="140" cy="86" r="17" fill="#FFFDF7" stroke="#527060" stroke-width="2"/>
+<circle cx="140" cy="86" r="11" fill="#EAF1EC" stroke="#96AD99" stroke-width="1.2"/>
+<path d="M134 80 Q137 77 141 77" stroke="#FFFFFF" stroke-width="2"/>
+<path d="M128 99 L114 115" stroke="#527060" stroke-width="4.5"/>
+<path d="M101 96 C110 94 120 100 123 108 C125 114 121 119 116 118 C120 122 116 127 111 124 C105 121 100 112 99 104Z" fill="#F7F5EB" stroke="#527060" stroke-width="1.5"/>
+<path d="M107 104 Q112 106 114 111" stroke="#B2BFAC" stroke-width="1.2"/>
+</g>
+</g>
 <!-- MeSH tree with tags -->
 <g font-family="inherit" font-weight="600">
 <path d="M190 58 L190 152 M190 88 L204 88 M190 120 L204 120 M190 152 L204 152" stroke="#B9C4BC" stroke-width="1.6"/>
