@@ -187,7 +187,6 @@
   .plab{display:inline-flex;align-items:center;gap:5px}
   .parr{font-size:14px;line-height:1;opacity:.75;padding:1px 2px 1px 4px}
   .parr:hover{opacity:1}
-  .pdot{width:9px;height:9px;border-radius:50%;border:2px solid var(--sh-amber);display:inline-block}
   .ptag{font-size:11px;opacity:.75;font-family:"SF Mono",Consolas,monospace}
   .pillpanel{position:absolute;z-index:25;top:calc(100% + 4px);left:0;width:max-content;max-width:min(400px,80vw);background:#fff;border:1px solid var(--sh-green);border-radius:9px;box-shadow:0 8px 24px rgba(31,69,56,.16);padding:8px 10px;white-space:normal;color:var(--ink)}
   .pph{font-size:12px;font-weight:700;color:var(--mut);margin-bottom:4px}
@@ -840,7 +839,7 @@ function buildRow(c){
       var grp=document.createElement("span"); grp.className="pgrp"; line.appendChild(grp);
       // 標目標籤
       var mp=pillDetails(k+"|m|"+it.text, "mpill",
-        '<span class="plab" title="'+esc(T("在右側檢視上下位結構","Show hierarchy on the right"))+'"><span class="pdot"></span>'+esc(it.text)+' <span class="ptag">'+esc(tagShort(it.tag||"mh"))+'</span></span><span class="parr" title="'+esc(T("切換欄位","Change field"))+'">▾</span>',
+        '<span class="plab" title="'+esc(T("在右側檢視上下位結構","Show hierarchy on the right"))+'">'+esc(it.text)+' <span class="ptag">'+esc(tagShort(it.tag||"mh"))+'</span></span><span class="parr" title="'+esc(T("切換欄位","Change field"))+'">▾</span>',
         function(panel){
           panel.innerHTML='<div class="pph">'+T("控制詞彙選項","MeSH options")+'</div>'+meshTagsFor(k).map(function(t){
             return '<label class="prad"><input type="radio" name="mt-'+k+'-'+esc(it.text)+'" value="'+t.v+'"'+((it.tag||"mh")===t.v?" checked":"")+'> '+esc(isEn()?t.en:t.zh)+'</label>';
