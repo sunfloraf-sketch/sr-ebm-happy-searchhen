@@ -213,7 +213,7 @@
   .fldlab{margin-right:2px}
   /* 列標題的兩個選單：底線型、簡單箭頭 */
   select.chipsel{-webkit-appearance:none;appearance:none;border:0;border-bottom:1px solid #B9C0BC;border-radius:0;font-family:inherit;font-size:10.2px;color:#4F5652;padding:2px 16px 2px 2px;cursor:pointer;background:transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23666' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right 2px center/8px 5px no-repeat;min-width:0}
-  select.chipsel.fld{width:10.5em}
+  select.chipsel.fld{width:11.5em}
   select.chipsel.prx{width:7.2em}   /* 固定寬度：選不同選項時位置不變 */
   select.chipsel:hover{border-bottom-color:var(--sh-green)}
   select.chipsel:focus-visible{outline:2px solid var(--sh-green);outline-offset:1px}
@@ -902,7 +902,7 @@ function buildRow(c){
       rs.insertAdjacentHTML("beforeend",'<span class="pxlab">'+T("鄰近字：","Proximity:")+'</span>');
       var px=document.createElement("select"); px.className="chipsel prx";
       px.title=T("套用到此列所有兩個字以上的自由詞彙；只在篇名/摘要 [tiab]、篇名 [ti] 有效，含截字 * 的詞除外","Applies to every multi-word free-text term in this row; works only with [tiab] / [ti], terms with * excluded");
-      fillSelect(px,[{v:"",zh:"預設採片語",en:"Phrase (default)"}].concat(PROX_N.map(function(n){return {v:n,zh:"~"+n+"字內",en:"within "+n};})), st.prox||"");
+      fillSelect(px,[{v:"",zh:"預設採片語",en:"Phrase"}].concat(PROX_N.map(function(n){return {v:n,zh:"~"+n+"字內",en:"within "+n};})), st.prox||"");
       px.addEventListener("change", function(){ st.prox=px.value; save(); renderRows(); renderStrategy(); });
       rs.appendChild(px);
       hd.insertBefore(rs, hd.querySelector(".rc"));
