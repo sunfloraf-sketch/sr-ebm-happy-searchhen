@@ -102,7 +102,8 @@
   .tree .plus:hover{border-color:var(--sh-green)}
   .tree .plus.on{background:#DCEFE3;border-color:#B7D4C1;cursor:default}
   .treeblk{border-top:1px dashed var(--line);padding:8px 0}
-  .treeblk:first-of-type{border-top:0}
+  .treehd{border-top:1px dashed var(--line);padding-top:8px;margin-top:2px}   /* 說明放在虛線下方 */
+  .treehd+.treeblk{border-top:0;padding-top:2px}
   .sidesec{margin-top:12px;border-top:1px solid var(--sh-line);padding-top:10px}
   .sidesec h4{margin:0 0 6px;font-size:13px;color:var(--sh-green-d);display:flex;gap:8px;align-items:center}
   .sidelist{display:flex;flex-direction:column;gap:2px;font-size:13px}
@@ -988,7 +989,7 @@ function drawSeeAlso(list, ctx){
 function drawTree(tr, ctx){
   var el=$("sideTree"); el.className="";
   if(!tr.trees.length){ el.innerHTML='<p class="sideempty">'+T("此標目沒有樹狀號。","No tree numbers for this heading.")+'</p>'; return; }
-  var h='<div class="cgrp">'+T("廣義詞（上位）→ 本標目 → 狹義詞（下位）","Broader → this heading → narrower")+'</div>';
+  var h='<div class="cgrp treehd">'+T("廣義詞（上位）→ 本標目 → 狹義詞（下位）","Broader → this heading → narrower")+'</div>';
   tr.trees.forEach(function(t){
     var cat=TREE_CAT[t.tn.charAt(0)], ind=0;
     h+='<div class="treeblk"><ul class="tree">';
