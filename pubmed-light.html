@@ -206,9 +206,9 @@
   .rset{display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:13.5px;color:#3A3F3C;margin-right:12px}
   .pxlab{margin-left:16px}
   .fldlab{margin-right:2px}
-  /* 列標題的兩個選單：無框、淺色底、簡單箭頭 */
-  select.chipsel{-webkit-appearance:none;appearance:none;border:0;border-radius:4px;font-family:inherit;font-size:13.5px;color:#2A2A2A;padding:2px 22px 2px 7px;cursor:pointer;background:#EEEEEE url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23444' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right 7px center/9px 6px no-repeat;min-width:0}
-  select.chipsel:hover{filter:brightness(.97)}
+  /* 列標題的兩個選單：底線型、簡單箭頭 */
+  select.chipsel{-webkit-appearance:none;appearance:none;border:0;border-bottom:1px solid #B9C0BC;border-radius:0;font-family:inherit;font-size:13.5px;color:#2A2A2A;padding:2px 20px 2px 2px;cursor:pointer;background:transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23444' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right 3px center/9px 6px no-repeat;min-width:0}
+  select.chipsel:hover{border-bottom-color:var(--sh-green)}
   select.chipsel:focus-visible{outline:2px solid var(--sh-green);outline-offset:1px}
   .crow>.proxwarn{margin-top:6px;text-align:right}
   .rset .proxwarn{margin:0}
