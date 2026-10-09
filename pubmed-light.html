@@ -94,7 +94,10 @@
   .tree .nm{cursor:pointer;color:var(--sh-ink)}
   .tree .nm:hover{color:var(--sh-green-d);text-decoration:underline}
   .tree .cur .nm{font-weight:800;color:var(--sh-green-d)}
-  .tree .cat{color:var(--mut);font-style:italic}
+  .tree .cat{color:var(--mut)}
+  .seehd{font-size:12.5px;font-weight:700;color:var(--ink);margin:2px 0 2px}
+  .seelist{margin:0 0 10px;padding-left:4px}
+  .seelist li::before{content:"•";color:var(--mut);margin-right:6px}
   .tree .plus{border:1px solid var(--line);background:#fff;color:var(--sh-green-d);border-radius:5px;font-size:11px;line-height:1.2;padding:0 5px;cursor:pointer;margin-left:auto;flex:0 0 auto}
   .tree .plus:hover{border-color:var(--sh-green)}
   .tree .plus.on{background:#DCEFE3;border-color:#B7D4C1;cursor:default}
@@ -493,6 +496,15 @@ function loadDetail(c){
 // 上下位結構：依樹狀號取得上位路徑（每一層）與直接下位標目
 var _treeCache={};
 var TREE_CAT={A:["解剖","Anatomy"],B:["生物","Organisms"],C:["疾病","Diseases"],D:["化學物質與藥物","Chemicals and Drugs"],E:["分析、診斷與治療技術及設備","Analytical, Diagnostic and Therapeutic Techniques, and Equipment"],F:["精神醫學與心理學","Psychiatry and Psychology"],G:["現象與過程","Phenomena and Processes"],H:["學科與職業","Disciplines and Occupations"],I:["人類學、教育、社會學與社會現象","Anthropology, Education, Sociology, and Social Phenomena"],J:["科技、產業與農業","Technology, Industry, and Agriculture"],K:["人文","Humanities"],L:["資訊科學","Information Science"],M:["特定族群","Named Groups"],N:["醫療照護","Health Care"],V:["出版特性","Publication Characteristics"],Z:["地理","Geographicals"]};
+var _seeCache={};
+function loadSeeAlso(dId){
+  if(_seeCache[dId]) return Promise.resolve(_seeCache[dId]);
+  return soft(sparql(PFX+'SELECT DISTINCT ?d ?n WHERE { <'+MESH_URI+dId+'> meshv:seeAlso ?d . ?d rdfs:label ?n } ORDER BY ?n',50,false)).then(function(j){
+    var seen={}, out=[];
+    rows(j).forEach(function(b){ var d=didOf(b.d&&b.d.value), n=b.n&&b.n.value; if(d&&n&&!seen[d]){ seen[d]=1; out.push({dId:d,label:n}); } });
+    _seeCache[dId]=out; return out;
+  });
+}
 function loadTree(dId){
   if(_treeCache[dId]) return Promise.resolve(_treeCache[dId]);
   return loadDetail({dId:dId, label:""}).then(function(d){
@@ -947,13 +959,31 @@ function renderSide(){
     return;
   }
   var ctx=sideCtx, tok=++sideTok;
-  side.innerHTML='<h2>'+esc(ctx.label)+'</h2><div id="sideTree" class="sideempty">'+T("載入上下位結構…","Loading hierarchy…")+'</div><div class="sidesec" id="sideEt"></div>';
+  side.innerHTML='<h2>'+esc(ctx.label)+'</h2><div id="sideSee"></div><div id="sideTree" class="sideempty">'+T("載入上下位結構…","Loading hierarchy…")+'</div><div class="sidesec" id="sideEt"></div>';
+  loadSeeAlso(ctx.dId).then(function(list){ if(tok===sideTok) drawSeeAlso(list, ctx); });
   loadTree(ctx.dId).then(function(tr){ if(tok===sideTok) drawTree(tr, ctx); }, function(){ if(tok===sideTok) $("sideTree").textContent=T("無法載入上下位結構。","Could not load the hierarchy."); });
   loadDetail({dId:ctx.dId,label:ctx.label}).then(function(d){ if(tok===sideTok) drawEntryList(d, ctx); });
 }
 function plusBtn(dId, label){
   var k=sideTarget(), on=!!findItem(k,"mesh",label);
   return '<button class="plus'+(on?' on':'')+'" data-add="'+esc(dId)+'" data-label="'+esc(label)+'" title="'+esc(on?T("已在 ","Already in ")+codeOf(k):T("加入到 ","Add to ")+codeOf(k)+" "+conceptName(k))+'">'+(on?"✓":"+ "+esc(codeOf(k)))+'</button>';
+}
+// See Also：列在標目名稱下方；點名稱檢視其結構，「+ P」加入目前的列
+function bindTreeActions(el, ctx){
+  el.querySelectorAll(".nm[data-go]").forEach(function(n){ var d=n.getAttribute("data-go"); if(d) n.addEventListener("click", function(){ showSide(d, n.getAttribute("data-label"), ctx.k, !findItem(ctx.k,"mesh",n.getAttribute("data-label"))); }); });
+  el.querySelectorAll(".plus[data-add]").forEach(function(b){ if(b.classList.contains("on")) return; b.addEventListener("click", function(){
+    var k=sideTarget(), lab=b.getAttribute("data-label");
+    addItems(k,[{type:"mesh", text:lab, dId:b.getAttribute("data-add"), tag:defMeshTag(k,lab)}]);
+    renderSide();
+  }); });
+}
+function drawSeeAlso(list, ctx){
+  var el=$("sideSee"); if(!el) return;
+  if(!list || !list.length){ el.innerHTML=""; return; }
+  el.innerHTML='<div class="seehd">See Also:</div><ul class="tree seelist">'+list.map(function(c){
+    return '<li><span class="nm" data-go="'+esc(c.dId)+'" data-label="'+esc(c.label)+'">'+esc(c.label)+'</span>'+plusBtn(c.dId,c.label)+'</li>';
+  }).join("")+'</ul>';
+  bindTreeActions(el, ctx);
 }
 function drawTree(tr, ctx){
   var el=$("sideTree"); el.className="";
@@ -962,7 +992,7 @@ function drawTree(tr, ctx){
   tr.trees.forEach(function(t){
     var cat=TREE_CAT[t.tn.charAt(0)], ind=0;
     h+='<div class="treeblk"><ul class="tree">';
-    h+='<li class="cat" style="padding-left:0">'+esc(cat?(isEn()?cat[1]:cat[0]+" "+cat[1]):t.tn.charAt(0))+'</li>';
+    h+='<li class="cat" style="padding-left:0">'+esc(cat?cat[1]:t.tn.charAt(0))+'</li>';
     t.path.forEach(function(p){ ind+=10; h+='<li style="padding-left:'+ind+'px"><span class="nm" data-go="'+esc(p.dId||"")+'" data-label="'+esc(p.label)+'">'+esc(p.label)+'</span>'+(p.dId?plusBtn(p.dId,p.label):'')+'</li>'; });
     ind+=10;
     h+='<li class="cur" style="padding-left:'+ind+'px"><span class="nm">▸ '+esc(ctx.label)+'</span></li>';
@@ -973,12 +1003,7 @@ function drawTree(tr, ctx){
   });
   if(tr.failed) h+='<p class="sideempty">'+T("上位／下位名稱載入失敗，僅顯示樹狀號。","Could not load broader/narrower names; showing tree numbers only.")+'</p>';
   el.innerHTML=h;
-  el.querySelectorAll(".nm[data-go]").forEach(function(n){ var d=n.getAttribute("data-go"); if(d) n.addEventListener("click", function(){ showSide(d, n.getAttribute("data-label"), ctx.k, !findItem(ctx.k,"mesh",n.getAttribute("data-label"))); }); });
-  el.querySelectorAll(".plus[data-add]").forEach(function(b){ if(b.classList.contains("on")) return; b.addEventListener("click", function(){
-    var k=sideTarget(), lab=b.getAttribute("data-label");
-    addItems(k,[{type:"mesh", text:lab, dId:b.getAttribute("data-add"), tag:defMeshTag(k,lab)}]);
-    renderSide();
-  }); });
+  bindTreeActions(el, ctx);
 }
 function drawEntryList(d, ctx){
   var el=$("sideEt"), k=ctx.k;
