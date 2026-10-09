@@ -2083,7 +2083,7 @@ if (typeof module !== "undefined" && module.exports) {
   var _meshCache={}, _meshEntryCache={};
   function _meshBare(s){ return String(s||"").replace(CV_SCR_RE,"").replace(CV_NOEXP_RE,"").replace(/\s*\/\s*[A-Za-z]{1,3}\s*$/,"").replace(/^["'“”]+|["'“”]+$/g,"").replace(/\s+/g," ").trim(); }
   function _meshDid(uri){ var m=String(uri||"").match(/(D\d+)\b/); return m?m[1]:""; }
-  function _meshScrOf(uri){ var m=String(uri||"").match(/(C\d{6,})\b/); return m?m[1]:""; }   // 補充概念（Supplementary Concept Record）編號
+  function _meshScrOf(uri){ var m=String(uri||"").match(/\/(C\d+)\b/); return m?m[1]:""; }   // 補充概念（Supplementary Concept Record）編號
   function _meshFetch(url){ return fetch(url,{headers:{"Accept":"application/json"}}).then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); }); }
   function _meshCheck(term){
     var key=term.toLowerCase(); if(_meshCache[key]) return Promise.resolve(_meshCache[key]);
@@ -2094,7 +2094,7 @@ if (typeof module !== "undefined" && module.exports) {
       // 不是正式標目 → 查是否為「同義詞（entry term）」：term 端點精準比對（例：Gestational diabetes＝Diabetes, Gestational 的同義詞）
       return _meshFetch(MESH_LOOKUP+"term?label="+enc+"&match=exact&limit=5").then(function(tm){
         var t=(tm||[]).filter(function(d){return String(d.label||"").toLowerCase()===key;})[0] || (tm&&tm[0]);
-        if(t){ return _meshResolveTerm(t.resource, term).then(function(di){ if(di&&di.label&&!di.scr&&di.label.toLowerCase()===key){ var rok={state:"ok", label:di.label, dId:di.dId}; _meshCache[key]=rok; return rok; } if(di&&di.scr&&di.label){ var rsc={state:"scr", label:di.label, dId:di.dId, termLabel:t.label}; _meshCache[key]=rsc; return rsc; } var r={state:"entry", termLabel:t.label, official:(di&&di.label)||null, dId:(di&&di.dId)||""}; _meshCache[key]=r; return r; }, function(){ var r={state:"entry", termLabel:t.label}; _meshCache[key]=r; return r; }); }
+        if(t){ return _meshResolveTerm(t.resource, term).then(function(di){ if(di&&di.label&&!di.scr&&/^D\d+$/.test(di.dId||"")&&di.label.toLowerCase()===key){ var rok={state:"ok", label:di.label, dId:di.dId}; _meshCache[key]=rok; return rok; } if(di&&di.label&&!di.scr&&!/^D\d+$/.test(di.dId||"")&&di.label.toLowerCase()===key){ di.scr=true; } if(di&&di.scr&&di.label){ var rsc={state:"scr", label:di.label, dId:di.dId, termLabel:t.label}; _meshCache[key]=rsc; return rsc; } var r={state:"entry", termLabel:t.label, official:(di&&di.label)||null, dId:(di&&di.dId)||""}; _meshCache[key]=r; return r; }, function(){ var r={state:"entry", termLabel:t.label}; _meshCache[key]=r; return r; }); }
         return _meshFetch(MESH_LOOKUP+"descriptor?label="+enc+"&match=contains&limit=8").then(function(ct){
           if(ct&&ct.length){ var r={state:"suggest", suggests:ct.map(function(d){return {label:d.label, dId:_meshDid(d.resource)};})}; _meshCache[key]=r; return r; }
           // 正式標目也找不到 → 再查「同義詞包含這個字」（例：clown → Clown Therapy → Laughter Therapy）
