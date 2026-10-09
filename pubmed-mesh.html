@@ -109,10 +109,18 @@
 
   table.strat{border-collapse:collapse;width:100%;font-size:13px}
   table.strat td{border:1px solid var(--line);padding:6px 9px;vertical-align:top}
-  table.strat td.n{width:48px;font-weight:700;color:var(--sh-green-d);white-space:nowrap}
+  table.strat td.n{width:52px;text-align:center;vertical-align:middle}
+  .lnum{border:0;background:none;font-family:inherit;font-weight:700;font-size:13px;color:var(--sh-green-d);cursor:pointer;padding:2px 4px;border-radius:4px}
+  .lnum:hover{background:#EEF4F0}
   table.strat td.c{width:120px;color:var(--mut)}
   table.strat td.q{font-family:"SF Mono",Consolas,monospace;font-size:12.5px;word-break:break-word}
-  table.strat td.cnt{width:90px;text-align:right;white-space:nowrap;color:var(--sh-green-d)}
+  table.strat td.cnt{width:90px;text-align:right;white-space:nowrap}
+  table.strat td.cnt a{color:var(--sh-green-d);text-decoration:none}
+  table.strat td.cnt a:hover{text-decoration:underline}
+  .combo{margin-top:12px}
+  .combo textarea{width:100%;font-family:"SF Mono",Consolas,monospace;font-size:13px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;resize:vertical;background:#fff}
+  .combohint{font-size:12px;color:var(--mut);margin-top:4px}
+  .combohint.err{color:#9B3B2E}
   .final{margin-top:12px}
   .final textarea{width:100%;min-height:110px;font-family:"SF Mono",Consolas,monospace;font-size:12.5px;border:1px solid var(--line);border-radius:8px;padding:9px;background:var(--codebg);resize:vertical}
   .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;align-items:center}
@@ -243,16 +251,15 @@
   <div class="panel">
     <h2><span data-zh>② PubMed 檢索策略</span><span data-en>② PubMed search strategy</span></h2>
     <div id="stratWrap"></div>
-    <div class="final">
-      <div class="cgrp"><span data-zh>合併後的完整檢索式</span><span data-en>Combined query</span></div>
-      <textarea id="finalQ" readonly></textarea>
-      <div class="acts">
-        <button class="btn sm" id="copyBtn"><span data-zh>複製檢索式</span><span data-en>Copy query</span></button>
-        <button class="btn sm line" id="copyLinesBtn"><span data-zh>複製逐行策略</span><span data-en>Copy line-by-line</span></button>
-        <a class="btn sm line" id="openPm" href="https://pubmed.ncbi.nlm.nih.gov/" target="_blank" rel="noopener" style="text-decoration:none"><span data-zh>在 PubMed 執行 ↗</span><span data-en>Run in PubMed ↗</span></a>
-        <button class="btn sm line" id="countBtn"><span data-zh>更新筆數</span><span data-en>Refresh counts</span></button>
-      </div>
-      <div class="warnbox"><span data-zh>開啟「即時顯示 PubMed 筆數」或按「更新筆數」時，檢索式會送到 NCBI E-utilities 官方 API 計算筆數；MeSH 查詢使用 NLM MeSH API。其他資料只存在您的瀏覽器中。</span><span data-en>With live counts on, or when you press "Refresh counts", queries are sent to the official NCBI E-utilities API to count results; MeSH lookups use the NLM MeSH API. Everything else stays in your browser.</span></div>
+    <div class="combo">
+      <label class="cgrp" for="comboTa"><span data-zh>自訂組合（選填）</span><span data-en>Custom combination (optional)</span></label>
+      <textarea id="comboTa" rows="2" spellcheck="false" placeholder="#1 AND #2 AND #4&#10;(#3 OR #5) NOT #6"></textarea>
+      <div class="combohint" id="comboMsg"></div>
+    </div>
+    <div class="acts">
+      <button class="btn sm" id="copyBtn"><span data-zh>複製檢索式</span><span data-en>Copy query</span></button>
+      <button class="btn sm line" id="copyLinesBtn"><span data-zh>複製逐行策略</span><span data-en>Copy line-by-line</span></button>
+      <a class="btn sm line" id="openPm" href="https://pubmed.ncbi.nlm.nih.gov/" target="_blank" rel="noopener" style="text-decoration:none"><span data-zh>在 PubMed 執行 ↗</span><span data-en>Run in PubMed ↗</span></a>
     </div>
   </div>
 
@@ -983,35 +990,69 @@ function fmt(it, lv, prox){
   var needQ=/\s|[-\/]/.test(t) && !/\*/.test(t);   // 片語加引號；截字（*）不可加引號
   return (needQ?'"'+t+'"':t)+"["+lv+"]";
 }
-var lines=[];
+var lines=[], lastFull="", comboErrs=[];
+// 自訂組合的一行：只能有 #行號、AND／OR／NOT 與括號，且只能引用上方已有的行
+function checkCombo(q, maxN){
+  var rest=q.replace(/#\d+|\bAND\b|\bOR\b|\bNOT\b|[()\s]/gi,"");
+  if(rest) return T("無法辨識「"+rest+"」","Unrecognized \""+rest+"\"");
+  if(!/#\d+/.test(q)) return T("請引用行號，例：#1 AND #2","Reference line numbers, e.g. #1 AND #2");
+  var bad=(q.match(/#\d+/g)||[]).map(function(x){ return +x.slice(1); }).filter(function(x){ return x<1||x>maxN; });
+  if(bad.length) return T("找不到 #"+bad.join("、#"),"No line #"+bad.join(", #"));
+  var d=0; for(var i=0;i<q.length;i++){ if(q[i]==="(") d++; else if(q[i]===")"){ d--; if(d<0) break; } }
+  if(d!==0) return T("括號不成對","Unbalanced parentheses");
+  return null;
+}
 function buildLines(){
-  lines=[]; var n=0, used=[];
+  lines=[]; comboErrs=[]; var n=0, used=[];
   CONCEPTS.forEach(function(c){
     var st=state.concepts[c.k]; if(!st.items.length) return;
     var lv=lvlOf(c.k);
     var its=st.items.filter(function(i){return i.type==="mesh";}).concat(st.items.filter(function(i){return i.type==="ft";}));
-    n++; lines.push({n:n, k:c.k, label:c.code+" "+conceptName(c.k)+" ("+lv+(st.prox&&proxOK(lv)?", ~"+st.prox:"")+")", q:its.map(function(i){return fmt(i,lv,st.prox);}).join(" OR "), on:st.on});
+    n++; lines.push({n:n, k:c.k, label:c.code+" "+conceptName(c.k), q:its.map(function(i){return fmt(i,lv,st.prox);}).join(" OR "), on:st.on});
     if(st.on) used.push(n);
   });
-  if(used.length>1){ n++; lines.push({n:n, k:"", label:T("組合","Combine"), q:used.map(function(x){return "#"+x;}).join(" AND "), comb:true}); }
-  var parts=lines.filter(function(l){return !l.comb && l.on;}).map(function(l){return "("+l.q+")";});
-  return parts.length>1?parts.join("\nAND\n"):(parts[0]?parts[0].slice(1,-1):"");
+  var custom=String(state.combo||"").split(/\n/).map(function(x){ return x.replace(/\s+/g," ").trim(); }).filter(Boolean);
+  if(custom.length){
+    custom.forEach(function(q, i){
+      q=q.replace(/\b(and|or|not)\b/gi, function(m){ return m.toUpperCase(); });
+      var err=checkCombo(q, n);
+      if(err){ comboErrs.push(T("第 "+(i+1)+" 行：","Line "+(i+1)+": ")+err); return; }
+      n++; lines.push({n:n, k:"", label:T("自訂組合","Custom"), q:q, comb:true});
+    });
+  } else if(used.length>1){ n++; lines.push({n:n, k:"", label:T("組合","Combine"), q:used.map(function(x){return "#"+x;}).join(" AND "), comb:true}); }
+  // 最終檢索式＝最後一個組合行展開；沒有組合行時為唯一勾選的列
+  var combs=lines.filter(function(l){ return l.comb; }), inc=lines.filter(function(l){ return !l.comb && l.on; });
+  lastFull=combs.length?expandLine(combs[combs.length-1]):(inc[0]?inc[0].q:"");
+  return lastFull;
 }
-function fullQuery(){ return ($("finalQ").value||"").replace(/\s*\n\s*/g," ").trim(); }
+function fullQuery(){ return lastFull; }
+function pmUrl(q){ return q?"https://pubmed.ncbi.nlm.nih.gov/?term="+encodeURIComponent(q):"https://pubmed.ncbi.nlm.nih.gov/"; }
 function renderStrategy(){
-  var full=buildLines(), w=$("stratWrap");
+  buildLines(); var w=$("stratWrap");
   if(!lines.length){ w.innerHTML='<div class="empty">'+T("尚未加入任何檢索詞。","No terms added yet.")+'</div>'; }
   else{
     w.innerHTML='<table class="strat"><tbody>'+lines.map(function(l){
-      return '<tr><td class="n">#'+l.n+'</td><td class="c">'+esc(l.label)+(l.comb||l.on?'':' <i>('+T("未納入","excluded")+')</i>')+'</td><td class="q">'+esc(l.q)+'</td><td class="cnt" id="cnt'+l.n+'"></td></tr>';
+      return '<tr><td class="n"><button type="button" class="lnum" data-n="'+l.n+'" title="'+esc(T("點選複製此列檢索式","Click to copy this line's query"))+'">#'+l.n+'</button></td>'+
+        '<td class="c">'+esc(l.label)+(l.comb||l.on?'':' <i>('+T("未納入","excluded")+')</i>')+'</td><td class="q">'+esc(l.q)+'</td>'+
+        '<td class="cnt"><a id="cnt'+l.n+'" href="'+esc(pmUrl(expandLine(l)))+'" target="_blank" rel="noopener" title="'+esc(T("在 PubMed 查看此列結果","Open this line's results in PubMed"))+'"></a></td></tr>';
     }).join("")+'</tbody></table>';
+    w.querySelectorAll(".lnum").forEach(function(b){ b.addEventListener("click", function(){
+      var l=lines.filter(function(x){ return x.n===+b.getAttribute("data-n"); })[0]; if(l) copyText(expandLine(l), b);
+    }); });
   }
-  $("finalQ").value=full;
-  var oneLine=fullQuery(), url=oneLine?"https://pubmed.ncbi.nlm.nih.gov/?term="+encodeURIComponent(oneLine):"https://pubmed.ncbi.nlm.nih.gov/";
+  var cm=$("comboMsg");
+  if(comboErrs.length){ cm.className="combohint err"; cm.textContent=comboErrs.join("　"); }
+  else { cm.className="combohint"; cm.textContent=T("每行一個組合，可用上方行號（#1、#2…）、AND／OR／NOT 與括號，會新增為下一行；最後一行即為最終檢索式。留白則自動以 AND 組合有勾選的列。","One combination per line using line numbers (#1, #2…), AND / OR / NOT and parentheses; each becomes the next line, and the last one is the final query. Leave empty to AND the ticked rows."); }
+  var url=pmUrl(fullQuery());
   $("openPm").href=url; $("totalBtn").href=url;
   drawCounts(); scheduleCounts();
 }
-function expandLine(l){ return l.comb ? l.q.replace(/#(\d+)/g,function(_m,k){ var t=lines.filter(function(x){return x.n===+k;})[0]; return t?"("+t.q+")":_m; }) : l.q; }
+function expandLine(l){
+  if(!l.comb) return l.q;
+  var q=l.q, g=0;
+  while(/#\d+/.test(q) && g++<20) q=q.replace(/#(\d+)/g, function(m,k){ var t=lines.filter(function(x){ return x.n===+k; })[0]; return t?"("+t.q+")":m; });
+  return q;
+}
 // 把快取中的筆數畫到：各列標題、策略表、底部「在 PubMed 顯示 N 筆結果」
 function drawCounts(){
   CONCEPTS.forEach(function(c){
@@ -1045,9 +1086,10 @@ function copyText(txt, btn){
 }
 
 // ===== 綁定 =====
-$("copyBtn").addEventListener("click", function(){ copyText($("finalQ").value.replace(/\s*\n\s*/g," "), this); });
+$("copyBtn").addEventListener("click", function(){ copyText(fullQuery(), this); });
+var comboTa=$("comboTa"), comboTimer=null; comboTa.value=state.combo||"";
+comboTa.addEventListener("input", function(){ state.combo=comboTa.value; save(); clearTimeout(comboTimer); comboTimer=setTimeout(renderStrategy, 400); });
 $("copyLinesBtn").addEventListener("click", function(){ copyText(lines.map(function(l){return "#"+l.n+"\t"+l.q;}).join("\n"), this); });
-$("countBtn").addEventListener("click", function(){ runCounts(true); });
 var liveCb=$("liveCb"); liveCb.checked=live;
 liveCb.addEventListener("change", function(){ live=liveCb.checked; try{ localStorage.setItem(LIVE_KEY, live?"1":"0"); }catch(e){} drawCounts(); if(live) runCounts(true); });
 $("clearBtn").addEventListener("click", function(){ if(!confirm(T("確定清空所有欄位？","Clear all fields?"))) return; CONCEPTS.forEach(function(c){ state.concepts[c.k].items=[]; }); rowStatus={}; save(); renderRows(); renderStrategy(); sideCtx=null; renderSide(); });
