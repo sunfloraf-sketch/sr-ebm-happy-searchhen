@@ -195,6 +195,7 @@
   .pxlab{margin-left:14px}
   .crow>.proxwarn{margin-top:6px;text-align:right}
   .rset .proxwarn{margin:0}
+  .clearrow{display:flex;justify-content:flex-end;margin-top:6px}
   .totalbar{margin-top:14px;display:flex;flex-direction:column;align-items:center;gap:6px}
   .totalbtn{display:block;width:100%;text-align:center;background:var(--sh-green);color:#fff;text-decoration:none;font-size:16px;font-weight:700;padding:12px 16px;border-radius:9px}
   .totalbtn:hover{background:var(--sh-green-d)}
@@ -227,6 +228,7 @@
     <h2><span data-zh>① PICO ＋ 研究設計</span><span data-en>① PICO + Study design</span></h2>
     <div class="sub"><span data-zh>在任一列輸入英文檢索詞並從候選清單選擇 MeSH 標目，會同時加入控制辭彙與其同義詞（Entry Terms）；點標目標籤可在右側檢視上下位結構，點 ▾ 可切換欄位。拖曳左側 ⠿ 可調整列的順序。同一列內以 OR 連結，右上角有勾選的列（加入檢索策略）之間以 AND 組合。PICO 只是引導框架：列的代號（如 P1）與名稱可直接點選修改，也可新增或刪除概念列。</span><span data-en>Type an English term in any row and pick a MeSH heading — the heading and its synonyms (Entry Terms) are added together; click a heading tag to see its hierarchy on the right, or ▾ to change its field. Drag ⠿ to reorder rows. Terms within a row are ORed; rows ticked at the top right (added to the strategy) are ANDed. PICO is only a guide: click a row's code (e.g. P1) or name to rename it, and add or delete rows as needed.</span></div>
     <div class="rows" id="rows"></div>
+    <div class="clearrow"><button class="btn sm line" id="clearBtn"><span data-zh>清空</span><span data-en>Clear</span></button></div>
     <div class="totalbar">
       <a class="totalbtn" id="totalBtn" href="https://pubmed.ncbi.nlm.nih.gov/" target="_blank" rel="noopener"><span id="totalTxt"></span><span id="totalN"></span></a>
       <label class="opt"><input type="checkbox" id="liveCb"> <span data-zh>即時顯示 PubMed 筆數</span><span data-en>Live PubMed counts</span></label>
@@ -245,7 +247,6 @@
         <button class="btn sm line" id="copyLinesBtn"><span data-zh>複製逐行策略</span><span data-en>Copy line-by-line</span></button>
         <a class="btn sm line" id="openPm" href="https://pubmed.ncbi.nlm.nih.gov/" target="_blank" rel="noopener" style="text-decoration:none"><span data-zh>在 PubMed 執行 ↗</span><span data-en>Run in PubMed ↗</span></a>
         <button class="btn sm line" id="countBtn"><span data-zh>更新筆數</span><span data-en>Refresh counts</span></button>
-        <button class="btn sm line" id="clearBtn" style="margin-left:auto"><span data-zh>清空全部</span><span data-en>Clear all</span></button>
       </div>
       <div class="warnbox"><span data-zh>開啟「即時顯示 PubMed 筆數」或按「更新筆數」時，檢索式會送到 NCBI E-utilities 官方 API 計算筆數；MeSH 查詢使用 NLM MeSH API。其他資料只存在您的瀏覽器中。</span><span data-en>With live counts on, or when you press "Refresh counts", queries are sent to the official NCBI E-utilities API to count results; MeSH lookups use the NLM MeSH API. Everything else stays in your browser.</span></div>
     </div>
