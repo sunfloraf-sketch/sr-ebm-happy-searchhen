@@ -94,7 +94,7 @@
   .card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px 22px 22px;transition:box-shadow .15s,transform .15s,border-color .15s}
   .card:hover{box-shadow:0 14px 30px rgba(35,48,42,.09);transform:translateY(-3px);border-color:#d7d0bf}
   .cnum{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#fff;margin-bottom:14px}
-  .card.c1 .cnum{background:var(--amber)} .card.c2 .cnum{background:var(--green)} .card.c3 .cnum{background:var(--slate)}
+  .card.c1 .cnum{background:var(--amber)} .card.c2 .cnum{background:var(--green)} .card.c3 .cnum{background:var(--slate)} .card.c4 .cnum{background:#5E8C7E}
   .card h3{margin:0;font-size:18.5px;font-weight:800;color:var(--ink)}
   .card .en{font-size:12.5px;font-weight:600;color:var(--mut);margin:2px 0 12px}
   .card p{margin:0 0 18px;font-size:13.5px;color:#4c554e;flex:1}
@@ -104,6 +104,7 @@
   .card.c1 .cbtn.line{border:1px solid var(--amber);color:#8f5d23} .card.c1 .cbtn.line:hover{background:var(--amberlt)}
   .card.c2 .cbtn.solid{background:var(--green);color:#fff} .card.c2 .cbtn.solid:hover{background:var(--green-d)}
   .card.c3 .cbtn.solid{background:var(--slate);color:#fff} .card.c3 .cbtn.solid:hover{background:#2f4a5e}
+  .card.c4 .cbtn.solid{background:#5E8C7E;color:#fff} .card.c4 .cbtn.solid:hover{background:#47705F}
   .chead{display:flex;justify-content:flex-start;align-items:flex-start;gap:24px;margin-bottom:10px}
   .chead .cnum{margin-bottom:0;flex:0 0 auto}
   .cart{flex:1 1 auto;min-width:0;margin:-8px 0 0 0}
@@ -228,6 +229,9 @@
 /* Keep only the divider between the original origin paragraphs. */
 .story>p:nth-last-of-type(-n+2){border-top:1px solid rgba(234,241,236,.28);padding-top:16px;margin-top:18px}
 
+/* 四個工具：寬螢幕改為 2×2 排列 */
+@media(min-width:861px){ .tools .grid{grid-template-columns:repeat(2,1fr)} }
+
 /* Align description starts; illustration rows must not absorb spare card height. */
 .tools .chead{flex:0 0 58px}
 .tools .cart{flex:0 0 218px;height:218px;align-items:flex-start;margin-bottom:18px}
@@ -331,6 +335,7 @@
     <a class="navlink" href="pico-builder.html"><span data-zh>PICO 檢索策略產生器</span><span data-en>PICO Strategy Builder</span></a>
     <a class="navlink" href="syntax-converter.html"><span data-zh>資料庫檢索語法轉換器</span><span data-en>Syntax Converter</span></a>
     <a class="navlink" href="proximity-builder.html"><span data-zh>鄰近字分堆組合器</span><span data-en>Proximity Builder</span></a>
+    <a class="navlink" href="pubmed-light.html">PubMed Light ✦</a>
     <button class="langbtn" id="langBtn" onclick="toggleLang()">English</button>
   </div>
 </header>
@@ -350,7 +355,7 @@
       <p class="desc"><span data-zh>搜尋策略不是按一下就自動長好的成品。<br>搜尋策略需要使用者／研究者理解問題、照料每個概念，<span class="nw">再逐步發展、檢查與測試。</span></span><span data-en>A search strategy isn’t a finished product that grows at a single click.<br>It needs a user / researcher who understands the question, tends each concept, and develops, checks and tests it step by step.</span></p>
       <div class="cta">
         <a class="btn-primary" href="pico-builder.html"><span data-zh>開始建立檢索策略</span><span data-en>Start building</span> →</a>
-        <a class="btn-ghost" href="#tools"><span data-zh>看看三個工具</span><span data-en>Explore the tools</span></a>
+        <a class="btn-ghost" href="#tools"><span data-zh>看看四個工具</span><span data-en>Explore the tools</span></a>
       </div>
     </div>
     <div class="art">
@@ -387,7 +392,7 @@
 <section class="tools">
   <div class="wrap">
     <div class="sec-h">
-      <h2><span data-zh>三個獨立工具</span><span data-en>Three independent tools</span></h2>
+      <h2><span data-zh>四個獨立工具</span><span data-en>Four independent tools</span></h2>
       <p><span data-zh>各自可單獨使用，也能互相搭配。使用時請找出最適合自己的流程。</span><span data-en>Use any one on its own, or combine them. Find the workflow that suits you best.</span></p>
     </div>
     <div class="grid">
@@ -524,6 +529,39 @@
         </div>
       </div>
 
+      <div class="card c4">
+        <div class="chead"><div class="cnum">4</div><h3>PubMed Light ✦</h3></div>
+        <div class="cart"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 202" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<ellipse cx="84" cy="183" rx="62" ry="4" fill="#EEF0E8"/>
+<!-- hen with a magnifier -->
+<path d="M70 52 C64 44 69 38 76 43 C74 31 85 29 89 39 C96 32 103 38 99 48" fill="#C18469" stroke="#A96D55" stroke-width="1.3"/>
+<path d="M60 84 C54 64 64 46 82 46 C100 45 110 60 107 76 C124 93 124 118 113 140 C98 160 66 162 52 140 C40 120 44 98 60 84Z" fill="#FCFAF3" stroke="#527060" stroke-width="1.7"/>
+<path d="M105 66 Q115 69 118 74 Q111 78 105 77" fill="#D9AE68" stroke="#B4945B" stroke-width="1.1"/>
+<circle cx="91" cy="64" r="2.6" fill="#527060"/>
+<ellipse cx="94" cy="77" rx="5" ry="2.7" fill="#E9B7A4" opacity=".65"/>
+<path d="M58 108 C46 112 44 128 52 136 C58 140 66 134 68 126" fill="#F7F5EB" stroke="#527060" stroke-width="1.5"/>
+<circle cx="132" cy="104" r="17" fill="#FFFDF7" stroke="#527060" stroke-width="2"/>
+<circle cx="132" cy="104" r="11" fill="#EAF1EC" stroke="#96AD99" stroke-width="1.2"/>
+<path d="M120 117 L104 133" stroke="#527060" stroke-width="4"/>
+<path d="M126 98 Q129 95 133 95" stroke="#FFFFFF" stroke-width="2"/>
+<path d="M72 160 L70 176 M90 160 L92 176 M64 176 L76 176 M86 176 L98 176" stroke="#B4945B" stroke-width="1.8"/>
+<!-- MeSH tree with tags -->
+<g font-family="inherit" font-weight="600">
+<path d="M196 58 L196 152 M196 88 L214 88 M196 120 L214 120 M196 152 L214 152" stroke="#B9C4BC" stroke-width="1.6"/>
+<rect x="172" y="36" width="70" height="24" rx="12" fill="#FBF1DE"/><text x="207" y="52" text-anchor="middle" font-size="11.5" fill="#5B4A2C">MeSH</text>
+<rect x="214" y="76" width="96" height="24" rx="12" fill="#FBF1DE"/><text x="262" y="92" text-anchor="middle" font-size="10.5" fill="#5B4A2C">Pain [mh]</text>
+<rect x="214" y="108" width="96" height="24" rx="12" fill="#E1EFE5"/><text data-zh="" x="262" y="124" text-anchor="middle" font-size="10.5" fill="#2F4A3F">同義詞 +3</text><text data-en="" x="262" y="124" text-anchor="middle" font-size="10.5" fill="#2F4A3F">Synonyms +3</text>
+<rect x="214" y="140" width="96" height="24" rx="12" fill="#EEF2EF"/><text x="262" y="156" text-anchor="middle" font-size="10.5" fill="#4A554F">ache [tiab]</text>
+<path d="M300 40 L303 47 L310 50 L303 53 L300 60 L297 53 L290 50 L297 47Z" fill="#E7C27A"/>
+<text x="258" y="186" text-anchor="middle" font-size="11" fill="#7A8A80">605,646</text>
+</g>
+</svg></div>
+        <p><span data-zh>以 PICO 為引導，在 PubMed 逐列建立檢索：輸入檢索詞即提示 MeSH 標目，一鍵帶入同義詞（Entry Terms），可切換欄位、設定鄰近字，並即時顯示 PubMed 筆數。右側可看上下位結構與 See Also。</span><span data-en>Build a PubMed search row by row, guided by PICO: MeSH headings are suggested as you type, synonyms (Entry Terms) are added in one click, fields and proximity are adjustable, and PubMed counts update live. Broader/narrower headings and See Also are shown alongside.</span></p>
+        <div class="crow">
+          <a class="cbtn solid" href="pubmed-light.html"><span data-zh>開始檢索</span><span data-en>Start searching</span> →</a>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -545,7 +583,7 @@
     <p><span data-zh>工具引用：方靜如，SR × EBM Happy SearchHen 搜尋策略生成雞。doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/</a></span><span data-en>Cite this tool: Fang CJ, SR × EBM Happy SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/</a></span></p>
     <div class="frow">
       <span class="brandline">SR × EBM Happy SearchHen　搜尋策略生成雞</span>
-      <span>© 2026 Ching-Ju Fang <a href="https://orcid.org/0000-0002-7892-8840" target="_blank" rel="noopener" title="ORCID iD" style="text-decoration:none;white-space:nowrap;color:inherit" onclick="try{if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:'author-orcid',title:'作者-ORCID',event:true})}catch(e){}"><svg width="13" height="13" viewBox="0 0 256 256" style="vertical-align:-2px;margin-right:3px" aria-hidden="true"><circle cx="128" cy="128" r="128" fill="#A6CE39"/><g fill="#fff"><path d="M86.3 186.2H70.9V79.1h15.4v107.1z"/><path d="M108.9 79.1h41.6c39.6 0 57 28.3 57 53.6 0 27.5-21.5 53.6-56.8 53.6h-41.8V79.1zm15.4 93.3h24.5c34.9 0 42.9-26.5 42.9-39.7 0-21.5-13.7-39.7-43.7-39.7h-23.7v79.4z"/><circle cx="78.6" cy="56.8" r="10.1"/></g></svg>0000-0002-7892-8840</a> · All rights reserved · <a href="https://github.com/sunfloraf-sketch/sr-ebm-happy-searchhen/blob/main/LICENSE" target="_blank" rel="noopener"><span data-zh>使用條款</span><span data-en>Terms of use</span></a> · v3.2.6</span>
+      <span>© 2026 Ching-Ju Fang <a href="https://orcid.org/0000-0002-7892-8840" target="_blank" rel="noopener" title="ORCID iD" style="text-decoration:none;white-space:nowrap;color:inherit" onclick="try{if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:'author-orcid',title:'作者-ORCID',event:true})}catch(e){}"><svg width="13" height="13" viewBox="0 0 256 256" style="vertical-align:-2px;margin-right:3px" aria-hidden="true"><circle cx="128" cy="128" r="128" fill="#A6CE39"/><g fill="#fff"><path d="M86.3 186.2H70.9V79.1h15.4v107.1z"/><path d="M108.9 79.1h41.6c39.6 0 57 28.3 57 53.6 0 27.5-21.5 53.6-56.8 53.6h-41.8V79.1zm15.4 93.3h24.5c34.9 0 42.9-26.5 42.9-39.7 0-21.5-13.7-39.7-43.7-39.7h-23.7v79.4z"/><circle cx="78.6" cy="56.8" r="10.1"/></g></svg>0000-0002-7892-8840</a> · All rights reserved · <a href="https://github.com/sunfloraf-sketch/sr-ebm-happy-searchhen/blob/main/LICENSE" target="_blank" rel="noopener"><span data-zh>使用條款</span><span data-en>Terms of use</span></a> · v3.2.7</span>
     </div>
   </div>
 </footer>
