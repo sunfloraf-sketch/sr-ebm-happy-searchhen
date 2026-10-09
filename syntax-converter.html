@@ -268,8 +268,8 @@
   </div>
 </main>
 <footer class="shfoot"><div class="shfoot-in">
-  <p><span data-zh>此工具為純網頁程式，未使用到AI運作，僅在您的瀏覽器本機執行與暫存，不會上傳任何研究資料到網路。轉換結果請人工覆核後再執行檢索。</span>
-    <span data-en>A pure web-based tool with no AI — it runs and is cached entirely in your browser and never uploads any of your research data. Please human-check the converted results before running your searches.</span></p>
+  <p><span data-zh>此工具為純網頁程式，未使用到AI運作，在您的瀏覽器執行與暫存，不會上傳您的檢索式或研究資料。唯一例外：輸入含 PubMed [nm]（補充概念）的詞時，會把「該詞本身」（不含整條檢索式）送到美國國家醫學圖書館（NLM）的 MeSH 公開 API 查詢補充概念類型，以決定 Ovid 欄位；離線或查詢失敗時會自動退回六個欄位全查。轉換結果請人工覆核後再執行檢索。</span>
+    <span data-en>A pure web-based tool with no AI — it runs and is cached in your browser and does not upload your search strategy or research data. One exception: when your input contains a PubMed [nm] (supplementary concept) term, that term alone (not the whole query) is sent to the U.S. National Library of Medicine (NLM) public MeSH API to look up its supplementary-concept type and choose the Ovid field; offline or on failure it falls back to searching all six fields. Please human-check the converted results before running your searches.</span></p>
   <p><span data-zh>工具引用：方靜如，SR x EBM Happy SearchHen 搜尋策略生成雞。<br>Fang CJ, SR x EBM Happy SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/</a><br></span>
     <span data-en>Cite this tool: Fang CJ, SR x EBM Happy SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/</a></span></p>
   <div class="frow"><span class="brandline">SR × EBM Happy SearchHen　搜尋策略生成雞</span><span>© 2026 Ching-Ju Fang <a href="https://orcid.org/0000-0002-7892-8840" target="_blank" rel="noopener" title="ORCID iD" style="text-decoration:none;white-space:nowrap;color:inherit" onclick="try{if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:'author-orcid',title:'作者-ORCID',event:true})}catch(e){}"><svg width="13" height="13" viewBox="0 0 256 256" style="vertical-align:-2px;margin-right:3px" aria-hidden="true"><circle cx="128" cy="128" r="128" fill="#A6CE39"/><g fill="#fff"><path d="M86.3 186.2H70.9V79.1h15.4v107.1z"/><path d="M108.9 79.1h41.6c39.6 0 57 28.3 57 53.6 0 27.5-21.5 53.6-56.8 53.6h-41.8V79.1zm15.4 93.3h24.5c34.9 0 42.9-26.5 42.9-39.7 0-21.5-13.7-39.7-43.7-39.7h-23.7v79.4z"/><circle cx="78.6" cy="56.8" r="10.1"/></g></svg>https://orcid.org/0000-0002-7892-8840</a> · All rights reserved · <a href="https://github.com/sunfloraf-sketch/sr-ebm-happy-searchhen/blob/main/LICENSE" target="_blank" rel="noopener"><span data-zh>使用條款</span><span data-en>Terms of use</span></a> · v3.2.7</span></div>
@@ -288,7 +288,7 @@
    ===================================================================== */
 
 var DBS = ["embase", "ovid", "pubmed", "cochrane", "ebsco", "wos", "scopus", "airiti", "ndltd"];
-var RENDER_OPTS = { expand: false, fieldExpand: false, variants: null, strippedRoots: [] };
+var RENDER_OPTS = { expand: false, fieldExpand: false, variants: null, strippedRoots: [], noScrField: false };
 
 var DB_LABEL = {
   pubmed:   "PubMed",
@@ -414,6 +414,50 @@ var SYNTAX_MAP = {
    PubMed 一律為 [nm]（不分類型）。輸出 Ovid 時優先用 Concept/Phrase 欄位，化學物質退用 .nm.；
    類型不明（例如來自 PubMed [nm]）時，六個欄位以 OR 全查。
    --------------------------------------------------------------------- */
+var SCR_TYPE_CACHE = {};   // 小寫詞 → chem|dis|prot|org|pop|anat；"" 表示已查過但沒查到（或離線）
+var SCR_TYPE_PENDING = {};
+var SCR_CLASS_MAP = { chemical: "chem", disease: "dis", protocol: "prot", organism: "org", population: "pop", anatomy: "anat" };
+// 向 NLM 查補充概念類型：term 精準比對 → SPARQL 找對應的補充概念記錄與其類型（只送出該詞）
+function scrLookupType(label) {
+  var key = String(label).toLowerCase();
+  if (key in SCR_TYPE_CACHE) return Promise.resolve(SCR_TYPE_CACHE[key]);
+  if (SCR_TYPE_PENDING[key]) return SCR_TYPE_PENDING[key];
+  if (typeof fetch !== "function") return Promise.resolve("");
+  var JS = { headers: { "Accept": "application/json" } };
+  var p = fetch("https://id.nlm.nih.gov/mesh/lookup/term?label=" + encodeURIComponent(label) + "&match=exact&limit=5", JS)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (tm) {
+      var uris = (tm || []).filter(function (x) { return String(x.label || "").toLowerCase() === key; }).map(function (x) { return "<" + x.resource + ">"; });
+      if (!uris.length) return "";
+      var q = 'PREFIX meshv: <http://id.nlm.nih.gov/mesh/vocab#> SELECT DISTINCT ?d ?ty WHERE { VALUES ?t { ' + uris.join(" ") + ' } ?d (meshv:preferredConcept|meshv:concept) ?c . ?c (meshv:preferredTerm|meshv:term) ?t . ?d a ?ty }';
+      return fetch("https://id.nlm.nih.gov/mesh/sparql?format=JSON&inference=false&limit=40&query=" + encodeURIComponent(q), JS)
+        .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+        .then(function (j) {
+          var ty = "";
+          ((j && j.results && j.results.bindings) || []).forEach(function (b) {
+            var m = String(b.ty && b.ty.value || "").match(/SCR_(Chemical|Disease|Protocol|Organism|Population|Anatomy)/i);
+            if (m) ty = SCR_CLASS_MAP[m[1].toLowerCase()];
+          });
+          return ty;
+        });
+    })
+    .catch(function () { return ""; })
+    .then(function (ty) { SCR_TYPE_CACHE[key] = ty; delete SCR_TYPE_PENDING[key]; return ty; });
+  SCR_TYPE_PENDING[key] = p;
+  return p;
+}
+// 走訪 AST，找出類型不明的補充概念詞（尚未查過者）
+function scrUnknownTerms(ast, out) {
+  out = out || [];
+  if (!ast) return out;
+  if (ast.t === "scr" && !ast.type && ast.value && !((ast.value.toLowerCase()) in SCR_TYPE_CACHE)) out.push(ast.value);
+  (ast.kids || []).forEach(function (k) { scrUnknownTerms(k, out); });
+  (ast.items || []).forEach(function (k) { scrUnknownTerms(k.ast, out); });
+  if (ast.child) scrUnknownTerms(ast.child, out);
+  if (ast.a) scrUnknownTerms(ast.a, out);
+  if (ast.b) scrUnknownTerms(ast.b, out);
+  return out;
+}
 var SCR_OVID_OUT = { chem: "nm", dis: "rs", prot: "ps", org: "os", pop: "ul", anat: "my" };
 var SCR_OVID_IN  = { nm: "chem", rx: "dis", rs: "dis", px: "prot", ps: "prot", ox: "org", os: "org", ux: "pop", ul: "pop", mx: "anat", my: "anat", rn: "rn" };
 function scrNode(value, type) { return { t: "scr", value: String(value).replace(/^["']|["']$/g, "").trim(), type: type || "" }; }
@@ -1163,18 +1207,27 @@ function renderMesh(node, dst, warn) {
   return m[mkey].replace(/%T/g, tv);
 }
 function renderScr(node, dst, warn, ctx) {
-  var v = node.value, L = DB_LABEL[dst];
+  var v = node.value, L = DB_LABEL[dst], looked = false;
+  if (!node.type && SCR_TYPE_CACHE[v.toLowerCase()]) { node = { t: "scr", value: v, type: SCR_TYPE_CACHE[v.toLowerCase()] }; looked = true; }
   if (dst === "pubmed") {
     if (node.type === "rn") return v + "[rn]";
     return (/[\s,;:()\[\]\/-]/.test(v) ? '"' + v + '"' : v) + "[nm]";
   }
-  if (dst === "ovid") {
+  if (dst === "ovid" && !RENDER_OPTS.noScrField) {
     var q = node.type === "rn" ? v : '"' + v + '"';
-    warn.push(L + (_EN()
-      ? ": supplementary-concept fields exist in MEDLINE (Ovid) only — Embase (Ovid) has none (use Emtree drug terms or free text). Phrase fields (.rs. .ps. .os. .ul. .my.) require the exact supplementary-concept name; for entry terms/synonyms use free text or the Word fields (.rx. .px. .ox. .ux. .mx. .nm.)"
-      : "：補充概念欄位僅 MEDLINE (Ovid) 有，Embase (Ovid) 沒有（請改用 Emtree 藥物詞或自由詞彙）；Phrase 欄位（.rs. .ps. .os. .ul. .my.）需與補充概念正式名稱完全一致，同義詞請改用自由詞彙或 Word 欄位（.rx. .px. .ox. .ux. .mx. .nm.）"));
+    var _merged = looked && SCR_OVID_OUT[node.type];
+    if (!_merged) {
+      warn.push(L + (_EN()
+        ? ": supplementary-concept fields exist in MEDLINE (Ovid) only. Phrase fields (.rs. .ps. .os. .ul. .my.) require the exact supplementary-concept name; for entry terms/synonyms use free text or the Word fields (.rx. .px. .ox. .ux. .mx. .nm.)"
+        : "：補充概念欄位僅 MEDLINE (Ovid) 有；Phrase 欄位（.rs. .ps. .os. .ul. .my.）需與補充概念正式名稱完全一致，同義詞請改用自由詞彙或 Word 欄位（.rx. .px. .ox. .ux. .mx. .nm.）"));
+    }
     if (node.type === "rn") return q + ".rn.";
-    if (SCR_OVID_OUT[node.type]) return q + "." + SCR_OVID_OUT[node.type] + ".";
+    if (SCR_OVID_OUT[node.type]) {
+      if (looked) warn.push(L + (_EN()
+        ? ": supplementary-concept type looked up from NLM MeSH: PubMed [nm] maps to MEDLINE (Ovid) ." + SCR_OVID_OUT[node.type] + ". (" + { chem: "chemical", dis: "rare disease", prot: "protocol", org: "organism", pop: "population", anat: "anatomy" }[node.type] + ")"
+        : "：補充概念類型已向 NLM MeSH 查詢：PubMed 的 [nm] 對應為 MEDLINE (Ovid) 的 ." + SCR_OVID_OUT[node.type] + ". (" + { chem: "化學物質", dis: "罕見疾病", prot: "方案", org: "生物", pop: "族群", anat: "解剖" }[node.type] + ")"));
+      return q + "." + SCR_OVID_OUT[node.type] + ".";
+    }
     var outs = ["nm", "rs", "ps", "os", "ul", "my"].map(function (c) { return q + "." + c + "."; });
     warn.push(L + (_EN() ? ": supplementary-concept type unknown — all six fields are searched (OR); delete the ones you do not need" : "：補充概念類型不明，六個欄位全查（OR），可自行刪除不需要的欄位"));
     return "(" + outs.join(" OR ") + ")";
@@ -1218,6 +1271,7 @@ function convert(input, src, dsts, opts) {
   RENDER_OPTS.expand = !!opts.proximityExpand;
   RENDER_OPTS.fieldExpand = !!opts.fieldExpand;
   RENDER_OPTS.variants = opts.variants || null;
+  RENDER_OPTS.noScrField = !!opts.noScrField;   // Embase (Ovid)：沒有補充概念欄位 → 補充概念改為自由詞彙
   RENDER_OPTS.strippedRoots = [];
   var parsed = parseQuery(input, src);
   var mismatch = detectSourceMismatch(input, src);
@@ -1233,7 +1287,7 @@ function convert(input, src, dsts, opts) {
 function dedupe(arr) { return arr.filter(function (x, i) { return arr.indexOf(x) === i; }); }
 
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { convert: convert, parseQuery: parseQuery, render: render, SYNTAX_MAP: SYNTAX_MAP, DBS: DBS, DB_LABEL: DB_LABEL, TARGETS: TARGETS, TARGET_BY_ID: TARGET_BY_ID };
+  module.exports = { scrLookupType: scrLookupType, SCR_TYPE_CACHE: SCR_TYPE_CACHE, scrUnknownTerms: scrUnknownTerms, convert: convert, parseQuery: parseQuery, render: render, SYNTAX_MAP: SYNTAX_MAP, DBS: DBS, DB_LABEL: DB_LABEL, TARGETS: TARGETS, TARGET_BY_ID: TARGET_BY_ID };
 }
 /* ================= UI APP ================= */
 (function(){
@@ -1432,6 +1486,14 @@ if (typeof module !== "undefined" && module.exports) {
     let res;
     try{ res=convert(input, src, DBS); }
     catch(e){ outs.innerHTML='<div class="panel">Error: '+e.message+'</div>'; return; }
+    // 補充概念（PubMed [nm]）類型不明：向 NLM 查詢類型，查完以同一輸入重新轉換（只送出詞本身）
+    try{
+      var _scrU=scrUnknownTerms(res.ast, []).filter(function(x,i,a){return a.indexOf(x)===i;});
+      if(_scrU.length && !window.__scrBusy){
+        window.__scrBusy=true; var _inp0=inp.value;
+        Promise.all(_scrU.slice(0,8).map(scrLookupType)).then(function(){ window.__scrBusy=false; if(inp.value===_inp0) run(); }, function(){ window.__scrBusy=false; });
+      }
+    }catch(_e){}
 
     const en=document.body.classList.contains("en");
     const rawWarn=res.parseWarn||[];
@@ -1458,11 +1520,14 @@ if (typeof module !== "undefined" && module.exports) {
       }
     }
     // 依選單順序輸出全部資料庫（含來源庫）
+    // Embase (Ovid) 沒有補充概念欄位：與 MEDLINE (Ovid) 共用 ovid 引擎，另以「不用補充概念欄位」轉一次
+    var _resEO=null; try{ _resEO=convert(input, src, ["ovid"], {noScrField:true}); }catch(_e){ _resEO=null; }
+    var _resOf=function(tg){ return (tg.id==="embase_ovid" && _resEO) ? _resEO.results.ovid : res.results[tg.engine]; };
     TARGETS.forEach(tg=>{
       const d=tg.engine;
       const isSource=(tg.id===srcTarget);
       if(!isSource && !checkedSet.has(tg.id)) return;   // 未勾選的輸出資料庫略過（起始庫一律顯示）
-      const txt=isSource?srcQuoted:res.results[d].text;
+      const txt=isSource?srcQuoted:_resOf(tg).text;
       const srcVocab=TARGET_BY_ID[srcTarget].vocab;
       // 詞表不同才需替換（如 MeSH→Emtree）；詞表相同(如 PubMed→Ovid MEDLINE→Cochrane 皆 MeSH)則不需
       const needReplace = !isSource && !!tg.vocab && !!srcVocab && (tg.vocab!==srcVocab);
@@ -1479,7 +1544,7 @@ if (typeof module !== "undefined" && module.exports) {
       var remHtml=[];
       if(!isSource){
         var _rl=new RegExp("^"+String(DB_LABEL[d]||"").replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\s*[：:]?\\s*");
-        (res.results[d].warn||[]).forEach(function(w){ remHtml.push(String(w).replace(_rl,"")); });
+        (_resOf(tg).warn||[]).forEach(function(w){ remHtml.push(String(w).replace(_rl,"")); });
       }
       if((d==="airiti" || d==="ndltd") && !isSource){
         remHtml.push(en
