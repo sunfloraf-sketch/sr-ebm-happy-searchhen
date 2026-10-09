@@ -837,7 +837,7 @@ function buildRow(c){
     // 標籤列
     var line=document.createElement("div"); line.className="tokline";
     var mi=st.items.filter(function(i){return i.type==="mesh";});
-    var synN=0;   // 每列只有第一個同義詞標籤寫「n個同義詞」，其餘只寫「n個」
+    var synN=0;   // 每列只有第一個同義詞標籤寫「同義詞+n」，其餘只寫「+n」
     mi.forEach(function(it){
       // 標目＋其同義詞為一組，換行時一起移動（不會以同義詞標籤開頭）
       var grp=document.createElement("span"); grp.className="pgrp"; line.appendChild(grp);
@@ -863,7 +863,7 @@ function buildRow(c){
       if(it.dId){
         var n=st.items.filter(function(x){ return x.type==="ft" && x.from===it.dId; }).length;
         grp.appendChild(pillDetails(k+"|e|"+it.dId, "epill",
-          (synN++===0)?T(n+"個同義詞",n+" synonyms"):T(n+"個",String(n)),
+          (synN++===0)?T("同義詞+"+n,"Synonyms +"+n):"+"+n,
           function(panel){ fillEntryPanel(panel, k, it); }));
       }
     });
