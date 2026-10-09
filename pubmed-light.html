@@ -162,7 +162,7 @@
   .sdhd{margin-top:14px;padding:6px 2px 2px;font-size:13px;font-weight:700;color:var(--sh-green-d);border-top:2px solid var(--sh-line)}
   .addrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px;color:var(--mut);padding:2px 2px 0}
   .rhd .sp{flex:1}
-  .rhd .rc{font-size:12.5px;color:var(--sh-green-d);font-variant-numeric:tabular-nums}
+  .rhd .rc{font-size:12.5px;color:var(--sh-green-d);font-variant-numeric:tabular-nums;width:7.5ch;text-align:right;flex:0 0 auto}   /* 固定寬度：筆數位數不同時左側選單不跳動 */
   .pgrp{display:inline-flex;align-items:center;gap:4px;flex-wrap:nowrap}
   .tokline{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;padding:2px 0 2px 17px;min-height:34px}   /* 左側與代號（P）對齊 */
   .qwrap{position:relative;flex:1 1 180px;min-width:160px}
@@ -208,6 +208,8 @@
   .fldlab{margin-right:2px}
   /* 列標題的兩個選單：底線型、簡單箭頭 */
   select.chipsel{-webkit-appearance:none;appearance:none;border:0;border-bottom:1px solid #B9C0BC;border-radius:0;font-family:inherit;font-size:13.5px;color:#4F5652;padding:2px 20px 2px 2px;cursor:pointer;background:transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23666' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right 3px center/9px 6px no-repeat;min-width:0}
+  select.chipsel.fld{width:10.5em}
+  select.chipsel.prx{width:7.2em}   /* 固定寬度：選不同選項時位置不變 */
   select.chipsel:hover{border-bottom-color:var(--sh-green)}
   select.chipsel:focus-visible{outline:2px solid var(--sh-green);outline-offset:1px}
   .crow>.proxwarn{margin-top:6px;text-align:right}
