@@ -150,16 +150,16 @@
   .addrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px;color:var(--mut);padding:2px 2px 0}
   .rhd .sp{flex:1}
   .rhd .rc{font-size:12.5px;color:var(--sh-green-d);font-variant-numeric:tabular-nums}
-  .tokline{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:2px 0;min-height:34px}
+  .tokline{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:2px 0 2px 17px;min-height:34px}   /* 左側與代號（P）對齊 */
   .qwrap{position:relative;flex:1 1 180px;min-width:160px}
   .qwrap input{width:100%;border:0;outline:0;background:transparent;font-size:14px;padding:5px 4px}
   .pill{position:relative;display:inline-flex;align-items:center;font-size:13px;border-radius:14px;line-height:1.3}
   details.pill>summary{list-style:none;cursor:pointer;padding:3px 10px;border-radius:14px;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;user-select:none}
   details.pill>summary::-webkit-details-marker{display:none}
   details.pill>summary::after{content:"▾";font-size:10px;opacity:.65}
-  .mpill>summary{background:#FBF1DE;border:1px solid #EBD3A6;color:#5B4A2C}
-  .epill>summary{background:#E5EFF2;border:1px solid #C3D7DD;color:#2C4A55}
-  .fpill{background:#EEF2EF;border:1px solid #D3DFD7;padding:3px 4px 3px 10px;gap:4px}
+  .mpill>summary{background:#FBF1DE;color:#2A2A2A}
+  .epill>summary{background:#E5EFF2;color:#2A2A2A}
+  .fpill{background:#EEF2EF;color:#2A2A2A;padding:3px 4px 3px 10px;gap:4px}
   .fpill button{border:0;background:none;color:#9AA3A0;cursor:pointer;font-size:14px;line-height:1;padding:0 3px}
   .fpill button:hover{color:#9B3B2E}
   details.mpill>summary::after{content:none}   /* 控制辭彙標籤只用自己的 ▾（.parr） */
@@ -171,7 +171,8 @@
   .pillpanel{position:absolute;z-index:25;top:calc(100% + 4px);left:0;width:max-content;max-width:min(400px,80vw);background:#fff;border:1px solid var(--sh-green);border-radius:9px;box-shadow:0 8px 24px rgba(31,69,56,.16);padding:8px 10px;white-space:normal;color:var(--ink)}
   .pph{font-size:12px;font-weight:700;color:var(--mut);margin-bottom:4px}
   .prad{display:flex;gap:6px;align-items:center;font-size:13px;padding:2px 0;cursor:pointer}
-  .ppa{display:flex;gap:14px;margin-top:8px;padding-top:6px;border-top:1px dashed var(--line)}
+  .ppa{display:flex;justify-content:flex-end;gap:10px;margin-top:8px;padding-top:6px;border-top:1px dashed var(--line)}
+  .ppa .lnk{text-decoration:none}
   .lnk.danger{color:#9B3B2E}
   .pillpanel .etlist{display:flex;flex-direction:column;gap:2px;max-height:240px;overflow:auto}
   .pillpanel .etlist label{font-size:13px;display:flex;gap:6px;align-items:baseline;cursor:pointer}
@@ -186,8 +187,9 @@
   .ftadd:hover{background:#EEF4F0}
   .ftadd[hidden]{display:none}
   .sgfree{border-top:1px dashed var(--line);border-radius:0 0 6px 6px;color:var(--sh-green-d)}
-  .crow .status{margin-top:4px;font-size:12.5px}
-  .rset{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:6px 8px;margin-top:6px;font-size:12px;color:var(--mut)}
+  .crow .status{margin-top:4px;font-size:12.5px;padding-left:17px}
+  .rset{display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:12px;color:var(--mut);margin-right:10px}
+  .pxlab{margin-left:14px}
   .crow>.proxwarn{margin-top:6px;text-align:right}
   .rset .proxwarn{margin:0}
   .totalbar{margin-top:14px;display:flex;flex-direction:column;align-items:center;gap:6px}
@@ -299,8 +301,8 @@ var DEF_ROWS=["P","I","C","O","S"].map(function(t){ return {k:t, type:t, code:t,
 var CONCEPTS=DEF_ROWS.map(function(d){ return {k:d.k, type:d.type, code:d.code, name:d.name}; });   // k＝內部 id（不變）；code／name＝可編輯的顯示代號與名稱
 // 自由詞彙檢索欄位
 var LEVELS=["all","tw","tiab","ti"];
-var LVL_NAME={ zh:{all:"所有欄位 [all]", tw:"文字欄位 [tw]", tiab:"篇名/摘要 [tiab]", ti:"篇名 [ti]"},
-               en:{all:"All Fields [all]", tw:"Text Word [tw]", tiab:"Title/Abstract [tiab]", ti:"Title [ti]"} };
+var LVL_NAME={ zh:{all:"[all] 所有欄位", tw:"[tw] 文字欄位", tiab:"[tiab] 篇名/摘要", ti:"[ti] 篇名"},
+               en:{all:"[all] All Fields", tw:"[tw] Text Word", tiab:"[tiab] Title/Abstract", ti:"[ti] Title"} };
 var OLD_LVL={L0:"all", L1:"tiab", L2:"ti", L3:"ti"};   // 舊版存的 L0～L3 對應到欄位
 // 控制詞彙可選欄位（顯示名稱用白話，後面附 PubMed 代碼）
 var MESH_TAGS=[
@@ -792,7 +794,7 @@ function buildRow(c){
       var mp=pillDetails(k+"|m|"+it.text, "mpill",
         '<span class="plab" title="'+esc(T("在右側檢視上下位結構","Show hierarchy on the right"))+'"><span class="pdot"></span>'+esc(it.text)+' <span class="ptag">'+esc(tagShort(it.tag||"mh"))+'</span></span><span class="parr" title="'+esc(T("切換欄位","Change field"))+'">▾</span>',
         function(panel){
-          panel.innerHTML='<div class="pph">'+T("控制辭彙欄位","MeSH field")+'</div>'+meshTagsFor(k).map(function(t){
+          panel.innerHTML='<div class="pph">'+T("控制詞彙選項","MeSH options")+'</div>'+meshTagsFor(k).map(function(t){
             return '<label class="prad"><input type="radio" name="mt-'+k+'-'+esc(it.text)+'" value="'+t.v+'"'+((it.tag||"mh")===t.v?" checked":"")+'> '+esc(isEn()?t.en:t.zh)+'</label>';
           }).join("")+'<div class="ppa"><button type="button" class="lnk danger" data-a="rm">'+T("移除","Remove")+'</button><span class="ppsep">｜</span><button type="button" class="lnk danger" data-a="rmall">'+T("移除（含同義詞）","Remove (with synonyms)")+'</button></div>';
           panel.querySelectorAll("input[type=radio]").forEach(function(r){ r.addEventListener("change", function(){ it.tag=r.value; save(); renderRows(); renderStrategy(); }); });
@@ -842,17 +844,16 @@ function buildRow(c){
     // 自由詞彙設定（有自由詞彙時才顯示）
     if(st.items.some(function(i){ return i.type==="ft"; })){
       var rs=document.createElement("div"); rs.className="rset";
-      rs.innerHTML='<span>'+T("同義詞欄位","Synonym field")+'</span>';
-      var lvs=document.createElement("select"); lvs.className="sm"; fillSelect(lvs, lvlOpts(), lv);
+      var lvs=document.createElement("select"); lvs.className="sm"; fillSelect(lvs, lvlOpts(), lv); lvs.title=T("同義詞欄位","Synonym field");
       lvs.addEventListener("change", function(){ st.level=lvs.value; save(); renderRows(); renderStrategy(); });
       rs.appendChild(lvs);
-      rs.insertAdjacentHTML("beforeend",'<span>'+T("鄰近字","Proximity")+'</span>');
+      rs.insertAdjacentHTML("beforeend",'<span class="pxlab">'+T("鄰近字：","Proximity:")+'</span>');
       var px=document.createElement("select"); px.className="sm";
       px.title=T("套用到此列所有兩個字以上的自由詞彙；只在篇名/摘要 [tiab]、篇名 [ti] 有效，含截字 * 的詞除外","Applies to every multi-word free-text term in this row; works only with [tiab] / [ti], terms with * excluded");
-      fillSelect(px,[{v:"",zh:"不使用（完整片語）",en:"Off (exact phrase)"}].concat(PROX_N.map(function(n){return {v:n,zh:"~"+n+" 字內",en:"within "+n};})), st.prox||"");
+      fillSelect(px,[{v:"",zh:"預設採片語",en:"Phrase (default)"}].concat(PROX_N.map(function(n){return {v:n,zh:"~"+n+"字內",en:"within "+n};})), st.prox||"");
       px.addEventListener("change", function(){ st.prox=px.value; save(); renderRows(); renderStrategy(); });
       rs.appendChild(px);
-      row.appendChild(rs);
+      hd.insertBefore(rs, hd.querySelector(".rc"));
       if(st.prox && !proxOK(lv)){
         var pw=document.createElement("div"); pw.className="proxwarn";
         pw.textContent=T("「"+LVL_NAME.zh[lv]+"」不支援鄰近字，此列自由詞彙以完整片語檢索；要用鄰近字請改選篇名/摘要 [tiab] 或篇名 [ti]。",
