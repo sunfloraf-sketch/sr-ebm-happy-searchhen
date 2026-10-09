@@ -931,7 +931,7 @@ function renderSide(){
     return;
   }
   var ctx=sideCtx, tok=++sideTok;
-  side.innerHTML='<h2>'+esc(ctx.label)+'</h2><div class="meta">'+esc(codeOf(ctx.k)+" "+conceptName(ctx.k))+'</div><div id="sideTree" class="sideempty">'+T("載入上下位結構…","Loading hierarchy…")+'</div><div class="sidesec" id="sideEt"></div>';
+  side.innerHTML='<h2>'+esc(ctx.label)+'</h2><div id="sideTree" class="sideempty">'+T("載入上下位結構…","Loading hierarchy…")+'</div><div class="sidesec" id="sideEt"></div>';
   loadTree(ctx.dId).then(function(tr){ if(tok===sideTok) drawTree(tr, ctx); }, function(){ if(tok===sideTok) $("sideTree").textContent=T("無法載入上下位結構。","Could not load the hierarchy."); });
   loadDetail({dId:ctx.dId,label:ctx.label}).then(function(d){ if(tok===sideTok) drawEntryList(d, ctx); });
 }
@@ -942,7 +942,7 @@ function plusBtn(dId, label){
 function drawTree(tr, ctx){
   var el=$("sideTree"); el.className="";
   if(!tr.trees.length){ el.innerHTML='<p class="sideempty">'+T("此標目沒有樹狀號。","No tree numbers for this heading.")+'</p>'; return; }
-  var h='<div class="cgrp">'+T("上位（廣義）→ 本標目 → 下位（狹義）","Broader → this heading → narrower")+'</div>';
+  var h='<div class="cgrp">'+T("廣義詞（上位）→ 本標目 → 狹義詞（下位）","Broader → this heading → narrower")+'</div>';
   tr.trees.forEach(function(t){
     var cat=TREE_CAT[t.tn.charAt(0)], ind=0;
     h+='<div class="treeblk"><ul class="tree">';
