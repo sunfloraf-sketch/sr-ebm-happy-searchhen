@@ -80,8 +80,10 @@
   .art .scene:hover .hen-c{opacity:1}
   /* 工具 1 插圖：平常盤中食物少一些、盾牌不打勾；滑鼠移過時裝滿並打勾 */
   .card.c1 .food-more,.card.c1 .tick-more{opacity:0;transition:opacity .3s ease}
+  .card.c1 .shield-no{transition:opacity .3s ease}
+  .card.c1:hover .shield-no,.card.c1:focus-within .shield-no{opacity:0}   /* 平常紅底 ✕，移過時變回綠底 ✓ */
   .card.c1:hover .food-more,.card.c1:focus-within .food-more,.card.c1:hover .tick-more,.card.c1:focus-within .tick-more{opacity:1}
-  @media(prefers-reduced-motion:reduce){.card.c1 .food-more,.card.c1 .tick-more{transition:none}}
+  @media(prefers-reduced-motion:reduce){.card.c1 .food-more,.card.c1 .tick-more,.card.c1 .shield-no{transition:none}}
   /* 工具 2 插圖：平常只勾第一項，滑鼠移過時其餘也打勾 */
   .card.c2 .tick-more{opacity:0;transition:opacity .25s ease}
   .card.c2:hover .tick-more,.card.c2:focus-within .tick-more{opacity:1}
@@ -443,6 +445,7 @@
 <path d="M249 58 Q256 56 263 58 M247 64 Q256 62 265 64" stroke="#B9AB8E" stroke-width="1.5"/>
 <path d="M278 19 Q286 20 292 16 L293 29 Q289 37 284 38 Q276 34 276 27Z" fill="#6E927C"/>
 <path class="tick-more" d="M280 27 L284 31 L290 23" stroke="#FFFDF7" stroke-width="1.7"/>
+<g class="shield-no"><path d="M278 19 Q286 20 292 16 L293 29 Q289 37 284 38 Q276 34 276 27Z" fill="#C2645A"/><path d="M281 23.5 L288 30.5 M288 23.5 L281 30.5" stroke="#FFFDF7" stroke-width="1.7"/></g>
 <g fill="#B0926A"><path d="M220 87 Q222 84 226 88 Q225 93 221 92Z"/><path d="M216 94 Q220 91 223 95 Q221 99 217 98Z"/><path d="M230 97 Q234 94 236 98 Q234 101 230 100Z"/></g>
 <text data-zh="" x="80" y="116" text-anchor="middle" fill="#886A43" font-size="13" font-weight="600">自由詞彙</text><text data-en="" x="80" y="116" text-anchor="middle" fill="#886A43" font-size="12" font-weight="600">Free-text terms</text><text data-zh="" x="258" y="116" text-anchor="middle" fill="#556553" font-size="13" font-weight="600">控制詞彙</text><text data-en="" x="258" y="116" text-anchor="middle" fill="#556553" font-size="12" font-weight="600">Controlled terms</text>
 <path d="M104 128 C112 141 131 143 140 148 M136 140 Q140 145 140 149 L132 147 M237 128 C228 140 208 142 199 148 M202 140 L198 149 L207 147" stroke="#ABA991" stroke-width="1.7"/>
