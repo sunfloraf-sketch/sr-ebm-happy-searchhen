@@ -300,7 +300,7 @@
       <li>Entry Terms 常是倒裝形式（例：Attack, Heart），加入時會自動轉成自然語序 Heart Attack，才能在題名／摘要中比對到。</li>
       <li><b>找不到標目時</b>（例：縮寫 GDM），會自動取 PubMed 相關性前 50 篇文章，統計它們最常標的 MeSH，列出前 10 名並標示出現篇數；名稱有對到但不是想要的，可按候選清單底部的「反推」。</li>
       <li><b>補充概念 [nm]</b>：藥物、化學物質、罕見疾病等多為 MeSH 的補充概念，不在標目樹中，標籤顯示「補充概念」並以 <code>"xxx"[nm]</code> 檢索；右側若列出對應標目，建議一併加入。</li>
-      <li><b>倒退鍵刪除</b>：輸入框空白時按一下 Backspace 會以紅框標示最後一個詞彙，再按一下即刪除；刪除標目時連同其同義詞一起移除。</li>
+      <li><b>鍵盤刪除</b>：輸入框空白時，用 ← → 在詞彙間移動（紅框標示），按 Backspace 或 Delete 刪除紅框詞彙，可連續刪除；也可直接點詞彙選取。只按 Backspace 時，第一下會先標示最後一個詞彙。刪除標目時連同其同義詞一起移除。</li>
       <li><b>鄰近字</b>：每列可設定一次，套用到該列所有兩個字以上的自由詞彙，例：<code>"hip fracture"[tiab:~3]</code> 會找到 fracture of the hip。PubMed 鄰近字只支援篇名/摘要 [tiab] 與篇名 [ti]；選所有欄位 [all] 或文字欄位 [tw] 時不套用，且不能與截字 * 併用。</li>
       <li><b>出版類型 [pt]</b>：研究設計欄位加入 Randomized Controlled Trial、Meta-Analysis 等標目時預設為 [pt]（例：<code>"Randomized Controlled Trial"[pt]</code>）。請同時放自由詞彙（randomized、placebo），以免漏掉尚未標引的新文獻。</li>
       <li>比較（C）若與介入相同概念，通常不必納入 AND 組合，可取消該列右上角的勾選。</li>
@@ -310,7 +310,7 @@
       <li>Entry Terms are often inverted (e.g. Attack, Heart); they are automatically converted to natural order (Heart Attack) so they match titles/abstracts.</li>
       <li><b>No heading found</b> (e.g. the abbreviation GDM): the tool takes the top 50 relevance-ranked PubMed articles, tallies the MeSH headings they carry and lists the top 10 with article counts. If a name match is not what you meant, use the “infer” button at the bottom of the suggestion list.</li>
       <li><b>Supplementary concepts [nm]</b>: drugs, chemicals and rare diseases are often MeSH supplementary concepts outside the heading tree. They show a “supplementary” badge and are searched as <code>"xxx"[nm]</code>; if mapped headings are listed on the right, consider adding them too.</li>
-      <li><b>Delete with Backspace</b>: with the input box empty, press Backspace once to highlight the last term (red outline) and again to delete it; a heading is removed together with its synonyms.</li>
+      <li><b>Keyboard deletion</b>: with the input box empty, use ← → to move between terms (red outline) and press Backspace or Delete to remove the outlined one; keep pressing to remove several in a row. You can also click a term to select it. Pressing Backspace alone first outlines the last term. A heading is removed together with its synonyms.</li>
       <li><b>Proximity</b>: set once per row; it applies to every multi-word free-text term in that row, e.g. <code>"hip fracture"[tiab:~3]</code> also finds fracture of the hip. PubMed proximity works only in [tiab] and [ti] (not applied with [all] / [tw]), and not with truncation *.</li>
       <li><b>Publication type [pt]</b>: in Study design, headings such as Randomized Controlled Trial or Meta-Analysis default to [pt] (e.g. <code>"Randomized Controlled Trial"[pt]</code>). Add free-text too (randomized, placebo) to catch not-yet-indexed records.</li>
       <li>If the Comparison duplicates the Intervention concept, untick the box at the top right of that row so it is not ANDed.</li>
@@ -894,34 +894,44 @@ function pickSug(k, i){
   var list=allCands(k);
   if(i<list.length) chooseCand(k, list[i]); else addFt(k, rowQ[k]||sugTerm[k]);
 }
-// 倒退鍵刪除：輸入框空白時按 Backspace，第一下標示最後一個詞彙（紅框），再按一下才刪除（標目連同其同義詞）
-var bsArm={};
-function lastItem(k){
+// 鍵盤刪除詞彙（輸入框空白時）：← → 在詞彙間移動（紅框標示），Backspace／Delete 刪除紅框詞彙；
+// 只按 Backspace 時第一下先標示最後一個。刪除後紅框移到前一個，可連續刪除；標目連同其同義詞一起移除。
+// 也可直接點自由詞彙標籤（或標目文字）選取，再按 Backspace／Delete。
+var bsSel={};
+function units(k){   // 與畫面順序一致：標目組（標目＋同義詞）在前，其後為獨立自由詞彙
   var st=state.concepts[k], dIds={};
-  st.items.forEach(function(i){ if(i.type==="mesh" && i.dId) dIds[i.dId]=1; });
-  var ft=st.items.filter(function(i){ return i.type==="ft" && !(i.from && dIds[i.from]); });
-  if(ft.length) return ft[ft.length-1];
   var mi=st.items.filter(function(i){ return i.type==="mesh"; });
-  return mi.length?mi[mi.length-1]:null;
+  mi.forEach(function(i){ if(i.dId) dIds[i.dId]=1; });
+  return mi.concat(st.items.filter(function(i){ return i.type==="ft" && !(i.from && dIds[i.from]); }));
 }
-function bsDisarm(k){ bsArm[k]=null; var q=$("q-"+k), w=q&&q.parentNode, el=w&&w.previousElementSibling; if(el) el.classList.remove("bsarm"); }
-function onBackspace(k, e){
+function unitEls(k){ var r=$("row-"+k); return r?Array.prototype.slice.call(r.querySelectorAll(".tokline > .pgrp, .tokline > .fpill")):[]; }
+function drawSel(k){
+  var u=units(k), i=u.indexOf(bsSel[k]);
+  unitEls(k).forEach(function(el,j){ el.classList.toggle("bsarm", j===i); });
+}
+function selUnit(k, it){ bsSel[k]=it; drawSel(k); }
+function clearSel(k){ if(bsSel[k]){ bsSel[k]=null; drawSel(k); } }
+function onDelKey(k, e){
   var q=$("q-"+k); if(!q || q.value || q.selectionStart!==0 || q.selectionEnd!==0) return false;
-  var it=lastItem(k); if(!it) return false;
-  e.preventDefault();
-  if(bsArm[k]===it){
-    bsArm[k]=null; openPill=null;
+  var u=units(k); if(!u.length) return false;
+  var i=u.indexOf(bsSel[k]);
+  if(e.key==="ArrowLeft"){ e.preventDefault(); selUnit(k, u[i<0?u.length-1:Math.max(0,i-1)]); return true; }
+  if(e.key==="ArrowRight"){ if(i<0) return false; e.preventDefault(); if(i>=u.length-1) clearSel(k); else selUnit(k, u[i+1]); return true; }
+  if(e.key==="Backspace" || e.key==="Delete"){
+    if(i<0){ if(e.key==="Delete") return false; e.preventDefault(); selUnit(k, u[u.length-1]); return true; }
+    e.preventDefault();
+    var it=u[i]; openPill=null;
     if(it.type==="mesh") removeHeading(k,it,true); else removeItem(k,it);
-    focusRow(k);
-  } else {
-    bsDisarm(k); bsArm[k]=it;
-    var el=q.parentNode.previousElementSibling; if(el) el.classList.add("bsarm");
+    var u2=units(k);   // 刪除後：Backspace 標示前一個，Delete 標示原位置的下一個
+    bsSel[k]=u2.length?u2[e.key==="Backspace"?Math.max(0,i-1):Math.min(i,u2.length-1)]:null;
+    focusRow(k); drawSel(k);
+    return true;
   }
-  return true;
+  return false;
 }
 function onKey(k, e){
-  if(e.key==="Backspace"){ if(onBackspace(k,e)) return; }
-  else if(bsArm[k]) bsDisarm(k);
+  if(onDelKey(k,e)) return;
+  clearSel(k);
   var list=allCands(k), box=$("sg-"+k), open=box&&!box.hidden;
   var max=list.length;
   if(e.key==="ArrowDown"&&open){ e.preventDefault(); sugIdx[k]=Math.min(max,(sugIdx[k]||0)+1); drawSug(k); }
@@ -1069,6 +1079,7 @@ function buildRow(c){
         if(e.target.closest(".parr")) return;
         e.preventDefault();
         if(it.dId) showSide(it.dId, it.text, k); else resolveAndShow(k,it);
+        selUnit(k,it); focusRow(k);
       });
       grp.appendChild(mp);
       // Entry Terms 標籤
@@ -1085,17 +1096,19 @@ function buildRow(c){
       var sp=document.createElement("span"); sp.className="pill fpill";
       sp.textContent=it.text;
       var x=document.createElement("button"); x.type="button"; x.textContent="×"; x.title=T("移除","Remove");
-      x.addEventListener("click", function(){ removeItem(k,it); });
+      x.addEventListener("click", function(e){ e.stopPropagation(); clearSel(k); removeItem(k,it); });
+      sp.addEventListener("click", function(){ selUnit(k,it); focusRow(k); });   // 點標籤＝選取，可再按 Backspace／Delete 刪除
+      sp.style.cursor="pointer";
       sp.appendChild(x); line.appendChild(sp);
     });
     // 輸入框＋即時候選
     var wrap=document.createElement("div"); wrap.className="qwrap";
     var q=document.createElement("input"); q.type="text"; q.id="q-"+k; q.autocomplete="off"; q.spellcheck=false; q.value=rowQ[k]||"";
-    q.placeholder="+"; q.title=T("輸入檢索詞；輸入框空白時按兩下倒退鍵可刪除最後一個詞彙","Type a term; with the box empty, press Backspace twice to delete the last term");
+    q.placeholder="+"; q.title=T("輸入檢索詞；輸入框空白時可用 ← → 選取詞彙，按 Backspace／Delete 刪除","Type a term; with the box empty, use ← → to select a term and Backspace/Delete to remove it");
     q.addEventListener("input", function(){ rowQ[k]=q.value; onType(k); fa.hidden=!ftNorm(q.value); });
     q.addEventListener("keydown", function(e){ onKey(k,e); });
     q.addEventListener("focus", function(){ state.active=k; document.querySelectorAll(".crow").forEach(function(r){ r.classList.toggle("active", r.id==="row-"+k); }); });
-    q.addEventListener("blur", function(){ bsDisarm(k); setTimeout(function(){ closeSug(k); }, 150); });
+    q.addEventListener("blur", function(){ setTimeout(function(){ if(document.activeElement!==$("q-"+k)) clearSel(k); }, 0); setTimeout(function(){ closeSug(k); }, 150); });
     var sg=document.createElement("div"); sg.className="sugg"; sg.id="sg-"+k; sg.hidden=true;
     var fa=document.createElement("button"); fa.type="button"; fa.className="ftadd"; fa.hidden=!ftNorm(rowQ[k]||"");
     fa.textContent=T("＋ 加為自由詞彙","+ Add as free-text"); fa.title=T("把輸入框中的字直接加為自由詞彙","Add what you typed as a free-text term");
@@ -1103,6 +1116,7 @@ function buildRow(c){
     fa.addEventListener("click", function(){ addFt(k, rowQ[k]); });
     wrap.appendChild(q); wrap.appendChild(sg); line.appendChild(wrap); line.appendChild(fa);
     row.appendChild(line);
+    (function(){ var i=units(k).indexOf(bsSel[k]); if(i<0) bsSel[k]=null; else { var el=line.querySelectorAll(":scope > .pgrp, :scope > .fpill")[i]; if(el) el.classList.add("bsarm"); } })();   // 重繪後保留紅框
     var stEl=document.createElement("div"); stEl.className="status"; stEl.id="st-"+k; row.appendChild(stEl);
     // 自由詞彙設定（有自由詞彙時才顯示）
     if(st.items.some(function(i){ return i.type==="ft"; })){
