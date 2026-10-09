@@ -2094,7 +2094,7 @@ if (typeof module !== "undefined" && module.exports) {
       // 不是正式標目 → 查是否為「同義詞（entry term）」：term 端點精準比對（例：Gestational diabetes＝Diabetes, Gestational 的同義詞）
       return _meshFetch(MESH_LOOKUP+"term?label="+enc+"&match=exact&limit=5").then(function(tm){
         var t=(tm||[]).filter(function(d){return String(d.label||"").toLowerCase()===key;})[0] || (tm&&tm[0]);
-        if(t){ return _meshResolveTerm(t.resource).then(function(di){ if(di&&di.scr&&di.label){ var rsc={state:"scr", label:di.label, dId:di.dId, termLabel:t.label}; _meshCache[key]=rsc; return rsc; } var r={state:"entry", termLabel:t.label, official:(di&&di.label)||null, dId:(di&&di.dId)||""}; _meshCache[key]=r; return r; }, function(){ var r={state:"entry", termLabel:t.label}; _meshCache[key]=r; return r; }); }
+        if(t){ return _meshResolveTerm(t.resource, term).then(function(di){ if(di&&di.label&&!di.scr&&di.label.toLowerCase()===key){ var rok={state:"ok", label:di.label, dId:di.dId}; _meshCache[key]=rok; return rok; } if(di&&di.scr&&di.label){ var rsc={state:"scr", label:di.label, dId:di.dId, termLabel:t.label}; _meshCache[key]=rsc; return rsc; } var r={state:"entry", termLabel:t.label, official:(di&&di.label)||null, dId:(di&&di.dId)||""}; _meshCache[key]=r; return r; }, function(){ var r={state:"entry", termLabel:t.label}; _meshCache[key]=r; return r; }); }
         return _meshFetch(MESH_LOOKUP+"descriptor?label="+enc+"&match=contains&limit=8").then(function(ct){
           if(ct&&ct.length){ var r={state:"suggest", suggests:ct.map(function(d){return {label:d.label, dId:_meshDid(d.resource)};})}; _meshCache[key]=r; return r; }
           // 正式標目也找不到 → 再查「同義詞包含這個字」（例：clown → Clown Therapy → Laughter Therapy）
@@ -2125,10 +2125,14 @@ if (typeof module !== "undefined" && module.exports) {
   }
   // 由 term URI 解析對應的正式標目（descriptor）＋名稱：用 SPARQL（同站，CORS 已驗證可用；失敗則略過、仍標為有效同義詞）
   function _meshSparql(q, n, inf){ return _meshFetch("https://id.nlm.nih.gov/mesh/sparql?format=JSON&inference="+((inf===false)?"false":"true")+"&limit="+(n||5)+"&query="+encodeURIComponent(q)); }
-  function _meshResolveTerm(tUri){
+  function _meshResolveTerm(tUri, want){
     if(!tUri) return Promise.resolve(null);
     var q='PREFIX meshv: <http://id.nlm.nih.gov/mesh/vocab#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?d ?dName WHERE { ?d (meshv:preferredConcept|meshv:concept) ?c . ?c (meshv:preferredTerm|meshv:term) <'+tUri+'> . ?d rdfs:label ?dName } LIMIT 5';
-    return _meshSparql(q).then(function(j){ var bs=(j&&j.results&&j.results.bindings)||[]; if(!bs.length) return null; var _u0=bs[0].d&&bs[0].d.value, _sc0=_meshScrOf(_u0); return { dId:_sc0||_meshDid(_u0), scr:!!_sc0, label:(bs[0].dName&&bs[0].dName.value)||null }; });
+    // 同一個詞可能同時掛在多筆紀錄下：優先取名稱與輸入詞相同者（例：SARS-CoV-2 variants 本身就是補充概念名稱），其次補充概念以外的標目，最後才取第一筆
+    return _meshSparql(q).then(function(j){ var bs=(j&&j.results&&j.results.bindings)||[]; if(!bs.length) return null;
+      var lk=String(want||"").toLowerCase(), nm=function(b){ return String((b.dName&&b.dName.value)||""); };
+      var b0=bs.filter(function(b){ return lk && nm(b).toLowerCase()===lk; })[0] || bs.filter(function(b){ return _meshDid(b.d&&b.d.value); })[0] || bs[0];
+      var _u0=b0.d&&b0.d.value, _sc0=_meshScrOf(_u0); return { dId:_sc0||_meshDid(_u0), scr:!!_sc0, label:nm(b0)||null }; });
   }
   // 一次把多個同義詞(term) URI 解析成正式標目：供「同義詞包含這個字」的建議使用
   function _meshResolveTermList(uris){
@@ -2570,7 +2574,7 @@ if (typeof module !== "undefined" && module.exports) {
       brow.appendChild(inc);
     }
     meshCard.appendChild(brow);
-    if(r.state==="entry" && r.official){ var repRow=document.createElement("div"); repRow.style.cssText="display:flex;align-items:center;gap:8px;margin:2px 0 2px"; var repLbl=document.createElement("span"); repLbl.style.cssText="font-size:12.5px;color:#55504B"; repLbl.textContent=isEn()?"Please click":"請點擊"; var rep=document.createElement("button"); rep.className="mcbtn"; rep.textContent=isEn()?"use official MeSH":"改用正式MeSH"; rep.onclick=function(){ _replaceMeshTerm(tr, rawTerm, r.official); _closeMeshCard(); }; repRow.appendChild(repLbl); repRow.appendChild(rep); meshCard.appendChild(repRow); }
+    if(r.state==="entry" && r.official){ var repRow=document.createElement("div"); repRow.style.cssText="display:flex;align-items:center;gap:8px;margin:2px 0 2px"; var repLbl=document.createElement("span"); repLbl.style.cssText="font-size:12.5px;color:#55504B"; repLbl.textContent=isEn()?"Please click":"請點擊"; var rep=document.createElement("button"); rep.className="mcbtn"; rep.textContent=(isEn()?"use official MeSH: ":"改用正式MeSH：")+r.official; rep.style.whiteSpace="normal"; rep.style.textAlign="left"; rep.onclick=function(){ _replaceMeshTerm(tr, rawTerm, r.official); _closeMeshCard(); }; repRow.appendChild(repLbl); repRow.appendChild(rep); meshCard.appendChild(repRow); }
     if((r.state==="suggest"||r.state==="none") && r.suggests && r.suggests.length){
       var ss=document.createElement("div"); ss.className="mcsec"; var sl=document.createElement("div"); sl.className="mclbl"; sl.textContent=isEn()?"Click one if it fits":"若適用請點選"; ss.style.marginTop="2px"; ss.appendChild(sl);
       var _scN=0, _sl=r.suggests.slice().sort(function(a,b){ return (a.scr?1:0)-(b.scr?1:0); }).filter(function(x){ if(x.scr){ _scN++; return _scN<=3; } return true; });   // 補充概念排後、最多 3 個
