@@ -553,9 +553,9 @@
 <path d="M190 58 L190 152 M190 88 L204 88 M190 120 L204 120 M190 152 L204 152" stroke="#B9C4BC" stroke-width="1.6"/>
 <rect x="166" y="36" width="70" height="24" rx="12" fill="#FBF1DE"/><text x="201" y="52" text-anchor="middle" font-size="11.5" fill="#2A2A2A">MeSH</text>
 <!-- 顏色比照實際頁面：控制詞彙 #FBF1DE、同義詞 #EEF6F0、自加詞 #E1EFE5 -->
-<rect x="204" y="76" width="130" height="24" rx="12" fill="#FBF1DE"/><text x="269" y="92" text-anchor="middle" font-size="10" fill="#2A2A2A">Diet, Plant-Based [mh]</text>
-<rect x="204" y="108" width="84" height="24" rx="12" fill="#EEF6F0"/><text data-zh="" x="246" y="124" text-anchor="middle" font-size="10.5" fill="#5A635E">同義詞 +3</text><text data-en="" x="246" y="124" text-anchor="middle" font-size="10.5" fill="#5A635E">Synonyms +3</text>
-<rect x="204" y="140" width="64" height="24" rx="12" fill="#E1EFE5"/><text x="236" y="156" text-anchor="middle" font-size="10.5" fill="#2A2A2A">vegan*</text>
+<g class="tagfit"><rect x="204" y="76" width="130" height="24" rx="12" fill="#FBF1DE"/><text x="269" y="92" text-anchor="middle" font-size="10" fill="#2A2A2A">Diet, Plant-Based [mh]</text></g>
+<g class="tagfit"><rect x="204" y="108" width="84" height="24" rx="12" fill="#EEF6F0"/><text data-zh="" x="246" y="124" text-anchor="middle" font-size="10.5" fill="#5A635E">同義詞 +3</text><text data-en="" x="246" y="124" text-anchor="middle" font-size="10.5" fill="#5A635E">Synonyms +3</text></g>
+<g class="tagfit"><rect x="204" y="140" width="64" height="24" rx="12" fill="#E1EFE5"/><text x="236" y="156" text-anchor="middle" font-size="10.5" fill="#2A2A2A">vegan*</text></g>
 <path d="M296 38 L299 45 L306 48 L299 51 L296 58 L293 51 L286 48 L293 45Z" fill="#E7C27A"/>
 <text x="258" y="186" text-anchor="middle" font-size="11" fill="#7A8A80">605,646</text>
 </g>
@@ -593,17 +593,31 @@
 </footer>
 
 <script>
+  // 插圖標籤：依可見文字的實際長度設定寬度，左右留白一致（中英文切換後重算）
+  function fitTags(){
+    var PAD=11;
+    document.querySelectorAll("svg .tagfit").forEach(function(g){
+      var r=g.querySelector("rect"), x=+r.getAttribute("x"), w=0;
+      g.querySelectorAll("text").forEach(function(t){ if(getComputedStyle(t).display!=="none"){ try{ w=Math.max(w,t.getComputedTextLength()); }catch(e){} } });
+      if(!w) return;
+      var W=Math.round(w+PAD*2);
+      r.setAttribute("width",W);
+      g.querySelectorAll("text").forEach(function(t){ t.setAttribute("x", x+W/2); });
+    });
+  }
   function toggleLang(){
     var en=document.documentElement.getAttribute("lang")==="en";
     document.documentElement.setAttribute("lang",en?"zh-Hant":"en");
     document.getElementById("langBtn").textContent=en?"English":"中文";
     if (typeof syncHeroControlLabels === "function") syncHeroControlLabels();
     try{ localStorage.setItem("sr_lang", en?"zh":"en"); }catch(e){}
+    fitTags();
   }
   (function(){
     var q=((location.search.match(/[?&]lang=(en|zh)/i)||[])[1]||(location.hash.match(/^#(en|zh)\b/i)||[])[1]||"").toLowerCase();
     var want=q||(function(){ try{ return localStorage.getItem("sr_lang"); }catch(e){ return null; } })();
     if(want==="en") toggleLang();
+    fitTags(); if(document.fonts&&document.fonts.ready) document.fonts.ready.then(fitTags);
     if(q){ try{ localStorage.setItem("sr_lang", q); }catch(e){} }
   })();
   // 事件統計（雙軌：p=去重、p-all=no_session 每次都算）；並自動追蹤按鈕與工具連結點擊
