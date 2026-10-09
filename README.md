@@ -38,7 +38,7 @@ If you use this toolkit in your work, please cite it using the DOI below, or use
 
 如果你在研究中使用本工具，請以下列 DOI 引用，或使用 [`CITATION.cff`](CITATION.cff) 內的資訊。此 DOI 永遠指向最新版本。
 
-> Fang, C.-J. (2026). *SR / EBM Search Toolkit: Proximity Builder, PICO Strategy Builder, Search Syntax Converter, and PubMed Light*. Zenodo. https://doi.org/10.5281/zenodo.21960702
+> Fang, CJ (2026). SR x EBM Happy SearchHen. Zenodo. [doi: 10.5281/zenodo.21960702](https://doi.org/10.5281/zenodo.21960702). https://github.com/sunfloraf-sketch/sr-ebm-happy-searchhen
 
 ## License · 授權
 
