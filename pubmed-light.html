@@ -183,6 +183,7 @@
   .fpill{background:#E1EFE5;color:#2A2A2A;padding:3px 4px 3px 10px;gap:4px}
   .fpill button{border:0;background:none;color:#9AA3A0;cursor:pointer;font-size:14px;line-height:1;padding:0 3px}
   .fpill button:hover{color:#9B3B2E}
+  .fpill.bsarm,.pgrp.bsarm .pill{box-shadow:0 0 0 2px #C2645A}   /* 倒退鍵第一下：標示即將刪除的詞彙 */
   details.mpill>summary::after{content:none}   /* 控制辭彙標籤只用自己的 ▾（.parr） */
   .plab{display:inline-flex;align-items:center;gap:5px}
   .parr{font-size:14px;line-height:1;opacity:.75;padding:1px 2px 1px 4px}
@@ -299,6 +300,7 @@
       <li>Entry Terms 常是倒裝形式（例：Attack, Heart），加入時會自動轉成自然語序 Heart Attack，才能在題名／摘要中比對到。</li>
       <li><b>找不到標目時</b>（例：縮寫 GDM），會自動取 PubMed 相關性前 50 篇文章，統計它們最常標的 MeSH，列出前 10 名並標示出現篇數；名稱有對到但不是想要的，可按候選清單底部的「反推」。</li>
       <li><b>補充概念 [nm]</b>：藥物、化學物質、罕見疾病等多為 MeSH 的補充概念，不在標目樹中，標籤顯示「補充概念」並以 <code>"xxx"[nm]</code> 檢索；右側若列出對應標目，建議一併加入。</li>
+      <li><b>倒退鍵刪除</b>：輸入框空白時按一下 Backspace 會以紅框標示最後一個詞彙，再按一下即刪除；刪除標目時連同其同義詞一起移除。</li>
       <li><b>鄰近字</b>：每列可設定一次，套用到該列所有兩個字以上的自由詞彙，例：<code>"hip fracture"[tiab:~3]</code> 會找到 fracture of the hip。PubMed 鄰近字只支援篇名/摘要 [tiab] 與篇名 [ti]；選所有欄位 [all] 或文字欄位 [tw] 時不套用，且不能與截字 * 併用。</li>
       <li><b>出版類型 [pt]</b>：研究設計欄位加入 Randomized Controlled Trial、Meta-Analysis 等標目時預設為 [pt]（例：<code>"Randomized Controlled Trial"[pt]</code>）。請同時放自由詞彙（randomized、placebo），以免漏掉尚未標引的新文獻。</li>
       <li>比較（C）若與介入相同概念，通常不必納入 AND 組合，可取消該列右上角的勾選。</li>
@@ -308,6 +310,7 @@
       <li>Entry Terms are often inverted (e.g. Attack, Heart); they are automatically converted to natural order (Heart Attack) so they match titles/abstracts.</li>
       <li><b>No heading found</b> (e.g. the abbreviation GDM): the tool takes the top 50 relevance-ranked PubMed articles, tallies the MeSH headings they carry and lists the top 10 with article counts. If a name match is not what you meant, use the “infer” button at the bottom of the suggestion list.</li>
       <li><b>Supplementary concepts [nm]</b>: drugs, chemicals and rare diseases are often MeSH supplementary concepts outside the heading tree. They show a “supplementary” badge and are searched as <code>"xxx"[nm]</code>; if mapped headings are listed on the right, consider adding them too.</li>
+      <li><b>Delete with Backspace</b>: with the input box empty, press Backspace once to highlight the last term (red outline) and again to delete it; a heading is removed together with its synonyms.</li>
       <li><b>Proximity</b>: set once per row; it applies to every multi-word free-text term in that row, e.g. <code>"hip fracture"[tiab:~3]</code> also finds fracture of the hip. PubMed proximity works only in [tiab] and [ti] (not applied with [all] / [tw]), and not with truncation *.</li>
       <li><b>Publication type [pt]</b>: in Study design, headings such as Randomized Controlled Trial or Meta-Analysis default to [pt] (e.g. <code>"Randomized Controlled Trial"[pt]</code>). Add free-text too (randomized, placebo) to catch not-yet-indexed records.</li>
       <li>If the Comparison duplicates the Intervention concept, untick the box at the top right of that row so it is not ANDed.</li>
@@ -891,7 +894,34 @@ function pickSug(k, i){
   var list=allCands(k);
   if(i<list.length) chooseCand(k, list[i]); else addFt(k, rowQ[k]||sugTerm[k]);
 }
+// 倒退鍵刪除：輸入框空白時按 Backspace，第一下標示最後一個詞彙（紅框），再按一下才刪除（標目連同其同義詞）
+var bsArm={};
+function lastItem(k){
+  var st=state.concepts[k], dIds={};
+  st.items.forEach(function(i){ if(i.type==="mesh" && i.dId) dIds[i.dId]=1; });
+  var ft=st.items.filter(function(i){ return i.type==="ft" && !(i.from && dIds[i.from]); });
+  if(ft.length) return ft[ft.length-1];
+  var mi=st.items.filter(function(i){ return i.type==="mesh"; });
+  return mi.length?mi[mi.length-1]:null;
+}
+function bsDisarm(k){ bsArm[k]=null; var q=$("q-"+k), w=q&&q.parentNode, el=w&&w.previousElementSibling; if(el) el.classList.remove("bsarm"); }
+function onBackspace(k, e){
+  var q=$("q-"+k); if(!q || q.value || q.selectionStart!==0 || q.selectionEnd!==0) return false;
+  var it=lastItem(k); if(!it) return false;
+  e.preventDefault();
+  if(bsArm[k]===it){
+    bsArm[k]=null; openPill=null;
+    if(it.type==="mesh") removeHeading(k,it,true); else removeItem(k,it);
+    focusRow(k);
+  } else {
+    bsDisarm(k); bsArm[k]=it;
+    var el=q.parentNode.previousElementSibling; if(el) el.classList.add("bsarm");
+  }
+  return true;
+}
 function onKey(k, e){
+  if(e.key==="Backspace"){ if(onBackspace(k,e)) return; }
+  else if(bsArm[k]) bsDisarm(k);
   var list=allCands(k), box=$("sg-"+k), open=box&&!box.hidden;
   var max=list.length;
   if(e.key==="ArrowDown"&&open){ e.preventDefault(); sugIdx[k]=Math.min(max,(sugIdx[k]||0)+1); drawSug(k); }
@@ -1061,11 +1091,11 @@ function buildRow(c){
     // 輸入框＋即時候選
     var wrap=document.createElement("div"); wrap.className="qwrap";
     var q=document.createElement("input"); q.type="text"; q.id="q-"+k; q.autocomplete="off"; q.spellcheck=false; q.value=rowQ[k]||"";
-    q.placeholder="+";
+    q.placeholder="+"; q.title=T("輸入檢索詞；輸入框空白時按兩下倒退鍵可刪除最後一個詞彙","Type a term; with the box empty, press Backspace twice to delete the last term");
     q.addEventListener("input", function(){ rowQ[k]=q.value; onType(k); fa.hidden=!ftNorm(q.value); });
     q.addEventListener("keydown", function(e){ onKey(k,e); });
     q.addEventListener("focus", function(){ state.active=k; document.querySelectorAll(".crow").forEach(function(r){ r.classList.toggle("active", r.id==="row-"+k); }); });
-    q.addEventListener("blur", function(){ setTimeout(function(){ closeSug(k); }, 150); });
+    q.addEventListener("blur", function(){ bsDisarm(k); setTimeout(function(){ closeSug(k); }, 150); });
     var sg=document.createElement("div"); sg.className="sugg"; sg.id="sg-"+k; sg.hidden=true;
     var fa=document.createElement("button"); fa.type="button"; fa.className="ftadd"; fa.hidden=!ftNorm(rowQ[k]||"");
     fa.textContent=T("＋ 加為自由詞彙","+ Add as free-text"); fa.title=T("把輸入框中的字直接加為自由詞彙","Add what you typed as a free-text term");
