@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
-title: "SR / EBM Search Toolkit: Proximity Builder, PICO Strategy Builder, Search Syntax Converter, and PubMed Light"
+title: "SR x EBM Happy SearchHen"
 abstract: >-
   A set of four browser-based tools for systematic-review literature searching:
   a Proximity Builder that assembles adjacency/near fragments from synonym stacks,
