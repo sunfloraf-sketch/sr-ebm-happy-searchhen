@@ -1009,7 +1009,16 @@ function checkCombo(q, maxN){
   if(!/#\d+/.test(q)) return T("請引用行號，例：#1 AND #2","Reference line numbers, e.g. #1 AND #2");
   var bad=(q.match(/#\d+/g)||[]).map(function(x){ return +x.slice(1); }).filter(function(x){ return x<1||x>maxN; });
   if(bad.length) return T("找不到 #"+bad.join("、#"),"No line #"+bad.join(", #"));
-  var d=0; for(var i=0;i<q.length;i++){ if(q[i]==="(") d++; else if(q[i]===")"){ d--; if(d<0) break; } }
+  // 語法：行號與運算子要交替出現（AND／OR／NOT 不可連續、不可在開頭或結尾），括號要成對
+  var toks=q.match(/#\d+|\bAND\b|\bOR\b|\bNOT\b|[()]/gi)||[], wantOperand=true, d=0;
+  for(var i=0;i<toks.length;i++){
+    var t=toks[i].toUpperCase();
+    if(t==="("){ if(!wantOperand) return T("「(」前缺少 AND／OR／NOT","Missing AND / OR / NOT before \"(\""); d++; }
+    else if(t===")"){ if(wantOperand) return T("「)」前缺少行號","Missing a line number before \")\""); d--; if(d<0) return T("括號不成對","Unbalanced parentheses"); }
+    else if(t.charAt(0)==="#"){ if(!wantOperand) return T("「"+t+"」前缺少 AND／OR／NOT","Missing AND / OR / NOT before "+t); wantOperand=false; }
+    else { if(wantOperand) return T("「"+t+"」位置不正確","Misplaced "+t); wantOperand=true; }
+  }
+  if(wantOperand) return T("結尾缺少行號","Ends without a line number");
   if(d!==0) return T("括號不成對","Unbalanced parentheses");
   return null;
 }
@@ -1052,7 +1061,7 @@ function renderStrategy(){
     }); });
   }
   var cm=$("comboMsg");
-  if(comboErrs.length){ cm.className="combohint err"; cm.textContent=comboErrs.join("　"); }
+  if(comboErrs.length && document.activeElement!==$("comboTa")){ cm.className="combohint err"; cm.textContent=comboErrs.join("　"); }   // 輸入中不提示錯誤，離開輸入框才顯示
   else { cm.className="combohint"; cm.textContent=T("每行一個組合，可用上方行號（#1、#2…）、AND／OR／NOT 與括號，會新增為下一行；最後一行即為最終檢索式。留白則自動以 AND 組合有勾選的列。","One combination per line using line numbers (#1, #2…), AND / OR / NOT and parentheses; each becomes the next line, and the last one is the final query. Leave empty to AND the ticked rows."); }
   var url=pmUrl(fullQuery());
   $("openPm").href=url; $("totalBtn").href=url;
@@ -1100,6 +1109,7 @@ function copyText(txt, btn){
 $("copyBtn").addEventListener("click", function(){ copyText(fullQuery(), this); });
 var comboTa=$("comboTa"), comboTimer=null; comboTa.value=state.combo||"";
 comboTa.addEventListener("input", function(){ state.combo=comboTa.value; save(); clearTimeout(comboTimer); comboTimer=setTimeout(renderStrategy, 400); });
+comboTa.addEventListener("blur", function(){ clearTimeout(comboTimer); renderStrategy(); });
 $("copyLinesBtn").addEventListener("click", function(){ copyText(lines.map(function(l){return "#"+l.n+"\t"+l.q;}).join("\n"), this); });
 var liveCb=$("liveCb"); liveCb.checked=live;
 liveCb.addEventListener("change", function(){ live=liveCb.checked; try{ localStorage.setItem(LIVE_KEY, live?"1":"0"); }catch(e){} drawCounts(); if(live) runCounts(true); });
