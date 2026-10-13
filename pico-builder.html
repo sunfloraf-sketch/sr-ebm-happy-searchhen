@@ -545,6 +545,11 @@
   #meshCard .mchdT{border-bottom:0;margin-right:9px}  #meshCard .mcdel{width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;padding:0;border:1px solid transparent;border-radius:7px;background:none;color:#8a948e;cursor:pointer}
   #meshCard .mcdel svg{width:17px;height:17px;display:block}
   #meshCard .mcdel:hover{background:#FBF1F0;border-color:#E0C9C6;color:#9E2B25}
+  /* 貼上表格框：加深虛線框、淡色底、加高，讓人一眼看出是貼上的地方 */
+  #pasteZone{display:block;margin:10px 0 0 var(--pzind,14px);width:calc(100% - var(--pzind,14px)) !important;box-sizing:border-box;min-height:120px;padding:16px 18px !important;font-size:14px !important;border:2px dashed #0f766e !important;border-radius:10px !important;background:#EDF7F5;cursor:copy;transition:background .15s,box-shadow .15s}
+  #pasteZone::placeholder{color:#0f766e;opacity:.8;font-weight:700;font-size:15px}
+  #pasteZone:hover{background:#E1F2EE}
+  #pasteZone:focus{outline:none;background:#fff;border-style:solid !important;box-shadow:0 0 0 3px rgba(15,118,110,.18)}
 </style>
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -662,7 +667,7 @@
           <span data-zh><div>‧ <a href="https://chatgpt.com/share/69e09cc1-e6b8-83e8-a2fb-95dd223ff3ab" target="_blank" rel="noopener">開啟 ChatGPT 提示詞範例 ↗</a>（優先使用 ChatGPT 或 Claude，登入帳號效果較佳）</div><div>‧ 從 ChatGPT 等複製整個表格後，於下方框按 <b>Ctrl+V</b> 貼上，工具會依欄位標題自動對應，並填入下方 PICO 表（亦可從 Word／Excel 複製後貼上）</div><div>‧ 表格請含一列標題（概念／中文／English／Emtree／MeSH／CINAHL。不需要的欄位可不提供；順序不拘）</div><div style="color:var(--mut);padding-left:1.2em">（不同複製方式填入效果可能有差異；含合併／巢狀儲存格的複雜表格，貼上後請檢查並自行調整）</div></span>
           <span data-en><div>‧ <a href="https://chatgpt.com/share/69e09cc1-e6b8-83e8-a2fb-95dd223ff3ab" target="_blank" rel="noopener">Open ChatGPT prompt example ↗</a> (ChatGPT or Claude works best; signing in helps)</div><div>‧ Copy the whole table from ChatGPT etc., click the box below and press <b>Ctrl+V</b>; columns are auto-mapped by header and fill the PICO table below (Word / Excel also work)</div><div>‧ Include a header row (Concept / Chinese / English / Emtree / MeSH / CINAHL; omit columns you don't need; any order)</div><div style="color:var(--mut);padding-left:1.2em">(Results may vary with different copy methods; for complex tables with merged/nested cells, check the filled result and adjust as needed.)</div></span>
         </div>
-        <textarea id="pasteZone" spellcheck="false" rows="3" style="width:100%;border:1px dashed var(--brand);border-radius:8px;padding:9px 11px;font-size:13px" placeholder="在此按 Ctrl+V 貼上表格"></textarea>
+        <textarea id="pasteZone" spellcheck="false" rows="4" style="width:100%" placeholder="在此按 Ctrl+V 貼上表格"></textarea>
         <div id="pasteMsg" style="font-size:12.5px;margin-top:6px"></div>
         <details id="pasteDiagBox" style="margin-top:10px;border-top:1px dashed var(--line);padding-top:8px">
           <summary style="cursor:pointer;font-size:12px;color:var(--mut)"><span data-zh>貼上後沒被正確辨識？點此開啟「貼上診斷」</span><span data-en>Paste not recognized correctly? Open “Paste diagnostics”</span></summary>
