@@ -555,6 +555,9 @@
   #pasteZone:focus{outline:none;background:#fff;border-style:solid !important;box-shadow:0 0 0 3px rgba(15,118,110,.18)}
   /* PICO 表格各儲存格（中文／整理前／整理後）行距加大 */
   table.pico td textarea{line-height:1.8}
+  .pcopy{display:inline;margin:0;padding:1px 9px;border:1px solid #9BB9B3;border-radius:999px;background:#EDF7F5;color:#0f766e;font:inherit;font-size:12px;font-weight:600;cursor:pointer;vertical-align:baseline}
+  .pcopy:hover{background:#DCEFEA}
+  .pcopy.done{background:#0f766e;color:#fff;border-color:#0f766e}
 </style>
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -666,11 +669,11 @@
       </div>
     </div>
     <details class="ccbox" id="pasteBox" style="margin:0 0 12px">
-      <summary style="cursor:pointer;font-weight:700;font-size:13px;color:#0f766e"><span data-zh>貼上整理好的表格（➜ 參考 AI 提示詞範例）</span><span data-en>Paste a prepared table (➜ see AI prompt example)</span></summary>
+      <summary style="cursor:pointer;font-weight:700;font-size:13px;color:#0f766e"><span data-zh>貼上整理好的表格（➜ 可參考 AI 提示詞範例）</span><span data-en>Paste a prepared table (➜ AI prompt example available)</span></summary>
       <div style="margin-top:8px">
         <div class="sub" style="font-size:12px;color:var(--mut);margin-bottom:6px">
-          <span data-zh><div>‧ <a href="https://chatgpt.com/share/69e09cc1-e6b8-83e8-a2fb-95dd223ff3ab" target="_blank" rel="noopener">開啟 ChatGPT 提示詞範例 ↗</a>（優先使用 ChatGPT 或 Claude，登入帳號效果較佳）</div><div>‧ 從 ChatGPT 等複製整個表格後，於下方框按 <b>Ctrl+V</b> 貼上，工具會依欄位標題自動對應，並填入下方 PICO 表（亦可從 Word／Excel 複製後貼上）</div><div>‧ 表格請含一列標題（概念／中文／English／Emtree／MeSH／CINAHL。不需要的欄位可不提供；順序不拘）</div><div style="color:var(--mut);padding-left:1.2em">（不同複製方式填入效果可能有差異；含合併／巢狀儲存格的複雜表格，貼上後請檢查並自行調整）</div></span>
-          <span data-en><div>‧ <a href="https://chatgpt.com/share/69e09cc1-e6b8-83e8-a2fb-95dd223ff3ab" target="_blank" rel="noopener">Open ChatGPT prompt example ↗</a> (ChatGPT or Claude works best; signing in helps)</div><div>‧ Copy the whole table from ChatGPT etc., click the box below and press <b>Ctrl+V</b>; columns are auto-mapped by header and fill the PICO table below (Word / Excel also work)</div><div>‧ Include a header row (Concept / Chinese / English / Emtree / MeSH / CINAHL; omit columns you don't need; any order)</div><div style="color:var(--mut);padding-left:1.2em">(Results may vary with different copy methods; for complex tables with merged/nested cells, check the filled result and adjust as needed.)</div></span>
+          <span data-zh><div>‧ <a href="https://chatgpt.com/share/6acf29ad-49ac-83ec-9784-c6e3a73cd9b1" target="_blank" rel="noopener">開啟 ChatGPT 提示詞與對話範例 ↗</a> 或 <button type="button" class="pcopy" data-pcopy>直接複製提示詞</button>（優先使用 ChatGPT 或 Claude，登入帳號效果較佳）</div><div style="color:#8a5a00;padding-left:1.2em">（提示詞裡的「研究題目」只是範例，複製後請先換成您自己的研究題目再送出）</div><div>‧ 從 ChatGPT 等複製整個表格後，於下方框按 <b>Ctrl+V</b> 貼上，工具會依欄位標題自動對應，並填入下方 PICO 表（亦可從 Word／Excel 複製後貼上）</div><div>‧ 表格請含一列標題（概念／中文／English／Emtree／MeSH／CINAHL。不需要的欄位可不提供；順序不拘）</div><div style="color:var(--mut);padding-left:1.2em">（不同複製方式填入效果可能有差異；含合併／巢狀儲存格的複雜表格，貼上後請檢查並自行調整）</div></span>
+          <span data-en><div>‧ <a href="https://chatgpt.com/share/6acf2a7f-ffb4-83ee-843b-672fba323b4c" target="_blank" rel="noopener">Open ChatGPT prompt &amp; chat example ↗</a> or <button type="button" class="pcopy" data-pcopy>copy the prompt</button> (ChatGPT or Claude works best; signing in helps)</div><div style="color:#8a5a00;padding-left:1.2em">(The “Research Question” in the prompt is only an example — replace it with your own before sending.)</div><div>‧ Copy the whole table from ChatGPT etc., click the box below and press <b>Ctrl+V</b>; columns are auto-mapped by header and fill the PICO table below (Word / Excel also work)</div><div>‧ Include a header row (Concept / Chinese / English / Emtree / MeSH / CINAHL; omit columns you don't need; any order)</div><div style="color:var(--mut);padding-left:1.2em">(Results may vary with different copy methods; for complex tables with merged/nested cells, check the filled result and adjust as needed.)</div></span>
         </div>
         <textarea id="pasteZone" spellcheck="false" rows="4" style="width:100%" placeholder="在此按 Ctrl+V 貼上表格"></textarea>
         <div id="pasteMsg" style="font-size:12.5px;margin-top:6px"></div>
@@ -5275,6 +5278,35 @@ function befPluralOf(w){
   window.addEventListener("resize", function(){ setTimeout(fitAll,60); });
   setInterval(fitAll, 400);          // 載入範例、貼上、複製到整理後等程式填值時也會自動跟上
   fitAll();
+})();
+</script>
+<script>
+/* 貼上表格說明：「直接複製提示詞」（依目前介面語言複製中文或英文版） */
+(function(){
+  var P_ZH="任務\n請整理下列研究題目進行書目資料庫檢索時可使用的檢索詞。\n\n研究題目\n妊娠糖尿病患者以身體活動介入，是否能改善血糖控制效果？\n\n輸出格式\n請以「一張大表格」呈現 PICO (或其他變形，如PCC)，欄位包含：\nPICO｜概念｜中文同義詞｜英文同義詞｜MeSH｜Emtree｜CINAHL Headings\n要求：\n\n* 同一儲存格內每個詞彙必須各佔一行，請使用 `<br>` 強制換行\n* 若同一 PICO 有不同子概念，可分列呈現，但不要將子概念切得太細。\n\n\n控制詞彙查證\n\n* MeSH 必須查證 NLM MeSH Database，不可僅依模型記憶推測：\nhttps://www.ncbi.nlm.nih.gov/mesh/\n例如：https://www.ncbi.nlm.nih.gov/mesh/?term=exercise\n* Emtree、CINAHL Headings 也盡量從可靠來源蒐集 (但不須加註查證結果，我另有驗證方式)";
+  var P_EN="Task\nPlease identify and organize search terms that can be used for bibliographic database searching for the research question below.\n\nResearch Question\nCan physical activity interventions improve glycemic control in patients with gestational diabetes mellitus?\n\nOutput Format\nPlease present the PICO (or other frameworks, such as PCC) in one comprehensive table, with the following columns:\nPICO | Concept | Chinese Synonyms | English Synonyms | MeSH | Emtree | CINAHL Headings\nRequirements:\n\n* Each term within the same table cell must appear on a separate line. Use `<br>` to force line breaks.\n* If a PICO element contains different sub-concepts, they may be presented in separate rows, but do not divide the concepts too narrowly.\n\n\nControlled Vocabulary Verification\n\n* MeSH terms must be verified using the official NLM MeSH Database and should not be based solely on model memory:\nhttps://www.ncbi.nlm.nih.gov/mesh/\nExample: https://www.ncbi.nlm.nih.gov/mesh/?term=exercise\n* For Emtree and CINAHL Headings, please also obtain terms from reliable sources whenever possible. There is no need to annotate or explain the verification results, as I will verify them separately.";
+  function copyText(t, ok, fail){
+    if(navigator.clipboard && window.isSecureContext){ navigator.clipboard.writeText(t).then(ok, function(){ legacy(); }); return; }
+    legacy();
+    function legacy(){
+      var ta=document.createElement("textarea"); ta.value=t; ta.setAttribute("readonly",""); ta.style.cssText="position:fixed;top:-1000px;opacity:0";
+      document.body.appendChild(ta); ta.select();
+      var good=false; try{ good=document.execCommand("copy"); }catch(e){}
+      document.body.removeChild(ta); (good?ok:fail)();
+    }
+  }
+  document.addEventListener("click", function(e){
+    var b=e.target.closest && e.target.closest("[data-pcopy]"); if(!b) return;
+    e.preventDefault(); e.stopPropagation();
+    var en=document.body.classList.contains("en");
+    var old=b.textContent;
+    copyText(en?P_EN:P_ZH, function(){
+      b.textContent=en?"✓ Copied":"✓ 已複製"; b.classList.add("done");
+      clearTimeout(b._t); b._t=setTimeout(function(){ b.textContent=old; b.classList.remove("done"); },1800);
+    }, function(){
+      b.textContent=en?"Copy failed — select manually":"複製失敗，請手動選取"; clearTimeout(b._t); b._t=setTimeout(function(){ b.textContent=old; },2400);
+    });
+  });
 })();
 </script>
 </body>
