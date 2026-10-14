@@ -553,6 +553,8 @@
   #pasteZone::placeholder{color:#0f766e;opacity:.8;font-weight:700;font-size:15px}
   #pasteZone:hover{background:#E1F2EE}
   #pasteZone:focus{outline:none;background:#fff;border-style:solid !important;box-shadow:0 0 0 3px rgba(15,118,110,.18)}
+  /* PICO 表格各儲存格（中文／整理前／整理後）行距加大 */
+  table.pico td textarea{line-height:1.8}
 </style>
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -5244,5 +5246,36 @@ function befPluralOf(w){
 </script>
 <script>/* 頁面瀏覽路徑正規化：去除 ?lang 等 query，避免同頁被拆成多筆（不影響功能事件的顯式 path） */window.goatcounter={path:function(p){try{return location.pathname;}catch(e){return p;}}};</script>
 <script data-goatcounter="https://sr-toolkit.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<script>
+/* PICO 表格儲存格：預設完全展開（高度隨內容自動增長，同一列各格等高；不需出現捲軸）。
+   內容、欄寬或列數改變時才重算，所以使用者手動拖曳高度後，不會被無故還原。 */
+(function(){
+  var body=document.getElementById("picoBody"); if(!body) return;
+  var MIN=116, sig=new WeakMap();
+  function rowSig(tr){
+    var s="", tas=tr.querySelectorAll("textarea");
+    for(var i=0;i<tas.length;i++){ var t=tas[i]; s+=t.value.length+":"+t.offsetWidth+"|"; }
+    return s;
+  }
+  function fitRow(tr){
+    var tas=Array.prototype.filter.call(tr.querySelectorAll("textarea"), function(t){ return t.offsetParent!==null && !t.classList.contains("cvpaste-ta"); });
+    if(!tas.length) return;
+    tas.forEach(function(t){ t.style.height="auto"; t.style.height=MIN+"px"; });          // 先縮回最小高度，才量得到真正的內容高度
+    var h=MIN; tas.forEach(function(t){ if(t.scrollHeight>h) h=t.scrollHeight; });
+    h+=2;                                                                                  // 邊框
+    tas.forEach(function(t){ t.style.height=h+"px"; });
+  }
+  function fitAll(){
+    Array.prototype.forEach.call(body.querySelectorAll("tr"), function(tr){
+      var s=rowSig(tr); if(sig.get(tr)===s) return;
+      fitRow(tr); sig.set(tr, rowSig(tr));
+    });
+  }
+  body.addEventListener("input", function(e){ var tr=e.target.closest&&e.target.closest("tr"); if(tr){ fitRow(tr); sig.set(tr,rowSig(tr)); } });
+  window.addEventListener("resize", function(){ setTimeout(fitAll,60); });
+  setInterval(fitAll, 400);          // 載入範例、貼上、複製到整理後等程式填值時也會自動跟上
+  fitAll();
+})();
+</script>
 </body>
 </html>
