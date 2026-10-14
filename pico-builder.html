@@ -482,6 +482,9 @@
   .befmi{display:flex;align-items:center;gap:7px;width:100%;box-sizing:border-box;padding:5px 9px;border:0;background:none;font:inherit;font-size:12.5px;font-weight:500;color:#23282D;cursor:pointer;border-radius:5px;text-align:left;line-height:1.5}
   .befmi:hover{background:#EEF2F5}
   .befmi input{margin:0}
+  .befsub2{display:flex;gap:2px;padding-left:22px}
+  .befsub2 .befmi{width:auto;padding:3px 8px;font-size:12px}
+  .befsep{height:1px;background:#E3E8EC;margin:4px 6px}
   /* 欄寬不夠時（視窗較窄）整理前標題列改為可換行，三個元件不會被切掉 */
   /* 第一欄（概念）與最後一欄（欄位選單）寬度固定，不隨其他欄增減而變 */
   table.pico th.lab{width:66px}
@@ -739,7 +742,7 @@ Optical Imaging)</pre>
         <tr>
           <th class="lab" style="width:44px"><span data-zh>概念</span><span data-en>Concept</span></th>
           <th class="ref" style="width:13%"><span data-zh>中文同義詞</span><span data-en>Chinese synonyms</span></th>
-          <th class="bef" style="width:17%"><span data-zh>英文同義詞</span><span data-en>English synonyms</span><span class="stagw"><span class="stag"><span data-zh>整理前</span><span data-en>Before</span></span><span class="subhd befsub"><span class="befmw"><button type="button" class="befcolbtn" id="befMenuBtn" aria-haspopup="true" aria-expanded="false"><span class="t"></span><span class="cvcaret car"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span></button><div class="befmenu" id="befMenu" hidden><button type="button" class="befmi" id="befCopyAll"><span class="t"></span></button><label class="befmi"><input type="checkbox" id="befOptMesh"><span data-zh>找 MeSH</span><span data-en>Find MeSH</span></label><label class="befmi"><input type="checkbox" id="befOptProx"><span data-zh>鄰近字</span><span data-en>Proximity</span></label></div></span></span></span></th>
+          <th class="bef" style="width:17%"><span data-zh>英文同義詞</span><span data-en>English synonyms</span><span class="stagw"><span class="stag"><span data-zh>整理前</span><span data-en>Before</span></span><span class="subhd befsub"><span class="befmw"><button type="button" class="befcolbtn" id="befMenuBtn" aria-haspopup="true" aria-expanded="false"><span class="t"></span><span class="cvcaret car"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span></button><div class="befmenu" id="befMenu" hidden><button type="button" class="befmi" id="befCopyAll"><span class="t"></span></button><div class="befsub2"><label class="befmi" data-tip-zh="複製時，依「鄰近字組合器」同一套規則改成字根加 *：單字（complications → complication*；vein 這類短字不切並補複數 veins）、片語逐字切（gestational diabetes → gestation* diabet*）；縮寫、含數字符號的字不動。" data-tip-en="When copying, terms are truncated with the same rules as the proximity builder: single words (complications → complication*; short words like vein stay whole and get a plural, veins) and phrases word by word (gestational diabetes → gestation* diabet*). Acronyms and words with digits/symbols are left alone."><input type="checkbox" id="befOptTrunc"><span data-zh>切截</span><span data-en>Truncate</span></label><label class="befmi" data-tip-zh="複製時，略過已被更短詞涵蓋的冗贅詞（例：有 HIV 就不再帶入 HIV Infection、People Living with HIV）。" data-tip-en="When copying, skip terms already covered by a shorter term (with HIV, skip HIV Infection and People Living with HIV)."><input type="checkbox" id="befOptRedun"><span data-zh>去冗</span><span data-en>De-redundify</span></label></div><div class="befsep"></div><label class="befmi"><input type="checkbox" id="befOptMesh"><span data-zh>找 MeSH</span><span data-en>Find MeSH</span></label><label class="befmi"><input type="checkbox" id="befOptProx"><span data-zh>鄰近字</span><span data-en>Proximity</span></label></div></span></span></span></th>
           <th class="free" style="width:19%"><span data-zh>英文同義詞</span><span data-en>English synonyms</span><span class="stagw"><span class="stag"><span data-zh>整理後</span><span data-en>After</span></span></span></th>
           <th class="cv cvhead" data-vocab="emtree" style="width:21%" title="點一下展開 Emtree 各概念詞彙的查核連結">Emtree <span class="cvcaret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span></th>
           <th class="cv cvhead" data-vocab="mesh" style="width:21%" title="點一下展開 MeSH 各概念詞彙的查核連結">MeSH <span class="cvcaret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span> <button type="button" id="meshVerifyHd" class="meshvhd" title="線上查核此欄每個 MeSH 詞是否為正式標目，並可帶入同義詞／狹義詞"><svg width="30" height="30" viewBox="0 0 24 24"><path d="M12 3 L19 6 V11 c0 4.5 -3 7.5 -7 9 c-4 -1.5 -7 -4.5 -7 -9 V6 Z" fill="currentColor"/><path d="M10 10.3 L14 14.3 M14 10.3 L10 14.3" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg></button></th>
@@ -2863,16 +2866,94 @@ if (typeof module !== "undefined" && module.exports) {
     ta.addEventListener("blur", function(){ befDedupe(ta); });
   }
 
-  // 把一列的整理前內容帶到整理後（去重、倒裝轉正、跳過已被切截涵蓋者）；回傳實際新增的筆數
-  function befTidyInto(beTa, ftTa){
+  // ── 複製到整理後的兩個選項 ──
+  // 切截：規則與「鄰近字組合器」完全相同（字根算法 stem()、短字不切＋補複數、縮寫保留）。單字與片語（逐字）都切。
+var BEF_STEM_SUF=["arum","orum","ies","ing","ally","ed","al","ic","ous","es","us","um","ae","cy","s","a"];
+function befStem(w){if(/ss$/.test(w))return w; if(/ous$/.test(w))return w.length>8?w.slice(0,-3):w; for(var i=0;i<BEF_STEM_SUF.length;i++){var s=BEF_STEM_SUF[i];if(w.length-s.length>=6&&w.slice(-s.length)===s)return w.slice(0,w.length-s.length);} if(w.length>=7 && /[^aeiou]y$/.test(w)) return w.slice(0,w.length-1); return w;}
+function befIsAbbrev(norm,orig){ var o2=(orig||"").replace(/s$/,""); return /[0-9]/.test(norm)||(/^[A-Z0-9]+$/.test(orig)&&orig.length<=6)||(/^[A-Z0-9]+$/.test(o2)&&o2.length<=6)||!/[aeiou]/.test(norm); }
+var BEF_PL_NO={};"onco uro neuro low high deep long oral anti post pre non pro over open full mild poor good bad new old late past near far all any both each more most less many much very real true free safe sick ill dry wet hot cold warm cool soft hard firm weak dead live able main half self care data news fish milk meat rice gold iron zinc lead pus info mid semi sub auto"
+  .split(" ").forEach(function(w){ BEF_PL_NO[w]=1; });
+var BEF_PL_IRR={foot:"feet",man:"men",ox:"oxen",axis:"axes",leaf:"leaves",life:"lives",wife:"wives",calf:"calves",loaf:"loaves",wolf:"wolves"};
+var BEF_PL_OES={hero:1,echo:1,veto:1};
+function befPluralOf(w){
+  if(!/^[a-z]{2,4}$/.test(w) || BEF_PL_NO[w]) return null;
+  if(BEF_PL_IRR.hasOwnProperty(w)) return BEF_PL_IRR[w];
+  if(/s$/.test(w) && !/(ss|us|is)$/.test(w)) return null;
+  if(/(s|x|z|ch|sh)$/.test(w)) return w+"es";
+  if(/[^aeiou]y$/.test(w)) return w.slice(0,-1)+"ies";
+  if(/[^aeiou]o$/.test(w)) return BEF_PL_OES[w] ? w+"es" : w+"s";
+  return w+"s";
+}
+  function befTruncWord(w){   // 單字 → 字根* 或原字（縮寫保留原樣；沒切的字轉小寫）；不補複數
+    var low=w.toLowerCase();
+    if(befIsAbbrev(low,w)) return w;
+    var r=befStem(low);
+    return (r.length>=6 || (r.length===5 && r!==low)) ? r+"*" : low;
+  }
+  function befTruncate(term){   // 回傳陣列：[詞] 或 [詞, 自動複數]；片語逐字切截（同鄰近字組合器的字根規則），不補複數
+    var t=String(term||"").trim();
+    if(/^[A-Za-z]+$/.test(t)){                               // 單一單字
+      var one=befTruncWord(t);
+      if(one!==t.toLowerCase() || befIsAbbrev(t.toLowerCase(),t)) return [one];
+      var out=[one], p=befPluralOf(one); if(p) out.push(p);   // 短字（4 字母以內）自動補複數
+      return out;
+    }
+    if(/[*?#$"“”()\/]/.test(t) || /\s(and|or|not)\s/i.test(t)) return [t];   // 已有切截、引號、括號、運算子：不動
+    var words=t.split(/\s+/);
+    if(words.length<2) return [t];
+    var res=words.map(function(w){
+      if(/^[A-Za-z]+$/.test(w)) return befTruncWord(w);
+      if(/^[A-Za-z]+(-[A-Za-z0-9]+)+$/.test(w)) return w.split("-").map(function(x){ return /^[A-Za-z]+$/.test(x)?befTruncWord(x):x; }).join("-");   // short-term：各段分別處理
+      return w;                                              // 含數字／符號的字原樣保留
+    });
+    return [res.join(" ")];
+  }
+  // 去冗：若詞 A 的字詞序列完整包含另一個較短的詞 B（B 的 * 可當字尾通配），A 就是冗贅
+  var BEF_OPSLINE=/[()]|(^|\s)(and|or|not)(\s|$)|\b(near|adj|pre|same)\b|\b[nw]\/?\d+\b/i;
+  function befIsPlain(line){ return !!String(line||"").trim() && !BEF_OPSLINE.test(line); }
+  function befToks(s){ return String(s||"").toLowerCase().replace(/["'“”]/g,"").split(/[\s\-]+/).filter(Boolean); }
+  function befTokMatch(a,b){
+    if(a===b) return true;
+    if(a.charAt(a.length-1)==="*"){ var pre=a.slice(0,-1); return pre.length>0 && b.replace(/\*$/,"").indexOf(pre)===0; }
+    return false;
+  }
+  function befCovers(p,c){   // p 是否涵蓋 c（p 較短或帶 *）
+    var tp=befToks(p), tc=befToks(c); if(!tp.length||tp.length>tc.length) return false;
+    for(var i=0;i+tp.length<=tc.length;i++){
+      var ok=true;
+      for(var j=0;j<tp.length;j++){ if(!befTokMatch(tp[j],tc[i+j])){ ok=false; break; } }
+      if(ok) return true;
+    }
+    return false;
+  }
+  function befCopyOpts(){
+    var t=document.getElementById("befOptTrunc"), r=document.getElementById("befOptRedun");
+    return {trunc:!!(t&&t.checked), redun:!!(r&&r.checked), removed:0};
+  }
+  // 把一列的整理前內容帶到整理後（去重、倒裝轉正、跳過已被切截涵蓋者；可選：切截、去冗）；回傳實際新增的筆數
+  function befTidyInto(beTa, ftTa, opts){
     if(!beTa||!ftTa) return 0;
+    opts=opts||{};
     var added=[], seen=befLines(ftTa.value).map(befNorm);
     befLines(beTa.value).forEach(function(t){
-      var v=befUninvert(t), k=befNorm(v);
-      if(!k || seen.indexOf(k)>=0) return;
-      if(befCovered(ftTa, v)) return;
-      seen.push(k); added.push(v);
+      var u=befUninvert(t);
+      (opts.trunc ? befTruncate(u) : [u]).forEach(function(v){
+        var k=befNorm(v);
+        if(!k || seen.indexOf(k)>=0) return;
+        if(befCovered(ftTa, v)) return;
+        seen.push(k); added.push(v);
+      });
     });
+    if(opts.redun && added.length){
+      var pool=befLines(ftTa.value).filter(befIsPlain).concat(added.filter(befIsPlain));
+      var kept=added.filter(function(c){
+        if(!befIsPlain(c)) return true;
+        var red=pool.some(function(p){ return p!==c && befCovers(p,c) && !befCovers(c,p); });
+        if(red) opts.removed=(opts.removed||0)+1;
+        return !red;
+      });
+      added=kept;
+    }
     if(!added.length) return 0;
     var cur=(ftTa.value||"").replace(/\s+$/,"");
     ftTa.value=(cur?cur+"\n":"")+added.join("\n");
@@ -3024,15 +3105,15 @@ if (typeof module !== "undefined" && module.exports) {
     }
     label(); window._befColLabel=label;
     b.onclick=function(){
-      var rows=0, terms=0;
+      var rows=0, terms=0, opts=befCopyOpts();
       Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr){
         var beTa=tr.querySelector("textarea.beftxt"); if(!beTa) return;
         var tas=Array.prototype.filter.call(tr.querySelectorAll("textarea"), function(t){ return !t.classList.contains("beftxt"); });
-        var n=befTidyInto(beTa, tas[1]);
+        var n=befTidyInto(beTa, tas[1], opts);
         if(n){ rows++; terms+=n; }
       });
       var en=isEn(), t=b.querySelector(".t"), old=t.textContent;
-      t.textContent = terms ? ((en?"✓ +":"✓ 加入 ")+terms) : (en?"✓ nothing new":"✓ 無新增");
+      t.textContent = terms ? ((en?"✓ +":"✓ 加入 ")+terms+(opts.removed?(en?" ("+opts.removed+" redundant skipped)":"（去冗 "+opts.removed+"）"):"")) : (en?"✓ nothing new":"✓ 無新增");
       if(typeof saveDraftDebounced==="function") saveDraftDebounced();
       setTimeout(function(){ t.textContent=old; }, 1600);
     };
@@ -3042,12 +3123,12 @@ if (typeof module !== "undefined" && module.exports) {
   // 整理前欄標題「工具 ▾」選單：複製到整理後／勾選是否顯示每列的「找 MeSH」「→ 鄰近字」按鈕（預設：只顯示鄰近字）
   (function(){
     var btn=document.getElementById("befMenuBtn"), menu=document.getElementById("befMenu"); if(!btn||!menu) return;
-    [{id:"befOptMesh",key:"sr_pico_bef_mesh",cls:"nobefmesh",def:false},{id:"befOptProx",key:"sr_pico_bef_prox",cls:"nobefprox",def:true}].forEach(function(o){
+    [{id:"befOptMesh",key:"sr_pico_bef_mesh",cls:"nobefmesh",def:false},{id:"befOptProx",key:"sr_pico_bef_prox",cls:"nobefprox",def:false},{id:"befOptTrunc",key:"sr_pico_bef_trunc",cls:"",def:false},{id:"befOptRedun",key:"sr_pico_bef_redun",cls:"",def:false}].forEach(function(o){
       var cb=document.getElementById(o.id); if(!cb) return;
       var saved=null; try{ saved=localStorage.getItem(o.key); }catch(e){}
       var on=(saved===null)?o.def:(saved==="1");
-      cb.checked=on; document.body.classList.toggle(o.cls,!on);
-      cb.addEventListener("change", function(){ document.body.classList.toggle(o.cls,!cb.checked); try{ localStorage.setItem(o.key,cb.checked?"1":"0"); }catch(e){} });
+      cb.checked=on; if(o.cls) document.body.classList.toggle(o.cls,!on);
+      cb.addEventListener("change", function(){ if(o.cls) document.body.classList.toggle(o.cls,!cb.checked); try{ localStorage.setItem(o.key,cb.checked?"1":"0"); }catch(e){} });
     });
     function label(){ var en=isEn(); btn.querySelector(".t").textContent=en?"Tools":"工具"; btn.title=en?"Copy Before to After, and choose which buttons show under each Before cell":"把整理前帶到整理後，並選擇每列整理前下方要顯示哪些按鈕"; }
     function setOpen(o){ menu.hidden=!o; btn.setAttribute("aria-expanded",o?"true":"false"); }
