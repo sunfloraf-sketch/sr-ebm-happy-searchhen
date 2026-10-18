@@ -2112,7 +2112,7 @@ if (typeof module !== "undefined" && module.exports) {
   function _meshDid(uri){ var m=String(uri||"").match(/(D\d+)\b/); return m?m[1]:""; }
   function _meshScrOf(uri){ var m=String(uri||"").match(/\/(C\d+)\b/); return m?m[1]:""; }   // 補充概念（Supplementary Concept Record）編號
   function _meshFetch(url){ return fetch(url,{headers:{"Accept":"application/json"}}).then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); }); }
-  function _meshCheck(term){
+  function _meshCheck0(term){
     var key=term.toLowerCase(); if(_meshCache[key]) return Promise.resolve(_meshCache[key]);
     var enc=encodeURIComponent(term);
     return _meshFetch(MESH_LOOKUP+"descriptor?label="+enc+"&match=exact&limit=5").then(function(ex){
@@ -2142,6 +2142,35 @@ if (typeof module !== "undefined" && module.exports) {
         });
       });
     });
+  }
+  // 比對用「寬鬆鍵」：忽略大小寫、各種撇號（’ ' ` ´）與變音符號（Sjögren → Sjogren）
+  function _meshNormKey(s){ return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/['\u2018\u2019\u02BC`\u00B4]/g,"").replace(/\s+/g," ").trim().toLowerCase(); }
+  var _meshCache2={};
+  // 外層：先照原樣查；若查無／只有建議，再用「去變音、去撇號」的寫法重查（例：Sjogren's Syndrome → Sjogren Syndrome／Sjogrens Syndrome），
+  // 只要查到的正式標目與輸入「寬鬆相同」，就視為正式標目（ok）。避免含撇號的標目（Sjogren's、Crohn's、Alzheimer's…）被判查無。
+  function _meshCheck(term){
+    var key=String(term).toLowerCase(); if(_meshCache2[key]) return Promise.resolve(_meshCache2[key]);
+    var nk=_meshNormKey(term);
+    function accept(r){
+      if(!r) return null;
+      if((r.state==="ok"||r.state==="scr") && _meshNormKey(r.label)===nk) return r;
+      if(r.state==="entry" && r.official && _meshNormKey(r.official)===nk) return {state:"ok", label:r.official, dId:r.dId};
+      if(r.state==="suggest"){ var m=(r.suggests||[]).filter(function(x){ return x && !x.scr && _meshNormKey(x.label)===nk; })[0]; if(m) return {state:"ok", label:m.label, dId:m.dId}; }
+      return null;
+    }
+    var plain=String(term).normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[\u2018\u2019\u02BC`\u00B4]/g,"'");
+    var variants=[plain, plain.replace(/'s\b/gi,""), plain.replace(/'/g,"")].filter(function(v,i,a){ return v && v!==term && a.indexOf(v)===i; });
+    return _meshCheck0(term).then(function(r0){
+      if(r0.state==="ok"||r0.state==="scr") return r0;
+      var up=accept(r0); if(up) return up;
+      if(!variants.length) return r0;
+      return variants.reduce(function(pm,v){
+        return pm.then(function(found){
+          if(found) return found;
+          return _meshCheck0(v).then(accept, function(){ return null; });
+        });
+      }, Promise.resolve(null)).then(function(found){ return found||r0; });
+    }).then(function(r){ _meshCache2[key]=r; return r; });
   }
   function _meshEntryTerms(dId){
     if(_meshEntryCache[dId]) return Promise.resolve(_meshEntryCache[dId]);
@@ -2688,6 +2717,13 @@ if (typeof module !== "undefined" && module.exports) {
       if(!bare){ ic.textContent=""; return; }
       _proms.push(_meshCheck(bare).then(function(r){
         var _st=r.state; if(_st==="scr") _st=scrParse(rawTerm)?"ok":"entry";   // 補充概念：已標註＝通過；未標註＝提醒
+        // 輸入只差在撇號／變音符號（Sjögren’s → Sjogren's）：驗證通過後直接改成 MeSH 正式寫法，避免檢索式帶入全形撇號或變音字母
+        if(r.state==="ok" && r.label && bare && r.label.toLowerCase()!==bare.toLowerCase() && _meshNormKey(r.label)===_meshNormKey(bare)){
+          var _newRaw=rawTerm.replace(bare, r.label);
+          ta.value=(ta.value||"").split(/\n/).map(function(l){ return l.trim()===rawTerm ? _newRaw : l; }).join("\n");
+          tx.textContent=_newRaw; rawTerm=_newRaw; bare=r.label;
+          if(typeof saveDraftDebounced==="function") saveDraftDebounced();
+        }
         if(_st==="ok"){ ic.className="mi ok"; ic.innerHTML=_meshMarkSvg("ok"); }
         else if(_st==="entry"||_st==="suggest"){ ic.className="mi entry"; ic.innerHTML=_meshMarkSvg("entry"); }
         else { ic.className="mi none"; ic.innerHTML=_meshMarkSvg("none"); }
@@ -4021,7 +4057,7 @@ function befPluralOf(w){
     if(sm){ term=sm[1].trim(); sub=sm[2]; }
     var tpl;
     if(sub && CV_SUB[eng]) tpl=CV_SUB[eng];
-    else if(noexp && CV_NOEXP[eng]) tpl=CV_NOEXP[eng];   // 使用者標示「不狹／不含狹義詞」→ 一律只「不含狹義詞」(noexp)，不再於 L3 升為主標目
+    else if(noexp && CV_NOEXP[eng]) tpl=(level==="L3" && CV_NOEXP_MJ[eng]) ? CV_NOEXP_MJ[eng] : CV_NOEXP[eng];   // 使用者標示「不狹／不含狹義詞」→ 不展開（noexp）；L3 精準時再加「主要焦點」（Embase /mj、Ovid *、PubMed majr:noexp、Cochrane [mj]、CINAHL MM）
     else { var t=CV_TPL[eng]; tpl = t ? (level==="L3"?t.mj:t.ex) : "%T"; }
     return { text: tpl.replace(/%T/g, term).replace(/%S/g, sub||""), sub:!!sub, noexp:!!noexp };
   }
