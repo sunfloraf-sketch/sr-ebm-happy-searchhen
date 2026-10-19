@@ -4275,8 +4275,8 @@ function befPluralOf(w){
     rct:{
       embase_com:"(\"randomized controlled trial\"/de or \"controlled clinical study\"/de or \"randomization\"/de or \"intermethod comparison\"/de or \"double blind procedure\"/de or \"human experiment\"/de OR (random* or placebo or \"parallel group$\" or crossover or \"cross over\" or assigned or allocated or volunteer or volunteers):ti,ab OR (open NEAR/1 label):ti,ab OR ((double or single or doubly or singly) NEAR/1 (blind or blinded or blindly)):ti,ab OR ((assign* or match or matched or allocation) NEAR/5 (alternate or group$ or intervention$ or patient$ or subject$ or participant$)):ti,ab OR (controlled NEAR/7 (study or design or trial)):ti,ab OR (compare or compared or comparison or trial):ti OR ((evaluated or evaluate or evaluating or assessed or assess) and (compare or compared or comparing or comparison)):ab) NOT (((random* NEAR/1 sampl* NEAR/7 (\"cross section*\" or questionnaire$ or survey* or database$)):ti,ab not (\"comparative study\"/de or \"controlled study\"/de or \"randomi$ed controlled\":ti,ab or \"randomly assigned\":ti,ab)) OR (\"cross-sectional study\"/de not (\"randomized controlled trial\"/de or \"controlled clinical study\"/de or \"controlled study\"/de or \"randomi$ed controlled\":ti,ab or \"control group$\":ti,ab)) OR ((((case NEAR/1 control*) and random*) not \"randomi$ed controlled\"):ti,ab) OR ((\"systematic review\" not (trial or study)):ti) OR ((nonrandom* not random*):ti,ab) OR (\"random field*\":ti,ab) OR ((\"random cluster\" NEAR/3 sampl*):ti,ab) OR ((review:ab and review/it) not trial:ti) OR (\"we searched\":ab and (review:ti or review/it)) OR (\"update review\":ab) OR ((databases NEAR/4 searched):ab) OR ((rat or rats or mouse or mice or swine or porcine or murine or sheep or lambs or pigs or piglets or rabbit or rabbits or cat or cats or dog or dogs or cattle or bovine or monkey or monkeys or trout or marmoset*):ti and \"animal experiment\"/de) OR (\"animal experiment\"/de not (\"human experiment\"/de or \"human\"/de)))",
       embase_ovid:"((Randomized controlled trial/) OR (Controlled clinical study/) OR (random$.ti,ab.) OR (randomization/) OR (intermethod comparison/) OR (placebo.ti,ab.) OR ((compare or compared or comparison).ti.) OR (((evaluated or evaluate or evaluating or assessed or assess) and (compare or compared or comparing or comparison)).ab.) OR ((open adj label).ti,ab.) OR (((double or single or doubly or singly) adj (blind or blinded or blindly)).ti,ab.) OR (double blind procedure/) OR (parallel group$1.ti,ab.) OR ((crossover or cross over).ti,ab.) OR (((assign$ or match or matched or allocation) adj5 (alternate or group$1 or intervention$1 or patient$1 or subject$1 or participant$1)).ti,ab.) OR ((assigned or allocated).ti,ab.) OR ((controlled adj7 (study or design or trial)).ti,ab.) OR ((volunteer or volunteers).ti,ab.) OR (human experiment/) OR (trial.ti.)) NOT ((random$ adj sampl$ adj7 (\"cross section$\" or questionnaire$1 or survey$ or database$1).ti,ab.) not (comparative study/ or controlled study/ or randomi?ed controlled.ti,ab. or randomly assigned.ti,ab.) OR (Cross-sectional study/ not (randomized controlled trial/ or controlled clinical study/ or controlled study/ or randomi?ed controlled.ti,ab. or control group$1.ti,ab.)) OR ((((case adj control$) and random$) not randomi?ed controlled).ti,ab.) OR ((Systematic review not (trial or study)).ti.) OR ((nonrandom$ not random$).ti,ab.) OR (\"Random field$\".ti,ab.) OR ((random cluster adj3 sampl$).ti,ab.) OR ((review.ab. and review.pt.) not trial.ti.) OR (\"we searched\".ab. and (review.ti. or review.pt.)) OR (\"update review\".ab.) OR ((databases adj4 searched).ab.) OR ((rat or rats or mouse or mice or swine or porcine or murine or sheep or lambs or pigs or piglets or rabbit or rabbits or cat or cats or dog or dogs or cattle or bovine or monkey or monkeys or trout or marmoset$1).ti. and animal experiment/) OR (Animal experiment/ not (human experiment/ or human/)))",
-      medline_ovid:"(randomized controlled trial.pt. or controlled clinical trial.pt. or randomi*ed.ab. or placebo.ab. or drug therapy.fs. or randomly.ab. or trial.ab. or groups.ab. not (exp animals/ not humans.sh.))",
-      pubmed:"(randomized controlled trial[pt] OR controlled clinical trial[pt] OR randomi*ed[tiab] OR placebo[tiab] OR drug therapy[sh] OR randomly[tiab] OR trial[tiab] OR groups[tiab] NOT (animals[mh] NOT humans[mh]))",
+      medline_ovid:"(randomized controlled trial.pt. or controlled clinical trial.pt. or randomi*ed.ab. or placebo.ab. or drug therapy.fs. or randomly.ab. or trial.ab. or groups.ab.) not (exp animals/ not humans.sh.)",
+      pubmed:"(randomized controlled trial[pt] OR controlled clinical trial[pt] OR randomi*ed[tiab] OR placebo[tiab] OR drug therapy[sh] OR randomly[tiab] OR trial[tiab] OR groups[tiab]) NOT (animals[mh] NOT humans[mh])",
       cinahl_ebsco:"((MH (\"randomized controlled trials\" OR \"double-blind studies\" OR \"single‐blind studies\" OR \"random assignment\" OR \"pretest‐posttest design\" OR \"cluster sample\") OR TI (randomised OR randomized) OR AB (random*) OR TI (trial) OR (MH (sample size) AND AB (assigned OR allocated OR control)) OR MH (placebos) OR PT (randomized controlled trial) OR AB (control W5 group) OR MH (\"crossover design\" OR \"comparative studies\") OR AB (cluster W3 RCT)) NOT ((MH (\"animals+\" OR \"animal studies\") OR TI (animal model*)) NOT MH (human)))",
       wos:"(TS= clinical trial* OR TS=research design OR TS=comparative stud* OR TS=evaluation stud* OR TS=controlled trial* OR TS=follow-up stud* OR TS=prospective stud* OR TS=random* OR TS=placebo* OR TS=(single blind*) OR TS=(double blind*))",
       scopus:"(INDEXTERMS ( \"clinical trials\" OR \"clinical trials as a topic\" OR \"randomized controlled trial\" OR \"Randomized Controlled Trials as Topic\" OR \"controlled clinical trial\" OR \"Controlled Clinical Trials\" OR \"random allocation\" OR \"Double-Blind Method\" OR \"Single-Blind Method\" OR \"Cross-Over Studies\" OR \"Placebos\" OR \"multicenter study\" OR \"double blind procedure\" OR \"single blind procedure\" OR \"crossover procedure\" OR \"clinical trial\" OR \"controlled study\" OR \"randomization\" OR \"placebo\" ) OR TITLE-ABS-KEY ( \"clinical trials\" OR \"clinical trials as a topic\" OR \"randomized controlled trial\" OR \"Randomized Controlled Trials as Topic\" OR \"controlled clinical trial\" OR \"Controlled Clinical Trials as Topic\" OR \"random allocation\" OR \"randomly allocated\" OR \"allocated randomly\" OR \"Double-Blind Method\" OR \"Single-Blind Method\" OR \"Cross-Over Studies\" OR \"Placebos\" OR \"cross-over trial\" OR \"single blind\" OR \"double blind\" OR \"factorial design\" OR \"factorial trial\" ) OR TITLE ( clinical trial OR trial OR rct* OR random* OR blind* ))"
@@ -4647,60 +4647,64 @@ function befPluralOf(w){
     var body=doc.getElementsByTagNameNS(_WNS,"body")[0];
     function heading(txt){ return _mkP(doc,[{text:txt,bold:true,sz:28}]); }
     function synTc(runs, w){ var tc=doc.createElementNS(_WNS,"w:tc"); var tcPr=doc.createElementNS(_WNS,"w:tcPr"); var ww=doc.createElementNS(_WNS,"w:tcW"); ww.setAttributeNS(_WNS,"w:w",String(w)); ww.setAttributeNS(_WNS,"w:type","dxa"); tcPr.appendChild(ww); tc.appendChild(tcPr); tc.appendChild(_mkPRuns(doc, runs)); return tc; }
-    var _ct=_conceptTermsTable(doc);
-    if(_ct){ body.appendChild(_ct.head); body.appendChild(_ct.note); body.appendChild(_ct.tbl); body.appendChild(_mkP(doc,[{text:""}])); }
-    body.appendChild(heading(en?"PICO Search Strategy":"PICO 檢索策略"));
+    var _ct=_conceptTermsTable(doc,{download:true});
+    if(_ct){ body.appendChild(_ct.head); body.appendChild(_ct.note); body.appendChild(_ct.tbl);
+      var _brk=_mkP(doc,[{text:""}]); _wdPPr(_brk).appendChild(_wdSect(doc,true)); body.appendChild(_brk); }   // 檢索詞表＝A4 橫向一節；其後檢索策略＝A4 直向
+    body.appendChild(heading(en?"Search Strategy":"檢索策略"));
     body.appendChild(_mkP(doc,[{text:(en?"Field level: ":"欄位完整度：")+((lastGen&&lastGen.level)||""), sz:18, color:"555555"}]));
-    body.appendChild(_mkP(doc,[{text:_noteStrat(), color:"C00000", sz:18}]));   // 策略表提醒（三點）
+    body.appendChild(_mkP(doc,[{text:_noteStrat(), color:"C00000", sz:18}]));   // 策略表提醒
     var tbl=doc.createElementNS(_WNS,"w:tbl"), pr=doc.createElementNS(_WNS,"w:tblPr");
     var tw=doc.createElementNS(_WNS,"w:tblW"); tw.setAttributeNS(_WNS,"w:w","0"); tw.setAttributeNS(_WNS,"w:type","auto"); pr.appendChild(tw);
     var bd=doc.createElementNS(_WNS,"w:tblBorders");
     ["top","left","bottom","right","insideH","insideV"].forEach(function(e){ var el=doc.createElementNS(_WNS,"w:"+e); el.setAttributeNS(_WNS,"w:val","single"); el.setAttributeNS(_WNS,"w:sz","4"); el.setAttributeNS(_WNS,"w:space","0"); el.setAttributeNS(_WNS,"w:color","999999"); bd.appendChild(el); });
     pr.appendChild(bd); tbl.appendChild(pr);
-    var grid=doc.createElementNS(_WNS,"w:tblGrid"); [1500,600,7200].forEach(function(gw){ var gc=doc.createElementNS(_WNS,"w:gridCol"); gc.setAttributeNS(_WNS,"w:w",String(gw)); grid.appendChild(gc); }); tbl.appendChild(grid);
+    var SW=[1626,600,7200];
+    var grid=doc.createElementNS(_WNS,"w:tblGrid"); SW.forEach(function(gw){ var gc=doc.createElementNS(_WNS,"w:gridCol"); gc.setAttributeNS(_WNS,"w:w",String(gw)); grid.appendChild(gc); }); tbl.appendChild(grid);
     var htr=doc.createElementNS(_WNS,"w:tr");
-    htr.appendChild(_mkTc(doc,[{text:(en?"Database":"資料庫 Database"),bold:true,color:"FFFFFF"}],{shd:"5B21B6",w:1500}));
-    htr.appendChild(_mkTc(doc,[{text:"#",bold:true,color:"FFFFFF"}],{shd:"5B21B6",w:600}));
-    htr.appendChild(_mkTc(doc,[{text:(en?"Search syntax":"搜尋語法 Search syntax"),bold:true,color:"FFFFFF"}],{shd:"5B21B6",w:7200}));
+    htr.appendChild(_mkTc(doc,[{text:(en?"Database":"資料庫 Database"),bold:true}],{shd:"F2F2F2",w:SW[0]}));
+    htr.appendChild(_mkTc(doc,[{text:"#",bold:true}],{shd:"F2F2F2",w:SW[1]}));
+    htr.appendChild(_mkTc(doc,[{text:(en?"Search syntax":"搜尋語法 Search syntax"),bold:true}],{shd:"F2F2F2",w:SW[2]}));
     tbl.appendChild(htr);
+    function _unbold(rs){ return rs.map(function(r){ var o={}; for(var k in r) o[k]=r[k]; o.bold=false; return o; }); }   // 語法上色但不加粗
     lastGen.data.forEach(function(c){
       var rws=c.rows||[]; if(!rws.length) return;
       var vf=(c.verify||[]);
       var lab=c.label+(c.isStart?(en?" (start)":"（起始）"):"");
       rws.forEach(function(x,idx){
         var tr=doc.createElementNS(_WNS,"w:tr");
-        tr.appendChild(_mkTc(doc,[{text:(idx===0?lab:""),bold:true}],{vmerge:(idx===0?"restart":"cont"),w:1500}));
-        tr.appendChild(_mkTc(doc,[{text:(x.n!=null?(_refPrefix(c.engine)+x.n):""),color:"6D28D9",bold:true}],{w:600}));
-        tr.appendChild(synTc(_hlRuns(_dispRefs(x.text,c.engine), c.engine, c.vocab), 7200));
+        tr.appendChild(_mkTc(doc,[{text:(idx===0?lab:""),bold:true}],{vmerge:(idx===0?"restart":"cont"),w:SW[0]}));
+        tr.appendChild(_mkTc(doc,[{text:(x.n!=null?(_refPrefix(c.engine)+x.n):""),bold:true}],{w:SW[1]}));
+        tr.appendChild(synTc(_unbold(_hlRuns(_dispRefs(x.text,c.engine), c.engine, c.vocab)), SW[2]));
         tbl.appendChild(tr);
       });
       if(vf.length){
         var vtr=doc.createElementNS(_WNS,"w:tr");
-        vtr.appendChild(_mkTc(doc,[{text:""}],{vmerge:"cont",w:1500}));
-        vtr.appendChild(_mkTc(doc,[{text:""}],{w:600}));
-        vtr.appendChild(_mkTc(doc,[{text:_verifyNote(vf),color:"B45309"}],{w:7200}));
+        vtr.appendChild(_mkTc(doc,[{text:""}],{vmerge:"cont",w:SW[0]}));
+        vtr.appendChild(_mkTc(doc,[{text:""}],{w:SW[1]}));
+        vtr.appendChild(_mkTc(doc,[{text:_verifyNote(vf),color:"B45309"}],{w:SW[2]}));
         tbl.appendChild(vtr);
       }
     });
+    _wdFmtTable(tbl,{hdrFill:"F2F2F2", centerCols:[1]});
     body.appendChild(tbl);
+    body.appendChild(_wdFmtP(_mkP(doc,[{text:""}]),{after:0,line:_WD.line}));
     if(lastGen.filters && lastGen.filters.length){
       var DL={rct:"RCT",quasi:(en?"Quasi-experimental":"類實驗 Quasi"),cohort:"Cohort",casecontrol:"Case-control",crosssectional:"Cross-sectional",qualitative:(en?"Qualitative":"質性 Qualitative"),sr:"SR",guideline:(en?"Guideline":"指引 Guideline")};
       var srcPs=[];
       lastGen.filters.forEach(function(dz){ if(!STUDY_FILTER_SRC[dz]) return; var g={},ord=[];
         lastGen.data.forEach(function(c){ var s=STUDY_FILTER_SRC[dz][c.tid]; if(s){ if(!g[s]){g[s]=[];ord.push(s);} g[s].push(c.label); } });
-        if(!ord.length) return; var parts=ord.map(function(s){ return g[s].join("、")+" — "+s; });
-        srcPs.push(_mkP(doc,[{text:(DL[dz]||dz)+"："+parts.join("；"), sz:18, color:"444444"}]));
+        if(!ord.length) return; srcPs.push(_wdSrcP(doc, (DL[dz]||dz), ord, g));
       });
-      if(srcPs.length){ body.appendChild(_mkP(doc,[{text:(en?"Study-design filter sources":"研究設計篩選語法出處"),bold:true,sz:18}])); srcPs.forEach(function(p){ body.appendChild(p); }); }
+      if(srcPs.length){ body.appendChild(_wdFmtP(_mkP(doc,[{text:(en?"Study-design filter sources":"研究設計篩選語法出處"),bold:true,sz:18}]),{after:0,line:_WD.line})); srcPs.forEach(function(p){ body.appendChild(p); }); }
     }
-    body.appendChild(_mkP(doc,[{text:(en?"Cite this tool: ":"工具引用："), sz:18, color:"555555", bold:true}]));
-    _citeLines().forEach(function(ln){ body.appendChild(_mkP(doc,[{text:ln, sz:18, color:"555555"}])); });
-    var sect=doc.createElementNS(_WNS,"w:sectPr"); var pgSz=doc.createElementNS(_WNS,"w:pgSz"); pgSz.setAttributeNS(_WNS,"w:w","11906"); pgSz.setAttributeNS(_WNS,"w:h","16838"); sect.appendChild(pgSz); var pgMar=doc.createElementNS(_WNS,"w:pgMar"); pgMar.setAttributeNS(_WNS,"w:top","1440"); pgMar.setAttributeNS(_WNS,"w:right","1440"); pgMar.setAttributeNS(_WNS,"w:bottom","1440"); pgMar.setAttributeNS(_WNS,"w:left","1440"); sect.appendChild(pgMar); body.appendChild(sect);
+    body.appendChild(_wdFmtP(_mkP(doc,[{text:(en?"Cite this tool: ":"工具引用："), sz:18, color:"555555", bold:true}]),{after:0,line:_WD.line}));
+    _citeLines().forEach(function(ln){ body.appendChild(_wdFmtP(_mkP(doc,[{text:ln, sz:18, color:"555555"}]),{line:_WD.line})); });
+    body.appendChild(_wdSect(doc,false));
     var docXml=new XMLSerializer().serializeToString(doc);
     if(!/^\s*<\?xml/i.test(docXml)) docXml='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n'+docXml;
     var ctypes='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>';
     var rels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>';
-    var files=[["[Content_Types].xml",ctypes],["_rels/.rels",rels],["word/document.xml",docXml]];
+    var files=[["[Content_Types].xml",_WD_CTYPES],["_rels/.rels",rels],["word/document.xml",docXml],["word/_rels/document.xml.rels",_WD_DOCRELS],["word/styles.xml",_WD_STYLES]];
     var enc=new TextEncoder(), entries=[];
     for(var k=0;k<files.length;k++){ var bytes=enc.encode(files[k][1]); var crc=_crc32(bytes); var comp=null; try{ comp=await _deflateRaw(bytes); }catch(_e){ comp=null; } var de={name:files[k][0], crc:crc, usize:bytes.length}; if(comp){ de.method=8; de.data=comp; de.csize=comp.length; } else { de.method=0; de.data=bytes; de.csize=bytes.length; } entries.push(de); }
     var outBuf=_zipBuild(entries);
@@ -4857,6 +4861,56 @@ function befPluralOf(w){
     return {ok:true, filled:filled, dbs:Object.keys(dbHit).length, xml:out};
   }
   // 沒有搜尋策略表格時：把「下載 Word」的檢索策略表附加到文件末（保留原文其餘內容）
+  // ===== Word 下載版面（比照使用者調整範本 2026-10）：檢索詞表＝A4 橫向、檢索策略＝A4 直向；邊距 2 cm；表格行距固定 16 pt、儲存格邊界 0.2 cm =====
+  var _WD={mar:"1134", cellMar:"113", line:"320", hfont:"微軟正黑體", termsW:14641, portW:9638};
+  function _wdEl(doc,tag,attrs){ var e=doc.createElementNS(_WNS,"w:"+tag); if(attrs) Object.keys(attrs).forEach(function(k){ e.setAttributeNS(_WNS,"w:"+k,String(attrs[k])); }); return e; }
+  function _wdPPr(p){ var f=p.firstChild; if(f && f.localName==="pPr") return f; var ppr=_wdEl(p.ownerDocument,"pPr"); p.insertBefore(ppr,f); return ppr; }
+  // 段落格式：o.after（段後）、o.line（固定行距）、o.jc（對齊）
+  function _wdFmtP(p,o){ o=o||{}; var doc=p.ownerDocument, ppr=_wdPPr(p), c, ref;
+    var a={}; if(o.after!=null) a.after=o.after; if(o.line){ a.line=o.line; a.lineRule="exact"; }
+    if(Object.keys(a).length){ ref=null; for(c=ppr.firstChild;c;c=c.nextSibling){ if(/^(ind|contextualSpacing|jc|rPr|sectPr|pPrChange)$/.test(c.localName)){ ref=c; break; } } ppr.insertBefore(_wdEl(doc,"spacing",a),ref); }
+    if(o.jc){ ref=null; for(c=ppr.firstChild;c;c=c.nextSibling){ if(/^(rPr|sectPr|pPrChange)$/.test(c.localName)){ ref=c; break; } } ppr.insertBefore(_wdEl(doc,"jc",{val:o.jc}),ref); }
+    return p; }
+  // 段落內所有 run 套字型
+  function _wdFont(p,font){ var rs=p.getElementsByTagNameNS(_WNS,"r");
+    for(var i=0;i<rs.length;i++){ var r=rs[i], rpr=r.firstChild; if(!rpr||rpr.localName!=="rPr"){ rpr=_wdEl(p.ownerDocument,"rPr"); r.insertBefore(rpr,r.firstChild); }
+      if(rpr.getElementsByTagNameNS(_WNS,"rFonts").length) continue; rpr.insertBefore(_wdEl(p.ownerDocument,"rFonts",{ascii:font,eastAsia:font,hAnsi:font}), rpr.firstChild); }
+    return p; }
+  // 表格：固定總寬（dxa；0＝自動）、儲存格邊界、行距固定 16 pt；首列＝標題列（灰底、置中、粗體黑字，可指定字型）；centerCols＝需置中的欄
+  function _wdFmtTable(tbl,o){ o=o||{}; var doc=tbl.ownerDocument;
+    var tw=tbl.getElementsByTagNameNS(_WNS,"tblW")[0]; if(tw && o.width){ tw.setAttributeNS(_WNS,"w:w",String(o.width)); tw.setAttributeNS(_WNS,"w:type","dxa"); }
+    var trs=tbl.getElementsByTagNameNS(_WNS,"tr");
+    for(var i=0;i<trs.length;i++){ var tcs=trs[i].getElementsByTagNameNS(_WNS,"tc");
+      for(var j=0;j<tcs.length;j++){ var tc=tcs[j], tcPr=tc.firstChild;
+        if(!tcPr||tcPr.localName!=="tcPr"){ tcPr=_wdEl(doc,"tcPr"); tc.insertBefore(tcPr,tc.firstChild); }
+        if(i===0){ var shd=tcPr.getElementsByTagNameNS(_WNS,"shd")[0]; if(!shd){ shd=_wdEl(doc,"shd",{val:"clear",color:"auto"}); tcPr.appendChild(shd); } shd.setAttributeNS(_WNS,"w:fill",o.hdrFill||"D9D9D9"); }
+        var m=_wdEl(doc,"tcMar"); ["top","left","bottom","right"].forEach(function(s){ m.appendChild(_wdEl(doc,s,{w:_WD.cellMar,type:"dxa"})); }); tcPr.appendChild(m);
+        var ps=tc.getElementsByTagNameNS(_WNS,"p");
+        for(var k=0;k<ps.length;k++){
+          _wdFmtP(ps[k],{after:0, line:_WD.line, jc:(i===0||(o.centerCols&&o.centerCols.indexOf(j)>=0))?"center":null});
+          if(i===0){ var cl=ps[k].getElementsByTagNameNS(_WNS,"color"); for(var q=0;q<cl.length;q++) cl[q].setAttributeNS(_WNS,"w:val","000000"); if(o.hdrFont) _wdFont(ps[k],o.hdrFont); }
+        }
+      } }
+    return tbl; }
+  // 分節（A4；landscape＝橫向）
+  function _wdSect(doc,landscape){ var s=_wdEl(doc,"sectPr");
+    s.appendChild(landscape?_wdEl(doc,"pgSz",{w:16838,h:11906,orient:"landscape"}):_wdEl(doc,"pgSz",{w:11906,h:16838}));
+    s.appendChild(_wdEl(doc,"pgMar",{top:_WD.mar,right:_WD.mar,bottom:_WD.mar,left:_WD.mar,header:720,footer:720,gutter:0})); return s; }
+  // 回填：取原文件（最後一節）的可用版面寬度，讓附加的檢索詞表貼齊原文件
+  function _wdBodyW(doc){ try{ var ss=doc.getElementsByTagNameNS(_WNS,"sectPr"); var s=ss[ss.length-1]; if(!s) return _WD.portW;
+    var sz=s.getElementsByTagNameNS(_WNS,"pgSz")[0], mr=s.getElementsByTagNameNS(_WNS,"pgMar")[0];
+    var w=+(sz&&sz.getAttributeNS(_WNS,"w"))||11906, l=+(mr&&mr.getAttributeNS(_WNS,"left"))||1440, r=+(mr&&mr.getAttributeNS(_WNS,"right"))||1440;
+    var v=w-l-r; return (v>3000&&v<30000)?v:_WD.portW; }catch(e){ return _WD.portW; } }
+  // 依基準欄寬等比縮放到指定總寬
+  function _wdScale(base,total){ var s=base.reduce(function(a,b){return a+b;},0); var out=base.map(function(b){ return Math.round(b*total/s); }); out[out.length-1]+=total-out.reduce(function(a,b){return a+b;},0); return out; }
+  // styles.xml：Word 預設（12 pt、段後 8 pt、行距 1.16）＋超連結樣式；讓不同電腦開啟時外觀一致
+  var _WD_STYLES='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Aptos" w:eastAsia="新細明體" w:hAnsi="Aptos" w:cs="Times New Roman"/><w:kern w:val="2"/><w:sz w:val="24"/><w:szCs w:val="24"/><w:lang w:val="en-US" w:eastAsia="zh-TW" w:bidi="ar-SA"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="278" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/><w:pPr><w:widowControl w:val="0"/></w:pPr></w:style><w:style w:type="character" w:default="1" w:styleId="DefaultParagraphFont"><w:name w:val="Default Paragraph Font"/><w:uiPriority w:val="1"/><w:semiHidden/><w:unhideWhenUsed/></w:style><w:style w:type="table" w:default="1" w:styleId="TableNormal"><w:name w:val="Normal Table"/><w:uiPriority w:val="99"/><w:semiHidden/><w:unhideWhenUsed/><w:tblPr><w:tblInd w:w="0" w:type="dxa"/><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:left w:w="108" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/><w:right w:w="108" w:type="dxa"/></w:tblCellMar></w:tblPr></w:style><w:style w:type="numbering" w:default="1" w:styleId="NoList"><w:name w:val="No List"/><w:uiPriority w:val="99"/><w:semiHidden/><w:unhideWhenUsed/></w:style><w:style w:type="character" w:styleId="Hyperlink"><w:name w:val="Hyperlink"/><w:basedOn w:val="DefaultParagraphFont"/><w:uiPriority w:val="99"/><w:unhideWhenUsed/><w:rPr><w:color w:val="0563C1"/><w:u w:val="single"/></w:rPr></w:style></w:styles>';
+  var _WD_CTYPES='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>';
+  var _WD_DOCRELS='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rIdStyles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>';
+  // 「研究設計篩選語法出處」段落：資料庫名稱粗體
+  function _wdSrcP(doc, label, ord, g){ var runs=[{text:label+"：", sz:18, color:"444444"}];
+    ord.forEach(function(s,i){ if(i) runs.push({text:"；", sz:18, color:"444444"}); runs.push({text:g[s].join("、"), sz:18, color:"444444", bold:true}); runs.push({text:" — "+s, sz:18, color:"444444"}); });
+    return _wdFmtP(_mkP(doc,runs),{line:_WD.line}); }
   function _mkP(doc, runs){
     var p=doc.createElementNS(_WNS,"w:p");
     (runs||[]).forEach(function(rn){
@@ -4965,44 +5019,54 @@ function befPluralOf(w){
   }
   // 共用說明文字（概念表提醒／策略表提醒／工具引用）——網頁與兩個 Word 一致
   function _noteTerms(){ return isEn()
-    ? "⚠ Reminder: assess the suitability of synonyms and controlled vocabulary yourself, and especially verify the controlled terms — the tool only links to the thesauri and does not verify them."
-    : "⚠ 提醒您！請自行評估同義詞與控制詞彙的適用性，尤其確實查核控制詞彙，工具僅提供詞表超連結，並未進行查驗。"; }
+    ? "⚠ Reminder: assess the suitability of synonyms and controlled vocabulary yourself, and especially verify the controlled terms. The Happy SearchHen tool only links to the thesauri, does not verify them, and assumes no warranty."
+    : "⚠ 提醒您！請自行評估同義詞與控制詞彙的適用性，尤其確實查核控制詞彙。Happy SearchHen工具僅提供詞表超連結，並未進行查驗，不負保證責任。"; }
   function _noteStrat(){ return isEn()
     ? "⚠ Reminder: verify the controlled vocabulary and review the search strategy; test and evaluate carefully in the databases. SearchHen assumes no warranty."
     : "⚠ 提醒您！請確實查核控制詞彙，並覆核檢索策略，應謹慎於資料庫實測與評估。SearchHen 不負保證責任。"; }
-  var _CITE_ZH="方靜如，SR x EBM Happy SearchHen 搜尋策略生成雞。";
+  var _CITE_ZH="方靜如，SR x EBM Happy SearchHen 搜尋策略生成雞。doi: 10.5281/zenodo.21960702. https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/";
   var _CITE_EN="Fang CJ, SR x EBM Happy SearchHen. doi: 10.5281/zenodo.21960702. https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/";
   function _citeLines(){ return isEn()? [_CITE_EN] : [_CITE_ZH, _CITE_EN]; }   // 中文版中英並列、英文版只放英文
   // 建「工具整理的檢索詞（概念表原貌）」：回傳 {head, note, tbl}；無詞則 null。說明在表格上方、控制詞彙欄內嵌查證超連結、換行為 Enter 段落。
-  function _conceptTermsTable(doc){
+  function _conceptTermsTable(doc,o){ o=o||{};
     var en=isEn();
-    var terms=((lastGen&&lastGen.terms)||[]).filter(function(r){return r.zh||r.ft||r.mesh||r.emtree||r.cinahl;});
+    var terms=((lastGen&&lastGen.terms)||[]).filter(function(r){return r.zh||r.ft||r.mesh||r.emtree||r.cinahl||r.before;});
     if(!terms.length) return null;
-    var head=_mkP(doc,[{text:(en?"※ Search terms tidied in the tool (concept table):":"※ 工具整理的檢索詞（概念表）："), color:"0F766E", sz:18, bold:true}]);
+    var hasBef=terms.some(function(r){ return r.before; });   // 有「整理前」內容才加該欄
+    var head=o.download
+      ? _wdFont(_mkP(doc,[{text:(en?"Search Terms Table":"檢索詞表"), color:"0D0D0D", sz:28, bold:true}]), _WD.hfont)
+      : _mkP(doc,[{text:(en?"※ Search terms tidied in the tool (concept table):":"※ 工具整理的檢索詞（概念表）："), color:"0F766E", sz:18, bold:true}]);
     var note=_mkP(doc,[{text:_noteTerms(), color:"C00000", sz:18}]);   // 概念表提醒：放在表格「上方」
     var tbl=doc.createElementNS(_WNS,"w:tbl"), pr=doc.createElementNS(_WNS,"w:tblPr");
     var tw=doc.createElementNS(_WNS,"w:tblW"); tw.setAttributeNS(_WNS,"w:w","0"); tw.setAttributeNS(_WNS,"w:type","auto"); pr.appendChild(tw);
     var bd=doc.createElementNS(_WNS,"w:tblBorders");
     ["top","left","bottom","right","insideH","insideV"].forEach(function(e){ var el=doc.createElementNS(_WNS,"w:"+e); el.setAttributeNS(_WNS,"w:val","single"); el.setAttributeNS(_WNS,"w:sz","4"); el.setAttributeNS(_WNS,"w:space","0"); el.setAttributeNS(_WNS,"w:color","999999"); bd.appendChild(el); });
     pr.appendChild(bd); tbl.appendChild(pr);
-    var grid=doc.createElementNS(_WNS,"w:tblGrid"); [1200,1600,2600,1700,1700,1700].forEach(function(gw){ var gc=doc.createElementNS(_WNS,"w:gridCol"); gc.setAttributeNS(_WNS,"w:w",String(gw)); grid.appendChild(gc); }); tbl.appendChild(grid);
-    var hdr=[[(en?"Concept":"概念"),1200],[(en?"Chinese terms":"中文詞"),1600],[(en?"Free-text (EN)":"英文自由詞"),2600],["Emtree",1700],["MeSH",1700],["CINAHL",1700]];
-    var htr=doc.createElementNS(_WNS,"w:tr"); hdr.forEach(function(h){ htr.appendChild(_mkTc(doc,[{text:h[0],bold:true,color:"FFFFFF"}],{shd:"0F766E",w:h[1]})); }); tbl.appendChild(htr);
+    var SYN=(en?"English synonyms":"英文同義詞");
+    var hdr=[(en?"Concept":"概念"),(en?"Chinese terms":"中文詞")];
+    if(hasBef) hdr.push(SYN+"\n"+(en?"Before":"整理前"), SYN+"\n"+(en?"After":"整理後")); else hdr.push(SYN);
+    hdr.push("Emtree","MeSH","CINAHL");
+    var total=o.width||(o.download?_WD.termsW:_WD.portW);
+    var W=_wdScale(hasBef?[473,1355,2552,1898,2268,2693,3402]:[473,1355,3400,2800,3100,3513], total);
+    var grid=doc.createElementNS(_WNS,"w:tblGrid"); W.forEach(function(gw){ var gc=doc.createElementNS(_WNS,"w:gridCol"); gc.setAttributeNS(_WNS,"w:w",String(gw)); grid.appendChild(gc); }); tbl.appendChild(grid);
+    var htr=doc.createElementNS(_WNS,"w:tr"); hdr.forEach(function(h,i){ htr.appendChild(_mkTcML(doc,h,{shd:"D9D9D9",w:W[i],bold:true})); }); tbl.appendChild(htr);
     terms.forEach(function(r){
-      var tr=doc.createElementNS(_WNS,"w:tr");
-      tr.appendChild(_mkTcML(doc, r.label||"", {w:1200, bold:true}));
-      tr.appendChild(_mkTcML(doc, r.zh||"", {w:1600}));
-      tr.appendChild(_mkTcML(doc, r.ft||"", {w:2600}));
-      tr.appendChild(_mkTcCV(doc, r.emtree||"", "emtree", {w:1700}));
-      tr.appendChild(_mkTcCV(doc, r.mesh||"", "mesh", {w:1700}));
-      tr.appendChild(_mkTcCV(doc, r.cinahl||"", "cinahl", {w:1700}));
+      var tr=doc.createElementNS(_WNS,"w:tr"), i=0;
+      tr.appendChild(_mkTcML(doc, r.label||"", {w:W[i++], bold:true}));
+      tr.appendChild(_mkTcML(doc, r.zh||"", {w:W[i++]}));
+      if(hasBef) tr.appendChild(_mkTcML(doc, r.before||"", {w:W[i++]}));
+      tr.appendChild(_mkTcML(doc, r.ft||"", {w:W[i++]}));
+      tr.appendChild(_mkTcCV(doc, r.emtree||"", "emtree", {w:W[i++]}));
+      tr.appendChild(_mkTcCV(doc, r.mesh||"", "mesh", {w:W[i++]}));
+      tr.appendChild(_mkTcCV(doc, r.cinahl||"", "cinahl", {w:W[i++]}));
       tbl.appendChild(tr);
     });
+    _wdFmtTable(tbl,{width:total, hdrFill:"D9D9D9", hdrFont:_WD.hfont});
     return {head:head, note:note, tbl:tbl};
   }
   // 回填：把工具整理的「檢索詞（概念表原貌）」附加在原有檢索詞表格「下方」，不覆蓋原表；具冪等性
   function _insertConceptTerms(doc){
-    var _ct=_conceptTermsTable(doc); if(!_ct) return;
+    var _ct=_conceptTermsTable(doc,{width:_wdBodyW(doc)}); if(!_ct) return;
     var ts=doc.getElementsByTagNameNS(_WNS,"t");
     for(var i=0;i<ts.length;i++){ var tx=ts[i].textContent||""; if(tx.indexOf("工具整理的檢索詞")>=0 || tx.indexOf("tidied in the tool")>=0) return; }
     // 找出紀錄表中「原有的檢索詞（概念）表」：含主題概念／自由詞／控制詞彙欄，且非「搜尋語法」策略表
@@ -5343,6 +5407,98 @@ function befPluralOf(w){
       b.textContent=en?"Copy failed — select manually":"複製失敗，請手動選取"; clearTimeout(b._t); b._t=setTimeout(function(){ b.textContent=old; },2400);
     });
   });
+})();
+</script>
+<script id="srPrefScript">
+/* 共用：① 提示文字只顯示目前語言（「中文 / English」雙語提示依語言切開）② 右上角「偏好設定」：提示文字 顯示／不顯示（localStorage: sr_pref_tips） */
+(function(){
+  var KEY="sr_pref_tips", cjk=/[一-鿿]/;
+  function isEn(){ return document.body.classList.contains("en") || document.documentElement.getAttribute("lang")==="en"; }
+  function lsGet(){ try{ return localStorage.getItem(KEY); }catch(e){ return null; } }
+  function lsSet(v){ try{ localStorage.setItem(KEY,v); }catch(e){} }
+
+  /* ① 雙語提示切語言 */
+  function split(v){ var i=String(v||"").lastIndexOf(" / "); if(i<0) return null; var a=v.slice(0,i).trim(), b=v.slice(i+3).trim(); return (cjk.test(a)&&!cjk.test(b)&&/[A-Za-z]{2}/.test(b))?{zh:a,en:b}:null; }
+  var ATTRS=["data-tip","title","data-title-keep","aria-label"];
+  function syncLang(){
+    var en=isEn();
+    ATTRS.forEach(function(at){
+      Array.prototype.forEach.call(document.querySelectorAll("["+at+"]"), function(el){
+        var bk="data-both-"+at, both=el.getAttribute(bk), cur=el.getAttribute(at)||"";
+        if(both===null){ if(!split(cur)) return; both=cur; el.setAttribute(bk,both); }
+        var sp=split(both); if(!sp){ el.removeAttribute(bk); return; }
+        if(cur!==both && cur!==sp.zh && cur!==sp.en){ el.removeAttribute(bk); return; }   // 別處已改成其他文字：不再覆蓋
+        var want=en?sp.en:sp.zh; if(cur!==want) el.setAttribute(at,want);
+      });
+    });
+  }
+
+  /* ② 提示文字 顯示／不顯示 */
+  function keepTitle(el){ var t=el.getAttribute&&el.getAttribute("title"); if(t){ el.setAttribute("data-title-keep",t); el.removeAttribute("title"); } }
+  function strip(root){ if(root.nodeType!==1) return; keepTitle(root); Array.prototype.forEach.call(root.querySelectorAll("[title]"), keepTitle); }
+  function restore(){ Array.prototype.forEach.call(document.querySelectorAll("[data-title-keep]"), function(el){ if(!el.hasAttribute("title")) el.setAttribute("title", el.getAttribute("data-title-keep")); el.removeAttribute("data-title-keep"); }); }
+  var tobs=null;
+  function applyTips(show){
+    document.body.classList.toggle("notips", !show);
+    if(!show){
+      strip(document.body);
+      if(!tobs){
+        tobs=new MutationObserver(function(muts){ muts.forEach(function(m){
+          if(m.type==="attributes") keepTitle(m.target);
+          else Array.prototype.forEach.call(m.addedNodes, strip);
+        }); });
+        tobs.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:["title"]});
+      }
+    } else { if(tobs){ tobs.disconnect(); tobs=null; } restore(); syncLang(); }
+  }
+
+  var css=document.createElement("style"); css.id="srPrefStyle";
+  css.textContent=
+    ".srpref{position:relative;display:inline-flex;align-items:center;margin-left:8px;flex:none}"+
+    ".srpref>button{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;padding:0;border:1px solid var(--sh-line,#C9D2CD);border-radius:50%;background:transparent;color:var(--sh-ink,#2b3a35);cursor:pointer;box-shadow:none}"+
+    ".srpref>button:hover,.srpref>button[aria-expanded=true]{border-color:var(--sh-green,#0f766e);color:var(--sh-green-d,#0f766e);background:transparent}"+
+    ".srpref svg{width:17px;height:17px}"+
+    ".srpop{position:absolute;z-index:10000;top:calc(100% + 8px);right:0;min-width:210px;padding:10px 12px;background:#fff;color:#23282D;border:1px solid #D5DCE0;border-radius:10px;box-shadow:0 8px 22px rgba(0,0,0,.16);font-size:13px;line-height:1.5;text-align:left;white-space:nowrap}"+
+    ".srpop[hidden]{display:none}"+
+    ".srph{font-weight:700;font-size:12px;color:#66717A;margin-bottom:6px}"+
+    ".srprow{display:flex;align-items:center;gap:12px}"+
+    ".srprow .srpl{font-weight:600;margin-right:2px}"+
+    ".srprow label{display:inline-flex;align-items:center;gap:4px;cursor:pointer;font-weight:500}"+
+    ".srprow input{margin:0;accent-color:#0f766e}"+
+    "body.notips #gtip{display:none !important}"+
+    "body.notips .hastip::after,body.notips .hastip::before{display:none !important}"+
+    "body.notips .infotip:hover .tip{display:none}body.notips .infotip.show .tip,body.notips .infotip.show:hover .tip{display:block}";
+  document.head.appendChild(css);
+
+  var lang=document.getElementById("langBtn");
+  if(lang){
+    var wrap=document.createElement("span"); wrap.className="srpref";
+    wrap.innerHTML=
+      '<button type="button" id="srPrefBtn" aria-haspopup="true" aria-expanded="false" title="偏好設定 / Preferences" aria-label="偏好設定 / Preferences">'+
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>'+
+      '</button>'+
+      '<div class="srpop" id="srPrefPop" hidden role="dialog">'+
+        '<div class="srph"><span data-zh>偏好設定</span><span data-en>Preferences</span></div>'+
+        '<div class="srprow"><span class="srpl"><span data-zh>提示文字</span><span data-en>Tooltips</span></span>'+
+          '<label><input type="radio" name="srTips" value="1"><span data-zh>顯示</span><span data-en>Show</span></label>'+
+          '<label><input type="radio" name="srTips" value="0"><span data-zh>不顯示</span><span data-en>Hide</span></label></div>'+
+      '</div>';
+    lang.insertAdjacentElement("afterend", wrap);
+    var btn=wrap.querySelector("#srPrefBtn"), pop=wrap.querySelector("#srPrefPop"), radios=wrap.querySelectorAll("input[name=srTips]");
+    function setOpen(o){ pop.hidden=!o; btn.setAttribute("aria-expanded", o?"true":"false"); }
+    btn.addEventListener("click", function(e){ e.stopPropagation(); setOpen(pop.hidden); });
+    pop.addEventListener("click", function(e){ e.stopPropagation(); });
+    document.addEventListener("click", function(){ setOpen(false); });
+    document.addEventListener("keydown", function(e){ if(e.key==="Escape") setOpen(false); });
+    Array.prototype.forEach.call(radios, function(r){ r.addEventListener("change", function(){ if(!r.checked) return; var show=(r.value==="1"); lsSet(show?"1":"0"); applyTips(show); }); });
+    var saved=lsGet(), show=(saved!=="0");
+    Array.prototype.forEach.call(radios, function(r){ r.checked=(r.value===(show?"1":"0")); });
+    applyTips(show);
+  }
+
+  new MutationObserver(function(){ syncLang(); }).observe(document.body,{attributes:true,attributeFilter:["class"]});
+  new MutationObserver(function(){ syncLang(); }).observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
+  syncLang();
 })();
 </script>
 </body>

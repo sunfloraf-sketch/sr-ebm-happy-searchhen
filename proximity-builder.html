@@ -1333,5 +1333,97 @@ window.toggleLang=function(){
 })();
 </script>
 <script data-goatcounter="https://sr-toolkit.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<script id="srPrefScript">
+/* 共用：① 提示文字只顯示目前語言（「中文 / English」雙語提示依語言切開）② 右上角「偏好設定」：提示文字 顯示／不顯示（localStorage: sr_pref_tips） */
+(function(){
+  var KEY="sr_pref_tips", cjk=/[一-鿿]/;
+  function isEn(){ return document.body.classList.contains("en") || document.documentElement.getAttribute("lang")==="en"; }
+  function lsGet(){ try{ return localStorage.getItem(KEY); }catch(e){ return null; } }
+  function lsSet(v){ try{ localStorage.setItem(KEY,v); }catch(e){} }
+
+  /* ① 雙語提示切語言 */
+  function split(v){ var i=String(v||"").lastIndexOf(" / "); if(i<0) return null; var a=v.slice(0,i).trim(), b=v.slice(i+3).trim(); return (cjk.test(a)&&!cjk.test(b)&&/[A-Za-z]{2}/.test(b))?{zh:a,en:b}:null; }
+  var ATTRS=["data-tip","title","data-title-keep","aria-label"];
+  function syncLang(){
+    var en=isEn();
+    ATTRS.forEach(function(at){
+      Array.prototype.forEach.call(document.querySelectorAll("["+at+"]"), function(el){
+        var bk="data-both-"+at, both=el.getAttribute(bk), cur=el.getAttribute(at)||"";
+        if(both===null){ if(!split(cur)) return; both=cur; el.setAttribute(bk,both); }
+        var sp=split(both); if(!sp){ el.removeAttribute(bk); return; }
+        if(cur!==both && cur!==sp.zh && cur!==sp.en){ el.removeAttribute(bk); return; }   // 別處已改成其他文字：不再覆蓋
+        var want=en?sp.en:sp.zh; if(cur!==want) el.setAttribute(at,want);
+      });
+    });
+  }
+
+  /* ② 提示文字 顯示／不顯示 */
+  function keepTitle(el){ var t=el.getAttribute&&el.getAttribute("title"); if(t){ el.setAttribute("data-title-keep",t); el.removeAttribute("title"); } }
+  function strip(root){ if(root.nodeType!==1) return; keepTitle(root); Array.prototype.forEach.call(root.querySelectorAll("[title]"), keepTitle); }
+  function restore(){ Array.prototype.forEach.call(document.querySelectorAll("[data-title-keep]"), function(el){ if(!el.hasAttribute("title")) el.setAttribute("title", el.getAttribute("data-title-keep")); el.removeAttribute("data-title-keep"); }); }
+  var tobs=null;
+  function applyTips(show){
+    document.body.classList.toggle("notips", !show);
+    if(!show){
+      strip(document.body);
+      if(!tobs){
+        tobs=new MutationObserver(function(muts){ muts.forEach(function(m){
+          if(m.type==="attributes") keepTitle(m.target);
+          else Array.prototype.forEach.call(m.addedNodes, strip);
+        }); });
+        tobs.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:["title"]});
+      }
+    } else { if(tobs){ tobs.disconnect(); tobs=null; } restore(); syncLang(); }
+  }
+
+  var css=document.createElement("style"); css.id="srPrefStyle";
+  css.textContent=
+    ".srpref{position:relative;display:inline-flex;align-items:center;margin-left:8px;flex:none}"+
+    ".srpref>button{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;padding:0;border:1px solid var(--sh-line,#C9D2CD);border-radius:50%;background:transparent;color:var(--sh-ink,#2b3a35);cursor:pointer;box-shadow:none}"+
+    ".srpref>button:hover,.srpref>button[aria-expanded=true]{border-color:var(--sh-green,#0f766e);color:var(--sh-green-d,#0f766e);background:transparent}"+
+    ".srpref svg{width:17px;height:17px}"+
+    ".srpop{position:absolute;z-index:10000;top:calc(100% + 8px);right:0;min-width:210px;padding:10px 12px;background:#fff;color:#23282D;border:1px solid #D5DCE0;border-radius:10px;box-shadow:0 8px 22px rgba(0,0,0,.16);font-size:13px;line-height:1.5;text-align:left;white-space:nowrap}"+
+    ".srpop[hidden]{display:none}"+
+    ".srph{font-weight:700;font-size:12px;color:#66717A;margin-bottom:6px}"+
+    ".srprow{display:flex;align-items:center;gap:12px}"+
+    ".srprow .srpl{font-weight:600;margin-right:2px}"+
+    ".srprow label{display:inline-flex;align-items:center;gap:4px;cursor:pointer;font-weight:500}"+
+    ".srprow input{margin:0;accent-color:#0f766e}"+
+    "body.notips #gtip{display:none !important}"+
+    "body.notips .hastip::after,body.notips .hastip::before{display:none !important}"+
+    "body.notips .infotip:hover .tip{display:none}body.notips .infotip.show .tip,body.notips .infotip.show:hover .tip{display:block}";
+  document.head.appendChild(css);
+
+  var lang=document.getElementById("langBtn");
+  if(lang){
+    var wrap=document.createElement("span"); wrap.className="srpref";
+    wrap.innerHTML=
+      '<button type="button" id="srPrefBtn" aria-haspopup="true" aria-expanded="false" title="偏好設定 / Preferences" aria-label="偏好設定 / Preferences">'+
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>'+
+      '</button>'+
+      '<div class="srpop" id="srPrefPop" hidden role="dialog">'+
+        '<div class="srph"><span data-zh>偏好設定</span><span data-en>Preferences</span></div>'+
+        '<div class="srprow"><span class="srpl"><span data-zh>提示文字</span><span data-en>Tooltips</span></span>'+
+          '<label><input type="radio" name="srTips" value="1"><span data-zh>顯示</span><span data-en>Show</span></label>'+
+          '<label><input type="radio" name="srTips" value="0"><span data-zh>不顯示</span><span data-en>Hide</span></label></div>'+
+      '</div>';
+    lang.insertAdjacentElement("afterend", wrap);
+    var btn=wrap.querySelector("#srPrefBtn"), pop=wrap.querySelector("#srPrefPop"), radios=wrap.querySelectorAll("input[name=srTips]");
+    function setOpen(o){ pop.hidden=!o; btn.setAttribute("aria-expanded", o?"true":"false"); }
+    btn.addEventListener("click", function(e){ e.stopPropagation(); setOpen(pop.hidden); });
+    pop.addEventListener("click", function(e){ e.stopPropagation(); });
+    document.addEventListener("click", function(){ setOpen(false); });
+    document.addEventListener("keydown", function(e){ if(e.key==="Escape") setOpen(false); });
+    Array.prototype.forEach.call(radios, function(r){ r.addEventListener("change", function(){ if(!r.checked) return; var show=(r.value==="1"); lsSet(show?"1":"0"); applyTips(show); }); });
+    var saved=lsGet(), show=(saved!=="0");
+    Array.prototype.forEach.call(radios, function(r){ r.checked=(r.value===(show?"1":"0")); });
+    applyTips(show);
+  }
+
+  new MutationObserver(function(){ syncLang(); }).observe(document.body,{attributes:true,attributeFilter:["class"]});
+  new MutationObserver(function(){ syncLang(); }).observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
+  syncLang();
+})();
+</script>
 </body>
 </html>
