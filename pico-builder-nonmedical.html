@@ -615,7 +615,7 @@ City blocks)</pre>
       <label title="以顏色標出成對圓括弧"><input type="checkbox" id="cbBracket"><span data-zh>成對括弧顏色</span><span data-en>Bracket pairs</span></label>
       <label title="把最後一行的 #行號組合展開，串成一條可直接貼入單一檢索框的長檢索式"><input type="checkbox" id="cbFlat"><span data-zh>合併為一串檢索語法</span><span data-en>One combined query</span></label>
       <label title="在檢索策略裡，把控制詞彙(ASC/BSC/ERIC/Ei Compendex 等)加上可點的詞表查核連結，方便向館員諮詢時快速複查。連結只供核對，複製的檢索式仍為純文字。"><input type="checkbox" id="cbLinks" checked><span data-zh>控制詞彙查核連結</span><span data-en>Vocab verify links</span></label>
-      <span style="display:inline-flex;align-items:center;gap:8px"><label title="英文同義詞裡的多字片語：預設加引號當片語（如 &quot;gestational diabetes&quot;）；勾選則改用鄰近字（如 gestational NEAR/2 diabetes）。鄰近距離可在右方數字框設定（預設 2）。強烈建議先用「鄰近字組合器」把同義詞分堆整理乾淨再貼入。" style="display:inline-flex;align-items:center;gap:5px"><input type="checkbox" id="cbNearPhrase"><span data-zh>片語改用鄰近字</span><span data-en>Phrases as proximity</span></label><span style="display:inline-flex;align-items:center;gap:3px;color:var(--mut)"><span data-zh>鄰</span><span data-en>within&nbsp;</span><input type="number" id="nearN" min="0" max="20" value="2" title="鄰近距離：幾個單字內（預設 2）" style="width:34px;height:28px;font-size:12px;padding:0 5px;text-align:center;border:1px solid var(--line);border-radius:6px"><span data-zh>單字</span><span data-en>&nbsp;words</span></span></span>
+      <span class="phmode" style="display:inline-flex;align-items:center;gap:6px"><span title="英文同義詞裡的多字詞（如 gestational diabetes）如何處理：片語＝加引號；鄰近字＝以鄰近運算連接（距離可設定）；依輸入條件＝不加引號，照你輸入的樣子交給各資料庫依其預設處理（PubMed 的自由詞也不加欄位標籤，貼到 PubMed 才會自動對應 MeSH，ATM），特殊狀況使用。 / How multi-word terms (e.g. gestational diabetes) are handled: Phrase = quoted; Proximity = joined with a proximity operator (set the distance); As typed = left unquoted for each database to handle by its own default (PubMed free text also gets no field tag, so PubMed’s Automatic Term Mapping to MeSH runs when you paste it) — for special cases." style="cursor:help"><span data-zh>多字詞</span><span data-en>Multi-word</span></span><select id="phraseMode" style="width:auto;min-width:0;flex:0 0 auto;height:28px;font-size:12px;padding:0 6px;border:1px solid var(--line);border-radius:6px;background:#fff;color:inherit;cursor:pointer"><option value="phrase" data-zh="片語（預設）" data-en="Phrase (default)">片語（預設）</option><option value="near" data-zh="鄰近字" data-en="Proximity">鄰近字</option><option value="raw" data-zh="依輸入條件" data-en="As typed">依輸入條件</option></select><span id="nearWrap" style="display:none;align-items:center;gap:3px;color:var(--mut)"><span data-zh>鄰</span><span data-en>within&nbsp;</span><input type="number" id="nearN" min="0" max="20" value="2" title="鄰近距離：幾個單字內（預設 2） / Proximity distance in words (default 2)" style="width:34px;height:28px;font-size:12px;padding:0 5px;text-align:center;border:1px solid var(--line);border-radius:6px"><span data-zh>單字</span><span data-en>&nbsp;words</span></span></span>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-left:auto">
       <button class="btn primary" id="genBtn"><span data-zh>▶ 生成檢索策略</span><span data-en>▶ Generate strategies</span></button>
@@ -1480,11 +1480,12 @@ function renderTerm(node, dst, warn, ctx) {
   if (isPhrase && dst === "cochrane" && /\s/.test(val) && /[*?]/.test(val)) {
     // Cochrane 不允許引號片語內含截字："high dose*" -> (high NEXT dose*)
     body = "(" + val.split(/\s+/).join(" NEXT ") + ")";
-  } else if (!isPhrase && dst === "ebsco" && val && !/[*?#]/.test(val)) {
+  } else if (!isPhrase && dst === "ebsco" && val && !/[*?#]/.test(val) && !/\uE000/.test(val)) {   // （\uE000＝多字詞「依輸入條件」：不加引號）
     body = '"' + val + '"';   // EBSCOhost 會對未切截的單字自動加 *（home→home*）；單字強制雙引號改為精確比對
   } else {
     body = isPhrase ? '"' + val + '"' : val;
   }
+  if (RENDER_OPTS.pmBare && dst === "pubmed") return body;   // 多字詞「依輸入條件」：PubMed 自由詞不加欄位標籤（ATM）
   if (ctx.scoped) return body;                 // 欄位由外層 field 節點包
   return wrapField(body, ctx.field || "tiabkw", dst, false);  // 無範圍：自帶預設欄位
 }
@@ -1646,7 +1647,7 @@ if (typeof module !== "undefined" && module.exports) {
       picoBody = $("#picoBody"), outs = $("#outs"), lvlnote = $("#lvlnote"),
       cbColor = $("#cbColor"), cbBracket = $("#cbBracket"), cbFlat = $("#cbFlat"), customCombo = $("#customCombo"), picoWarn = $("#picoWarn"),
       toProxBtn = $("#toProxBtn"), restoreBtn = $("#restoreBtn"),
-      cbLinks = $("#cbLinks"), cinahlInst = $("#cinahlInst"), cbNearPhrase = $("#cbNearPhrase"), nearN = $("#nearN");
+      cbLinks = $("#cbLinks"), cinahlInst = $("#cinahlInst"), phraseMode = $("#phraseMode"), nearN = $("#nearN");
   // ---- 語法顏色標記 highlighter（綠=自由詞欄位+外層括弧, 紅=控制詞彙, 藍=鄰近字）----
   var PROX_RE=/\b(?:ADJ\d+|NEAR\/\d+|NEXT\/\d+|NEXT|N\d+|W\/\d+|W\d+|PRE\/\d+)\b|:~\d+/g;
   var CV_RE={pubmed:/(?:"[^"]*"|[A-Za-z][\w-]*)\s*\[(?:mh|mj|mesh)(?::noexp)?\]/gi,ovid:/(?:\bexp\s+)?\*?"[^"]*"\//gi,embase:/"[^"]*"\/(?:exp(?:\/mj)?|de|mj)\b/gi,cochrane:/\[mh\b[^\[\]]*(?:\[mj\])?\]/gi,ebsco:/\b(?:MH|MM)\s*\([^)]*\)|\bMW\s+"[^"]*"/gi,wos:null,scopus:null};
@@ -2682,7 +2683,7 @@ if (typeof module !== "undefined" && module.exports) {
     var _endsOpen = function(s){ return /\($/.test(s) || new RegExp("(?:^|\\s)"+_OPI+"$","i").test(s) || (_ebProx && new RegExp("(?:^|\\s)"+_OPU+"$").test(s)); };
     var _startsClose = function(s){ return /^\)/.test(s) || new RegExp("^"+_OPI+"(?:\\s|$)","i").test(s) || (_ebProx && new RegExp("^"+_OPU+"(?:\\s|$)").test(s)); };
     // 多字片語處理：一行為「純多字片語」(無運算子/引號/括號) 時，預設加引號當片語；勾「片語用鄰近字」則改 NEAR/3
-    var _nearMode = cbNearPhrase && cbNearPhrase.checked;
+    var _pmode = (phraseMode && phraseMode.value) || "phrase", _nearMode = (_pmode==="near");   // 多字詞：phrase 片語／near 鄰近字／raw 依輸入條件
     var _nearN = (nearN && nearN.value!=="" && parseInt(nearN.value,10)>=0) ? parseInt(nearN.value,10) : 2;
     var _hasOp = function(s){ return new RegExp("(?:^|\\s)"+_OPI+"(?:\\s|$)","i").test(s) || (_ebProx && new RegExp("(?:^|\\s)"+_OPU+"(?:\\s|$)").test(s)); };
     _lns = _lns.map(function(l){
@@ -2692,17 +2693,20 @@ if (typeof module !== "undefined" && module.exports) {
       if(/["()]/.test(_core) || _hasOp(_core)) return l;   // 核心仍含引號／括號／運算子 → 尊重使用者原樣
       var ws = _core.split(/\s+/).filter(Boolean);
       if(ws.length<2) return l;                             // 單字不處理
+      if(_pmode==="raw") return _pre + ws.join("\uE000") + _suf;   // 依輸入條件：不加引號／鄰近字，原樣交給各資料庫預設處理（暫以 \uE000 連接，避免被拆成 AND）
       var _wrapped = _nearMode ? ("("+ws.join(" NEAR/"+(_nearN + (SYNTAX_MAP.proximityOffset[startDB]||0))+" ")+")") : ('"'+_core+'"');
       return _pre + _wrapped + _suf;
     });
     var _joined = _lns[0]||"";
     for(var _i=1;_i<_lns.length;_i++){ _joined += ((_endsOpen(_lns[_i-1])||_startsClose(_lns[_i]))?" ":" OR ") + _lns[_i]; }
     var parsed = parseQuery(_joined, startDB);
-    var node = { t:"field", field:level, child:parsed.ast };
+    var node = (_pmode==="raw" && db==="pubmed") ? parsed.ast : { t:"field", field:level, child:parsed.ast };   // 依輸入條件：PubMed 自由詞不加欄位標籤，讓 PubMed 自動對應 MeSH（ATM）
     var warnArr=[];
     if(db==="compendex") node = expandProxCV(node, warnArr);          // Ei Compendex：鄰近字拆成個別詞對、移除切截
     else if(db==="ieee") node = expandProxCV(node, warnArr, false);   // IEEE：鄰近字拆成個別詞對（保留切截，欄位於各運算元重複）
-    var out = render(node, db, warnArr, { scoped:false });
+    RENDER_OPTS.pmBare = (_pmode==="raw" && db==="pubmed");
+    var out; try{ out = render(node, db, warnArr, { scoped:false }); } finally { RENDER_OPTS.pmBare = false; }
+    out = String(out||"").replace(/\uE000/g," ");
     if(warnOut){ warnArr.forEach(function(w){
       if(w.indexOf("⚠EMBCHAIN⚠")===0) warnOut.push(isEn() ? "This contains nested proximity (NEAR/NEXT) operators, which Embase.com does not support. Change the relationship between the phrase groups to parallel proximity, or split it into separate sets." : "此式含巢狀鄰近（NEAR／NEXT）運算，Embase.com 不支援，請將詞組間關係改為平行鄰近，或拆成多組處理");
       else if(w.indexOf("⚠CVTRUNC⚠")===0) warnOut.push(isEn() ? "Ei Compendex: proximity (NEAR/PRE) cannot contain truncation (*); it was removed from the proximity terms — list the spelling variants as separate OR terms instead." : "Ei Compendex：鄰近字(NEAR／PRE)不可含切截（*），已從鄰近詞對移除；請將字尾變化改列為獨立 OR 詞。");
@@ -3877,7 +3881,7 @@ if (typeof module !== "undefined" && module.exports) {
     }catch(e){ srAlert((en?"Fill failed: ":"\u56de\u586b\u5931\u6557\uff1a")+(e&&e.message||e)); btn.disabled=false; }
   };
 
-  function setLangPlaceholders(){ if(pasteZone) pasteZone.placeholder = isEn() ? "Press Ctrl+V here" : "在此按 Ctrl+V 貼上表格"; if(diagZone) diagZone.placeholder = isEn() ? "Press Ctrl+V here (diagnostics only; won’t fill in)" : "在此按 Ctrl+V 貼上表格（僅診斷，不會填入）"; }
+  function setLangPlaceholders(){ var _pmS=document.getElementById("phraseMode"); if(_pmS) Array.prototype.forEach.call(_pmS.options,function(o){ o.textContent=o.getAttribute(isEn()?"data-en":"data-zh"); }); if(pasteZone) pasteZone.placeholder = isEn() ? "Press Ctrl+V here" : "在此按 Ctrl+V 貼上表格"; if(diagZone) diagZone.placeholder = isEn() ? "Press Ctrl+V here (diagnostics only; won’t fill in)" : "在此按 Ctrl+V 貼上表格（僅診斷，不會填入）"; }
   window.toggleLang=function(){
     document.body.classList.toggle("en");
     $("#langBtn").textContent = isEn() ? "中文" : "English";
@@ -3942,8 +3946,10 @@ if (typeof module !== "undefined" && module.exports) {
   if(cbBracket) cbBracket.addEventListener("change", function(){ if(outs.children.length) $("#genBtn").click(); });
   if(cbFlat) cbFlat.addEventListener("change", function(){ if(outs.children.length) $("#genBtn").click(); });
   if(cbLinks) cbLinks.addEventListener("change", function(){ if(outs.children.length) $("#genBtn").click(); });
-  if(cbNearPhrase) cbNearPhrase.addEventListener("change", function(){ if(outs.children.length) $("#genBtn").click(); });
-  if(nearN) nearN.addEventListener("change", function(){ if(outs.children.length && cbNearPhrase && cbNearPhrase.checked) $("#genBtn").click(); });
+  function _syncPhraseMode(){ var w=$("#nearWrap"); if(w) w.style.display=(phraseMode&&phraseMode.value==="near")?"inline-flex":"none"; }
+  if(phraseMode) phraseMode.addEventListener("change", function(){ _syncPhraseMode(); if(outs.children.length) $("#genBtn").click(); });
+  if(nearN) nearN.addEventListener("change", function(){ if(outs.children.length && phraseMode && phraseMode.value==="near") $("#genBtn").click(); });
+  _syncPhraseMode();
   // EBSCOhost 機構碼（ASC／BSC／ERIC）改由各欄表頭下拉面板內逐庫輸入（見 buildColumnVerify）
   // CINAHL 機構碼：本機記憶，變更後重生（讓 CINAHL 連結生效）
   if(cinahlInst){ try{ cinahlInst.value=localStorage.getItem("sr_cinahl_inst")||""; }catch(e){}
