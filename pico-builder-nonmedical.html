@@ -421,7 +421,7 @@
   <div class="panel">
     <div class="controls">
       <div>
-        <label class="fld" style="display:flex;align-items:flex-end;gap:4px"><span><span data-zh>起始資料庫</span><span data-en>Starting database</span></span><span class="infotip" style="margin-bottom:2px;order:-1"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip"><span data-zh>你在「英文同義詞」欄打的自由詞，是用哪個資料庫的語法寫的。主要影響鄰近字（NEAR/n、ADJ、Nn…）與切截（*）的判讀與換算；若只打乾淨的單字／片語，維持預設即可。</span><span data-en>Which database's syntax your free-text (English synonyms column) is written in. Mainly affects how proximity (NEAR/n, ADJ, Nn…) and truncation (*) are read and converted; if you only type plain words/phrases, leave the default.</span></span></span></label>
+        <label class="fld" style="display:flex;align-items:flex-end;gap:4px"><span><span data-zh>起始資料庫</span><span data-en>Starting database</span></span><span class="infotip" style="margin-bottom:2px;order:-1"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip"><span data-zh>你在「英文同義詞」欄打的自由詞彙，是用哪個資料庫的語法寫的。主要影響鄰近字（NEAR/n、ADJ、Nn…）與切截（*）的判讀與換算；若只打乾淨的單字／片語，維持預設即可。</span><span data-en>Which database's syntax your free-text (English synonyms column) is written in. Mainly affects how proximity (NEAR/n, ADJ, Nn…) and truncation (*) are read and converted; if you only type plain words/phrases, leave the default.</span></span></span></label>
         <select id="src"></select>
       </div>
       <div>
@@ -624,11 +624,11 @@ City blocks)</pre>
       </div>
     </div>
     <div class="hlopts">
-      <label title="自由詞欄位＋外層括弧=綠、控制詞彙=紅、鄰近字=藍"><input type="checkbox" id="cbColor" checked><span data-zh>語法顏色標記</span><span data-en>Syntax colors</span></label>
+      <label title="自由詞彙欄位＋外層括弧=綠、控制詞彙=紅、鄰近字=藍"><input type="checkbox" id="cbColor" checked><span data-zh>語法顏色標記</span><span data-en>Syntax colors</span></label>
       <label title="以顏色標出成對圓括弧"><input type="checkbox" id="cbBracket"><span data-zh>成對括弧顏色</span><span data-en>Bracket pairs</span></label>
       <label title="把最後一行的 #行號組合展開，串成一條可直接貼入單一檢索框的長檢索式"><input type="checkbox" id="cbFlat"><span data-zh>合併為一串檢索語法</span><span data-en>One combined query</span></label>
       <label title="在檢索策略裡，把控制詞彙(ASC/BSC/ERIC/Ei Compendex 等)加上可點的詞表查核連結，方便向館員諮詢時快速複查。連結只供核對，複製的檢索式仍為純文字。"><input type="checkbox" id="cbLinks" checked><span data-zh>控制詞彙查核連結</span><span data-en>Vocab verify links</span></label>
-      <span class="phmode" style="display:inline-flex;align-items:center;gap:6px"><span title="英文同義詞裡的多字詞（如 gestational diabetes）如何處理：片語＝加引號；鄰近字＝以鄰近運算連接（距離可設定）；依輸入條件＝不加引號，照你輸入的樣子交給各資料庫依其預設處理（PubMed：L0／L1 自由詞不加欄位標籤，貼到 PubMed 才會自動對應 MeSH，ATM；L2／L3 仍加 [ti]，會失去控制詞彙比對效果），特殊狀況使用。 / How multi-word terms (e.g. gestational diabetes) are handled: Phrase = quoted; Proximity = joined with a proximity operator (set the distance); As typed = left unquoted for each database to handle by its own default (PubMed: at L0/L1 free text gets no field tag, so PubMed’s Automatic Term Mapping to MeSH runs when you paste it; at L2/L3 it still gets [ti] and loses that controlled-vocabulary mapping) — for special cases." style="cursor:help"><span data-zh>多字詞</span><span data-en>Multi-word</span></span><span class="pmdd"><select id="phraseMode" hidden aria-hidden="true" tabindex="-1"><option value="phrase" data-zh="片語（預設）" data-en="Phrase (default)">片語（預設）</option><option value="near" data-zh="鄰近字" data-en="Proximity">鄰近字</option><option value="raw" data-zh="依輸入條件" data-en="As typed">依輸入條件</option></select><button type="button" class="pmbtn" id="phraseModeBtn" aria-haspopup="listbox" aria-expanded="false"><span class="pmlbl">片語（預設）</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button><span class="pmmenu" id="phraseModeMenu" role="listbox" hidden><button type="button" role="option" data-v="phrase">片語（預設）</button><button type="button" role="option" data-v="near">鄰近字</button><button type="button" role="option" data-v="raw">依輸入條件</button></span></span><span id="nearWrap" style="display:none;align-items:center;gap:3px;color:var(--mut)"><span data-zh>鄰</span><span data-en>within&nbsp;</span><input type="number" id="nearN" min="0" max="20" value="2" title="鄰近距離：幾個單字內（預設 2） / Proximity distance in words (default 2)" style="width:34px;height:28px;font-size:12px;padding:0 5px;text-align:center;border:1px solid var(--line);border-radius:6px"><span data-zh>單字</span><span data-en>&nbsp;words</span></span></span>
+      <span class="phmode" style="display:inline-flex;align-items:center;gap:6px"><span title="英文同義詞裡的多字詞（如 gestational diabetes）如何處理：片語＝加引號；鄰近字＝以鄰近運算連接（距離可設定）；依輸入條件＝不加引號，照你輸入的樣子交給各資料庫依其預設處理（PubMed：L0／L1 自由詞彙不加欄位標籤，貼到 PubMed 才會自動對應 MeSH，ATM；L2／L3 仍加 [ti]，會失去控制詞彙比對效果），特殊狀況使用。 / How multi-word terms (e.g. gestational diabetes) are handled: Phrase = quoted; Proximity = joined with a proximity operator (set the distance); As typed = left unquoted for each database to handle by its own default (PubMed: at L0/L1 free text gets no field tag, so PubMed’s Automatic Term Mapping to MeSH runs when you paste it; at L2/L3 it still gets [ti] and loses that controlled-vocabulary mapping) — for special cases." style="cursor:help"><span data-zh>多字詞</span><span data-en>Multi-word</span></span><span class="pmdd"><select id="phraseMode" hidden aria-hidden="true" tabindex="-1"><option value="phrase" data-zh="片語（預設）" data-en="Phrase (default)">片語（預設）</option><option value="near" data-zh="鄰近字" data-en="Proximity">鄰近字</option><option value="raw" data-zh="依輸入條件" data-en="As typed">依輸入條件</option></select><button type="button" class="pmbtn" id="phraseModeBtn" aria-haspopup="listbox" aria-expanded="false"><span class="pmlbl">片語（預設）</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button><span class="pmmenu" id="phraseModeMenu" role="listbox" hidden><button type="button" role="option" data-v="phrase">片語（預設）</button><button type="button" role="option" data-v="near">鄰近字</button><button type="button" role="option" data-v="raw">依輸入條件</button></span></span><span id="nearWrap" style="display:none;align-items:center;gap:3px;color:var(--mut)"><span data-zh>鄰</span><span data-en>within&nbsp;</span><input type="number" id="nearN" min="0" max="20" value="2" title="鄰近距離：幾個單字內（預設 2） / Proximity distance in words (default 2)" style="width:34px;height:28px;font-size:12px;padding:0 5px;text-align:center;border:1px solid var(--line);border-radius:6px"><span data-zh>單字</span><span data-en>&nbsp;words</span></span></span>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-left:auto">
       <button class="btn primary" id="genBtn"><span data-zh>▶ 生成檢索策略</span><span data-en>▶ Generate strategies</span></button>
@@ -1498,7 +1498,7 @@ function renderTerm(node, dst, warn, ctx) {
   } else {
     body = isPhrase ? '"' + val + '"' : val;
   }
-  if (RENDER_OPTS.pmBare && dst === "pubmed") return body;   // 多字詞「依輸入條件」：PubMed 自由詞不加欄位標籤（ATM）
+  if (RENDER_OPTS.pmBare && dst === "pubmed") return body;   // 多字詞「依輸入條件」：PubMed 自由詞彙不加欄位標籤（ATM）
   if (ctx.scoped) return body;                 // 欄位由外層 field 節點包
   return wrapField(body, ctx.field || "tiabkw", dst, false);  // 無範圍：自帶預設欄位
 }
@@ -1661,7 +1661,7 @@ if (typeof module !== "undefined" && module.exports) {
       cbColor = $("#cbColor"), cbBracket = $("#cbBracket"), cbFlat = $("#cbFlat"), customCombo = $("#customCombo"), picoWarn = $("#picoWarn"),
       toProxBtn = $("#toProxBtn"), restoreBtn = $("#restoreBtn"),
       cbLinks = $("#cbLinks"), cinahlInst = $("#cinahlInst"), phraseMode = $("#phraseMode"), nearN = $("#nearN");
-  // ---- 語法顏色標記 highlighter（綠=自由詞欄位+外層括弧, 紅=控制詞彙, 藍=鄰近字）----
+  // ---- 語法顏色標記 highlighter（綠=自由詞彙欄位+外層括弧, 紅=控制詞彙, 藍=鄰近字）----
   var PROX_RE=/\b(?:ADJ\d+|NEAR\/\d+|NEXT\/\d+|NEXT|N\d+|W\/\d+|W\d+|PRE\/\d+)\b|:~\d+/g;
   var CV_RE={pubmed:/(?:"[^"]*"|[A-Za-z][\w-]*)\s*\[(?:mh|mj|mesh)(?::noexp)?\]/gi,ovid:/(?:\bexp\s+)?\*?"[^"]*"\//gi,embase:/"[^"]*"\/(?:exp(?:\/mj)?|de|mj)\b/gi,cochrane:/\[mh\b[^\[\]]*(?:\[mj\])?\]/gi,ebsco:/\b(?:MH|MM)\s*\([^)]*\)|\bMW\s+"[^"]*"/gi,wos:null,scopus:null};
   var FIELD_RE={pubmed:/\[(?:tiab|ti|tw|ab|all)\]/gi,ovid:/\.(?:ti|ab|kf|kw|mp|af|tw|nm|pt|sh|fs|xm|lg)(?:,(?:ti|ab|kf|kw|mp|af|tw|nm|pt|sh|fs|xm|lg))*\./gi,embase:/:(?:ti|ab|kw|de)(?:,(?:ti|ab|kw|de))*(?![a-z])/gi,cochrane:/:(?:ti|ab|kw|de)(?:,(?:ti|ab|kw|de))*(?![a-z])/gi,ebsco:/\b(?:TI|AB|KW|TX|XB)\b(?=\s*\()/gi,wos:/\b(?:TI|AB|AK|TS|ALL)=/gi,scopus:/\b(?:TITLE-ABS-KEY|TITLE-ABS|TITLE|ABS|AUTHKEY|KEY|ALL)\b(?=\s*\()/gi};
@@ -2297,7 +2297,7 @@ if (typeof module !== "undefined" && module.exports) {
     idx.ieee=find(/ieee/i);
     idx.pqdt=find(/pqdt|proquest|dissertation|學位論文/i);
     idx.zh=find(/中文|chinese|中譯/i);
-    // 自由詞（英文同義詞）：優先「After／處理後」欄；否則英文同義詞欄（排除 Before/處理前、中文欄、各控制詞彙欄）；再否則取 Before 欄的右一欄
+    // 自由詞彙（英文同義詞）：優先「After／處理後」欄；否則英文同義詞欄（排除 Before/處理前、中文欄、各控制詞彙欄）；再否則取 Before 欄的右一欄
     idx.ft=find(/after|處理後|處理過/i);
     if(idx.ft<0) idx.ft=find(/english|英文|自由詞|同義詞|synonym|free-?text|keyword|term/i, /before|處理前|中文|chinese|控制|vocab|thesaur|subject|asc|bsc|eric|compendex|engineering|ieee|pqdt|proquest/i);
     if(idx.ft<0){ var b=find(/before|處理前/i); if(b>=0 && b+1<hdr.length) idx.ft=b+1; }
@@ -2676,7 +2676,7 @@ if (typeof module !== "undefined" && module.exports) {
     group.forEach(function(d){ d.addEventListener("toggle", function(){ if(d.open){ group.forEach(function(o){ if(o!==d && o.open) o.open=false; }); } }); });
   })();
 
-  // ---- 核心：自由詞欄位範圍化（重用引擎的 field 節點；PubMed 逐詞展開） ----
+  // ---- 核心：自由詞彙欄位範圍化（重用引擎的 field 節點；PubMed 逐詞展開） ----
   function stripOuterParen(s){ s=(s||"").trim(); if(s[0]!=="("||s[s.length-1]!==")") return s; var depth=0; for(var i=0;i<s.length;i++){ if(s[i]==="(")depth++; else if(s[i]===")"){ depth--; if(depth===0 && i<s.length-1) return s; } } return s.slice(1,-1).trim(); }
   var PM_EXPAND=false, PM_VARIANTS=null;   // PubMed 卡片「使用鄰近字語法（展開群組配對）」狀態
   var EMBASE_LIM=true, AIRITI_INC=false;   // Embase.com 去重行、華藝納入英文片語與切截：改由各自資料庫卡片的勾選控制
@@ -2713,7 +2713,7 @@ if (typeof module !== "undefined" && module.exports) {
     var _joined = _lns[0]||"";
     for(var _i=1;_i<_lns.length;_i++){ _joined += ((_endsOpen(_lns[_i-1])||_startsClose(_lns[_i]))?" ":" OR ") + _lns[_i]; }
     var parsed = parseQuery(_joined, startDB);
-    var _pmBare = (_pmode==="raw" && db==="pubmed" && (level==="L0"||level==="L1"));   // 依輸入條件：PubMed L0／L1 自由詞不加欄位標籤（ATM）；L2／L3 仍加 [ti]
+    var _pmBare = (_pmode==="raw" && db==="pubmed" && (level==="L0"||level==="L1"));   // 依輸入條件：PubMed L0／L1 自由詞彙不加欄位標籤（ATM）；L2／L3 仍加 [ti]
     var node = _pmBare ? parsed.ast : { t:"field", field:level, child:parsed.ast };
     var warnArr=[];
     if(db==="compendex") node = expandProxCV(node, warnArr);          // Ei Compendex：鄰近字拆成個別詞對、移除切截
@@ -2775,7 +2775,7 @@ if (typeof module !== "undefined" && module.exports) {
     return { text:expr, hasSub:hasSub, hasBool:hasBool };
   }
 
-  // ---- 台灣資料庫（華藝 airiti／國圖 ndltd）自由詞：合併中文同義詞(zh)＋英文同義詞(ft) ----
+  // ---- 台灣資料庫（華藝 airiti／國圖 ndltd）自由詞彙：合併中文同義詞(zh)＋英文同義詞(ft) ----
   function twChineseTerms(cell){ return String(cell||"").split(/[\n、,，;；]+/).map(function(s){return s.trim();}).filter(Boolean); }
   function twEnglishTerms(cell){
     return String(cell||"").split(/[\n、,，;；]+|\s+OR\s+/i).map(function(s){
@@ -3265,14 +3265,14 @@ if (typeof module !== "undefined" && module.exports) {
           estBtn.disabled=false;st.className="pmstatus"+(failures?" err":"");st.textContent=failures?(isEn()?(failures+" failed"):(failures+" 行查詢失敗")):(isEn()?"Completed":"估算完成");
         };
       }
-      // AgeLine／ERIC：控制詞彙「貼上即用」區——坐落在該庫檢索策略下方，逐概念貼入 DE "…" OR …（原樣帶入，與自由詞組合）
+      // AgeLine／ERIC：控制詞彙「貼上即用」區——坐落在該庫檢索策略下方，逐概念貼入 DE "…" OR …（原樣帶入，與自由詞彙組合）
       if(tg.pasteCV){
         PASTE_CV[tid]=PASTE_CV[tid]||{};
         var cvw=document.createElement("div"); cvw.className="cvpaste";
         var chd=document.createElement("div"); chd.className="cvpaste-hd";
         chd.textContent=isEn()
           ? 'Paste this database’s controlled-vocabulary expression per concept — used verbatim (syntax unchanged), then OR-combined with the free-text line above.'
-          : '貼上此資料庫的控制詞彙檢索式（逐概念，例如 DE "…" OR DE "…"）：原樣帶入、不改語法，並與上方自由詞自動以 OR 組合。';
+          : '貼上此資料庫的控制詞彙檢索式（逐概念，例如 DE "…" OR DE "…"）：原樣帶入、不改語法，並與上方自由詞彙自動以 OR 組合。';
         cvw.appendChild(chd);
         rows.forEach(function(r,_ri){
           if(!_rf(r)) return;   // 空概念不顯示
@@ -4014,7 +4014,7 @@ if (typeof module !== "undefined" && module.exports) {
       var srcName=TARGET_BY_ID[srcSel.value]?TARGET_BY_ID[srcSel.value].label:srcSel.value;
       picoWarn.textContent = isEn()
         ? ("Added "+box.length+" concept(s) from the Proximity Builder"+(hadBase?" after your existing table":" (source: "+srcName+")")+". Free-text is filled in; add controlled vocabulary (MeSH / Emtree / CINAHL) as needed.")
-        : ("已從鄰近字組合器新增 "+box.length+" 個概念"+(hadBase?"（接在原本的表格後面）":"（來源："+srcName+"）")+"。自由詞已填入，控制詞彙（MeSH／Emtree／CINAHL）請自行補填。");
+        : ("已從鄰近字組合器新增 "+box.length+" 個概念"+(hadBase?"（接在原本的表格後面）":"（來源："+srcName+"）")+"。自由詞彙已填入，控制詞彙（MeSH／Emtree／CINAHL）請自行補填。");
     }
     return true;
   }

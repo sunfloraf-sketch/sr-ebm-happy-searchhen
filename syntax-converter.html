@@ -242,7 +242,7 @@
 
   <div class="toolbar">
     <div class="coloropts">
-      <label title="自由詞欄位＋外層括弧=綠、控制詞彙=紅、鄰近字=藍"><input type="checkbox" id="cbColor" checked><span data-zh>語法顏色標記</span><span data-en>Syntax colors</span></label>
+      <label title="自由詞彙欄位＋外層括弧=綠、控制詞彙=紅、鄰近字=藍"><input type="checkbox" id="cbColor" checked><span data-zh>語法顏色標記</span><span data-en>Syntax colors</span></label>
       <label title="以顏色標出成對圓括弧"><input type="checkbox" id="cbBracket"><span data-zh>成對括弧顏色</span><span data-en>Bracket pairs</span></label>
       <label title="把最後一行的 #行號組合展開，串成一條可直接貼入單一檢索框的長檢索式"><input type="checkbox" id="cbFlat"><span data-zh>整併為單一長式</span><span data-en>One combined query</span></label>
     </div>
@@ -1322,7 +1322,7 @@ if (typeof module !== "undefined" && module.exports) {
   let userTouched = false;
 
   // ================= syntax highlighter (ported from PICO builder) =================
-  // 綠=自由詞欄位+外層括弧, 紅=控制詞彙, 藍=鄰近字；括弧配對 6 色
+  // 綠=自由詞彙欄位+外層括弧, 紅=控制詞彙, 藍=鄰近字；括弧配對 6 色
   var PROX_RE=/\b(?:ADJ\d+|NEAR\/\d+|NEXT\/\d+|NEXT|N\d+|W\/\d+|W\d+|PRE\/\d+)\b|:~\d+/g;
   var CV_RE={pubmed:/(?:"[^"]*"|[A-Za-z][\w-]*)\s*\[(?:mh|mj|mesh)(?::noexp)?\]/gi,ovid:/(?:\bexp\s+)?\*?"[^"]*"\//gi,embase:/"[^"]*"\/(?:exp(?:\/mj)?|de|mj)\b/gi,cochrane:/\[mh\b[^\[\]]*(?:\[mj\])?\]/gi,ebsco:/\b(?:MH|MM)\s*\([^)]*\)|\bMW\s+"[^"]*"/gi,wos:null,scopus:null};
   var FIELD_RE={pubmed:/\[(?:tiab|ti|tw|ab)\]/gi,ovid:/\.(?:ti|ab|kf|kw|mp|tw|nm|pt|sh|fs|xm|lg)(?:,(?:ti|ab|kf|kw|mp|tw|nm|pt|sh|fs|xm|lg))*\./gi,embase:/:(?:ti|ab|kw|de)(?:,(?:ti|ab|kw|de))*(?![a-z])/gi,cochrane:/:(?:ti|ab|kw|de)(?:,(?:ti|ab|kw|de))*(?![a-z])/gi,ebsco:/\b(?:TI|AB|KW|TX|XB)\b(?=\s*\()/gi,wos:/\b(?:TITLE|ABSTRACT|AUTHKEY|TS|TI|AB|AK)=/gi,scopus:/\b(?:TITLE-ABS-KEY|TITLE-ABS|TITLE|ABS|AUTHKEY|KEY)\b(?=\s*\()/gi};
@@ -1383,7 +1383,7 @@ if (typeof module !== "undefined" && module.exports) {
     inhl.scrollTop=inp.scrollTop; inhl.scrollLeft=inp.scrollLeft;
   }
 
-  // 完整檢索策略範例：族群(自由詞+控制詞彙) × 介入(自由詞+控制詞彙)，最後一行為組合式
+  // 完整檢索策略範例：族群(自由詞彙+控制詞彙) × 介入(自由詞彙+控制詞彙)，最後一行為組合式
   const EXAMPLES = {
     pubmed:   { lines:[
       'GDM[tiab] OR ((gestation*[tiab] OR pregnan*[tiab] OR gravid*[tiab]) AND (diabet*[tiab] OR T2DM[tiab] OR NIDDM[tiab]))',
