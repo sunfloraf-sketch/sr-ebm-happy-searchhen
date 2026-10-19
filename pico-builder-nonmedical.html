@@ -387,6 +387,19 @@
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style id="pmddStyle">
+  .pmdd{position:relative;display:inline-flex}
+  .pmbtn{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 8px 0 10px;font:inherit;font-size:12px;color:var(--ink);background:linear-gradient(180deg,#FFFFFF,#F7F9FA);border:1px solid var(--line);border-radius:6px;cursor:pointer;white-space:nowrap}
+  .pmbtn:hover{border-color:#AAB7BC}
+  .pmbtn:focus-visible{outline:none;border-color:#AAB7BC;box-shadow:0 0 0 3px rgba(127,153,149,.14)}
+  .pmbtn svg{width:12px;height:12px;flex:0 0 auto;opacity:.7;transition:transform .15s}
+  .pmbtn[aria-expanded="true"] svg{transform:rotate(180deg)}
+  .pmmenu{position:absolute;left:0;top:calc(100% + 4px);z-index:60;min-width:100%;padding:4px;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);display:flex;flex-direction:column}
+  .pmmenu[hidden]{display:none}
+  .pmmenu button{all:unset;box-sizing:border-box;display:block;padding:6px 10px;font-size:12.5px;color:var(--ink);border-radius:5px;cursor:pointer;white-space:nowrap}
+  .pmmenu button:hover,.pmmenu button:focus-visible{background:#F1F4F2}
+  .pmmenu button[aria-selected="true"]{font-weight:700;color:#2A5A49;background:#EEF3EF}
+</style>
 </head>
 <body>
 <header class="sh">
@@ -615,7 +628,7 @@ City blocks)</pre>
       <label title="以顏色標出成對圓括弧"><input type="checkbox" id="cbBracket"><span data-zh>成對括弧顏色</span><span data-en>Bracket pairs</span></label>
       <label title="把最後一行的 #行號組合展開，串成一條可直接貼入單一檢索框的長檢索式"><input type="checkbox" id="cbFlat"><span data-zh>合併為一串檢索語法</span><span data-en>One combined query</span></label>
       <label title="在檢索策略裡，把控制詞彙(ASC/BSC/ERIC/Ei Compendex 等)加上可點的詞表查核連結，方便向館員諮詢時快速複查。連結只供核對，複製的檢索式仍為純文字。"><input type="checkbox" id="cbLinks" checked><span data-zh>控制詞彙查核連結</span><span data-en>Vocab verify links</span></label>
-      <span class="phmode" style="display:inline-flex;align-items:center;gap:6px"><span title="英文同義詞裡的多字詞（如 gestational diabetes）如何處理：片語＝加引號；鄰近字＝以鄰近運算連接（距離可設定）；依輸入條件＝不加引號，照你輸入的樣子交給各資料庫依其預設處理（PubMed 的自由詞也不加欄位標籤，貼到 PubMed 才會自動對應 MeSH，ATM），特殊狀況使用。 / How multi-word terms (e.g. gestational diabetes) are handled: Phrase = quoted; Proximity = joined with a proximity operator (set the distance); As typed = left unquoted for each database to handle by its own default (PubMed free text also gets no field tag, so PubMed’s Automatic Term Mapping to MeSH runs when you paste it) — for special cases." style="cursor:help"><span data-zh>多字詞</span><span data-en>Multi-word</span></span><select id="phraseMode" style="width:auto;min-width:0;flex:0 0 auto;height:28px;font-size:12px;padding:0 6px;border:1px solid var(--line);border-radius:6px;background:#fff;color:inherit;cursor:pointer"><option value="phrase" data-zh="片語（預設）" data-en="Phrase (default)">片語（預設）</option><option value="near" data-zh="鄰近字" data-en="Proximity">鄰近字</option><option value="raw" data-zh="依輸入條件" data-en="As typed">依輸入條件</option></select><span id="nearWrap" style="display:none;align-items:center;gap:3px;color:var(--mut)"><span data-zh>鄰</span><span data-en>within&nbsp;</span><input type="number" id="nearN" min="0" max="20" value="2" title="鄰近距離：幾個單字內（預設 2） / Proximity distance in words (default 2)" style="width:34px;height:28px;font-size:12px;padding:0 5px;text-align:center;border:1px solid var(--line);border-radius:6px"><span data-zh>單字</span><span data-en>&nbsp;words</span></span></span>
+      <span class="phmode" style="display:inline-flex;align-items:center;gap:6px"><span title="英文同義詞裡的多字詞（如 gestational diabetes）如何處理：片語＝加引號；鄰近字＝以鄰近運算連接（距離可設定）；依輸入條件＝不加引號，照你輸入的樣子交給各資料庫依其預設處理（PubMed 的自由詞也不加欄位標籤，貼到 PubMed 才會自動對應 MeSH，ATM），特殊狀況使用。 / How multi-word terms (e.g. gestational diabetes) are handled: Phrase = quoted; Proximity = joined with a proximity operator (set the distance); As typed = left unquoted for each database to handle by its own default (PubMed free text also gets no field tag, so PubMed’s Automatic Term Mapping to MeSH runs when you paste it) — for special cases." style="cursor:help"><span data-zh>多字詞</span><span data-en>Multi-word</span></span><span class="pmdd"><select id="phraseMode" hidden aria-hidden="true" tabindex="-1"><option value="phrase" data-zh="片語（預設）" data-en="Phrase (default)">片語（預設）</option><option value="near" data-zh="鄰近字" data-en="Proximity">鄰近字</option><option value="raw" data-zh="依輸入條件" data-en="As typed">依輸入條件</option></select><button type="button" class="pmbtn" id="phraseModeBtn" aria-haspopup="listbox" aria-expanded="false"><span class="pmlbl">片語（預設）</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button><span class="pmmenu" id="phraseModeMenu" role="listbox" hidden><button type="button" role="option" data-v="phrase">片語（預設）</button><button type="button" role="option" data-v="near">鄰近字</button><button type="button" role="option" data-v="raw">依輸入條件</button></span></span><span id="nearWrap" style="display:none;align-items:center;gap:3px;color:var(--mut)"><span data-zh>鄰</span><span data-en>within&nbsp;</span><input type="number" id="nearN" min="0" max="20" value="2" title="鄰近距離：幾個單字內（預設 2） / Proximity distance in words (default 2)" style="width:34px;height:28px;font-size:12px;padding:0 5px;text-align:center;border:1px solid var(--line);border-radius:6px"><span data-zh>單字</span><span data-en>&nbsp;words</span></span></span>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-left:auto">
       <button class="btn primary" id="genBtn"><span data-zh>▶ 生成檢索策略</span><span data-en>▶ Generate strategies</span></button>
@@ -3881,7 +3894,7 @@ if (typeof module !== "undefined" && module.exports) {
     }catch(e){ srAlert((en?"Fill failed: ":"\u56de\u586b\u5931\u6557\uff1a")+(e&&e.message||e)); btn.disabled=false; }
   };
 
-  function setLangPlaceholders(){ var _pmS=document.getElementById("phraseMode"); if(_pmS) Array.prototype.forEach.call(_pmS.options,function(o){ o.textContent=o.getAttribute(isEn()?"data-en":"data-zh"); }); if(pasteZone) pasteZone.placeholder = isEn() ? "Press Ctrl+V here" : "在此按 Ctrl+V 貼上表格"; if(diagZone) diagZone.placeholder = isEn() ? "Press Ctrl+V here (diagnostics only; won’t fill in)" : "在此按 Ctrl+V 貼上表格（僅診斷，不會填入）"; }
+  function setLangPlaceholders(){ var _pmS=document.getElementById("phraseMode"); if(_pmS) Array.prototype.forEach.call(_pmS.options,function(o){ o.textContent=o.getAttribute(isEn()?"data-en":"data-zh"); }); if(window._pmRefresh) window._pmRefresh(); if(pasteZone) pasteZone.placeholder = isEn() ? "Press Ctrl+V here" : "在此按 Ctrl+V 貼上表格"; if(diagZone) diagZone.placeholder = isEn() ? "Press Ctrl+V here (diagnostics only; won’t fill in)" : "在此按 Ctrl+V 貼上表格（僅診斷，不會填入）"; }
   window.toggleLang=function(){
     document.body.classList.toggle("en");
     $("#langBtn").textContent = isEn() ? "中文" : "English";
@@ -3950,6 +3963,24 @@ if (typeof module !== "undefined" && module.exports) {
   if(phraseMode) phraseMode.addEventListener("change", function(){ _syncPhraseMode(); if(outs.children.length) $("#genBtn").click(); });
   if(nearN) nearN.addEventListener("change", function(){ if(outs.children.length && phraseMode && phraseMode.value==="near") $("#genBtn").click(); });
   _syncPhraseMode();
+  // 多字詞自訂下拉（原生 select 隱藏、僅存值）：避免部分瀏覽器／內嵌視窗無法展開原生下拉
+  (function(){
+    var btn=$("#phraseModeBtn"), menu=$("#phraseModeMenu"); if(!btn||!menu||!phraseMode) return;
+    function lbl(o){ return o.getAttribute(isEn()?"data-en":"data-zh")||o.textContent; }
+    function refresh(){
+      var cur=phraseMode.options[phraseMode.selectedIndex]; btn.querySelector(".pmlbl").textContent=cur?lbl(cur):"";
+      Array.prototype.forEach.call(menu.querySelectorAll("button[data-v]"), function(b){ var o=phraseMode.querySelector('option[value="'+b.getAttribute("data-v")+'"]'); if(o) b.textContent=lbl(o); b.setAttribute("aria-selected", String(b.getAttribute("data-v")===phraseMode.value)); });
+    }
+    function open(v){ menu.hidden=!v; btn.setAttribute("aria-expanded", String(!!v)); if(v){ var s=menu.querySelector('button[aria-selected="true"]')||menu.querySelector("button"); if(s) s.focus(); } }
+    btn.addEventListener("click", function(e){ e.stopPropagation(); open(menu.hidden); });
+    menu.addEventListener("click", function(e){ var b=e.target.closest&&e.target.closest("button[data-v]"); if(!b) return; e.stopPropagation(); var v=b.getAttribute("data-v"); open(false); btn.focus();
+      if(phraseMode.value!==v){ phraseMode.value=v; refresh(); phraseMode.dispatchEvent(new Event("change",{bubbles:true})); } });
+    menu.addEventListener("keydown", function(e){ var bs=Array.prototype.slice.call(menu.querySelectorAll("button")), i=bs.indexOf(document.activeElement);
+      if(e.key==="ArrowDown"){ e.preventDefault(); bs[(i+1)%bs.length].focus(); } else if(e.key==="ArrowUp"){ e.preventDefault(); bs[(i-1+bs.length)%bs.length].focus(); } else if(e.key==="Escape"){ open(false); btn.focus(); } });
+    document.addEventListener("click", function(e){ if(!menu.hidden && !e.target.closest(".pmdd")) open(false); });
+    document.addEventListener("keydown", function(e){ if(e.key==="Escape" && !menu.hidden){ open(false); } });
+    window._pmRefresh=refresh; refresh();
+  })();
   // EBSCOhost 機構碼（ASC／BSC／ERIC）改由各欄表頭下拉面板內逐庫輸入（見 buildColumnVerify）
   // CINAHL 機構碼：本機記憶，變更後重生（讓 CINAHL 連結生效）
   if(cinahlInst){ try{ cinahlInst.value=localStorage.getItem("sr_cinahl_inst")||""; }catch(e){}
