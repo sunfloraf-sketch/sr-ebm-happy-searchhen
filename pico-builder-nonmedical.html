@@ -2777,6 +2777,30 @@ if (typeof module !== "undefined" && module.exports) {
 
   // ---- 台灣資料庫（華藝 airiti／國圖 ndltd）自由詞彙：合併中文同義詞(zh)＋英文同義詞(ft) ----
   function twChineseTerms(cell){ return String(cell||"").split(/[\n、,，;；]+/).map(function(s){return s.trim();}).filter(Boolean); }
+  // 中文同義詞含括號／AND・OR・NOT（如「((妊娠\n孕期\n懷孕)\nAND\n糖尿病)」）：依英文同義詞相同規則組成結構（換行＝OR；行尾「(」或運算子、下一行開頭「)」或運算子則不補 OR）
+  // 回傳 null＝純詞清單（沿用舊行為）；否則回傳 token 陣列 {k:"(" | ")" | "op" | "t", v}
+  function twChineseExpr(cell){
+    var raw=String(cell||"");
+    if(!/[()]/.test(raw) && !/(^|[\s(])(AND|OR|NOT)(?=$|[\s)])/i.test(raw)) return null;
+    var OP=/^(AND|OR|NOT)$/i;
+    var lns=raw.split(/\r?\n/).map(function(l){ return l.replace(/[、,，;；]+/g," OR ").trim(); }).filter(Boolean);
+    var endsOpen=function(s){ return /\($/.test(s) || /(^|\s)(AND|OR|NOT)$/i.test(s); };
+    var startsClose=function(s){ return /^\)/.test(s) || /^(AND|OR|NOT)(\s|$)/i.test(s); };
+    var j=lns[0]||""; for(var i=1;i<lns.length;i++){ j+=((endsOpen(lns[i-1])||startsClose(lns[i]))?" ":" OR ")+lns[i]; }
+    var toks=[], m, re=/\(|\)|[^\s()]+/g;
+    while((m=re.exec(j))){ var v=m[0];
+      if(v==="("||v===")") toks.push({k:v});
+      else if(OP.test(v)) toks.push({k:"op", v:v.toUpperCase()});
+      else if(toks.length && toks[toks.length-1].k==="t") toks[toks.length-1].v+=" "+v;   // 相鄰詞（中間無運算子）視為同一詞
+      else toks.push({k:"t", v:v});
+    }
+    return toks.some(function(t){return t.k==="t";}) ? toks : null;
+  }
+  function twExprStr(toks, termFn, opCase){ var out=""; toks.forEach(function(t){
+      if(t.k==="(") out+=(out && !/[(\s]$/.test(out)?" ":"")+"(";
+      else if(t.k===")") out+=")";
+      else { var s=(t.k==="op")?(opCase==="lower"?t.v.toLowerCase():t.v):termFn(t.v); out+=(out && !/\($/.test(out)?" ":"")+s; }
+    }); return out; }
   function twEnglishTerms(cell){
     return String(cell||"").split(/[\n、,，;；]+|\s+OR\s+/i).map(function(s){
       s=s.replace(/[()]/g,"").replace(/\b(?:ADJ\d*|NEAR(?:\/\d+)?|NEXT(?:\/\d+)?|PRE\/\d+|W\/?\d+|N\/?\d+)\b/gi," ").replace(/["']/g,"").replace(/\s+/g," ").trim();
@@ -2784,7 +2808,8 @@ if (typeof module !== "undefined" && module.exports) {
     }).filter(Boolean).filter(function(s){ return !/^(AND|OR|NOT)$/i.test(s); });
   }
   function buildTaiwanLine(zhCell, ftCell, eng, level, reminders, tgLabel, startEng){
-    var zh = twChineseTerms(zhCell), en = twEnglishTerms(ftCell);
+    var zhX = twChineseExpr(zhCell);   // 中文同義詞有括號／布林結構時保留結構
+    var zh = zhX ? zhX.filter(function(t){return t.k==="t";}).map(function(t){return t.v;}) : twChineseTerms(zhCell), en = twEnglishTerms(ftCell);
     function pushRem(m){ if(reminders.indexOf(m)<0) reminders.push(m); }
     if(eng==="airiti"){
       var incAll = AIRITI_INC;
@@ -2800,7 +2825,7 @@ if (typeof module !== "undefined" && module.exports) {
         else { dropped=true; }
       });
       var enc=SYNTAX_MAP.truncation.airiti.encode, savedStar=enc["*"]; if(incAll) enc["*"]="*";  // 勾選則保留切截
-      var combined=[]; if(zh.length) combined.push(zh.join(" OR ")); if(kept.length) combined.push(kept.join("\n"));
+      var combined=[]; if(zh.length) combined.push(zhX ? twExprStr(zhX, function(v){ return v; }, "upper") : zh.join(" OR ")); if(kept.length) combined.push(kept.join("\n"));
       var line = combined.length ? scopeFreetext(combined.join("\n"), startEng, "airiti", level, []) : "";
       enc["*"]=savedStar;
       if(dropped) pushRem(isEn()
@@ -2817,7 +2842,8 @@ if (typeof module !== "undefined" && module.exports) {
     // ndltd 國圖：中文加雙引號＋欄位；英文交給共用引擎（逐詞加欄位、鄰近字→and、保留 OR 分組、可片語可切截），最後以小寫 or 串接
     var suf = (level==="L3") ? ".ti" : (level==="L2" ? ".ti,kw" : (level==="L0" ? "" : ".ti,ab,kw"));
     var parts=[];
-    zh.forEach(function(t){ parts.push('"'+t+'"'+suf); });
+    if(zhX) parts.push(twExprStr(zhX, function(v){ return '"'+v+'"'+suf; }, "lower"));
+    else zh.forEach(function(t){ parts.push('"'+t+'"'+suf); });
     if(ftCell && String(ftCell).trim()){
       var enOut = scopeFreetext(ftCell, startEng, "ndltd", level, []);
       if(enOut && enOut.trim()) parts.push(enOut.trim());
