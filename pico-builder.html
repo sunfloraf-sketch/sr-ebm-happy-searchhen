@@ -4430,6 +4430,9 @@ function befPluralOf(w){
     var ENTRYDATE=readEntryDate();   // 加入資料庫日期限定（更新檢索）
     var FILTER_SEL=Array.prototype.map.call(document.querySelectorAll('input[name=sdfilter]:checked'), function(c){return c.value;}).filter(Boolean);   // 研究設計篩選（可複選）
     var rows=[]; Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr){ rows.push(tr._get()); });  // 全部列（含空列，維持 C1/C2… 對位）
+    // 整理後空白、整理前有詞 → 以整理前產生（並提醒）；原始列保留給 Word 檢索詞表
+    var _befUsed=[], _rowsOrig=rows;
+    rows=rows.map(function(r){ if(!r.ft && r.before){ _befUsed.push(r.label); var o={}; for(var k in r) o[k]=r[k]; o.ft=r.before; o._ftFromBefore=true; return o; } return r; });
     outs.innerHTML=""; lastGen=null; if($("#wordBtn")) $("#wordBtn").disabled=true;
     if(!rows.some(function(r){return r.ft||r.zh||r.mesh||r.emtree||r.cinahl;})){ outs.innerHTML='<div class="panel" style="color:var(--warn)">'+(isEn()?"Please fill at least one concept.":"請至少填入一個概念的詞彙。")+'</div>'; return; }
     var _dbInputs = Array.prototype.slice.call(dbchecks.querySelectorAll("input")).concat(Array.prototype.slice.call((dbchecksMore?dbchecksMore.querySelectorAll("input"):[])));
@@ -4448,6 +4451,9 @@ function befPluralOf(w){
         var tas=_rowTas(tr);            // [中文, 整理後, Emtree, MeSH, CINAHL]
         tas.forEach(function(ta){ if(ta && bad(ta.value)) ta.classList.add("cellerr"); });
       }
+      if(_befUsed.length) msgs.push(isEn()
+        ? ("Concept "+_befUsed.join(", ")+": “After” is empty, so the strategy was built from the “Before” terms. If needed, tidy them first (Tools ▾ → Copy to After, with truncation / de-duplication) or fill in “After”, then generate again.")
+        : (_befUsed.join("、")+" 概念的「整理後」無資料，已使用「整理前」產生檢索策略；如有需要，請先整理（可用「工具 ▾ → 複製到整理後」並勾選切截／去冗），或直接填寫「整理後」，再重新產生。"));
       var ub=[]; rows.forEach(function(r, ri){ if(_cells(r).some(function(c){return c && inputUnbalanced(c);})){ ub.push(r.label); _markCells(ri, function(v){ return v && inputUnbalanced(v); }); } });
       if(ub.length) msgs.push(isEn()?("Unbalanced parentheses: "+ub.join(", ")+" — the number of ( and ) doesn't match."):("圓括弧無法成對："+ub.join("、")+" 概念，請檢查（左、右括號數量不一致）"));
       var _unpairedLines=function(cell){ var _out=[]; if(!cell) return _out; String(cell).split(/\r?\n/).forEach(function(ln){ var _n=(ln.replace(/[“”„‟″]/g,'"').match(/"/g)||[]).length; if((_n%2)===1) _out.push(ln.replace(/[()]/g,"").trim()); }); return _out; };
@@ -4693,7 +4699,7 @@ function befPluralOf(w){
       }
       outs.appendChild(card);
     });
-    lastGen={data:exportData, level:lvlLabel, filters:FILTER_SEL, terms:rows};
+    lastGen={data:exportData, level:lvlLabel, filters:FILTER_SEL, terms:_rowsOrig};
     if($("#wordBtn")) $("#wordBtn").disabled = !exportData.length;
     if(typeof updateRecordBtn==="function") updateRecordBtn();
   };
