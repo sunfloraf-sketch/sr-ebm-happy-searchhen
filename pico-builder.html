@@ -111,6 +111,20 @@
   .pt-dd.alignR .pt-menu{left:auto;right:0}
   .pt-mi{display:flex;align-items:center;gap:9px;width:100%;white-space:nowrap;border:none;background:none;text-align:left;text-decoration:none;padding:9px 12px;border-radius:7px;font-size:13px;color:#25292D;cursor:pointer;font-weight:500;font-family:inherit}
   .pt-mi:hover{background:#f0f4f6}
+  /* 自訂組合：行號 L1、L2… 與 C／L 快速插入 */
+  .ccwrap{display:flex;border:1px solid var(--line);border-radius:8px;background:#fff;overflow:hidden}
+  .ccwrap:focus-within{border-color:#AAB7BC;box-shadow:0 0 0 3px rgba(127,153,149,.14)}
+  .ccgut{flex:0 0 40px;overflow:hidden;background:#F4F6F5;border-right:1px solid var(--line);position:relative}
+  .ccgutin{padding:9px 8px 9px 0;font-family:'SF Mono',Consolas,monospace;font-size:12px;line-height:22.1px;color:#0f766e;font-weight:700;text-align:right;white-space:pre}
+  .ccchips{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:8px;font-size:12px;color:var(--mut)}
+  .ccrow{display:inline-flex;flex-wrap:wrap;gap:4px}
+  .ccchip{min-width:34px;height:28px;padding:0 6px;border:1px solid #A9C9C3;border-radius:6px;background:#F3FAF8;color:#0f766e;font-family:'SF Mono',Consolas,monospace;font-size:12px;font-weight:700;cursor:pointer}
+  .ccchip:hover{background:#E1F2EE}
+  .ccchip.ccl{border-color:#D3C39A;background:#FBF6EA;color:#8A5A12}
+  .ccchip.ccl:hover{background:#F5ECD6}
+  .ccchip:focus-visible{outline:2px solid #0f766e;outline-offset:2px}
+  .ccchip.ccop{min-width:44px;border-color:#B9C3C9;background:#F1F4F6;color:#33404A}
+  .ccchip.ccop:hover{background:#E3E8EB}
   .pt-mi svg{flex:0 0 auto;color:#55606a}
   .pt-adv{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#0f766e;cursor:pointer;padding-left:8px;border-left:1px solid #DDE3E7}
   .pt-adv input{accent-color:#0f766e}
@@ -633,7 +647,7 @@
         </div>
         </div>
         <div id="filterOpt" style="margin-top:12px;display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;font-size:13px">
-          <span class="fld" style="margin:0 0 0 -10px" title="Study-design Filter (multi-select): for each ticked design, a line「final set AND (filter syntax)」is appended per supported database; ticking more than one adds a union (OR) line. RCT=App.2-1, Quasi=2-2, Observational=2-3, Qualitative=2-4, SR=2-5, Guideline=2-6. Cochrane CENTRAL (RCTs only) needs no filter."><span data-zh>研究設計篩選（適用 SR）：</span><span data-en>Study-design Filter (for SR):</span></span><span class="infotip" style="margin-bottom:2px;order:-1"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip"><span data-zh>適用 SR 於（高敏感度／文章數量多）；若欲臨床實證使用，建議在資料庫使用內建 Limits／Filters。<br>尚未整理部份資料庫（平台）語法者，將於檢索策略標示「請自行確認 Filters」。</span><span data-en>Suited for systematic reviews (high sensitivity / large result volume); for clinical / evidence-based use, prefer the database’s built-in Limits / Filters.<br>Databases (platforms) whose filter syntax isn’t compiled yet are flagged “please verify Filters yourself” in the strategy.</span></span></span>
+          <span class="fld" style="margin:0 0 0 -10px"><span data-zh>研究設計篩選（適用 SR）：</span><span data-en>Study-design Filter (for SR):</span></span><span class="infotip" style="margin-bottom:2px;order:-1"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip"><span data-zh>適用 SR 於（高敏感度／文章數量多）；若欲臨床實證使用，建議在資料庫使用內建 Limits／Filters。<br>尚未整理部份資料庫（平台）語法者，將於檢索策略標示「請自行確認 Filters」。</span><span data-en>Suited for systematic reviews (high sensitivity / large result volume); for clinical / evidence-based use, prefer the database’s built-in Limits / Filters.<br>Databases (platforms) whose filter syntax isn’t compiled yet are flagged “please verify Filters yourself” in the strategy.</span></span></span>
           <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" name="sdfilter" value="rct"><span>RCT</span></label>
           <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" name="sdfilter" value="quasi"><span>Quasi-experimental</span></label>
           <label class="sdf" style="display:flex;align-items:center;gap:4px;cursor:not-allowed;opacity:.45"><input type="checkbox" name="sdfilter" value="cohort" disabled><span>Cohort</span></label>
@@ -680,6 +694,7 @@
           </div>
         </div>
         <input type="file" id="projFile" accept=".json,application/json" style="display:none">
+        <input type="checkbox" id="cbAdvTools" hidden>   <!-- 控制詞彙進階標記工具：開關放在右上角齒輪（偏好設定），此為狀態載體 -->
       </div>
     </div>
     <details class="ccbox" id="pasteBox" style="margin:0 0 12px">
@@ -708,47 +723,6 @@
         </details>
       </div>
     </details>
-    <details class="ccbox" id="fillHelp" style="margin:0 0 12px">
-      <summary style="cursor:pointer;font-weight:700;font-size:13px;color:#0f766e"><span data-zh>填寫說明</span><span data-en>How to fill in</span></summary>
-      <div class="hint" style="margin:8px 0 0;line-height:1.75">
-        <div data-zh>
-          <div>．<b>儲存格內：</b>一詞一行（預設布林邏輯關係為 OR，不需標示）</div>
-          <div>．<b>英文同義詞，請自行調整：</b>(1) 單字切截 <code>*</code>；(2) 移除冗贅字詞（exercise 能找到 exercise therapy，不需列後者）；(3) 搭配鄰近字運算（參考載入範例寫法，或使用「鄰近字組合器」整理）</div>
-          <div>．<b>控制詞彙：</b></div>
-          <div style="padding-left:1.4em">‧ 不欲包含狹義詞時：請標註「不含狹義詞」、「不狹」、「noexp」或「no exp」</div>
-          <div style="padding-left:2.4em">例：<code>diabetes (不含狹義詞)</code>、<code>diabetes (noexp)</code></div>
-          <div style="padding-left:1.4em;margin-top:4px">‧ 補充概念（藥物、化學物質、罕見疾病等不在標目樹中的詞）：驗證卡片按「標註為補充概念」，詞後會加 <code>(補充概念：化學物質)</code>；PubMed 以 <code>[nm]</code>、Ovid MEDLINE 以 <code>.nm.</code> 等欄位檢索，其他資料庫改放自由詞彙</div>
-          <div style="padding-left:1.4em;margin-top:4px">‧ 單一儲存格內預設布林邏輯為 <b>OR</b>；如有特殊處理，請用 <code>AND</code> 及括號組合</div>
-          <div style="padding-left:2.4em">例：</div>
-          <pre style="margin:2px 0 6px 2.4em;padding:8px 10px;background:var(--codebg);border:1px solid var(--line);border-radius:6px;font-family:'SF Mono',Consolas,monospace;font-size:12px;line-height:1.5;white-space:pre;width:fit-content;max-width:100%">Optic Nerve
-AND
-(Ultrasonography
-Optical Imaging)</pre>
-          <div style="padding-left:1.4em;margin-top:4px">‧ 主標題若附加副標題（subheading）：<span style="color:#3a434b">語法需自行查各資料庫</span></div>
-          <div style="padding-left:2.4em">例 Ovid MEDLINE（dg 表示 Diagnostic Imaging）：</div>
-          <pre style="margin:2px 0 6px 2.4em;padding:8px 10px;background:var(--codebg);border:1px solid var(--line);border-radius:6px;font-family:'SF Mono',Consolas,monospace;font-size:12px;line-height:1.5;white-space:pre;width:fit-content;max-width:100%">Optic Nerve/dg</pre>
-          <div style="margin-top:6px">．<b>復原框內文字編輯：</b>想還原剛才在某一格輸入框打的字，直接按 <code>Ctrl+Z</code> 即可。</div>
-        </div>
-        <div data-en>
-          <div>• <b>Within a cell:</b> one term per line (the default Boolean is OR; no need to mark it).</div>
-          <div>• <b>English synonyms — refine them yourself:</b> (1) truncate word stems with <code>*</code>; (2) drop redundant terms (exercise already retrieves exercise therapy, so the latter isn't needed); (3) add proximity operators (see the loaded example, or tidy them in the Proximity Builder).</div>
-          <div>• <b>Controlled vocabulary:</b></div>
-          <div style="padding-left:1.4em">‧ To exclude narrower terms: mark it as non-exploded — 「不含狹義詞」, 「不狹」, <code>noexp</code> or <code>no exp</code>.</div>
-          <div style="padding-left:2.4em">e.g. <code>diabetes (不含狹義詞)</code>, <code>diabetes (noexp)</code></div>
-          <div style="padding-left:1.4em;margin-top:4px">‧ Supplementary concepts (drugs, chemicals, rare diseases outside the heading tree): use “Mark as supplementary concept” on the verification card, which appends <code>(supplementary: chemical)</code>; PubMed searches it with <code>[nm]</code>, Ovid MEDLINE with <code>.nm.</code> etc., and other databases get it as free text.</div>
-          <div style="padding-left:1.4em;margin-top:4px">‧ The default Boolean within one cell is <b>OR</b>; for anything else, use <code>AND</code> and parentheses.</div>
-          <div style="padding-left:2.4em">e.g.</div>
-          <pre style="margin:2px 0 6px 2.4em;padding:8px 10px;background:var(--codebg);border:1px solid var(--line);border-radius:6px;font-family:'SF Mono',Consolas,monospace;font-size:12px;line-height:1.5;white-space:pre;width:fit-content;max-width:100%">Optic Nerve
-AND
-(Ultrasonography
-Optical Imaging)</pre>
-          <div style="padding-left:1.4em;margin-top:4px">‧ To attach a subheading to a main heading: <span style="color:#3a434b">check each database for its own syntax</span></div>
-          <div style="padding-left:2.4em">e.g. Ovid MEDLINE (dg = Diagnostic Imaging):</div>
-          <pre style="margin:2px 0 6px 2.4em;padding:8px 10px;background:var(--codebg);border:1px solid var(--line);border-radius:6px;font-family:'SF Mono',Consolas,monospace;font-size:12px;line-height:1.5;white-space:pre;width:fit-content;max-width:100%">Optic Nerve/dg</pre>
-          <div style="margin-top:6px">• <b>Undo in-cell text edits:</b> to revert what you just typed in a cell, press <code>Ctrl+Z</code>.</div>
-        </div>
-      </div>
-    </details>
     <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:4px;flex-wrap:wrap">
       <span style="flex:1 1 300px;min-width:0;text-align:left;font-size:13px;line-height:1.5;color:#c0392b">
         <span data-zh>⚠ 提醒您！請自行評估同義詞與控制詞彙的適用性，務必利用工具查核控制詞彙。</span>
@@ -772,8 +746,48 @@ Optical Imaging)</pre>
       </thead>
       <tbody id="picoBody"></tbody>
     </table>
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px">
-      <label id="advToolsLbl" class="hastip" data-tip="開啟後，點進詞格會在下方浮出標記小工具（例：不含狹義詞）；關閉則填寫時完全不干擾。偏好會記住。" style="white-space:nowrap;display:inline-flex;align-items:center;gap:5px;font-size:13px;line-height:1.5;color:#0f766e;cursor:pointer"><input type="checkbox" id="cbAdvTools" style="accent-color:#0f766e"><span data-zh>進階標記工具</span><span data-en>Advanced marking tools</span></label>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-top:8px">
+      <details class="ccbox" id="fillHelp" style="margin:0;flex:1 1 auto;min-width:0">
+      <summary style="cursor:pointer;font-weight:700;font-size:13px;color:#0f766e"><span data-zh>填寫說明</span><span data-en>How to fill in</span></summary>
+      <div class="hint" style="margin:8px 0 0;line-height:1.75">
+        <div data-zh>
+          <div>．<b>儲存格內：</b>一詞一行（預設布林邏輯關係為 OR，不需標示）</div>
+          <div>．<b>英文同義詞，請自行調整：</b>(1) 單字切截 <code>*</code>；(2) 移除冗贅字詞（exercise 能找到 exercise therapy，不需列後者）；(3) 搭配鄰近字運算（參考載入範例寫法，或使用「鄰近字組合器」整理）</div>
+          <div>．<b>控制詞彙：</b></div>
+          <div style="padding-left:1.4em">‧ 不欲包含狹義詞時：請標註「不含狹義詞」、「不狹」、「noexp」或「no exp」，或直接勾選<label style="display:inline-flex;align-items:center;gap:5px;margin-left:4px;cursor:pointer;color:#0f766e;font-weight:700;white-space:nowrap"><input type="checkbox" class="advInline" style="margin:0;accent-color:#0f766e;width:14px;height:14px">控制詞彙進階標記</label>（點進控制詞彙格時會浮出標記小工具）</div>
+          <div style="padding-left:2.4em">例：<code>diabetes (不含狹義詞)</code>、<code>diabetes (noexp)</code></div>
+          <div style="padding-left:1.4em;margin-top:4px">‧ 補充概念（藥物、化學物質、罕見疾病等不在標目樹中的詞）：驗證卡片按「標註為補充概念」，詞後會加 <code>(補充概念：化學物質)</code>；PubMed 以 <code>[nm]</code>、Ovid MEDLINE 以 <code>.nm.</code> 等欄位檢索，其他資料庫改放自由詞彙</div>
+          <div style="padding-left:1.4em;margin-top:4px">‧ 單一儲存格內預設布林邏輯為 <b>OR</b>；如有特殊處理，請用 <code>AND</code> 及括號組合</div>
+          <div style="padding-left:2.4em">例：</div>
+          <pre style="margin:2px 0 6px 2.4em;padding:8px 10px;background:var(--codebg);border:1px solid var(--line);border-radius:6px;font-family:'SF Mono',Consolas,monospace;font-size:12px;line-height:1.5;white-space:pre;width:fit-content;max-width:100%">Optic Nerve
+AND
+(Ultrasonography
+Optical Imaging)</pre>
+          <div style="padding-left:1.4em;margin-top:4px">‧ 主標題若附加副標題（subheading）：<span style="color:#3a434b">語法需自行查各資料庫</span></div>
+          <div style="padding-left:2.4em">例 Ovid MEDLINE（dg 表示 Diagnostic Imaging）：</div>
+          <pre style="margin:2px 0 6px 2.4em;padding:8px 10px;background:var(--codebg);border:1px solid var(--line);border-radius:6px;font-family:'SF Mono',Consolas,monospace;font-size:12px;line-height:1.5;white-space:pre;width:fit-content;max-width:100%">Optic Nerve/dg</pre>
+          <div style="margin-top:6px">．<b>復原框內文字編輯：</b>想還原剛才在某一格輸入框打的字，直接按 <code>Ctrl+Z</code> 即可。</div>
+        </div>
+        <div data-en>
+          <div>• <b>Within a cell:</b> one term per line (the default Boolean is OR; no need to mark it).</div>
+          <div>• <b>English synonyms — refine them yourself:</b> (1) truncate word stems with <code>*</code>; (2) drop redundant terms (exercise already retrieves exercise therapy, so the latter isn't needed); (3) add proximity operators (see the loaded example, or tidy them in the Proximity Builder).</div>
+          <div>• <b>Controlled vocabulary:</b></div>
+          <div style="padding-left:1.4em">‧ To exclude narrower terms: mark it as non-exploded — 「不含狹義詞」, 「不狹」, <code>noexp</code> or <code>no exp</code>. Or simply tick<label style="display:inline-flex;align-items:center;gap:5px;margin-left:4px;cursor:pointer;color:#0f766e;font-weight:700;white-space:nowrap"><input type="checkbox" class="advInline" style="margin:0;accent-color:#0f766e;width:14px;height:14px">Controlled-vocabulary marking</label> (a small marking toolbar appears when you click into a controlled-vocabulary cell).</div>
+          <div style="padding-left:2.4em">e.g. <code>diabetes (不含狹義詞)</code>, <code>diabetes (noexp)</code></div>
+          <div style="padding-left:1.4em;margin-top:4px">‧ Supplementary concepts (drugs, chemicals, rare diseases outside the heading tree): use “Mark as supplementary concept” on the verification card, which appends <code>(supplementary: chemical)</code>; PubMed searches it with <code>[nm]</code>, Ovid MEDLINE with <code>.nm.</code> etc., and other databases get it as free text.</div>
+          <div style="padding-left:1.4em;margin-top:4px">‧ The default Boolean within one cell is <b>OR</b>; for anything else, use <code>AND</code> and parentheses.</div>
+          <div style="padding-left:2.4em">e.g.</div>
+          <pre style="margin:2px 0 6px 2.4em;padding:8px 10px;background:var(--codebg);border:1px solid var(--line);border-radius:6px;font-family:'SF Mono',Consolas,monospace;font-size:12px;line-height:1.5;white-space:pre;width:fit-content;max-width:100%">Optic Nerve
+AND
+(Ultrasonography
+Optical Imaging)</pre>
+          <div style="padding-left:1.4em;margin-top:4px">‧ To attach a subheading to a main heading: <span style="color:#3a434b">check each database for its own syntax</span></div>
+          <div style="padding-left:2.4em">e.g. Ovid MEDLINE (dg = Diagnostic Imaging):</div>
+          <pre style="margin:2px 0 6px 2.4em;padding:8px 10px;background:var(--codebg);border:1px solid var(--line);border-radius:6px;font-family:'SF Mono',Consolas,monospace;font-size:12px;line-height:1.5;white-space:pre;width:fit-content;max-width:100%">Optic Nerve/dg</pre>
+          <div style="margin-top:6px">• <b>Undo in-cell text edits:</b> to revert what you just typed in a cell, press <code>Ctrl+Z</code>.</div>
+        </div>
+      </div>
+    </details>
       <span style="display:inline-flex;align-items:center;gap:10px">
       <button type="button" class="rbtn clear hastip" id="clearBtn" data-tip="清空整張表（範例內容直接清；自填資料會先確認） / Clear table" aria-label="清空整張表">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7 H20"/><path d="M9.5 7 V5.2 Q9.5 4.3 10.4 4.3 H13.6 Q14.5 4.3 14.5 5.2 V7"/><path d="M6.2 7 L7 19.2 Q7.1 20.6 8.5 20.6 H15.5 Q16.9 20.6 17 19.2 L17.8 7"/><path d="M10 10.5 V17 M14 10.5 V17"/></svg>
@@ -794,10 +808,10 @@ Optical Imaging)</pre>
       <summary style="cursor:pointer;font-weight:700;font-size:13px;color:#0f766e"><span data-zh>自訂組合策略（選填）</span><span data-en>Custom combination (optional)</span></summary>
       <div style="margin-top:8px;padding-left:1.4em">
         <div class="sub" style="font-size:12px;color:var(--mut);margin-bottom:6px">
-          <span data-zh>預設跨行為 <b>AND</b> 關係；如有自訂組合，請輸入：<br>　<b>C1、C2…</b>：代表每個主題概念列<br>　<b>L1、L2…</b>：引用上方已寫的組合行<br>例如：<br><code>C1 AND C2 AND C3</code><br><code>C1 AND C4</code><br><code>L1 OR L2</code></span>
-          <span data-en>Rows are <b>AND</b>-ed by default; for a custom combination, enter:<br>　<b>C1, C2…</b>: each concept row<br>　<b>L1, L2…</b>: reference a combination line above<br>e.g.:<br><code>C1 AND C2 AND C3</code><br><code>C1 AND C4</code><br><code>L1 OR L2</code></span>
+          <span data-zh>預設跨行（列）間為 <b>AND</b> 關係<br>可輸入自訂組合：<br>　<b>C1、C2…</b>：代表每個主題概念列<br>　<b>L1、L2…</b>：引用自訂的組合行<br>例如：（大小寫皆可）<br>　<code>C1 AND C2 AND C3</code><br>　<code>C1 AND C4</code><br>　<code>L1 OR L2</code></span>
+          <span data-en>Rows are <b>AND</b>-ed by default<br>You can enter a custom combination:<br>　<b>C1, C2…</b>: each concept row<br>　<b>L1, L2…</b>: reference one of your combination lines<br>e.g. (any letter case):<br>　<code>C1 AND C2 AND C3</code><br>　<code>C1 AND C4</code><br>　<code>L1 OR L2</code></span>
         </div>
-        <textarea id="customCombo" spellcheck="false" rows="4" style="width:100%;font-family:'SF Mono',Consolas,monospace;font-size:13px;line-height:1.7;border:1px solid var(--line);border-radius:8px;padding:9px 11px" placeholder="C1 AND C2 AND C3&#10;C1 AND C4&#10;L1 OR L2"></textarea>
+        <div class="ccwrap"><div class="ccgut" aria-hidden="true"><div class="ccgutin"></div></div><textarea id="customCombo" spellcheck="false" rows="4" wrap="off" style="width:100%;font-family:'SF Mono',Consolas,monospace;font-size:13px;line-height:1.7;border:none;border-radius:0 8px 8px 0;padding:9px 11px;resize:vertical;box-sizing:border-box;overflow-x:auto" placeholder="C1 AND C2 AND C3&#10;C1 AND C4&#10;L1 OR L2" aria-label="自訂組合策略 / Custom combination"></textarea></div><div class="ccchips" role="group" aria-label="插入 C／L / Insert C / L"><span class="ccclbl"><span data-zh>點選插入：</span><span data-en>Click to insert:</span></span><span class="ccrow"><button type="button" class="ccchip" data-ins="C1">C1</button><button type="button" class="ccchip" data-ins="C2">C2</button><button type="button" class="ccchip" data-ins="C3">C3</button><button type="button" class="ccchip" data-ins="C4">C4</button><button type="button" class="ccchip" data-ins="C5">C5</button><button type="button" class="ccchip" data-ins="C6">C6</button><button type="button" class="ccchip" data-ins="C7">C7</button><button type="button" class="ccchip" data-ins="C8">C8</button><button type="button" class="ccchip" data-ins="C9">C9</button><button type="button" class="ccchip" data-ins="C10">C10</button></span><span class="ccrow"><button type="button" class="ccchip ccop" data-ins="AND">AND</button><button type="button" class="ccchip ccop" data-ins="OR">OR</button></span><span class="ccrow"><button type="button" class="ccchip ccl" data-ins="L1">L1</button><button type="button" class="ccchip ccl" data-ins="L2">L2</button><button type="button" class="ccchip ccl" data-ins="L3">L3</button><button type="button" class="ccchip ccl" data-ins="L4">L4</button><button type="button" class="ccchip ccl" data-ins="L5">L5</button><button type="button" class="ccchip ccl" data-ins="L6">L6</button><button type="button" class="ccchip ccl" data-ins="L7">L7</button><button type="button" class="ccchip ccl" data-ins="L8">L8</button><button type="button" class="ccchip ccl" data-ins="L9">L9</button><button type="button" class="ccchip ccl" data-ins="L10">L10</button></span></div>
       </div>
     </details>
   </div>
@@ -3467,6 +3481,28 @@ function befPluralOf(w){
   function offerRestore(){ if(restoreBtn) restoreBtn.style.display = stateNonEmpty(snapshotState()) ? "" : "none"; }
   // 即時暫存（本分頁草稿）；離開分頁時寫快照（供「還原上次」與 PICO↔鄰近字來回）
   picoBody.addEventListener("input", saveDraftDebounced);
+  // 自訂組合：左側行號 L1、L2…（同步捲動），C1–C10／L1–L10 點按插入游標處
+  (function(){
+    var ta=document.getElementById("customCombo"); if(!ta) return;
+    var wrap=ta.closest(".ccwrap"), gin=wrap&&wrap.querySelector(".ccgutin");
+    var last="";
+    function gut(){ if(!gin) return; var n=Math.max(parseInt(ta.getAttribute("rows")||"4",10), ta.value.split("\n").length); var t=[]; for(var i=1;i<=n;i++) t.push("L"+i); var s=t.join("\n"); if(s!==last){ gin.textContent=s; last=s; } gin.style.transform="translateY("+(-ta.scrollTop)+"px)"; }
+    ta.addEventListener("input", gut); ta.addEventListener("scroll", gut); ta.addEventListener("focus", gut);
+    setInterval(gut, 700);   // 草稿還原、專案開啟等程式設定內容時也更新行號
+    gut();
+    var chips=document.querySelector(".ccchips");
+    if(chips) chips.addEventListener("click", function(e){
+      var b=e.target.closest&&e.target.closest("[data-ins]"); if(!b) return;
+      var tok=b.getAttribute("data-ins"), v=ta.value, s=ta.selectionStart==null?v.length:ta.selectionStart, en=ta.selectionEnd==null?v.length:ta.selectionEnd;
+      if(document.activeElement!==ta && !ta._ccTouched){ s=en=v.length; }
+      var before=v.slice(0,s), after=v.slice(en);
+      var pre=(before && !/[\s(]$/.test(before)) ? " " : "", post=after ? (/^[\s)]/.test(after) ? "" : " ") : " ";   // 插入後補空白，方便接著輸入運算子
+      var ins=pre+tok+post; ta.value=before+ins+after; var pos=(before+ins).length;
+      ta.focus(); ta.setSelectionRange(pos,pos); ta._ccTouched=true;
+      ta.dispatchEvent(new Event("input",{bubbles:true}));
+    });
+    ta.addEventListener("click", function(){ ta._ccTouched=true; }); ta.addEventListener("keyup", function(){ ta._ccTouched=true; });
+  })();
   if(customCombo) customCombo.addEventListener("input", function(){ saveDraftDebounced(); autoRegenDebounced(); });   // 自訂組合異動 → 已生成的檢索策略跟著更新
   srcSel.addEventListener("change", saveDraftDebounced);
   window.addEventListener("pagehide", function(){ saveDraft(); saveSnapshot(); });
@@ -4405,14 +4441,15 @@ function befPluralOf(w){
   function _refPrefix(eng){ return eng==="ebsco"?"S":(eng==="ovid"||eng==="jbi")?"":"#"; }
   function _dispRefs(text, eng){ var s=(text==null?"":String(text)); if(eng==="ebsco") return s.replace(/#(\d+)/g,"S$1"); if(eng==="ovid"||eng==="jbi") return s.replace(/#(\d+)/g,"$1"); return s; }
   // 自訂組合：每行一條；C1/C2… → 對應概念的行號群組（依各庫），L1/L2… → 上方已寫的組合行
-  function buildCombos(text, conceptRefs, lastNum){
+  function buildCombos(text, conceptRefs, lastNum, eng){   // C1／L1 與 AND／OR／NOT 大小寫皆可；運算子輸出依資料庫（如國圖 and／or、Scopus AND NOT）
     var lines=String(text).split(/\r?\n/).map(function(s){return s.trim();}).filter(Boolean);
     var out=[], Lmap={};
     lines.forEach(function(line, idx){
       var num=lastNum+1+idx;
       var txt=line
         .replace(/\bC(\d+)\b/gi, function(m,k){ var g=conceptRefs[parseInt(k,10)-1]; return (g!=null)?g:m; })
-        .replace(/\bL(\d+)\b/gi, function(m,k){ var n=Lmap[parseInt(k,10)]; return (n!=null)?("#"+n):m; });
+        .replace(/\bL(\d+)\b/gi, function(m,k){ var n=Lmap[parseInt(k,10)]; return (n!=null)?("#"+n):m; })
+        .replace(/\b(AND\s+NOT|AND|OR|NOT)\b/gi, function(m){ var k=m.toUpperCase().replace(/\s+/g," "); var B=(eng && SYNTAX_MAP.boolean[eng])||null; if(k==="AND NOT") k="NOT"; return B ? (B[k]||k) : k; });
       Lmap[idx+1]=num;
       out.push({n:num, text:txt});
     });
@@ -4613,7 +4650,7 @@ function befPluralOf(w){
       var cp=document.createElement("button"); cp.className="copy copyicon"; cp.innerHTML=COPYSVG;
       cp.title=isEn()?"Copy syntax only (no #n labels)":"只複製語法（不含行首 #n 標號，可直接貼入資料庫）";
       // 尾端：有自訂組合就用自訂（C1/L1 展開），否則用預設組合行
-      var combos = (customCombo && customCombo.value.trim()) ? buildCombos(customCombo.value, b.conceptRefs, b.lastNum) : null;
+      var combos = (customCombo && customCombo.value.trim()) ? buildCombos(customCombo.value, b.conceptRefs, b.lastNum, tg.engine) : null;
       var tail = (combos && combos.length) ? combos : (b.finalRow ? [b.finalRow] : []);
       // Embase.com 排除設定：若最後一行為組合式，於末尾加對應限制行
       if(tg.engine==="embase" && EMBASE_EXCL!=="none" && tail.length){
@@ -4785,7 +4822,7 @@ function befPluralOf(w){
         var suffixCands=function(stem){ var c=[stem,stem+"s",stem+"es",stem+"al",stem+"ic",stem+"ing",stem+"ed",stem+"a"]; return c.filter(function(v,i){return c.indexOf(v)===i;}); };
         var collectVars=function(){ var V={}; Object.keys(varState).forEach(function(r){ V[r]=Array.from(varState[r]); }); return V; };   // varState[r] 為 Set，須用 Array.from（slice.call 對 Set 無效，會得到空陣列，導致字尾候選失效）
         var pmAssemble=function(bb){
-          var combos = (customCombo && customCombo.value.trim()) ? buildCombos(customCombo.value, bb.conceptRefs, bb.lastNum) : null;
+          var combos = (customCombo && customCombo.value.trim()) ? buildCombos(customCombo.value, bb.conceptRefs, bb.lastNum, "pubmed") : null;
           var tail = (combos && combos.length) ? combos : (bb.finalRow ? [bb.finalRow] : []);
           var baseR = bb.qlines.concat(tail), allR;
           if(cbFlat && cbFlat.checked && baseR.length){ var qmap={}; baseR.forEach(function(q){ if(q.n!=null) qmap[q.n]=q.text; }); var ft=_flatExpand(baseR[baseR.length-1].text, qmap, false); allR=[{n:null,text:ft}]; } else { allR=baseR; }
@@ -5679,10 +5716,10 @@ function befPluralOf(w){
     ".srpop{position:absolute;z-index:10000;top:calc(100% + 8px);right:0;min-width:210px;padding:10px 12px;background:#fff;color:#23282D;border:1px solid #D5DCE0;border-radius:10px;box-shadow:0 8px 22px rgba(0,0,0,.16);font-size:13px;line-height:1.5;text-align:left;white-space:nowrap}"+
     ".srpop[hidden]{display:none}"+
     ".srph{font-weight:700;font-size:12px;color:#66717A;margin-bottom:6px}"+
-    ".srprow{display:flex;align-items:center;gap:12px}"+
+    ".srprow{display:flex;align-items:center;gap:12px;padding:5px 0;line-height:1.6}"+
     ".srprow .srpl{font-weight:600;margin-right:2px}"+
-    ".srprow label{display:inline-flex;align-items:center;gap:4px;cursor:pointer;font-weight:500}"+
-    ".srprow input{margin:0;accent-color:#0f766e}"+
+    ".srprow label{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-weight:600}"+
+    ".srprow input{margin:0;accent-color:#0f766e;width:15px;height:15px}"+
     "body.notips #gtip{display:none !important}"+
     "body.notips .hastip::after,body.notips .hastip::before{display:none !important}"+
     "body.notips .infotip:hover .tip{display:none}body.notips .infotip.show .tip,body.notips .infotip.show:hover .tip{display:block}";
@@ -5697,26 +5734,44 @@ function befPluralOf(w){
       '</button>'+
       '<div class="srpop" id="srPrefPop" hidden role="dialog">'+
         '<div class="srph"><span data-zh>偏好設定</span><span data-en>Preferences</span></div>'+
-        '<div class="srprow"><span class="srpl"><span data-zh>提示文字</span><span data-en>Tooltips</span></span>'+
-          '<label><input type="radio" name="srTips" value="1"><span data-zh>顯示</span><span data-en>Show</span></label>'+
-          '<label><input type="radio" name="srTips" value="0"><span data-zh>不顯示</span><span data-en>Hide</span></label></div>'+
+        '<div class="srprow"><label><input type="checkbox" id="srTipsCb"><span data-zh>提示文字</span><span data-en>Tooltips</span></label></div>'+
       '</div>';
     lang.insertAdjacentElement("afterend", wrap);
-    var btn=wrap.querySelector("#srPrefBtn"), pop=wrap.querySelector("#srPrefPop"), radios=wrap.querySelectorAll("input[name=srTips]");
+    var btn=wrap.querySelector("#srPrefBtn"), pop=wrap.querySelector("#srPrefPop"), tipsCb=wrap.querySelector("#srTipsCb");
     function setOpen(o){ pop.hidden=!o; btn.setAttribute("aria-expanded", o?"true":"false"); }
     btn.addEventListener("click", function(e){ e.stopPropagation(); setOpen(pop.hidden); });
     pop.addEventListener("click", function(e){ e.stopPropagation(); });
     document.addEventListener("click", function(){ setOpen(false); });
     document.addEventListener("keydown", function(e){ if(e.key==="Escape") setOpen(false); });
-    Array.prototype.forEach.call(radios, function(r){ r.addEventListener("change", function(){ if(!r.checked) return; var show=(r.value==="1"); lsSet(show?"1":"0"); applyTips(show); }); });
+    if(tipsCb) tipsCb.addEventListener("change", function(){ var show=tipsCb.checked; lsSet(show?"1":"0"); applyTips(show); });
     var saved=lsGet(), show=(saved!=="0");
-    Array.prototype.forEach.call(radios, function(r){ r.checked=(r.value===(show?"1":"0")); });
+    if(tipsCb) tipsCb.checked=show;
     applyTips(show);
   }
 
   new MutationObserver(function(){ syncLang(); }).observe(document.body,{attributes:true,attributeFilter:["class"]});
   new MutationObserver(function(){ syncLang(); }).observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
   syncLang();
+})();
+</script>
+<script id="srPrefAdvScript">
+/* PICO（醫學）：右上角齒輪「偏好設定」加入「☐ 控制詞彙進階標記」，與 #cbAdvTools（localStorage sr_adv_tools）同步 */
+(function(){
+  var pop=document.getElementById("srPrefPop"), cb=document.getElementById("cbAdvTools"); if(!pop||!cb) return;
+  var row=document.createElement("div"); row.className="srprow"; row.title="開啟後，點進控制詞彙格會在下方浮出標記小工具（例：不含狹義詞）；關閉則填寫時完全不干擾。 / When on, clicking into a controlled-vocabulary cell shows a small marking toolbar (e.g. no narrower terms).";
+  row.innerHTML='<label><input type="checkbox" id="srAdvCb"><span data-zh>控制詞彙進階標記</span><span data-en>Controlled-vocabulary marking</span></label>';
+  pop.appendChild(row);
+  var ac=row.querySelector("#srAdvCb");
+  function sync(){ ac.checked=cb.checked; }
+  sync();
+  ac.addEventListener("change", function(){ if(cb.checked!==ac.checked){ cb.checked=ac.checked; cb.dispatchEvent(new Event("change",{bubbles:true})); } });
+  var btn=document.getElementById("srPrefBtn"); if(btn) btn.addEventListener("click", sync);
+  // 填寫說明內的勾選（中、英各一）：與 #cbAdvTools、齒輪同步
+  var inl=document.querySelectorAll("input.advInline");
+  function syncInl(){ Array.prototype.forEach.call(inl, function(x){ x.checked=cb.checked; }); ac.checked=cb.checked; }
+  syncInl();
+  Array.prototype.forEach.call(inl, function(x){ x.addEventListener("change", function(){ if(cb.checked!==x.checked){ cb.checked=x.checked; cb.dispatchEvent(new Event("change",{bubbles:true})); } syncInl(); }); });
+  cb.addEventListener("change", syncInl);
 })();
 </script>
 </body>

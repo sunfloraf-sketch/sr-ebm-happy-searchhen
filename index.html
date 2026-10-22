@@ -939,10 +939,10 @@ function syncHeroControlLabels() {
     ".srpop{position:absolute;z-index:10000;top:calc(100% + 8px);right:0;min-width:210px;padding:10px 12px;background:#fff;color:#23282D;border:1px solid #D5DCE0;border-radius:10px;box-shadow:0 8px 22px rgba(0,0,0,.16);font-size:13px;line-height:1.5;text-align:left;white-space:nowrap}"+
     ".srpop[hidden]{display:none}"+
     ".srph{font-weight:700;font-size:12px;color:#66717A;margin-bottom:6px}"+
-    ".srprow{display:flex;align-items:center;gap:12px}"+
+    ".srprow{display:flex;align-items:center;gap:12px;padding:5px 0;line-height:1.6}"+
     ".srprow .srpl{font-weight:600;margin-right:2px}"+
-    ".srprow label{display:inline-flex;align-items:center;gap:4px;cursor:pointer;font-weight:500}"+
-    ".srprow input{margin:0;accent-color:#0f766e}"+
+    ".srprow label{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-weight:600}"+
+    ".srprow input{margin:0;accent-color:#0f766e;width:15px;height:15px}"+
     "body.notips #gtip{display:none !important}"+
     "body.notips .hastip::after,body.notips .hastip::before{display:none !important}"+
     "body.notips .infotip:hover .tip{display:none}body.notips .infotip.show .tip,body.notips .infotip.show:hover .tip{display:block}";
@@ -957,20 +957,18 @@ function syncHeroControlLabels() {
       '</button>'+
       '<div class="srpop" id="srPrefPop" hidden role="dialog">'+
         '<div class="srph"><span data-zh>偏好設定</span><span data-en>Preferences</span></div>'+
-        '<div class="srprow"><span class="srpl"><span data-zh>提示文字</span><span data-en>Tooltips</span></span>'+
-          '<label><input type="radio" name="srTips" value="1"><span data-zh>顯示</span><span data-en>Show</span></label>'+
-          '<label><input type="radio" name="srTips" value="0"><span data-zh>不顯示</span><span data-en>Hide</span></label></div>'+
+        '<div class="srprow"><label><input type="checkbox" id="srTipsCb"><span data-zh>提示文字</span><span data-en>Tooltips</span></label></div>'+
       '</div>';
     lang.insertAdjacentElement("afterend", wrap);
-    var btn=wrap.querySelector("#srPrefBtn"), pop=wrap.querySelector("#srPrefPop"), radios=wrap.querySelectorAll("input[name=srTips]");
+    var btn=wrap.querySelector("#srPrefBtn"), pop=wrap.querySelector("#srPrefPop"), tipsCb=wrap.querySelector("#srTipsCb");
     function setOpen(o){ pop.hidden=!o; btn.setAttribute("aria-expanded", o?"true":"false"); }
     btn.addEventListener("click", function(e){ e.stopPropagation(); setOpen(pop.hidden); });
     pop.addEventListener("click", function(e){ e.stopPropagation(); });
     document.addEventListener("click", function(){ setOpen(false); });
     document.addEventListener("keydown", function(e){ if(e.key==="Escape") setOpen(false); });
-    Array.prototype.forEach.call(radios, function(r){ r.addEventListener("change", function(){ if(!r.checked) return; var show=(r.value==="1"); lsSet(show?"1":"0"); applyTips(show); }); });
+    if(tipsCb) tipsCb.addEventListener("change", function(){ var show=tipsCb.checked; lsSet(show?"1":"0"); applyTips(show); });
     var saved=lsGet(), show=(saved!=="0");
-    Array.prototype.forEach.call(radios, function(r){ r.checked=(r.value===(show?"1":"0")); });
+    if(tipsCb) tipsCb.checked=show;
     applyTips(show);
   }
 
