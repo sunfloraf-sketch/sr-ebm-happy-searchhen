@@ -673,8 +673,8 @@
             <svg class="pt-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
           <div class="pt-menu">
-            <a class="pt-mi" data-zh href="pico_template_zh.docx" download><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11"/><polyline points="7 10 12 15 17 10"/><path d="M4 20h16"/></svg>下載搜尋紀錄表樣板</a>
-            <a class="pt-mi" data-en href="pico_template_en.docx" download><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11"/><polyline points="7 10 12 15 17 10"/><path d="M4 20h16"/></svg>Download record-form template</a>
+            <a class="pt-mi" data-zh href="PICO_Search_template_zh.docx" download><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11"/><polyline points="7 10 12 15 17 10"/><path d="M4 20h16"/></svg>下載搜尋紀錄表樣板</a>
+            <a class="pt-mi" data-en href="pico_template_en.docx" download="PICO_template_en.docx"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11"/><polyline points="7 10 12 15 17 10"/><path d="M4 20h16"/></svg>Download record-form template</a>
             <button type="button" class="pt-mi" id="uploadBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4"/><polyline points="7 9 12 4 17 9"/><path d="M4 20h16"/></svg><span data-zh>上傳搜尋紀錄表</span><span data-en>Upload record form</span></button>
           </div>
         </div>
@@ -792,7 +792,7 @@ Optical Imaging)</pre>
       <button type="button" class="rbtn clear hastip" id="clearBtn" data-tip="清空整張表（範例內容直接清；自填資料會先確認） / Clear table" aria-label="清空整張表">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7 H20"/><path d="M9.5 7 V5.2 Q9.5 4.3 10.4 4.3 H13.6 Q14.5 4.3 14.5 5.2 V7"/><path d="M6.2 7 L7 19.2 Q7.1 20.6 8.5 20.6 H15.5 Q16.9 20.6 17 19.2 L17.8 7"/><path d="M10 10.5 V17 M14 10.5 V17"/></svg>
       </button>
-      <button type="button" class="rbtn hastip" id="tallRows" data-tip="拉高：展開到該列最長內容、完整顯示（再按一次還原） / Expand rows to fit content" aria-label="拉高已填格">
+      <button type="button" class="rbtn hastip" id="tallRows" data-tip="收合：各格縮回固定高度，內容可捲動（再按一次展開） / Collapse cells to a fixed height (click again to expand)" aria-label="收合各格 / Collapse cells">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 9 12 4 17 9"/><polyline points="7 15 12 20 17 15"/></svg>
       </button>
       <button type="button" class="rbtn prox hastip" id="toProxBtn" data-tip="用鄰近字組合器加概念（會開啟鄰近字組合器） / Add a concept via the Proximity Builder" aria-label="用鄰近字組合器加概念">
@@ -2895,10 +2895,10 @@ if (typeof module !== "undefined" && module.exports) {
   // 匯入（貼上詞表／上傳 Word）時，同義詞要落在哪一欄：
   //   整理前欄有顯示 → 進整理前（它就是原始詞收集區）；沒顯示 → 進整理後。
   //   來源表格本身就有整理前欄時，兩欄各就各位；若整理前欄沒顯示，才併進整理後以免資料遺失。
-  function _importSplit(ft, bef){
+  function _importSplit(ft, bef, srcHasBef){
     ft=String(ft||""); bef=String(bef||"");
-    // 來源同時有整理前／整理後兩欄 → 各就各位（整理前欄若沒顯示，匯入後會自動打開）
-    if(bef) return { ft:ft, before:bef };
+    // 來源同時有整理前／整理後兩欄 → 各就各位（即使其中一欄空白；整理前欄若沒顯示，匯入後會自動打開）
+    if(bef || srcHasBef) return { ft:ft, before:bef };
     // 來源只有一欄同義詞 → 整理前欄有顯示就放整理前，否則放整理後
     if(_ftTargetBefore()) return { ft:"", before:ft };
     return { ft:ft, before:"" };
@@ -3537,31 +3537,14 @@ function befPluralOf(w){
     document.addEventListener("keydown", function(e){ if(e.key==="Escape") dds.forEach(function(d){ d.classList.remove("open"); }); });
   })();
   // 一次把「有填文字的列」整列展開到該列最長內容、完整顯示（再按一次還原）
-  var _tallOn=false;
+  // 收合／展開：預設各格完整展開（自動等高）；按一下收合為固定高度（可捲動），再按一次展開
+  var _TIP_COLLAPSE="收合：各格縮回固定高度，內容可捲動（再按一次展開） / Collapse cells to a fixed height (click again to expand)";
+  var _TIP_EXPAND="展開：各格完整顯示內容 / Expand cells to show all content";
   if($("#tallRows")) $("#tallRows").onclick=function(){
-    _tallOn=!_tallOn;
-    Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr){
-      var tas=tr.querySelectorAll("textarea");
-      if(!_tallOn){ Array.prototype.forEach.call(tas, function(t){ t.style.minHeight=""; }); return; }
-      var hasText=Array.prototype.some.call(tas, function(t){return t.value.trim();});
-      if(!hasText){ Array.prototype.forEach.call(tas, function(t){ t.style.minHeight=""; }); return; }
-      // 量測該列每格內容的自然高度，取最長者
-      var maxH=0;
-      Array.prototype.forEach.call(tas, function(t){
-        var prev=t.style.height;
-        t.style.height="auto";
-        if(t.scrollHeight>maxH) maxH=t.scrollHeight;
-        t.style.height=prev;
-      });
-      if(maxH>0){ Array.prototype.forEach.call(tas, function(t){ t.style.minHeight=(maxH+4)+"px"; }); }  // 同列一起拉高到最長內容
-    });
+    window._srCompact=!window._srCompact;
+    if(typeof window._srFitAll==="function") window._srFitAll(true);
     var btn=$("#tallRows");
-    if(btn){
-      btn.classList.toggle("on", _tallOn);
-      btn.setAttribute("data-tip", _tallOn
-        ? "還原高度 / Reset height"
-        : "拉高：展開到該列最長內容、完整顯示（再按一次還原） / Expand rows to fit content");
-    }
+    if(btn){ btn.classList.toggle("on", !!window._srCompact); btn.setAttribute("data-tip", window._srCompact?_TIP_EXPAND:_TIP_COLLAPSE); btn.setAttribute("aria-label", window._srCompact?"展開各格 / Expand cells":"收合各格 / Collapse cells"); }
   };
 
   // ===== 貼上 AI 表格：解析剪貼簿的 HTML 表格（或 Tab 分隔文字），依標題自動對欄填入 =====
@@ -3580,6 +3563,8 @@ function befPluralOf(w){
       return _glueProtect(l, function(t){ return t.replace(/\*(?=[A-Za-z])/g,"*\n").replace(/([a-z]{3})(?=[A-Z])/g,"$1\n"); });
     }).join("\n").split("\n").map(function(x){return x.trim();}).filter(Boolean).join("\n"); }
   // 控制詞彙欄：移除 AI 附加的說明句（Includes entry terms such as…、Note: …）
+  // 樣板內的說明行（以 ↑ 開頭，例「↑ 鄰近字分堆整理時…」「↑ 標註灰字，不加入檢索」）與只填「-」的佔位格不匯入
+  function _dropArrowNotes(cell){ return String(cell||"").split("\n").filter(function(l){ return !/^\s*[↑⬆]/.test(l) && !/^\s*[-–—]+\s*$/.test(l); }).join("\n"); }
   function _cvDropNotes(cell){ return String(cell||"").split("\n").filter(function(l){ var t=l.trim(); if(!t) return false;
       if(/^(?:includes?|including|note|notes|see|use|also|e\.g\.|i\.e\.|entry terms?|such as|search|verify|check)\b/i.test(t) && t.split(/\s+/).length>=4) return false;
       if(t.split(/\s+/).length>=6 && /[.。]$/.test(t)) return false;
@@ -3736,12 +3721,12 @@ function befPluralOf(w){
       else { data=rows; col={label:0,zh:1,ft:2,emtree:3,mesh:4,cinahl:5}; }
     }
     var g=function(c,i){ return (i>=0&&i<c.length)?c[i]:""; };
-    var _isHdrLike=/^(概念|主題概念|主題|concept|中文同義|chinese|english|自由詞|控制詞|before|after|emtree|mesh|cinahl|範例|example)/i;
+    var _isHdrLike=/^(概念|主題概念|主題|concept|中文同義|chinese|english|自由詞|控制詞|before|after|emtree|mesh|cinahl|範例|example|e\.g\.)/i;
     var filled=[];
     data.forEach(function(c){ if(!c.length||c.every(function(x){return !x;}))return; var _lab=String(g(c,col.label)||"").trim(); if(_isHdrLike.test(_lab)) return;  // 略過殘留的表頭／群組列
       filled.push({label:labClean(g(c,col.label)),zh:toLines(g(c,col.zh),false),ft:toLines(g(c,col.ft),false),before:toLines(g(c,col.before),false),mesh:toLines(g(c,col.mesh),true),emtree:toLines(g(c,col.emtree),true),cinahl:toLines(g(c,col.cinahl),true)}); });
     var _glued=[], _gluedRows=[];   // 來源遺失換行、詞黏在一起：盡量拆開，仍可疑者提醒並標示儲存格
-    filled.forEach(function(r, _ri){ r.ft=_unglueFt(r.ft); r.before=_unglueFt(r.before); ["mesh","emtree","cinahl"].forEach(function(k){ r[k]=_cvDropNotes(r[k]); });
+    filled.forEach(function(r, _ri){ ["zh","ft","before","mesh","emtree","cinahl"].forEach(function(k){ r[k]=_dropArrowNotes(r[k]); }); r.ft=_unglueFt(r.ft); r.before=_unglueFt(r.before); ["mesh","emtree","cinahl"].forEach(function(k){ r[k]=_cvDropNotes(r[k]); });
       var cols=[], keys=[]; if(_gluedSuspect(r.zh,"zh")){ cols.push(en?"Chinese synonyms":"中文同義詞"); keys.push("zh"); }
       if(_gluedSuspect(r.before,"en")){ cols.push(en?"English synonyms (Before)":"英文同義詞（整理前）"); keys.push("before"); }
       if(_gluedSuspect(r.ft,"en")){ cols.push(en?"English synonyms":"英文同義詞"); keys.push("ft"); }
@@ -3751,7 +3736,8 @@ function befPluralOf(w){
     var pre=serializeState(); if(stateNonEmpty(pre)){ try{ localStorage.setItem(SNAP_KEY, JSON.stringify(pre)); }catch(e){} }  // 貼上前內容 → 供「還原上次」救回
     picoBody.innerHTML="";
     var _anyBef=false;
-    filled.forEach(function(r){ var sp=_importSplit(r.ft, r.before);
+    var _srcBef=(col.before!=null && col.before>=0);
+    filled.forEach(function(r){ var sp=_importSplit(r.ft, r.before, _srcBef);
       if(sp.before) _anyBef=true;
       addRow(r.label||"", r.zh||"", sp.ft, r.mesh||"", r.emtree||"", r.cinahl||"", undefined, undefined, sp.before); });
     if(_anyBef && window._srShowBefore) window._srShowBefore();
@@ -3859,6 +3845,8 @@ function befPluralOf(w){
     };
     var _cellText=function(tc,keepGray){
       // 逐 run 讀取；灰色字（提示/備註）不納入（keepGray=true 時全保留，供表頭偵測用）
+      // 以 ↑ 開頭的段落是樣板說明（例「↑ 鄰近字分堆整理時…」），整段略過
+      tc=tc.replace(/<w:p\b[\s\S]*?<\/w:p>/g, function(pp){ var t="", r2=/<w:t(?:\s[^>]*)?>([\s\S]*?)<\/w:t>/g, q; while((q=r2.exec(pp))) t+=q[1]; var ti=pp.search(/<w:t(?:\s[^>]*)?>\s*[^<\s]/), si=pp.indexOf("<w:sym"); return (/^\s*[↑⬆]/.test(t) || (si>=0 && (ti<0 || si<ti)))?"":pp; });   // ↑ 可能是文字或 Wingdings 符號
       var out="", re=/<w:r\b[\s\S]*?<\/w:r>|<w:br\b[^>]*?\/?>|<\/w:p>/g, m;
       while((m=re.exec(tc))){
         var seg=m[0];
@@ -3930,7 +3918,7 @@ function befPluralOf(w){
       }
       return [];
     };
-    var _SKIP=/^(概念|主題概念|concept|中文同義|chinese|english|before|after|emtree|mesh|cinahl|範例|example)/i;
+    var _SKIP=/^(概念|主題概念|concept|中文同義|chinese|english|before|after|emtree|mesh|cinahl|範例|example|e\.g\.)/i;
     uploadBtn.onclick=function(){ wordFile.click(); };
     wordFile.onchange=async function(ev){
       var f=ev.target.files&&ev.target.files[0]; if(!f) return;
@@ -3987,10 +3975,13 @@ function befPluralOf(w){
         picoBody.innerHTML="";
         var _anyBefDocx=false;
         data.forEach(function(k2){
-          var r=rows[k2], g=function(i){ return (i>=0 && r[i]!=null)?r[i]:""; };
+          var r=rows[k2], g=function(i){ return (i>=0 && r[i]!=null)?_dropArrowNotes(r[i]):""; };
           var em=g(ci.emtree), me=g(ci.mesh), cn=g(ci.cinahl);
           if(colorStyle){ var cs=_colorSplit(k2); em=cs.emtree; me=cs.mesh; cn=cs.cinahl; }
-          var sp=_importSplit(g(ci.ft), g(ci.before!=null?ci.before:-1));
+          // 整理前欄：保留灰字（原始詞收集區，樣板常整欄標灰）；整理後／控制詞彙欄：灰字不加入檢索
+          var _bi=(ci.before!=null?ci.before:-1), _rr=rowsRaw[k2]||[];
+          var _bef=(_bi>=0 && _rr[_bi]!=null)?_dropArrowNotes(_rr[_bi]):"";
+          var sp=_importSplit(g(ci.ft), _bef, _bi>=0);
           if(sp.before) _anyBefDocx=true;
           addRow(g(ci.concept).replace(/\s+/g," ").trim(), g(ci.zh), sp.ft, me, em, cn, undefined, undefined, sp.before);
         });
@@ -4092,6 +4083,8 @@ function befPluralOf(w){
     freetext = String(freetext||"").replace(/[\u201c\u201d\u201e\u201f\u2033]/g,'"').replace(/[\u2018\u2019\u201a\u201b\u2032]/g,"'");   // 智慧引號（彎引號）→ 直引號，避免片語無法辨識
     if(startDB==="embase"){ freetext = freetext.replace(/([A-Za-z])'([A-Za-z])/g,"$1 $2").replace(/'([^']*)'/g,'"$1"'); }   // Embase.com 起始：所有格撇號 Alzheimer's→"Alzheimer s"；成對單引號片語 'pain control'→"pain control"
     freetext = String(freetext||"").replace(/鄰\s*近?\s*(\d+)(?:\s*個)?(?:\s*單)?(?:\s*字)?(?:\s*(?:以|之)?內)?/g, function(m,n){ return " NEAR/"+(parseInt(n,10)+(SYNTAX_MAP.proximityOffset[startDB]||0))+" "; });
+    // 英文樣板寫法：「within 3 words」＝鄰3單字內
+    freetext = freetext.replace(/\bwithin\s+(\d+)\s+words?\b/gi, function(m,n){ return " NEAR/"+(parseInt(n,10)+(SYNTAX_MAP.proximityOffset[startDB]||0))+" "; });
     // 英文同義詞：Enter 換行 → 相鄰「詞」之間插 OR；若前一行結尾為「(」或運算子、或下一行開頭為「)」或運算子，則只接空白(保留使用者的括號/鄰近字結構)
     var _lns = freetext.split(/\r?\n/).map(function(l){return l.trim();}).filter(Boolean);
     // 運算子偵測分兩類：文字運算子與帶斜線鄰近字（大小寫皆可）；EBSCO 無斜線的 Nn／Wn 只認大寫，避免把 n3／w3（如 omega-3＝n-3）誤判為運算子
@@ -4304,7 +4297,7 @@ function befPluralOf(w){
     if(eng==="airiti"){
       var incAll = AIRITI_INC;
       // 英文逐行過濾：鄰近字／含括號分組 → 保留（引擎會把鄰近字轉 AND）；單一乾淨字 → 保留；純片語或含切截詞 → 預設略過（勾選則納入）
-      var OPRE=/\b(?:ADJ\d*|NEAR(?:\/\d+)?|NEXT(?:\/\d+)?|PRE\/\d+|W\/?\d+|N\/?\d+)\b|鄰\s*近?\s*\d/i;
+      var OPRE=/\b(?:ADJ\d*|NEAR(?:\/\d+)?|NEXT(?:\/\d+)?|PRE\/\d+|W\/?\d+|N\/?\d+)\b|鄰\s*近?\s*\d|\bwithin\s+\d+\s+words?\b/i;
       var enLines=String(ftCell||"").split(/\r?\n/).map(function(s){return s.trim();}).filter(Boolean);
       var kept=[], dropped=false, keptComplex=false;
       enLines.forEach(function(l){
@@ -5305,12 +5298,19 @@ function befPluralOf(w){
     for(var i=0;i<ts.length;i++){ var tx=ts[i].textContent||""; if(tx.indexOf("工具整理的檢索詞")>=0 || tx.indexOf("tidied in the tool")>=0) return; }
     // 找出紀錄表中「原有的檢索詞（概念）表」：含主題概念／自由詞彙／控制詞彙欄，且非「搜尋語法」策略表
     var tbls=doc.getElementsByTagNameNS(_WNS,"tbl"), ctbl=null;
-    for(var j=0;j<tbls.length;j++){ var txt=_recCellText(tbls[j]); if(!/搜尋語法|Search syntax/.test(txt) && (/主題概念/.test(txt)||/自由詞/.test(txt)||/控制詞彙|Controlled\s*Vocabulary/i.test(txt)||(/emtree/i.test(txt)&&/mesh/i.test(txt)&&/cinahl/i.test(txt)))){ ctbl=tbls[j]; break; } }
+    for(var j0=0;j0<tbls.length;j0++){ var tx0=_recCellText(tbls[j0]); if(!/搜尋語法|Search syntax/.test(tx0) && /emtree/i.test(tx0) && /mesh/i.test(tx0) && /cinahl/i.test(tx0) && /before|整理前|after|整理後|概念|concept/i.test(tx0)){ ctbl=tbls[j0]; break; } }
+    if(!ctbl) for(var j=0;j<tbls.length;j++){ var txt=_recCellText(tbls[j]); if(!/搜尋語法|Search syntax/.test(txt) && (/主題概念/.test(txt)||/自由詞/.test(txt)||/控制詞彙|Controlled\s*Vocabulary/i.test(txt)||(/emtree/i.test(txt)&&/mesh/i.test(txt)&&/cinahl/i.test(txt)))){ ctbl=tbls[j]; break; } }
     var head=_ct.head, note=_ct.note, tbl=_ct.tbl;
     // 附加時標題註明「附加於原表下方」
     var htext=(isEn()?"※ Search terms tidied in the tool (appended below your original table; not overwriting it):":"※ 工具整理的檢索詞（附加於原檢索詞表下方，未覆蓋原表）：");
     var ht=head.getElementsByTagNameNS(_WNS,"t"); if(ht.length) ht[0].textContent=htext;
     var spacer=_mkP(doc,[{text:""}]);
+    // 新版紀錄表有「2c. 檢索詞: SearchHen回填區」標題 → 直接放在該標題下方
+    var _bd=doc.getElementsByTagNameNS(_WNS,"body")[0], _anc=null;
+    if(_bd){ for(var a2=_bd.firstChild; a2; a2=a2.nextSibling){ if(a2.localName!=="p"||a2.namespaceURI!==_WNS) continue;
+      var _pt=""; var _tt=a2.getElementsByTagNameNS(_WNS,"t"); for(var q2=0;q2<_tt.length;q2++) _pt+=_tt[q2].textContent||"";
+      if(/SearchHen/i.test(_pt) && /回填|filled in by|fill-?back/i.test(_pt) && !/搜尋策略|Search strategy/i.test(_pt)){ _anc=a2; break; } } }
+    if(_anc){ if(ht.length) ht[0].textContent=(isEn()?"※ Search terms tidied in the tool:":"※ 工具整理的檢索詞："); var _nx=_anc.nextSibling; [head,note,tbl,spacer].forEach(function(nd){ _bd.insertBefore(nd,_nx); }); return; }
     if(ctbl && ctbl.parentNode){ var ref=ctbl.nextSibling; ctbl.parentNode.insertBefore(head, ref); ctbl.parentNode.insertBefore(note, ref); ctbl.parentNode.insertBefore(tbl, ref); ctbl.parentNode.insertBefore(spacer, ref); }
     else { var body=doc.getElementsByTagNameNS(_WNS,"body")[0]; if(body){ body.insertBefore(spacer, body.firstChild); body.insertBefore(tbl, body.firstChild); body.insertBefore(note, body.firstChild); body.insertBefore(head, body.firstChild); } }
   }
@@ -5387,7 +5387,12 @@ function befPluralOf(w){
     var tail=_mkP(doc,[{text:""}]);
     var nodes=[head, lvl, tbl].concat(srcPs.length?[_mkP(doc,[{text:(en?"Study-design filter sources":"研究設計篩選語法出處"),bold:true,sz:18}])].concat(srcPs):[]).concat([tail]);
     var sect=null, kids=body.childNodes; for(var i=kids.length-1;i>=0;i--){ if(kids[i].localName==="sectPr" && kids[i].namespaceURI===_WNS){ sect=kids[i]; break; } }
-    nodes.forEach(function(nd){ if(sect) body.insertBefore(nd, sect); else body.appendChild(nd); });
+    var anchor=null;   // 新版紀錄表：「搜尋策略（…將回填於此）」/「Search strategy (… will be filled in here)」
+    for(var ai=0; ai<kids.length; ai++){ var kd=kids[ai]; if(kd.localName!=="p" || kd.namespaceURI!==_WNS) continue;
+      var ptx=""; var tt=kd.getElementsByTagNameNS(_WNS,"t"); for(var q=0;q<tt.length;q++) ptx+=tt[q].textContent||"";
+      if(/^\s*(?:\d+[.、]?\s*)?(?:搜尋策略|Search strategy)/i.test(ptx) && /回填|fill(?:ed)? in here|filled in/i.test(ptx)){ anchor=kd; break; } }
+    if(anchor){ var nx=anchor.nextSibling; nodes.forEach(function(nd){ if(nd===head) return; body.insertBefore(nd, nx); }); }   // 標題已在紀錄表中，不重複
+    else nodes.forEach(function(nd){ if(sect) body.insertBefore(nd, sect); else body.appendChild(nd); });
     _insertConceptTerms(doc); _insertCVVerifyNote(doc); _insertCite(doc);
     var out=new XMLSerializer().serializeToString(doc);
     if(!/^\s*<\?xml/i.test(out)) out='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n'+out;
@@ -5618,6 +5623,7 @@ function befPluralOf(w){
   function fitRow(tr){
     var tas=Array.prototype.filter.call(tr.querySelectorAll("textarea"), function(t){ return t.offsetParent!==null && !t.classList.contains("cvpaste-ta"); });
     if(!tas.length) return;
+    if(window._srCompact){ tas.forEach(function(t){ t.style.height=MIN+"px"; }); return; }   // 收合模式：固定高度、內容捲動
     tas.forEach(function(t){ t.style.height="auto"; t.style.height=MIN+"px"; });          // 先縮回最小高度，才量得到真正的內容高度
     var h=MIN; tas.forEach(function(t){ if(t.scrollHeight>h) h=t.scrollHeight; });
     h+=2;                                                                                  // 邊框
@@ -5631,6 +5637,7 @@ function befPluralOf(w){
   }
   body.addEventListener("input", function(e){ var tr=e.target.closest&&e.target.closest("tr"); if(tr){ fitRow(tr); sig.set(tr,rowSig(tr)); } });
   window.addEventListener("resize", function(){ setTimeout(fitAll,60); });
+  window._srFitAll=function(force){ if(force) sig=new WeakMap(); fitAll(); };
   setInterval(fitAll, 400);          // 載入範例、貼上、複製到整理後等程式填值時也會自動跟上
   fitAll();
 })();
@@ -5682,7 +5689,7 @@ function befPluralOf(w){
         var bk="data-both-"+at, both=el.getAttribute(bk), cur=el.getAttribute(at)||"";
         if(both===null){ if(!split(cur)) return; both=cur; el.setAttribute(bk,both); }
         var sp=split(both); if(!sp){ el.removeAttribute(bk); return; }
-        if(cur!==both && cur!==sp.zh && cur!==sp.en){ el.removeAttribute(bk); return; }   // 別處已改成其他文字：不再覆蓋
+        if(cur!==both && cur!==sp.zh && cur!==sp.en){ var sp2=split(cur); if(!sp2){ el.removeAttribute(bk); return; } both=cur; el.setAttribute(bk,both); sp=sp2; }   // 程式改成新的雙語文字：改用新值；改成單語則不再覆蓋
         var want=en?sp.en:sp.zh; if(cur!==want) el.setAttribute(at,want);
       });
     });
@@ -5750,6 +5757,7 @@ function befPluralOf(w){
   }
 
   new MutationObserver(function(){ syncLang(); }).observe(document.body,{attributes:true,attributeFilter:["class"]});
+  var _slRaf=0; new MutationObserver(function(){ if(_slRaf) return; _slRaf=requestAnimationFrame(function(){ _slRaf=0; syncLang(); }); }).observe(document.body,{subtree:true,attributes:true,attributeFilter:["data-tip","title","aria-label"]});   // 程式動態設定的雙語提示（如 拉高／還原）也依語言切開
   new MutationObserver(function(){ syncLang(); }).observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
   syncLang();
 })();

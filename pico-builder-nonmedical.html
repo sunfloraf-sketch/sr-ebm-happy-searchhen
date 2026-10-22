@@ -601,7 +601,7 @@ City blocks)</pre>
       <button type="button" class="rbtn clear hastip" id="clearBtn" data-tip="清空整張表（範例內容直接清；自填資料會先確認） / Clear table" aria-label="清空整張表">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7 H20"/><path d="M9.5 7 V5.2 Q9.5 4.3 10.4 4.3 H13.6 Q14.5 4.3 14.5 5.2 V7"/><path d="M6.2 7 L7 19.2 Q7.1 20.6 8.5 20.6 H15.5 Q16.9 20.6 17 19.2 L17.8 7"/><path d="M10 10.5 V17 M14 10.5 V17"/></svg>
       </button>
-      <button type="button" class="rbtn hastip" id="tallRows" data-tip="拉高：展開到該列最長內容、完整顯示（再按一次還原） / Expand rows to fit content" aria-label="拉高已填格">
+      <button type="button" class="rbtn hastip" id="tallRows" data-tip="收合：各格縮回固定高度，內容可捲動（再按一次展開） / Collapse cells to a fixed height (click again to expand)" aria-label="收合各格 / Collapse cells">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 9 12 4 17 9"/><polyline points="7 15 12 20 17 15"/></svg>
       </button>
       <button type="button" class="rbtn prox hastip" id="toProxBtn" data-tip="用鄰近字組合器加概念（會開啟鄰近字組合器） / Add a concept via the Proximity Builder" aria-label="用鄰近字組合器加概念">
@@ -2179,30 +2179,14 @@ if (typeof module !== "undefined" && module.exports) {
   })();
 
   // 一次把「有填文字的列」整列展開到該列最長內容、完整顯示（再按一次還原）
-  var _tallOn=false;
+  // 收合／展開：預設各格完整展開（自動等高）；按一下收合為固定高度（可捲動），再按一次展開
+  var _TIP_COLLAPSE="收合：各格縮回固定高度，內容可捲動（再按一次展開） / Collapse cells to a fixed height (click again to expand)";
+  var _TIP_EXPAND="展開：各格完整顯示內容 / Expand cells to show all content";
   if($("#tallRows")) $("#tallRows").onclick=function(){
-    _tallOn=!_tallOn;
-    Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr){
-      var tas=tr.querySelectorAll("textarea");
-      if(!_tallOn){ Array.prototype.forEach.call(tas, function(t){ t.style.minHeight=""; }); return; }
-      var hasText=Array.prototype.some.call(tas, function(t){return t.value.trim();});
-      if(!hasText){ Array.prototype.forEach.call(tas, function(t){ t.style.minHeight=""; }); return; }
-      var maxH=0;
-      Array.prototype.forEach.call(tas, function(t){
-        var prev=t.style.height;
-        t.style.height="auto";
-        if(t.scrollHeight>maxH) maxH=t.scrollHeight;
-        t.style.height=prev;
-      });
-      if(maxH>0){ Array.prototype.forEach.call(tas, function(t){ t.style.minHeight=(maxH+4)+"px"; }); }
-    });
+    window._srCompact=!window._srCompact;
+    if(typeof window._srFitAll==="function") window._srFitAll(true);
     var btn=$("#tallRows");
-    if(btn){
-      btn.classList.toggle("on", _tallOn);
-      btn.setAttribute("data-tip", _tallOn
-        ? "還原高度 / Reset height"
-        : "拉高：展開到該列最長內容、完整顯示（再按一次還原） / Expand rows to fit content");
-    }
+    if(btn){ btn.classList.toggle("on", !!window._srCompact); btn.setAttribute("data-tip", window._srCompact?_TIP_EXPAND:_TIP_COLLAPSE); btn.setAttribute("aria-label", window._srCompact?"展開各格 / Expand cells":"收合各格 / Collapse cells"); }
   };
 
   // ===== 貼上 AI 表格：解析剪貼簿的 HTML 表格（或 Tab 分隔文字），依標題自動對欄填入 =====
@@ -4117,6 +4101,7 @@ if (typeof module !== "undefined" && module.exports) {
   function fitRow(tr){
     var tas=Array.prototype.filter.call(tr.querySelectorAll("textarea"), function(t){ return t.offsetParent!==null && !t.classList.contains("cvpaste-ta"); });
     if(!tas.length) return;
+    if(window._srCompact){ tas.forEach(function(t){ t.style.height=MIN+"px"; }); return; }   // 收合模式：固定高度、內容捲動
     tas.forEach(function(t){ t.style.height="auto"; t.style.height=MIN+"px"; });          // 先縮回最小高度，才量得到真正的內容高度
     var h=MIN; tas.forEach(function(t){ if(t.scrollHeight>h) h=t.scrollHeight; });
     h+=2;                                                                                  // 邊框
@@ -4130,6 +4115,7 @@ if (typeof module !== "undefined" && module.exports) {
   }
   body.addEventListener("input", function(e){ var tr=e.target.closest&&e.target.closest("tr"); if(tr){ fitRow(tr); sig.set(tr,rowSig(tr)); } });
   window.addEventListener("resize", function(){ setTimeout(fitAll,60); });
+  window._srFitAll=function(force){ if(force) sig=new WeakMap(); fitAll(); };
   setInterval(fitAll, 400);          // 載入範例、貼上、複製到整理後等程式填值時也會自動跟上
   fitAll();
 })();
@@ -4152,7 +4138,7 @@ if (typeof module !== "undefined" && module.exports) {
         var bk="data-both-"+at, both=el.getAttribute(bk), cur=el.getAttribute(at)||"";
         if(both===null){ if(!split(cur)) return; both=cur; el.setAttribute(bk,both); }
         var sp=split(both); if(!sp){ el.removeAttribute(bk); return; }
-        if(cur!==both && cur!==sp.zh && cur!==sp.en){ el.removeAttribute(bk); return; }   // 別處已改成其他文字：不再覆蓋
+        if(cur!==both && cur!==sp.zh && cur!==sp.en){ var sp2=split(cur); if(!sp2){ el.removeAttribute(bk); return; } both=cur; el.setAttribute(bk,both); sp=sp2; }   // 程式改成新的雙語文字：改用新值；改成單語則不再覆蓋
         var want=en?sp.en:sp.zh; if(cur!==want) el.setAttribute(at,want);
       });
     });
@@ -4220,6 +4206,7 @@ if (typeof module !== "undefined" && module.exports) {
   }
 
   new MutationObserver(function(){ syncLang(); }).observe(document.body,{attributes:true,attributeFilter:["class"]});
+  var _slRaf=0; new MutationObserver(function(){ if(_slRaf) return; _slRaf=requestAnimationFrame(function(){ _slRaf=0; syncLang(); }); }).observe(document.body,{subtree:true,attributes:true,attributeFilter:["data-tip","title","aria-label"]});   // 程式動態設定的雙語提示（如 拉高／還原）也依語言切開
   new MutationObserver(function(){ syncLang(); }).observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
   syncLang();
 })();

@@ -905,7 +905,7 @@ function syncHeroControlLabels() {
         var bk="data-both-"+at, both=el.getAttribute(bk), cur=el.getAttribute(at)||"";
         if(both===null){ if(!split(cur)) return; both=cur; el.setAttribute(bk,both); }
         var sp=split(both); if(!sp){ el.removeAttribute(bk); return; }
-        if(cur!==both && cur!==sp.zh && cur!==sp.en){ el.removeAttribute(bk); return; }   // 別處已改成其他文字：不再覆蓋
+        if(cur!==both && cur!==sp.zh && cur!==sp.en){ var sp2=split(cur); if(!sp2){ el.removeAttribute(bk); return; } both=cur; el.setAttribute(bk,both); sp=sp2; }   // 程式改成新的雙語文字：改用新值；改成單語則不再覆蓋
         var want=en?sp.en:sp.zh; if(cur!==want) el.setAttribute(at,want);
       });
     });
@@ -973,6 +973,7 @@ function syncHeroControlLabels() {
   }
 
   new MutationObserver(function(){ syncLang(); }).observe(document.body,{attributes:true,attributeFilter:["class"]});
+  var _slRaf=0; new MutationObserver(function(){ if(_slRaf) return; _slRaf=requestAnimationFrame(function(){ _slRaf=0; syncLang(); }); }).observe(document.body,{subtree:true,attributes:true,attributeFilter:["data-tip","title","aria-label"]});   // 程式動態設定的雙語提示（如 拉高／還原）也依語言切開
   new MutationObserver(function(){ syncLang(); }).observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
   syncLang();
 })();
