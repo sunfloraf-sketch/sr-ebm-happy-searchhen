@@ -685,8 +685,8 @@
       <summary style="cursor:pointer;font-weight:700;font-size:13px;color:#0f766e"><span data-zh>貼上整理好的表格（➜ 可參考 AI 提示詞範例）</span><span data-en>Paste a prepared table (➜ AI prompt example available)</span></summary>
       <div style="margin-top:8px">
         <div class="sub" style="font-size:12px;color:var(--mut);margin-bottom:6px">
-          <span data-zh><div>‧ <a href="https://chatgpt.com/share/6acf29ad-49ac-83ec-9784-c6e3a73cd9b1" target="_blank" rel="noopener">開啟 ChatGPT 提示詞與對話範例 ↗</a> 或 <button type="button" class="pcopy" data-pcopy>直接複製提示詞</button>（優先使用 ChatGPT 或 Claude，登入帳號效果較佳）</div><div>‧ 從 ChatGPT 等複製整個表格後，於下方框按 <b>Ctrl+V</b> 貼上，工具會依欄位標題自動對應，並填入下方 PICO 表（亦可從 Word／Excel 複製後貼上）</div><div>‧ 表格請含一列標題（概念／中文／English／Emtree／MeSH／CINAHL。不需要的欄位可不提供；順序不拘）</div><div style="color:var(--mut);padding-left:1.2em">（不同複製方式填入效果可能有差異；含合併／巢狀儲存格的複雜表格，貼上後請檢查並自行調整）</div></span>
-          <span data-en><div>‧ <a href="https://chatgpt.com/share/6acf2a7f-ffb4-83ee-843b-672fba323b4c" target="_blank" rel="noopener">Open ChatGPT prompt &amp; chat example ↗</a> or <button type="button" class="pcopy" data-pcopy>copy the prompt</button> (ChatGPT or Claude works best; signing in helps)</div><div>‧ Copy the whole table from ChatGPT etc., click the box below and press <b>Ctrl+V</b>; columns are auto-mapped by header and fill the PICO table below (Word / Excel also work)</div><div>‧ Include a header row (Concept / Chinese / English / Emtree / MeSH / CINAHL; omit columns you don't need; any order)</div><div style="color:var(--mut);padding-left:1.2em">(Results may vary with different copy methods; for complex tables with merged/nested cells, check the filled result and adjust as needed.)</div></span>
+          <span data-zh><div>‧ <a href="https://chatgpt.com/share/6ad984b7-e750-83ec-b7fb-359952fa53f5" target="_blank" rel="noopener">開啟 ChatGPT 提示詞與對話範例 ↗</a> 或 <button type="button" class="pcopy" data-pcopy>直接複製提示詞</button>（優先使用 ChatGPT 或 Claude，登入帳號效果較佳）</div><div>‧ 從 ChatGPT 等複製整個表格後，於下方框按 <b>Ctrl+V</b> 貼上，工具會依欄位標題自動對應，並填入下方 PICO 表（亦可從 Word／Excel 複製後貼上）</div><div>‧ 表格請含一列標題（概念／中文／English／Emtree／MeSH／CINAHL。不需要的欄位可不提供；順序不拘）</div><div style="color:var(--mut);padding-left:1.2em">（不同複製方式填入效果可能有差異；含合併／巢狀儲存格的複雜表格，貼上後請檢查並自行調整）</div></span>
+          <span data-en><div>‧ <a href="https://chatgpt.com/share/6ad986ee-28e0-83ee-af26-543ff8b647d1" target="_blank" rel="noopener">Open ChatGPT prompt &amp; chat example ↗</a> or <button type="button" class="pcopy" data-pcopy>copy the prompt</button> (ChatGPT or Claude works best; signing in helps)</div><div>‧ Copy the whole table from ChatGPT etc., click the box below and press <b>Ctrl+V</b>; columns are auto-mapped by header and fill the PICO table below (Word / Excel also work)</div><div>‧ Include a header row (Concept / Chinese / English / Emtree / MeSH / CINAHL; omit columns you don't need; any order)</div><div style="color:var(--mut);padding-left:1.2em">(Results may vary with different copy methods; for complex tables with merged/nested cells, check the filled result and adjust as needed.)</div></span>
         </div>
         <textarea id="pasteZone" spellcheck="false" rows="4" style="width:100%" placeholder="在此按 Ctrl+V 貼上表格"></textarea>
         <div id="pasteMsg" style="font-size:12.5px;margin-top:6px"></div>
@@ -3531,13 +3531,32 @@ function befPluralOf(w){
   function cellClean(s){ return String(s||"").replace(/ /g," ").replace(/[\u2028\u2029\u0085\u000B\u000C]/g,"\n").replace(/[⁠⁡⁢⁣⁤​‌﻿]/g,"\n").replace(/<br\s*\/?>/gi,"\n").replace(/<\/?(p|div|li|tr|ul|ol|h[1-6]|blockquote)\b[^>]*>/gi,"\n").replace(/<\/?[a-z][^>]*>/gi,"").replace(/[↗↪⧉➚🔗⇱]/g,"").split(/\r?\n/).map(function(x){return x.replace(/[ \t]+/g," ").trim();}).filter(function(x){return x!=="";}).join("\n").trim(); }
   function labClean(s){ var f=String(s||"").split("\n")[0].trim(); var m=f.match(/^[PICOSET]\b/i); if(m) return m[0].toUpperCase(); return f.split(/[\s(（:：]/)[0].slice(0,4); }
   // 同義詞／控制詞彙一格多個 → 拆成「一行一個」。keepComma=true 時保留詞內半形逗號（如 Diabetes, Gestational），只以 、；;／換行 斷行；同義詞欄則連半形逗號也斷。
+  // 黏在一起的詞（來源複製時遺失換行）：保護 eHealth、mHealth 等詞內大小寫，再交給 fn 斷詞
+  var _GLUE_KEEP=/(?:eHealth|mHealth|uHealth|eLearning|eCoaching|eMental|eCare|iPad|iPhone|iPod|PubMed|YouTube|WhatsApp|LinkedIn|McGill|PhD|MSc|BSc|HbA1c|LGBTQ\w*)/g;
+  function _glueProtect(t, fn){ var keep=[]; var x=String(t).replace(_GLUE_KEEP, function(m){ keep.push(m); return "\uE100"+(keep.length-1)+"\uE101"; });
+    x=fn(x).replace(/([A-Za-z*])(?=\uE100)/g,"$1\n").replace(/(\uE101)(?=[A-Za-z\uE100])/g,"$1\n");   // 受保護詞與前後字母黏著＝詞界（healtheHealth → health｜eHealth）
+    return x.replace(/\uE100(\d+)\uE101/g, function(_,i){ return keep[+i]; }); }
+  // 英文同義詞：長行（≥30 字）才嘗試拆開——切截 * 之後接字母、以及「≥3 個小寫字母＋大寫」交界（diseaseAlzheimer → disease｜Alzheimer）
+  function _unglueFt(cell){ return String(cell||"").split("\n").map(function(l){
+      if(l.length<30) return l;
+      return _glueProtect(l, function(t){ return t.replace(/\*(?=[A-Za-z])/g,"*\n").replace(/([a-z]{3})(?=[A-Z])/g,"$1\n"); });
+    }).join("\n").split("\n").map(function(x){return x.trim();}).filter(Boolean).join("\n"); }
+  // 控制詞彙欄：移除 AI 附加的說明句（Includes entry terms such as…、Note: …）
+  function _cvDropNotes(cell){ return String(cell||"").split("\n").filter(function(l){ var t=l.trim(); if(!t) return false;
+      if(/^(?:includes?|including|note|notes|see|use|also|e\.g\.|i\.e\.|entry terms?|such as|search|verify|check)\b/i.test(t) && t.split(/\s+/).length>=4) return false;
+      if(t.split(/\s+/).length>=6 && /[.。]$/.test(t)) return false;
+      return true; }).join("\n"); }
+  // 仍疑似黏在一起：中文連續 ≥10 字無分隔；英文／控制詞彙單行 ≥45 字
+  function _gluedSuspect(cell, kind){ return String(cell||"").split("\n").some(function(l){ l=l.trim(); if(!l) return false;
+      if(kind==="zh") return /[一-鿿]{10,}/.test(l.replace(/[\s、，,；;()（）]/g," ").split(" ").sort(function(a,b){return b.length-a.length;})[0]||"");
+      return l.length>=45; }); }
   function toLines(s, keepComma){ var t=cellClean(s); if(keepComma) t=t.replace(/,[ \t]*\n[ \t]*/g, ", ");
     // 保護引號內的內容（如 'child, preschool'）：整段引號先換成佔位符，斷詞後再還原，避免引號內的逗號／頓號被當成斷詞
     var _prot=[]; t=t.replace(/(['"“”‘’])([\s\S]*?)\1/g, function(m){ var i=_prot.length; _prot.push(m); return ""+i+""; });
     var _restore=function(x){ return x.replace(/(\d+)/g, function(_,i){ return _prot[+i]||""; }); };
     var re = keepComma ? /[、；;\n]+/ : /[、，,；;\n]+/; var parts=t.split(re).map(function(x){return _restore(x).trim();}).filter(Boolean);
     if(keepComma){   // 控制詞彙：部分 AI（如 Gemini）複製時會把多個 Title Case 標目「無分隔」黏成一串；標目邊界＝小寫/數字/中日韓字 緊接 大寫（詞內以空白分隔，故不會誤切），於該處補斷詞。全小寫黏詞（如 Emtree 小寫）無邊界線索，無法自動拆分。
-      var out=[]; parts.forEach(function(term){ term.replace(/([a-z0-9一-鿿])([A-Z])/g,"$1\n$2").split("\n").forEach(function(x){ x=x.trim(); if(x) out.push(x); }); }); parts=out;
+      var out=[]; parts.forEach(function(term){ _glueProtect(term, function(t){ return t.replace(/([a-z0-9一-鿿])([A-Z])/g,"$1\n$2"); }).split("\n").forEach(function(x){ x=x.trim(); if(x) out.push(x); }); }); parts=out;
     }
     return parts.join("\n"); }
   function _tdText(td){
@@ -3683,6 +3702,11 @@ function befPluralOf(w){
     var filled=[];
     data.forEach(function(c){ if(!c.length||c.every(function(x){return !x;}))return; var _lab=String(g(c,col.label)||"").trim(); if(_isHdrLike.test(_lab)) return;  // 略過殘留的表頭／群組列
       filled.push({label:labClean(g(c,col.label)),zh:toLines(g(c,col.zh),false),ft:toLines(g(c,col.ft),false),before:toLines(g(c,col.before),false),mesh:toLines(g(c,col.mesh),true),emtree:toLines(g(c,col.emtree),true),cinahl:toLines(g(c,col.cinahl),true)}); });
+    var _glued=[];   // 來源遺失換行、詞黏在一起：盡量拆開，仍可疑者提醒
+    filled.forEach(function(r, _ri){ r.ft=_unglueFt(r.ft); r.before=_unglueFt(r.before); ["mesh","emtree","cinahl"].forEach(function(k){ r[k]=_cvDropNotes(r[k]); });
+      var cols=[]; if(_gluedSuspect(r.zh,"zh")) cols.push(en?"Chinese synonyms":"中文同義詞"); if(_gluedSuspect(r.before,"en")||_gluedSuspect(r.ft,"en")) cols.push(en?"English synonyms":"英文同義詞");
+      [["mesh","MeSH"],["emtree","Emtree"],["cinahl","CINAHL"]].forEach(function(p){ if(_gluedSuspect(r[p[0]],"en")) cols.push(p[1]); });
+      if(cols.length) _glued.push((en?("row "+(_ri+1)+" ("+r.label+"): "):("第 "+(_ri+1)+" 列（"+r.label+"）："))+cols.join(en?", ":"、")); });
     if(!filled.length){ warn(en?"Table has no data rows.":"表格沒有資料列。"); return; }
     var pre=serializeState(); if(stateNonEmpty(pre)){ try{ localStorage.setItem(SNAP_KEY, JSON.stringify(pre)); }catch(e){} }  // 貼上前內容 → 供「還原上次」救回
     picoBody.innerHTML="";
@@ -3698,6 +3722,10 @@ function befPluralOf(w){
     pasteMsg.style.color="#166534";
     pasteMsg.textContent=(en?("Filled "+filled.length+" row(s)."+(hasHeader?"":" (no header found — used default column order)")):("已填入 "+filled.length+" 列。"+(hasHeader?"":"（未偵測到標題，改用預設欄序）")))
       +(miss.length?(en?(" Columns not matched: "+miss.join(", ")+"."):("　未對應到的欄："+miss.map(function(k){return missZh[k];}).join("、"))):"");
+    if(_glued.length){ var _gw=document.createElement("div"); _gw.style.cssText="color:#B45309;margin-top:4px;line-height:1.6";
+      _gw.textContent=en?("⚠ Some cells look like several terms run together (the copied table lost its line breaks): "+_glued.join("; ")+". Terms ending in * and lower/upper-case joins were split automatically; please split the rest by hand, or ask the AI to separate the terms in each cell with “; ” and copy again.")
+                       :("⚠ 部分儲存格的詞彙似乎黏在一起（複製來源遺失了換行）："+_glued.join("；")+"。已自動拆開切截（*）結尾與大小寫交界的詞，其餘請手動分行；或請您改要求 AI 每格以「; 」分隔詞彙後重新複製。");
+      pasteMsg.appendChild(_gw); }
     var pb=$("#pasteBox"); if(pb) pb.open=false; pasteZone.value="";
   }
   if(pasteZone){
@@ -5551,8 +5579,8 @@ function befPluralOf(w){
 <script>
 /* 貼上表格說明：「直接複製提示詞」（依目前介面語言複製中文或英文版） */
 (function(){
-  var P_ZH="任務\n請整理下列研究題目進行書目資料庫檢索時可使用的檢索詞。\n\n研究題目\n妊娠糖尿病患者以身體活動介入，是否能改善血糖控制效果？\n\n輸出格式\n請以「一張大表格」呈現 PICO (或其他變形，如PCC)，欄位包含：\nPICO｜概念｜中文同義詞｜英文同義詞｜MeSH｜Emtree｜CINAHL Headings\n要求：\n\n* 同一儲存格內每個詞彙必須各佔一行，請使用 `<br>` 強制換行\n* 若同一 PICO 有不同子概念，可分列呈現，但不要將子概念切得太細。\n\n\n控制詞彙查證\n\n* MeSH 必須查證 NLM MeSH Database，不可僅依模型記憶推測：\nhttps://www.ncbi.nlm.nih.gov/mesh/\n例如：https://www.ncbi.nlm.nih.gov/mesh/?term=exercise\n* Emtree、CINAHL Headings 也盡量從可靠來源蒐集 (但不須加註查證結果，我另有驗證方式)";
-  var P_EN="Task\nPlease identify and organize search terms that can be used for bibliographic database searching for the research question below.\n\nResearch Question\nCan physical activity interventions improve glycemic control in patients with gestational diabetes mellitus?\n\nOutput Format\nPlease present the PICO (or other frameworks, such as PCC) in one comprehensive table, with the following columns:\nPICO | Concept | Chinese Synonyms | English Synonyms | MeSH | Emtree | CINAHL Headings\nRequirements:\n\n* Each term within the same table cell must appear on a separate line. Use `<br>` to force line breaks.\n* If a PICO element contains different sub-concepts, they may be presented in separate rows, but do not divide the concepts too narrowly.\n\n\nControlled Vocabulary Verification\n\n* MeSH terms must be verified using the official NLM MeSH Database and should not be based solely on model memory:\nhttps://www.ncbi.nlm.nih.gov/mesh/\nExample: https://www.ncbi.nlm.nih.gov/mesh/?term=exercise\n* For Emtree and CINAHL Headings, please also obtain terms from reliable sources whenever possible. There is no need to annotate or explain the verification results, as I will verify them separately.";
+  var P_ZH="任務\n請整理下列研究題目進行書目資料庫檢索時可使用的檢索詞。\n\n研究題目\n妊娠糖尿病患者以身體活動介入，是否能改善血糖控制效果？\n\n輸出格式\n請以「一張大表格」呈現 PICO (或其他變形，如PCC)，欄位包含：\nPICO｜概念｜中文同義詞｜英文同義詞｜Emtree｜MeSH｜CINAHL Headings\n要求：\n\n* 同一儲存格內每個詞彙必須各佔一行，請使用 `<br>` 強制換行\n* 若同一 PICO 有不同子概念，可分列呈現，但不要將子概念切得太細。\n\n\n控制詞彙查證\n\n* MeSH 必須查證 NLM MeSH Database，不可僅依模型記憶推測：\nhttps://www.ncbi.nlm.nih.gov/mesh/\n例如：https://www.ncbi.nlm.nih.gov/mesh/?term=exercise\n* Emtree、CINAHL Headings 也盡量從可靠來源蒐集 (但不須加註查證結果，我另有驗證方式)";
+  var P_EN="Task\nPlease identify and organize search terms that can be used for bibliographic database searching for the research question below.\n\nResearch Question\nCan physical activity interventions improve glycemic control in patients with gestational diabetes mellitus?\n\nOutput Format\nPlease present the PICO (or other frameworks, such as PCC) in one comprehensive table, with the following columns:\nPICO | Concept | Chinese Synonyms | English Synonyms | Emtree | MeSH | CINAHL Headings\nRequirements:\n\n* Each term within the same table cell must appear on a separate line. Use `<br>` to force line breaks.\n* If a PICO element contains different sub-concepts, they may be presented in separate rows, but do not divide the concepts too narrowly.\n\n\nControlled Vocabulary Verification\n\n* MeSH terms must be verified using the official NLM MeSH Database and should not be based solely on model memory:\nhttps://www.ncbi.nlm.nih.gov/mesh/\nExample: https://www.ncbi.nlm.nih.gov/mesh/?term=exercise\n* For Emtree and CINAHL Headings, please also obtain terms from reliable sources whenever possible. There is no need to annotate or explain the verification results, as I will verify them separately.";
   function copyText(t, ok, fail){
     if(navigator.clipboard && window.isSecureContext){ navigator.clipboard.writeText(t).then(ok, function(){ legacy(); }); return; }
     legacy();
