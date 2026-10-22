@@ -5758,7 +5758,7 @@ function befPluralOf(w){
 /* PICO（醫學）：右上角齒輪「偏好設定」加入「☐ 控制詞彙進階標記」，與 #cbAdvTools（localStorage sr_adv_tools）同步 */
 (function(){
   var pop=document.getElementById("srPrefPop"), cb=document.getElementById("cbAdvTools"); if(!pop||!cb) return;
-  var row=document.createElement("div"); row.className="srprow"; row.title="開啟後，點進控制詞彙格會在下方浮出標記小工具（例：不含狹義詞）；關閉則填寫時完全不干擾。 / When on, clicking into a controlled-vocabulary cell shows a small marking toolbar (e.g. no narrower terms).";
+  var row=document.createElement("div"); row.className="srprow";   // 不加 title：提示氣泡會蓋住偏好設定面板
   row.innerHTML='<label><input type="checkbox" id="srAdvCb"><span data-zh>控制詞彙進階標記</span><span data-en>Controlled-vocabulary marking</span></label>';
   pop.appendChild(row);
   var ac=row.querySelector("#srAdvCb");
