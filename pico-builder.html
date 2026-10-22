@@ -276,6 +276,7 @@
   .inwarn.flash{animation:srwarnflash .85s ease-out 2}
   @keyframes srwarnflash{0%,100%{box-shadow:0 1px 4px rgba(192,57,43,.10)}50%{box-shadow:0 0 0 5px rgba(192,57,43,.20)}}
   /* 有問題的那一格直接標出來 */
+  table.pico td textarea.cellglue{border-color:#D98E2E !important;background:#FFF7E8 !important;box-shadow:0 0 0 2px rgba(217,142,46,.18) !important}
   table.pico td textarea.cellerr{border-color:#C0392B !important;background:#FEF6F5 !important;box-shadow:0 0 0 2px rgba(192,57,43,.13) !important}
   .out pre .hl-fld{color:#0a8f4f;font-weight:600}
   .out pre .hl-cv{color:#d32029;font-weight:600}
@@ -3546,10 +3547,10 @@ function befPluralOf(w){
       if(/^(?:includes?|including|note|notes|see|use|also|e\.g\.|i\.e\.|entry terms?|such as|search|verify|check)\b/i.test(t) && t.split(/\s+/).length>=4) return false;
       if(t.split(/\s+/).length>=6 && /[.。]$/.test(t)) return false;
       return true; }).join("\n"); }
-  // 仍疑似黏在一起：中文連續 ≥10 字無分隔；英文／控制詞彙單行 ≥45 字
+  // 仍疑似黏在一起：中文連續 ≥10 字無分隔；英文／控制詞彙單行 ≥40 字
   function _gluedSuspect(cell, kind){ return String(cell||"").split("\n").some(function(l){ l=l.trim(); if(!l) return false;
       if(kind==="zh") return /[一-鿿]{10,}/.test(l.replace(/[\s、，,；;()（）]/g," ").split(" ").sort(function(a,b){return b.length-a.length;})[0]||"");
-      return l.length>=45; }); }
+      return l.length>=40; }); }
   function toLines(s, keepComma){ var t=cellClean(s); if(keepComma) t=t.replace(/,[ \t]*\n[ \t]*/g, ", ");
     // 保護引號內的內容（如 'child, preschool'）：整段引號先換成佔位符，斷詞後再還原，避免引號內的逗號／頓號被當成斷詞
     var _prot=[]; t=t.replace(/(['"“”‘’])([\s\S]*?)\1/g, function(m){ var i=_prot.length; _prot.push(m); return ""+i+""; });
@@ -3702,11 +3703,13 @@ function befPluralOf(w){
     var filled=[];
     data.forEach(function(c){ if(!c.length||c.every(function(x){return !x;}))return; var _lab=String(g(c,col.label)||"").trim(); if(_isHdrLike.test(_lab)) return;  // 略過殘留的表頭／群組列
       filled.push({label:labClean(g(c,col.label)),zh:toLines(g(c,col.zh),false),ft:toLines(g(c,col.ft),false),before:toLines(g(c,col.before),false),mesh:toLines(g(c,col.mesh),true),emtree:toLines(g(c,col.emtree),true),cinahl:toLines(g(c,col.cinahl),true)}); });
-    var _glued=[];   // 來源遺失換行、詞黏在一起：盡量拆開，仍可疑者提醒
+    var _glued=[], _gluedRows=[];   // 來源遺失換行、詞黏在一起：盡量拆開，仍可疑者提醒並標示儲存格
     filled.forEach(function(r, _ri){ r.ft=_unglueFt(r.ft); r.before=_unglueFt(r.before); ["mesh","emtree","cinahl"].forEach(function(k){ r[k]=_cvDropNotes(r[k]); });
-      var cols=[]; if(_gluedSuspect(r.zh,"zh")) cols.push(en?"Chinese synonyms":"中文同義詞"); if(_gluedSuspect(r.before,"en")||_gluedSuspect(r.ft,"en")) cols.push(en?"English synonyms":"英文同義詞");
-      [["mesh","MeSH"],["emtree","Emtree"],["cinahl","CINAHL"]].forEach(function(p){ if(_gluedSuspect(r[p[0]],"en")) cols.push(p[1]); });
-      if(cols.length) _glued.push((en?("row "+(_ri+1)+" ("+r.label+"): "):("第 "+(_ri+1)+" 列（"+r.label+"）："))+cols.join(en?", ":"、")); });
+      var cols=[], keys=[]; if(_gluedSuspect(r.zh,"zh")){ cols.push(en?"Chinese synonyms":"中文同義詞"); keys.push("zh"); }
+      if(_gluedSuspect(r.before,"en")){ cols.push(en?"English synonyms (Before)":"英文同義詞（整理前）"); keys.push("before"); }
+      if(_gluedSuspect(r.ft,"en")){ cols.push(en?"English synonyms":"英文同義詞"); keys.push("ft"); }
+      [["emtree","Emtree"],["mesh","MeSH"],["cinahl","CINAHL"]].forEach(function(p){ if(_gluedSuspect(r[p[0]],"en")){ cols.push(p[1]); keys.push(p[0]); } });
+      if(cols.length){ var _lb=String(r.label||"").trim(); _glued.push((en?("row "+(_ri+1)+(_lb?(" ("+_lb+")"):"")+": "):("第 "+(_ri+1)+" 列"+(_lb?("（"+_lb+"）"):"")+"："))+cols.join(en?", ":"、")); _gluedRows.push({ri:_ri, keys:keys}); } });
     if(!filled.length){ warn(en?"Table has no data rows.":"表格沒有資料列。"); return; }
     var pre=serializeState(); if(stateNonEmpty(pre)){ try{ localStorage.setItem(SNAP_KEY, JSON.stringify(pre)); }catch(e){} }  // 貼上前內容 → 供「還原上次」救回
     picoBody.innerHTML="";
@@ -3721,11 +3724,29 @@ function befPluralOf(w){
     var missZh={ft:"英文同義詞",mesh:"MeSH",emtree:"Emtree",cinahl:"CINAHL"};
     pasteMsg.style.color="#166534";
     pasteMsg.textContent=(en?("Filled "+filled.length+" row(s)."+(hasHeader?"":" (no header found — used default column order)")):("已填入 "+filled.length+" 列。"+(hasHeader?"":"（未偵測到標題，改用預設欄序）")))
-      +(miss.length?(en?(" Columns not matched: "+miss.join(", ")+"."):("　未對應到的欄："+miss.map(function(k){return missZh[k];}).join("、"))):"");
-    if(_glued.length){ var _gw=document.createElement("div"); _gw.style.cssText="color:#B45309;margin-top:4px;line-height:1.6";
-      _gw.textContent=en?("⚠ Some cells look like several terms run together (the copied table lost its line breaks): "+_glued.join("; ")+". Terms ending in * and lower/upper-case joins were split automatically; please split the rest by hand, or ask the AI to separate the terms in each cell with “; ” and copy again.")
-                       :("⚠ 部分儲存格的詞彙似乎黏在一起（複製來源遺失了換行）："+_glued.join("；")+"。已自動拆開切截（*）結尾與大小寫交界的詞，其餘請手動分行；或請您改要求 AI 每格以「; 」分隔詞彙後重新複製。");
-      pasteMsg.appendChild(_gw); }
+      +(miss.length?(en?(" Columns not matched: "+miss.map(function(k){return ({ft:"English synonyms",mesh:"MeSH",emtree:"Emtree",cinahl:"CINAHL"})[k]||k;}).join(", ")+"."):("　未對應到的欄："+miss.map(function(k){return missZh[k];}).join("、"))):"");
+    // 黏詞提醒：放在「貼上表格」區塊外（貼上後該區塊會收起），並以橘框標示可疑儲存格
+    var _pbx=$("#pasteBox"), _gwb=document.getElementById("pasteGlueWarn");
+    if(_gwb) _gwb.remove();
+    if(_glued.length && _pbx && _pbx.parentNode){
+      _gwb=document.createElement("div"); _gwb.id="pasteGlueWarn"; _gwb.setAttribute("role","status");
+      _gwb.style.cssText="display:flex;gap:10px;align-items:flex-start;margin:0 0 12px;padding:10px 14px;border:1px solid #E5C48A;background:#FFF7E8;color:#7A4A06;border-radius:10px;font-size:13.5px;line-height:1.65";
+      var _gt=document.createElement("div"); _gt.style.flex="1 1 auto";
+      _gt.textContent=en?("⚠ Some cells look like several terms run together (the copied table lost its line breaks): "+_glued.join("; ")+". Terms ending in * and lower/upper-case joins were split automatically; please split the rest by hand (cells marked in orange), or ask the AI to separate the terms in each cell with “; ” and copy again.")
+                        :("⚠ 部分儲存格的詞彙似乎黏在一起（複製來源遺失了換行）："+_glued.join("；")+"。已自動拆開切截（*）結尾與大小寫交界的詞，其餘請手動分行（已以橘框標示）；或請您改要求 AI 每格以「; 」分隔詞彙後重新複製。");
+      var _gx=document.createElement("button"); _gx.type="button"; _gx.textContent="✕"; _gx.setAttribute("aria-label", en?"Dismiss":"關閉提醒");
+      _gx.style.cssText="flex:0 0 auto;border:none;background:transparent;color:#7A4A06;font-size:15px;cursor:pointer;min-width:32px;min-height:32px;border-radius:6px";
+      _gx.onclick=function(){ _gwb.remove(); };
+      _gwb.appendChild(_gt); _gwb.appendChild(_gx);
+      _pbx.parentNode.insertBefore(_gwb, _pbx.nextSibling);
+      var _trsG=Array.prototype.slice.call(picoBody.querySelectorAll("tr"));
+      _gluedRows.forEach(function(g){ var tr=_trsG[g.ri]; if(!tr) return; g.keys.forEach(function(k){
+        var ta = (k==="before") ? tr.querySelector("textarea.beftxt") : tr.querySelector('textarea[data-kind="'+k+'"]');
+        if(k==="ft" && ta && !ta.value.trim()){ var _bt=tr.querySelector("textarea.beftxt"); if(_bt && _bt.value.trim()) ta=_bt; }   // 英文同義詞被帶到「整理前」欄時，標示整理前
+        if(ta){ ta.classList.add("cellglue"); ta.addEventListener("input", function _un(){ ta.classList.remove("cellglue"); ta.removeEventListener("input", _un); }); }
+      }); });
+      try{ _gwb.scrollIntoView({behavior:"smooth", block:"nearest"}); }catch(e){}
+    }
     var pb=$("#pasteBox"); if(pb) pb.open=false; pasteZone.value="";
   }
   if(pasteZone){
