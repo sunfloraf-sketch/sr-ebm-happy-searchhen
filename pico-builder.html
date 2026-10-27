@@ -258,8 +258,6 @@
   .out pre .qs{white-space:pre-wrap;word-break:break-word;flex:1 1 auto;min-width:0}
   .pmcount{flex:0 0 auto;min-width:86px;text-align:right;color:var(--mut);font-size:11.5px;white-space:nowrap}
   .pmcount.ok{color:#355E55;font-weight:700}.pmcount.err{color:#A33A32}
-  .pmcount.retry{cursor:pointer;text-decoration:underline dotted;text-underline-offset:2px}
-  .pmcount.retry:hover{color:#7E1F19}
   .pmestimate{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 14px;border-top:1px dashed var(--line);background:#F5F8F7;font-size:12px}
   .pmestimate input{width:210px;font:inherit;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink)}
   .pmestimate .pmstatus{color:var(--mut);min-width:120px}.pmestimate .pmstatus.err{color:#A33A32}
@@ -4833,37 +4831,20 @@ function befPluralOf(w){
         }
         sendBtnG.onclick=function(){ _pmRun("https://pubmed.ncbi.nlm.nih.gov/?term=", 'pico-pubmed-run', 'PICO-執行PubMed最終檢索(通用)'); };
         sendBtn.onclick=function(){ _pmRun(PUBMED_NCKU_URL+"&term=", 'pico-pubmed-run-ncku', 'PICO-執行PubMed最終檢索(成大)'); };
-        // 單行查詢；失敗的行可點一下重新查詢（不必整份重跑）
-        var _pmBusy=false;
-        async function _pmOne(ci){
-          var cel=countEls[ci]; if(!cel) return false;
-          cel.onclick=null; cel.textContent=isEn()?"checking…":"查詢中…"; cel.className="pmcount"; cel.removeAttribute("role"); cel.removeAttribute("tabindex"); cel.title="";
-          try{
-            var full=expandNumberedQuery(allRows[ci],allRows);
-            var n=await fetchPubmedCount(full);
-            cel.textContent=n.toLocaleString()+(isEn()?" records":" 篇"); cel.className="pmcount ok"; return true;
-          }catch(err){
-            cel.textContent=isEn()?"failed · retry":"查詢失敗 · 點此重試"; cel.className="pmcount err retry";
-            cel.title=(isEn()?"Click to query this line again. ":"點一下重新查詢這一行。")+String(err&&err.message||err);
-            cel.setAttribute("role","button"); cel.tabIndex=0;
-            cel.onclick=async function(){ if(_pmBusy) return; _pmBusy=true; estBtn.disabled=true; st.className="pmstatus"; st.textContent=isEn()?("Retrying line "+(ci+1)+"…"):("重新查詢第 "+(ci+1)+" 行…");
-              await _pmOne(ci); _pmBusy=false; estBtn.disabled=false; _pmSummary(); };
-            cel.onkeydown=function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); cel.onclick&&cel.onclick(); } };
-            return false;
-          }
-        }
-        function _pmSummary(){ var f=countEls.filter(function(c){ return c && c.classList.contains("err"); }).length;
-          st.className="pmstatus"+(f?" err":""); st.textContent=f?(isEn()?(f+" failed — click a failed line to retry"):(f+" 行查詢失敗，可點該行重試")):(isEn()?"Completed":"估算完成"); }
         estBtn.onclick=async function(){
-          if(_pmBusy) return;
           srCount('pico-pubmed-count','PICO-PubMed估算文章數');
-          _pmBusy=true; estBtn.disabled=true; st.className="pmstatus";
+          estBtn.disabled=true;st.className="pmstatus";var failures=0;
           for(var ci=0;ci<allRows.length;ci++){
+            var cel=countEls[ci]; cel.textContent=isEn()?"checking…":"查詢中…";cel.className="pmcount";
             st.textContent=(ci+1)+" / "+allRows.length;
-            await _pmOne(ci);
+            try{
+              var full=expandNumberedQuery(allRows[ci],allRows);
+              var n=await fetchPubmedCount(full);
+              cel.textContent=n.toLocaleString()+(isEn()?" records":" 篇");cel.className="pmcount ok";
+            }catch(err){failures++;cel.textContent=isEn()?"failed":"查詢失敗";cel.className="pmcount err";cel.title=String(err&&err.message||err);}
             if(ci<allRows.length-1) await waitMs(400);
           }
-          _pmBusy=false; estBtn.disabled=false; _pmSummary();
+          estBtn.disabled=false;st.className="pmstatus"+(failures?" err":"");st.textContent=failures?(isEn()?(failures+" failed"):(failures+" 行查詢失敗")):(isEn()?"Completed":"估算完成");
         };
       }
       // AgeLine／ERIC：控制詞彙「貼上即用」區——坐落在該庫檢索策略下方，逐概念貼入 DE "…" OR …（原樣帶入，與自由詞彙組合）
@@ -5875,6 +5856,8 @@ function befPluralOf(w){
   var css=document.createElement("style"); css.id="srMoreStyle";
   css.textContent=
     ".srmore{position:relative;display:inline-flex;align-items:center;flex:none}"+
+    ".srpref{margin-left:0 !important}"+
+    ".srmore.here>button,.srmore.here>button:hover,.srmore.here>button[aria-expanded=true]{border-color:#c0392b;color:#c0392b}"+
     ".srmore>button{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;padding:0;border:1px solid var(--sh-line,#C9D2CD);border-radius:50%;background:transparent;color:var(--sh-ink,#2b3a35);cursor:pointer;box-shadow:none}"+
     ".srmore>button:hover,.srmore>button[aria-expanded=true]{border-color:var(--sh-green,#0f766e);color:var(--sh-green-d,#0f766e);background:transparent}"+
     ".srmore svg{width:17px;height:17px}"+
@@ -5886,7 +5869,7 @@ function befPluralOf(w){
     ".srmi.active::before{content:\"\";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--sh-amber,#AE7430);margin-right:8px;vertical-align:2px}";
   document.head.appendChild(css);
   var here=(location.pathname.split("/").pop()||"index.html").toLowerCase();
-  var w=document.createElement("span"); w.className="srmore";
+  var w=document.createElement("span"); w.className="srmore"+(ITEMS.some(function(it){ return it.href.toLowerCase()===here; })?" here":"");
   w.innerHTML='<button type="button" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg></button>'+
     '<div class="srmenu" hidden role="menu">'+ITEMS.map(function(it){ var on=(it.href.toLowerCase()===here);
       return '<a class="srmi'+(on?' active':'')+'" href="'+it.href+'"'+(on?' aria-current="page"':'')+' role="menuitem"><span data-zh>'+it.zh+'</span><span data-en>'+it.en+'</span></a>'; }).join("")+'</div>';

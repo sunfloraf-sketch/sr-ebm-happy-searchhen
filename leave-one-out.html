@@ -148,7 +148,8 @@
   body.en .tippanel ul.blk[data-en]{display:block}
   .panel h2 .h2note{margin-left:10px;font-size:12.5px;font-weight:600;color:var(--mut)}
   .tippanel .tipintro{font-size:12.5px;color:#4b5650;line-height:1.65;margin:6px 0 2px}
-  .sh-sub .subname{color:#c0392b;font-weight:700}
+  @media(min-width:1001px){.sh-sub>span{display:block;max-width:calc(100% - 352px)}body.en .sh-sub>span[data-en]{display:block}}   /* 說明文字寬度對齊左側功能欄（右欄 330px＋間距 22px） */
+  .sh-sub .subname{display:block;color:#c0392b;font-weight:800;font-size:20px;line-height:1.35;margin-bottom:4px;letter-spacing:.5px}
   .panel h2.inh{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px}
   .projbtns{display:flex;gap:4px;flex-wrap:wrap}
   .projb{display:inline-flex;align-items:center;gap:6px;background:none;border:0;padding:4px 8px;border-radius:7px;font:inherit;font-size:12.5px;font-weight:600;color:var(--sh-green-d);cursor:pointer}
@@ -237,6 +238,10 @@
   .cnt0{display:inline-block;padding:3px 7px;color:#a0a7ad}
   .cerr{color:#b42318;font-weight:800;margin-left:3px;cursor:help}
   .tblwrap{overflow-x:auto}
+  .tfoot{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+  .refetch{display:inline-flex;align-items:center;gap:6px;margin-top:10px;background:none;border:1px solid var(--line);border-radius:8px;padding:6px 12px;font:inherit;font-size:12.5px;font-weight:600;color:var(--sh-green-d);cursor:pointer;white-space:nowrap}
+  .refetch:hover{border-color:var(--sh-green)}
+  .refetch svg{width:14px;height:14px}
   .tipsbox{font-size:12px;color:var(--mut);margin-top:10px;line-height:1.75}
   .tipsbox ul.tnote{margin:0}
   ul.tnote{margin:10px 0 0;padding:0;list-style:none;font-size:12px;color:var(--mut);line-height:1.75}
@@ -262,7 +267,7 @@
     <button class="sh-lang" id="langBtn" onclick="toggleLang()">English</button>
   </div>
 </header>
-<div class="sh-sub"><span data-zh><b class="subname">揪出那個詞</b>：借用統合分析「逐一剔除敏感度分析」（leave-one-out sensitivity analysis）的概念，每個概念逐一拿掉一個詞，看每個詞帶進多少筆、哪個詞的獨有筆數最多，能幫助剔除或保留檢索詞，平衡檢索策略之周全與精準。（PubMed 可自動取得筆數）</span><span data-en><b class="subname">Leave-One-Out Term Test</b>: borrowing the idea of the leave-one-out sensitivity analysis used in meta-analysis, it drops one term at a time from each concept to show how many records each term brings in and which adds the most unique records — helping you decide which terms to drop or keep, balancing sensitivity and precision. (PubMed counts can be fetched automatically.)</span></div>
+<div class="sh-sub"><span data-zh><b class="subname">揪出那個詞</b>借用統合分析「逐一剔除敏感度分析」（leave-one-out sensitivity analysis）的概念，每個概念逐一拿掉一個詞，看每個詞帶進多少筆、哪個詞的獨有筆數最多，能幫助剔除或保留檢索詞，平衡檢索策略之周全與精準。（PubMed 可自動取得筆數）</span><span data-en><b class="subname">Leave-One-Out Term Test</b>Borrowing the idea of the leave-one-out sensitivity analysis used in meta-analysis, it drops one term at a time from each concept to show how many records each term brings in and which adds the most unique records — helping you decide which terms to drop or keep, balancing sensitivity and precision. (PubMed counts can be fetched automatically.)</span></div>
 <main class="pxmain">
 <div class="pxtool">
   <div class="panel">
@@ -321,7 +326,7 @@
       <div class="sub"><span data-zh>點一下即載入</span><span data-en>Click to load</span></div>
       <button class="excard" onclick="loadEx(1)"><span class="exn">PubMed</span><span class="ext"><b><span data-zh>手部衛生</span><span data-en>Hand hygiene</span> × <span data-zh>護理</span><span data-en>nursing</span></b><i><span data-zh>兩個概念、一行一個詞（含 AND 組合）；看 hygiene 單一個字帶進多少</span><span data-en>Two concepts, one term per line (incl. an AND combination); see how much “hygiene” alone brings in</span></i></span></button>
       <button class="excard" onclick="loadEx(2)"><span class="exn">PubMed</span><span class="ext"><b><span data-zh>中央靜脈導管</span><span data-en>Central venous catheter</span> CVC</b><i><span data-zh>只有一個概念；子群組 (catheter* AND central) 裡的詞也拆開</span><span data-en>One concept; terms inside (catheter* AND central) are split too</span></i></span></button>
-      <button class="excard" onclick="loadEx(3)"><span class="exn">Scopus</span><span class="ext"><b><span data-zh>害怕跌倒</span><span data-en>Fear of falling</span></b><i><span data-zh>外層 TITLE-ABS-KEY(…) 自動保留；複製到 Scopus 後填回筆數</span><span data-en>Outer TITLE-ABS-KEY(…) kept; copy to Scopus and enter the counts</span></i></span></button>
+      <button class="excard" onclick="loadEx(3)"><span class="exn">Scopus</span><span class="ext"><b><span data-zh>害怕跌倒</span><span data-en>Fear of falling</span></b><i><span data-zh>外層 TITLE-ABS-KEY (…) 自動保留；複製到 Scopus 後填回筆數</span><span data-en>Outer TITLE-ABS-KEY (…) kept; copy to Scopus and enter the counts</span></i></span></button>
     </div>
     <div class="panel tippanel">
       <h2><span data-zh>怎麼看結果</span><span data-en>Reading the results</span></h2>
@@ -421,7 +426,7 @@ function tokenize(s,db){
       var pre="", lt=out[out.length-1];
       if(lt&&lt.t==="W"){
         if(lastEnd===i && /^[A-Z][A-Z\-]*=?$/.test(lt.v)){ pre=lt.v; out.pop(); }
-        else if(/^[A-Z][A-Z\-]*\s*=$/.test(lt.v)||/^[A-Z]{2}$/.test(lt.v)){ pre=lt.v+(/=$/.test(lt.v)?"":" "); out.pop(); }
+        else if(/^[A-Z][A-Z\-]*\s*=$/.test(lt.v)||/^[A-Z]{2}$/.test(lt.v)||/^[A-Z]+(-[A-Z]+)+$/.test(lt.v)||/^(TITLE|ABS|KEY|AUTHKEY|INDEXTERMS|ALL|SRCTITLE|AUTH|AFFIL)$/.test(lt.v)){ pre=lt.v+(/=$/.test(lt.v)?"":" "); out.pop(); }   // 欄位名與左括弧之間有空格（TITLE-ABS-KEY (…)、TI (…)）：保留空格
       }
       out.push({t:"LP",pre:pre}); i++; continue;
     }
@@ -812,7 +817,8 @@ function renderResults(){
   h.push('</tbody></table></div>');
   var zh=["點擊特定欄位標題可排序","點擊特定列可在完整檢索策略中標出該詞"],
       en=["Click a column heading to sort","Click a row to mark the term in the full strategy"];
-  h.push('<ul class="tnote">'+(isEn()?en:zh).map(function(s){ return '<li>'+esc(s)+'</li>'; }).join("")+'</ul>');
+  var refBtn=P.db==="pubmed"?'<button type="button" class="refetch" data-noauto onclick="refetchPubMed()" title="'+T("有缺漏或失敗的版本時只補抓那些；全部都有筆數時整批重新檢索","Fetches only missing or failed strings; if all have counts, re-searches everything")+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><polyline points="21 3 21 9 15 9"/></svg>'+T("重新檢索 PubMed","Re-search PubMed")+'</button>':'';
+  h.push('<div class="tfoot"><ul class="tnote">'+(isEn()?en:zh).map(function(s){ return '<li>'+esc(s)+'</li>'; }).join("")+'</ul>'+refBtn+'</div>');
   document.getElementById("resTable").innerHTML=h.join("");
   bindCnt(document.getElementById("resPanel"));
   bindRows();
@@ -918,9 +924,9 @@ async function esearch(q,key,signal){
   }
   throw new Error(T("請求過於頻繁，請稍後再試","Rate limited — try again shortly"));
 }
-async function fetchAll(qs){
+async function fetchAll(qs,force){
   var uniq=[]; qs.forEach(function(q){ if(q&&uniq.indexOf(q)<0) uniq.push(q); });
-  var key=document.getElementById("apikey").value.trim(), gap=key?120:350;
+  var key=document.getElementById("apikey").value.trim(), gap=key?150:400, netRow=0;
   var my=++FETCH_GEN; curAbort=(typeof AbortController!=="undefined")?new AbortController():null;
   var sig=curAbort?curAbort.signal:undefined;
   running=true; stopReq=false;
@@ -931,15 +937,26 @@ async function fetchAll(qs){
     if(stopReq) break;
     var q=uniq[k];
     setStatus(T("取得筆數中 <b>"+(done+1)+"</b> / "+uniq.length,"Fetching <b>"+(done+1)+"</b> / "+uniq.length));
-    var cached=CACHE[q];
+    var cached=force?null:CACHE[q];
     if(!cached){
-      try{ cached=await esearch(q,key,sig); CACHE[q]=cached; }
-      catch(e){
-        if(my!==FETCH_GEN || (e&&e.name==="AbortError")) return;
-        fails++; var msg=String(e&&e.message||e);
-        if(/Failed to fetch|NetworkError|Load failed/i.test(msg)){ netFail=true; meta[q]={err:T("無法連到 PubMed（網路或瀏覽器擋下）","Couldn’t reach PubMed (network or browser blocked)")}; renderResults(); break; }
-        meta[q]={err:"PubMed: "+msg}; renderResults(); done++; if(k<uniq.length-1) await sleep(gap); continue;
+      var err=null;
+      // PubMed 限流（每秒約 3 次）時常回不帶 CORS 標頭的 429，瀏覽器只會顯示「Failed to fetch」：等一下再試，最多 3 次
+      for(var at=0;at<4;at++){
+        try{ cached=await esearch(q,key,sig); CACHE[q]=cached; err=null; break; }
+        catch(e){
+          if(my!==FETCH_GEN || (e&&e.name==="AbortError")) return;
+          err=e;
+          if(at<3){ setStatus(T("PubMed 回應較慢，稍候重試…（"+(done+1)+" / "+uniq.length+"）","PubMed is busy — retrying… ("+(done+1)+" / "+uniq.length+")")); await sleep(1500*(at+1)); if(my!==FETCH_GEN) return; }
+        }
       }
+      if(err){
+        fails++; var msg=String(err&&err.message||err), isNet=/Failed to fetch|NetworkError|Load failed/i.test(msg);
+        meta[q]={err:isNet?T("無法連到 PubMed（網路或限流），可按「重新檢索 PubMed」再試","Couldn’t reach PubMed (network or rate limit) — press “Re-search PubMed” to retry"):"PubMed: "+msg};
+        renderResults(); done++;
+        if(isNet){ netRow++; if(netRow>=3){ netFail=true; break; } } else netRow=0;
+        await sleep(gap); continue;
+      }
+      netRow=0;
       if(k<uniq.length-1) await sleep(gap);
       if(my!==FETCH_GEN) return;
     }
@@ -949,12 +966,21 @@ async function fetchAll(qs){
   if(my!==FETCH_GEN) return;
   running=false; curAbort=null;
   document.getElementById("runBtn").disabled=false; document.getElementById("stopBtn").style.display="none";
-  if(netFail) setStatus('<span style="color:#b42318">'+T("無法連到 PubMed，請檢查網路後重試；或點筆數格複製檢索式，到 PubMed 執行後手動填入。","Couldn’t reach PubMed — check the connection and retry, or click a count cell to copy the string, run it in PubMed and type the count.")+'</span>');
+  if(netFail) setStatus('<span style="color:#b42318">'+T("連續無法連到 PubMed，已暫停；請稍後按表格右下「重新檢索 PubMed」補抓，或點筆數格複製檢索式手動查。","PubMed couldn’t be reached repeatedly, so fetching paused — press “Re-search PubMed” below the table later, or copy a string and check it by hand.")+'</span>');
   else if(stopReq) setStatus(T("已停止（完成 "+done+" / "+uniq.length+"）；再按一次會接著取得。","Stopped ("+done+" / "+uniq.length+"); run again to continue."));
-  else { DONE_N={n:done,f:fails,t:new Date()}; setStatus(""); renderResults(); }
+  else { var _u={}; allQs().forEach(function(q){ if(q) _u[q]=1; }); DONE_N={n:Object.keys(_u).length,f:fails,t:new Date()}; setStatus(fails?'<span style="color:#b42318">'+T("有 "+fails+" 版沒取得筆數（標「!」），可按表格右下「重新檢索 PubMed」補抓。",fails+" strings failed (marked “!”) — press “Re-search PubMed” below the table to retry.")+'</span>':""); renderResults(); }
   srCount("loo-pubmed-fetch","抽一個字-PubMed取得筆數");
 }
 function stopFetch(){ stopReq=true; }
+// 表格右下「重新檢索 PubMed」：有缺漏（沒筆數或失敗）時只補抓缺的；全部都有時整批重新檢索
+function allQs(){ var qs=[P.qTotal]; P.rows.forEach(function(r){ qs.push(r.qAlone); if(r.qWithout) qs.push(r.qWithout); }); return qs; }
+function refetchPubMed(){
+  if(!P||!P.rows.length||P.db!=="pubmed") return;
+  cancelFetch(); DONE_N=null;
+  var qs=allQs(), miss=qs.filter(function(q){ return q&&(counts[q]==null||(meta[q]&&meta[q].err)); });
+  if(miss.length){ miss.forEach(function(q){ if(meta[q]) delete meta[q].err; }); renderResults(); fetchAll(miss,true); }
+  else fetchAll(qs,true);
+}
 
 /* ---------- 複製 ---------- */
 function copyText(t,btn,cb){
@@ -1027,7 +1053,7 @@ function clearAll(){
 var EX={
   1:{db:"pubmed",c:['"hand hygiene"\n"hand washing"\nhandwashing\n(hand OR hands) AND (disinfect* OR rub OR rubs)\nhygiene\n"Hand Hygiene"[mh]','nurse* OR nursing OR "Nurses"[mh]']},
   2:{db:"pubmed",c:['"central venous catheter*" OR "central line*" OR CVC OR PICC OR (catheter* AND central)']},
-  3:{db:"scopus",c:['TITLE-ABS-KEY("fear of falling" OR "fear of falls" OR "falls efficacy" OR "fall-related anxiety" OR falls)','TITLE-ABS-KEY(elderly OR "older adult*" OR aged)']}
+  3:{db:"scopus",c:['TITLE-ABS-KEY ("fear of falling" OR "fear of falls" OR "falls efficacy" OR "fall-related anxiety" OR falls)','TITLE-ABS-KEY (elderly OR "older adult*" OR aged)']}
 };
 function loadEx(n){
   cancelFetch(); clearTimeout(_rfT);
@@ -1200,6 +1226,8 @@ fillDb(); loadDraft(); syncMode();
   var css=document.createElement("style"); css.id="srMoreStyle";
   css.textContent=
     ".srmore{position:relative;display:inline-flex;align-items:center;flex:none}"+
+    ".srpref{margin-left:0 !important}"+
+    ".srmore.here>button,.srmore.here>button:hover,.srmore.here>button[aria-expanded=true]{border-color:#c0392b;color:#c0392b}"+
     ".srmore>button{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;padding:0;border:1px solid var(--sh-line,#C9D2CD);border-radius:50%;background:transparent;color:var(--sh-ink,#2b3a35);cursor:pointer;box-shadow:none}"+
     ".srmore>button:hover,.srmore>button[aria-expanded=true]{border-color:var(--sh-green,#0f766e);color:var(--sh-green-d,#0f766e);background:transparent}"+
     ".srmore svg{width:17px;height:17px}"+
@@ -1211,7 +1239,7 @@ fillDb(); loadDraft(); syncMode();
     ".srmi.active::before{content:\"\";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--sh-amber,#AE7430);margin-right:8px;vertical-align:2px}";
   document.head.appendChild(css);
   var here=(location.pathname.split("/").pop()||"index.html").toLowerCase();
-  var w=document.createElement("span"); w.className="srmore";
+  var w=document.createElement("span"); w.className="srmore"+(ITEMS.some(function(it){ return it.href.toLowerCase()===here; })?" here":"");
   w.innerHTML='<button type="button" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg></button>'+
     '<div class="srmenu" hidden role="menu">'+ITEMS.map(function(it){ var on=(it.href.toLowerCase()===here);
       return '<a class="srmi'+(on?' active':'')+'" href="'+it.href+'"'+(on?' aria-current="page"':'')+' role="menuitem"><span data-zh>'+it.zh+'</span><span data-en>'+it.en+'</span></a>'; }).join("")+'</div>';
