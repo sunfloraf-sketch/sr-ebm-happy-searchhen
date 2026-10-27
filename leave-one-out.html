@@ -147,6 +147,7 @@
   .tippanel li b{color:var(--sh-ink)}
   body.en .tippanel ul.blk[data-en]{display:block}
   .panel h2 .h2note{margin-left:10px;font-size:12.5px;font-weight:600;color:var(--mut)}
+  .tippanel .tipintro{font-size:12.5px;color:#4b5650;line-height:1.65;margin:6px 0 2px}
   .sh-sub .subname{color:#c0392b;font-weight:700}
   .panel h2.inh{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px}
   .projbtns{display:flex;gap:4px;flex-wrap:wrap}
@@ -324,8 +325,9 @@
     </div>
     <div class="panel tippanel">
       <h2><span data-zh>怎麼看結果</span><span data-en>Reading the results</span></h2>
+      <div class="tipintro" data-zh>類似統合分析的逐一剔除敏感度分析——一次拿掉一項，看整體結果改變多少；這裡拿掉的是檢索詞，看的是筆數變化，藉此判斷每個詞對檢索結果的影響程度。</div>
+      <div class="tipintro" data-en>Like a leave-one-out sensitivity analysis in meta-analysis — remove one item at a time and see how much the overall result changes; here the item is a search term and the result is the record count, showing how much each term influences the search.</div>
       <ul class="blk" data-zh>
-        <li><b>方法：</b>類似統合分析的逐一剔除敏感度分析——一次拿掉一項，看整體結果改變多少；這裡拿掉的是檢索詞，看的是筆數變化，藉此判斷每個詞對檢索結果的影響程度。</li>
         <li><b>點擊筆數即複製：</b>點任一格筆數或<span class="fillchip">填入</span>，會複製那一版檢索式；手動模式貼到資料庫執行後，可人工填入筆數於該格（或資料庫畫面自行評估不回填）。</li>
         <li><b>單獨保留筆數：</b>這個詞所在的概念只留它，其他詞彙維持。</li>
         <li><b>抽掉後總數：</b>這個詞所在的概念拿掉它，其餘照舊。</li>
@@ -335,7 +337,6 @@
         <li><b>獨有為 0：</b>標示「已被涵蓋」，抽掉沒影響，通常可以保留；兩個詞寫法相同時標「重複」。</li>
       </ul>
       <ul class="blk" data-en>
-        <li><b>Method:</b> like a leave-one-out sensitivity analysis in meta-analysis — remove one item at a time and see how much the overall result changes; here the item is a search term and the result is the record count, showing how much each term influences the search.</li>
         <li><b>Click a count to copy:</b> clicking any count or <span class="fillchip">enter</span> cell copies that search string; in manual mode, run it in the database and type the count into that cell (or just judge it on the database screen without entering it).</li>
         <li><b>Alone:</b> only this term is kept in its concept; the other concepts stay.</li>
         <li><b>Total without:</b> this term is removed from its concept; everything else unchanged.</li>
