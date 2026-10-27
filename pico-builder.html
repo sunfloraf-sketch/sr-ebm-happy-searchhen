@@ -291,6 +291,7 @@
   .inwarn.flash{animation:srwarnflash .85s ease-out 2}
   @keyframes srwarnflash{0%,100%{box-shadow:0 1px 4px rgba(192,57,43,.10)}50%{box-shadow:0 0 0 5px rgba(192,57,43,.20)}}
   /* 有問題的那一格直接標出來 */
+  table.pico td textarea.cellcomma{border-color:#D98E2E !important;background:#FFF7E8 !important;box-shadow:0 0 0 2px rgba(217,142,46,.18) !important}
   table.pico td textarea.cellglue{border-color:#D98E2E !important;background:#FFF7E8 !important;box-shadow:0 0 0 2px rgba(217,142,46,.18) !important}
   table.pico td textarea.cellerr{border-color:#C0392B !important;background:#FEF6F5 !important;box-shadow:0 0 0 2px rgba(192,57,43,.13) !important}
   .out pre .hl-fld{color:#0a8f4f;font-weight:600}
@@ -3181,13 +3182,18 @@ function befPluralOf(w){
     }
     label(); window._befColLabel=label;
     b.onclick=function(){
-      var rows=0, terms=0, opts=befCopyOpts();
+      var rows=0, terms=0, opts=befCopyOpts(), conv=[];
       Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr){
         var beTa=tr.querySelector("textarea.beftxt"); if(!beTa) return;
         var tas=Array.prototype.filter.call(tr.querySelectorAll("textarea"), function(t){ return !t.classList.contains("beftxt"); });
+        var lab=(tr._get&&tr._get().label)||"", cl=_commaLines(beTa.value);
         var n=befTidyInto(beTa, tas[1], opts);
         if(n){ rows++; terms+=n; }
+        if(cl.length){ _commaMark(tas[1]); cl.forEach(function(l){ conv.push((lab?lab:"")+"〈"+l+"〉→〈"+befUninvert(l)+"〉"); }); }
       });
+      if(conv.length){ var _en=isEn(), _h=function(x){ return String(x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); };
+        _commaShow(_en ? ("Terms with a comma were treated as inverted and put back in order: "+_h(conv.join("; "))+". If a comma actually separated two terms, split them onto two lines in “After” (orange cells).")
+                       : ("含逗號的詞已當成倒裝寫法轉正後放入整理後："+_h(conv.join("、"))+"。若逗號其實是隔開兩個詞，請在「整理後」手動拆成兩行（橘框）。")); }
       var en=isEn(), t=b.querySelector(".t"), old=t.textContent;
       t.textContent = terms ? ((en?"✓ +":"✓ 加入 ")+terms+(opts.removed?(en?" ("+opts.removed+" redundant skipped)":"（去冗 "+opts.removed+"）"):"")) : (en?"✓ nothing new":"✓ 無新增");
       if(typeof saveDraftDebounced==="function") saveDraftDebounced();
@@ -3593,6 +3599,25 @@ function befPluralOf(w){
     });
     return out.join("\n");
   }
+  // 英文同義詞含逗號：可能是兩個詞（該拆兩行），也可能是倒裝寫法（Catheterization, Central Venous → 該轉正）——無法自動判斷，標橘框提醒自行確認
+  function _commaLines(v){ return String(v||"").split("\n").filter(function(l){ return /[,，]/.test(l.replace(/"[^"]*"/g,"")); }).map(function(l){ return l.trim(); }); }
+  function _commaMark(ta){ if(!ta || ta.classList.contains("cellcomma")) return; ta.classList.add("cellcomma"); ta.addEventListener("input", function _u(){ ta.classList.remove("cellcomma"); ta.removeEventListener("input",_u); }); }
+  // mode："all"＝整理前＋整理後都查（匯入時）；"gen"＝產生時只查實際用來產生的欄（整理後有字查整理後，否則查整理前）
+  function _commaScan(mode){
+    Array.prototype.forEach.call(picoBody.querySelectorAll("textarea.cellcomma"), function(t){ t.classList.remove("cellcomma"); });
+    var items=[];
+    Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr){
+      var be=tr.querySelector("textarea.beftxt"), ft=_rowTas(tr)[1], lab=(tr._get&&tr._get().label)||"", tas;
+      if(mode==="gen") tas=(ft && ft.value.trim())?[ft]:[be]; else tas=[be,ft];
+      tas.forEach(function(ta){ if(!ta) return; var ls=_commaLines(ta.value); if(ls.length){ _commaMark(ta); ls.forEach(function(l){ items.push({label:lab, line:l}); }); } });
+    });
+    return items;
+  }
+  function _commaText(items){ var en=isEn(), h=function(x){ return String(x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); };
+    var list=items.map(function(it){ return (it.label?h(it.label):"")+"〈"+h(it.line)+"〉"; }).join(en?"; ":"、");
+    return en ? ("English synonyms contain a comma: "+list+" — the comma may separate two terms (split them onto two lines) or mark an inverted term (e.g. Catheterization, Central Venous → put it back in order). Please check (orange cells).")
+              : ("英文同義詞含逗號："+list+"——逗號可能是隔開兩個詞（請拆成兩行），也可能是倒裝寫法（如 Catheterization, Central Venous，請轉正）；請自行確認（橘框）。"); }
+  function _commaShow(html){ if(!picoWarn || !html) return; picoWarn.innerHTML="\u26A0 "+html; picoWarn.style.display="block"; picoWarn.classList.remove("flash"); void picoWarn.offsetWidth; picoWarn.classList.add("flash"); }
   function _cvDropNotes(cell){ return String(cell||"").split("\n").filter(function(l){ var t=l.trim(); if(!t) return false;
       if(/^(?:includes?|including|note|notes|see|use|also|e\.g\.|i\.e\.|entry terms?|such as|search|verify|check)\b/i.test(t) && t.split(/\s+/).length>=4) return false;
       if(t.split(/\s+/).length>=6 && /[.。]$/.test(t)) return false;
@@ -3771,6 +3796,7 @@ function befPluralOf(w){
     if(_anyBef && window._srShowBefore) window._srShowBefore();
     if(!picoBody.querySelector("tr")) seedEmpty();
     saveDraft(); offerRestore();
+    (function(){ var _cm=_commaScan("all"); if(_cm.length) _commaShow(_commaText(_cm)); })();
     var miss=[]; ["ft","mesh","emtree","cinahl"].forEach(function(k){ if(col[k]<0) miss.push(k); });
     var missZh={ft:"英文同義詞",mesh:"MeSH",emtree:"Emtree",cinahl:"CINAHL"};
     pasteMsg.style.color="#166534";
@@ -4025,6 +4051,7 @@ function befPluralOf(w){
         recordDocx={ buf:buf, name:(f.name||"SR檢索紀錄表.docx") };   // 保留原檔，供回填下載
         if(typeof updateRecordBtn==="function") updateRecordBtn();
         if(picoWarn) picoWarn.style.display="none";
+        var _cm=_commaScan("all"); if(_cm.length) _commaShow(_commaText(_cm));
       }catch(e){ srAlert((isEn()?"Read failed: ":"讀取失敗：")+e.message); }
       ev.target.value="";
     };
@@ -4651,6 +4678,7 @@ function befPluralOf(w){
       var _hesc=function(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); };
       var uq=[]; rows.forEach(function(r, ri){ var _bad=[]; _cells(r).forEach(function(c){ _unpairedLines(c).forEach(function(b){ _bad.push(b); }); }); if(_bad.length) _markCells(ri, function(v){ return _unpairedLines(v).length>0; }); if(_bad.length) uq.push(r.label+_bad.map(function(x){return "〈"+_hesc(x)+"〉";}).join("")); });
       if(uq.length) msgs.push(isEn()?("Unpaired double quote: "+uq.join("; ")):("雙引號未成對："+uq.join("、")+"，請檢查"));
+      var _cm=_commaScan("gen"); if(_cm.length) msgs.push(_commaText(_cm));
       var lt=[]; rows.forEach(function(r){ if(r.ft && /(^|[\s("'])\*/.test(r.ft)) lt.push(r.label); });
       if(lt.length) msgs.push(isEn()?("Leading truncation (word-initial *) in: "+lt.join(", ")+" — only Cochrane / Scopus / Web of Science support it; the leading * is removed for other databases."):("字頭切截（詞首 *）出現在："+lt.join("、")+" 概念 —— 僅 Cochrane / Scopus / Web of Science 支援，其餘資料庫的詞首 * 已自動移除。"));
       if(msgs.length){
