@@ -959,7 +959,7 @@ function syncHeroControlLabels() {
         '<div class="srph"><span data-zh>偏好設定</span><span data-en>Preferences</span></div>'+
         '<div class="srprow"><label><input type="checkbox" id="srTipsCb"><span data-zh>提示文字</span><span data-en>Tooltips</span></label></div>'+
       '</div>';
-    lang.insertAdjacentElement("afterend", wrap);
+    lang.insertAdjacentElement("beforebegin", wrap);
     var btn=wrap.querySelector("#srPrefBtn"), pop=wrap.querySelector("#srPrefPop"), tipsCb=wrap.querySelector("#srTipsCb");
     function setOpen(o){ pop.hidden=!o; btn.setAttribute("aria-expanded", o?"true":"false"); }
     btn.addEventListener("click", function(e){ e.stopPropagation(); setOpen(pop.hidden); });
@@ -976,6 +976,46 @@ function syncHeroControlLabels() {
   var _slRaf=0; new MutationObserver(function(){ if(_slRaf) return; _slRaf=requestAnimationFrame(function(){ _slRaf=0; syncLang(); }); }).observe(document.body,{subtree:true,attributes:true,attributeFilter:["data-tip","title","aria-label"]});   // 程式動態設定的雙語提示（如 拉高／還原）也依語言切開
   new MutationObserver(function(){ syncLang(); }).observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
   syncLang();
+})();
+</script>
+<script id="srMoreScript">
+/* 共用：頁首「⋯ 更多工具」選單（放在偏好設定齒輪與語言鈕之前）。新增工具只要在 ITEMS 加一筆。 */
+(function(){
+  var ITEMS=[
+    {href:"leave-one-out.html", zh:"揪出那個詞", en:"Leave-One-Out Term Test"}
+  ];
+  var lang=document.getElementById("langBtn"); if(!lang||document.querySelector(".srmore")) return;
+  var css=document.createElement("style"); css.id="srMoreStyle";
+  css.textContent=
+    ".srmore{position:relative;display:inline-flex;align-items:center;flex:none}"+
+    ".srmore>button{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;padding:0;border:1px solid var(--sh-line,#C9D2CD);border-radius:50%;background:transparent;color:var(--sh-ink,#2b3a35);cursor:pointer;box-shadow:none}"+
+    ".srmore>button:hover,.srmore>button[aria-expanded=true]{border-color:var(--sh-green,#0f766e);color:var(--sh-green-d,#0f766e);background:transparent}"+
+    ".srmore svg{width:17px;height:17px}"+
+    ".srmenu{position:absolute;z-index:10000;top:calc(100% + 8px);right:0;min-width:180px;padding:6px;background:#fff;border:1px solid #D5DCE0;border-radius:10px;box-shadow:0 8px 22px rgba(0,0,0,.16);text-align:left}"+
+    ".srmenu[hidden]{display:none}"+
+    ".srmi{display:block;padding:8px 12px;border-radius:7px;font-size:13.5px;font-weight:600;color:#23302A;text-decoration:none;white-space:nowrap;line-height:1.5}"+
+    ".srmi:hover{background:#F1F4F2;color:var(--sh-green-d,#0f766e)}"+
+    ".srmi.active{color:var(--sh-green-d,#0f766e)}"+
+    ".srmi.active::before{content:\"\";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--sh-amber,#AE7430);margin-right:8px;vertical-align:2px}";
+  document.head.appendChild(css);
+  var here=(location.pathname.split("/").pop()||"index.html").toLowerCase();
+  var w=document.createElement("span"); w.className="srmore";
+  w.innerHTML='<button type="button" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg></button>'+
+    '<div class="srmenu" hidden role="menu">'+ITEMS.map(function(it){ var on=(it.href.toLowerCase()===here);
+      return '<a class="srmi'+(on?' active':'')+'" href="'+it.href+'"'+(on?' aria-current="page"':'')+' role="menuitem"><span data-zh>'+it.zh+'</span><span data-en>'+it.en+'</span></a>'; }).join("")+'</div>';
+  (document.querySelector(".srpref")||lang).insertAdjacentElement("beforebegin", w);
+  var btn=w.querySelector("button"), menu=w.querySelector(".srmenu");
+  function isEn(){ return document.body.classList.contains("en")||document.documentElement.getAttribute("lang")==="en"; }
+  function label(){ var t=isEn()?"More tools":"更多工具"; btn.setAttribute("aria-label",t); btn.setAttribute("data-tip-zh","更多工具"); btn.setAttribute("data-tip-en","More tools"); if(!document.body.classList.contains("notips")) btn.setAttribute("title",t); }
+  function setOpen(o){
+    menu.hidden=!o; btn.setAttribute("aria-expanded",o?"true":"false");
+    if(o){ menu.style.left=""; menu.style.right=""; if(menu.getBoundingClientRect().left<6){ menu.style.right="auto"; menu.style.left="0"; } }
+  }
+  btn.addEventListener("click",function(e){ e.stopPropagation(); setOpen(menu.hidden); });
+  menu.addEventListener("click",function(e){ e.stopPropagation(); });
+  document.addEventListener("click",function(){ setOpen(false); });
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape") setOpen(false); });
+  label(); new MutationObserver(label).observe(document.body,{attributes:true,attributeFilter:["class"]});
 })();
 </script>
 </body>

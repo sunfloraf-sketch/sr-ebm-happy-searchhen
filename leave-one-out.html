@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<!--
+  SR x EBM Happy SearchHen (搜尋策略生成雞)
+  Copyright (c) 2026 Ching-Ju Fang (方靜如). All rights reserved. 著作權所有，保留一切權利。
+
+  允許：透過官方網址免費線上使用，用於個人、教學、研究或臨床工作，並請依建議格式引用。
+        使用本工具產生的檢索策略與輸出內容，歸使用者自由運用。
+  禁止：未經作者書面同意，不得複製、修改、改作、翻譯本工具的程式碼、介面、圖像或文字；
+        不得將本工具或其衍生版本放置於其他網站、伺服器或平台（含鏡像、iframe 嵌入）；
+        不得再散布、轉授權或作商業利用。
+
+  PERMITTED: free online use at the official address below for personal, educational,
+  research or clinical work; please cite. Output you create with the tool is yours to use.
+  NOT PERMITTED without the author's prior written consent: copying, modifying, adapting or
+  translating this code, interface, images or text; re-hosting on another website, server or
+  platform (including mirrors and iframe embedding); redistribution, sublicensing, commercial use.
+
+  使用條款 / Terms: https://github.com/sunfloraf-sketch/sr-ebm-happy-searchhen/blob/main/LICENSE
+  官方網址 / Official: https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/
+  引用 / Cite: Fang CJ, SR x EBM Happy SearchHen. doi:10.5281/zenodo.21960702
+-->
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>揪出那個詞 · Leave-One-Out Term Test</title>
+<style>
+  :root{--bg:#F2F4F6;--card:#FFFFFF;--ink:#23282D;--mut:#66717A;--line:#D5DCE2;--brand:#DDE3E7;--brand2:#617B76;--accent:#EEF2F5;--code:#1E2327;--codebg:#FAFBFC;--warn:#7B6840;--warnbg:#F3F1E6;--ok:#4E6065;--deco:#7E9994;--deco2:#617B76}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"Segoe UI","Noto Sans TC",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;font-size:15px}
+  header{background:linear-gradient(135deg,#1D2328 0%, #374047 45%, #606B74 100%);color:#fff;padding:20px 24px;font-family:-apple-system,"Segoe UI","PingFang TC","Microsoft JhengHei","Noto Sans TC",Roboto,Arial,sans-serif;box-shadow:inset 0 1px 0 rgba(255,255,255,.10), inset 0 -1px 0 rgba(255,255,255,.06)}
+  header .row{max-width:1080px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  header h1{margin:0;font-size:20px;font-weight:650}
+  header p{margin:4px 0 0;font-size:13px;opacity:.9}
+  .toplinks{display:flex;gap:10px;align-items:center}
+  .navlink{background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(231,236,240,.94));border:1px solid rgba(255,255,255,.96);color:#25292D;padding:6px 14px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;text-decoration:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 1px 3px rgba(0,0,0,.10)}
+  .navlink:hover{background:linear-gradient(180deg,#FFFFFF,#E8EEF1)}
+  main{max-width:1080px;margin:0 auto;padding:22px 24px 60px}
+  .panel{background:linear-gradient(180deg,#FFFFFF 0%, #FCFDFD 100%);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:18px;position:relative}
+  .panel h2{margin:0 0 4px;font-size:15px;color:var(--brand2)}
+  .panel .sub{font-size:12px;color:var(--mut);margin-bottom:10px}
+  label.fld{display:block;font-weight:600;font-size:13px;margin-bottom:6px;color:var(--mut)}
+  .controls{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-end}
+  select,textarea,input[type=text]{font-family:inherit;font-size:14px;border:1px solid var(--line);border-radius:8px;padding:9px 11px;color:var(--ink);background:linear-gradient(180deg,#FFFFFF,#F7F9FA)}
+  select{min-width:170px;cursor:pointer}
+  .autobar{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
+  .autobar textarea{flex:1;min-width:280px;min-height:120px;line-height:1.6;font-family:"SF Mono",Consolas,monospace;font-size:13px}
+  .gobtn{background:linear-gradient(180deg,#F1F4F6,#D7DEE3);color:#25292D;border:1px solid #BFC8CF;border-radius:8px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 2px 5px rgba(0,0,0,.08)}
+  .gobtn:hover{background:linear-gradient(180deg,#F7F9FA,#CDD6DC)}
+  .review{margin-top:12px;font-size:12.5px;color:var(--mut)}
+  .review table{border-collapse:collapse;width:100%;margin-top:6px}
+  .review td{border:1px solid var(--line);padding:5px 9px;vertical-align:top}
+  .review td.k{font-family:"SF Mono",Consolas,monospace;font-weight:700;color:var(--brand2);white-space:nowrap;width:120px}
+  .badge{display:inline-block;font-size:11px;border-radius:8px;padding:1px 7px;margin-right:5px}
+  .bA{background:#ede9fe;color:#5b21b6}.bB{background:#dcfce7;color:#166534}.bC{background:#fef9c3;color:#854d0e}.bD{background:#dbeafe;color:#1e40af}.bS{background:#f3f4f6;color:#374151}
+  .removed{margin-top:14px;border:1px solid #f0a24b;background:#fff7ed;border-radius:8px;padding:10px 12px}
+  .removed .rh{font-weight:600;color:#b45309;font-size:12.5px;margin-bottom:8px}
+  .rrow{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+  .rword{font-family:"SF Mono",Consolas,monospace;font-size:13px;min-width:150px}
+  .rrow select{min-width:120px;font-size:12.5px;padding:4px 8px}
+  .stackset{display:flex;flex-wrap:wrap;gap:12px;align-items:stretch;margin-top:8px}
+  .stackcol{flex:1 1 0;min-width:150px}
+  .stackcol label{display:block;font-weight:600;font-size:13px;margin-bottom:6px;color:var(--brand2)}
+  .stackcol textarea{width:100%;min-height:130px;resize:vertical;line-height:1.7;font-family:"SF Mono",Consolas,monospace;font-size:13px}
+  .opmid{display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--ok);font-size:12.5px;line-height:1.5;white-space:pre-line;text-align:center;padding:0 4px;align-self:center;cursor:help}
+  .splithint{background:#fff4e5;border:1px solid #f0a24b;border-left:5px solid #e67700;border-radius:10px;padding:12px 16px;margin-bottom:14px;color:#7a3d00;font-size:13px}
+  .splithint .shh{font-weight:700;font-size:14px;margin-bottom:5px;color:#b34700}
+  .splithint p{margin:4px 0}
+  .solowrap{margin-top:12px}
+  .solowrap input,.solowrap textarea{width:100%;font-family:"SF Mono",Consolas,monospace;font-size:13px}
+  .solowrap textarea{min-height:42px;resize:vertical;line-height:1.55}
+  .hint{font-size:12px;color:var(--mut);margin-top:8px;line-height:1.75}
+  .out{background:var(--card);border:1px solid var(--line);border-radius:11px;overflow:hidden;margin-bottom:14px}
+  .out h3{margin:0;padding:11px 14px;font-size:14px;background:linear-gradient(180deg,#F4F7F8,#E9EEF1);color:#32383D;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;box-shadow:inset 3px 0 0 var(--deco)}
+  .out pre{margin:0;padding:13px 14px;white-space:pre-wrap;word-break:break-word;font-family:"SF Mono",Consolas,monospace;font-size:13px;color:var(--code);background:var(--codebg);min-height:40px}
+  .btnrow{display:flex;gap:8px}
+  .copy{background:linear-gradient(180deg,#F3F6F7,#DCE3E7);color:#25292D;border:1px solid #C6CFD5;border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;font-weight:600;box-shadow:inset 0 1px 0 rgba(255,255,255,.88),0 1px 3px rgba(0,0,0,.08)}
+  .copy:hover{background:linear-gradient(180deg,#FAFBFC,#D3DBE0)}.copy.done{background:linear-gradient(180deg,#EEF2F4,#D7DEE2);color:#25292D}
+  .sendbtn{background:var(--deco2);color:#fff;border:1px solid #55706B;border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;font-weight:600;text-decoration:none;display:inline-block}
+  .sendbtn:hover{background:#55706B}
+  .pmnote{padding:8px 14px;background:var(--warnbg);color:var(--warn);font-size:12px;border-top:1px dashed var(--line)}
+  .foot{font-size:12px;color:var(--mut);margin-top:20px;text-align:center;line-height:1.7}
+  /* ---- 統一導覽列 ---- */
+  .hbar{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .brand{text-decoration:none;color:#fff;flex-shrink:0}
+  .brand h1{margin:0;font-size:20px;font-weight:700;letter-spacing:.3px;white-space:nowrap}
+  .toolnav{display:flex;gap:8px;flex-wrap:wrap;flex:1;margin-left:4px}
+  .toolbtn{text-decoration:none;color:rgba(255,255,255,.90);background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.26);padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;white-space:nowrap;transition:background .15s,color .15s}
+  .toolbtn:hover{background:rgba(255,255,255,.20);color:#fff}
+  .toolbtn.active{background:#FFFFFF;color:#1D2328;border:1px solid #FFFFFF;box-shadow:0 2px 10px rgba(0,0,0,.28);cursor:default;font-weight:700}
+  .subtitle{max-width:1200px;margin:10px auto 0;font-size:13px;opacity:.92;color:#fff}
+  [data-en]{display:none}
+  body.en [data-zh]{display:none} body.en [data-en]{display:revert}
+  /* 全域 title 提示：比照 ⓘ（黑底白字），取代瀏覽器原生灰底提示 */
+  #gtip{position:fixed;z-index:9999;max-width:240px;white-space:normal;text-align:left;background:#1c2733;color:#fff;font-size:11.5px;font-weight:400;line-height:1.55;padding:8px 10px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.25);pointer-events:none;opacity:0;transition:opacity .12s;display:none}
+  #gtip.show{opacity:1}
+  #gtip::after{content:"";position:absolute;left:var(--ax,50%);transform:translateX(-50%);border:6px solid transparent}
+  #gtip.above::after{top:100%;border-top-color:#1c2733}
+  #gtip.below::after{bottom:100%;border-bottom-color:#1c2733}
+
+  /* ===== Landing-style 頁頭／頁尾／背景（與 landing 一致） ===== */
+  :root{--sh-paper:#F3F0E8;--sh-paper2:#FBF9F4;--sh-ink:#23302A;--sh-mut:#6C726B;--sh-line:#E5E0D4;--sh-green:#2A5A49;--sh-green-d:#1F4538;--sh-amber:#AE7430;--shw:1280px}
+  html,body{background:var(--sh-paper) !important}
+  header.sh{background:rgba(243,240,232,.94);color:var(--sh-ink);padding:0;box-shadow:none;border-bottom:1px solid var(--sh-line);font-family:inherit}
+  header.sh .sh-in{max-width:var(--shw,1200px);margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:8px 18px;flex-wrap:wrap}
+  header.sh .sh-logo{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--sh-green-d)}
+  header.sh .sh-logo svg{width:37px;height:40px;flex:0 0 auto;display:block}
+  header.sh .sh-wm{display:flex;flex-direction:column;line-height:1.12}
+  header.sh .sh-wm b{font-size:16px;font-weight:800;letter-spacing:.2px;color:var(--sh-green-d)}
+  header.sh .sh-wm i{font-style:normal;font-size:11px;color:var(--sh-mut);letter-spacing:3px}
+  header.sh .sh-sp{flex:1}
+  header.sh .sh-nav{display:flex;gap:6px 18px;flex-wrap:wrap;align-items:center}
+  header.sh a.sh-link{background:none;border:0;box-shadow:none;border-radius:0;padding:6px 4px;color:var(--sh-ink);font-size:14px;font-weight:600;text-decoration:none;position:relative;cursor:pointer;white-space:nowrap}
+  header.sh a.sh-link:hover{background:none;color:var(--sh-amber)}
+  header.sh a.sh-link.active{background:none;border:0;box-shadow:none;color:var(--sh-green-d);font-weight:700}
+  header.sh a.sh-link.active::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--sh-amber);border-radius:2px}
+  header.sh button.sh-lang{background:transparent;border:1px solid var(--sh-line);color:var(--sh-ink);padding:6px 13px;border-radius:20px;cursor:pointer;font-size:12.5px;font-weight:600;box-shadow:none}
+  header.sh button.sh-lang:hover{border-color:var(--sh-green);color:var(--sh-green-d);background:transparent}
+  .sh-sub{max-width:var(--shw,1200px);margin:0 auto;padding:14px 24px 0;font-size:13px;color:var(--sh-mut)}
+  footer.shfoot{margin-top:24px;border-top:1px solid var(--sh-line);background:var(--sh-paper2)}
+  footer.shfoot .shfoot-in{max-width:var(--shw,1200px);margin:0 auto;padding:22px 24px 32px;color:var(--sh-mut);font-size:12.5px;line-height:1.7;text-align:left}
+  footer.shfoot p{margin:0 0 8px}
+  footer.shfoot a{color:var(--sh-green-d)}
+  footer.shfoot .frow{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:baseline;margin-top:6px}
+  footer.shfoot .brandline{font-weight:700;color:var(--sh-ink)}
+  /* 切換頁面時位置一致：統一寬度、頁頭字型／高度，預留捲軸空間，目前頁不加粗 */
+  html{scrollbar-gutter:stable}
+  main{max-width:1280px}
+  header.sh{font-family:-apple-system,"Segoe UI","PingFang TC","Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif}
+  header.sh .sh-in{min-height:64px;box-sizing:border-box;line-height:1.5}
+  header.sh a.sh-link,header.sh button.sh-lang{line-height:1.5}
+  header.sh button.sh-lang{width:80px;box-sizing:border-box;text-align:center;padding-left:0;padding-right:0;white-space:nowrap}
+  header.sh a.sh-link.active{font-weight:600}
+  /* ===== 抽一個字測試頁 ===== */
+  main.pxmain{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:22px;align-items:start}
+  .pxtool{min-width:0}
+  .pxside{position:sticky;top:14px}
+  .pxside .panel h2{color:var(--sh-green-d)}
+  @media(max-width:1000px){main.pxmain{grid-template-columns:1fr}.pxside{position:static}}
+  .excard{display:flex;gap:11px;align-items:flex-start;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 12px;margin-top:10px;cursor:pointer;font:inherit;color:inherit;transition:border-color .15s,box-shadow .15s}
+  .excard:hover{border-color:var(--sh-green);box-shadow:0 2px 10px rgba(31,69,56,.10)}
+  .exn{flex:0 0 auto;font-size:12px;font-weight:700;border-radius:7px;padding:3px 9px;margin-top:1px;white-space:nowrap;background:#F1F2EF;color:#4E5752;border:1px solid #DEE1DC;min-width:82px;text-align:center;box-sizing:border-box}
+  .ext b{display:block;font-size:14px;color:var(--sh-ink);line-height:1.4}
+  .ext i{display:block;font-style:normal;font-size:12px;color:var(--mut);margin-top:3px;line-height:1.5}
+  .tippanel ul{margin:6px 0 0;padding-left:18px;font-size:12.5px;color:#4b5650;line-height:1.65}
+  .tippanel li{margin:0 0 6px}
+  .tippanel li b{color:var(--sh-ink)}
+  body.en .tippanel ul.blk[data-en]{display:block}
+  .panel h2 .h2note{margin-left:10px;font-size:12.5px;font-weight:600;color:var(--mut)}
+  .panel h2.inh{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+  .projbtns{display:flex;gap:4px;flex-wrap:wrap}
+  .projb{display:inline-flex;align-items:center;gap:6px;background:none;border:0;padding:4px 8px;border-radius:7px;font:inherit;font-size:12.5px;font-weight:600;color:var(--sh-green-d);cursor:pointer}
+  .projb:hover{background:#EEF2EF}
+  .cblk{margin-top:4px}
+  .cblk .cand{text-align:center;font-weight:800;color:var(--ok);font-size:13px;letter-spacing:1px;margin:6px 0 4px}
+  .cblk:first-child .cand{display:none}
+  .cblk .chd{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+  .cblk .chd label.fld{margin-bottom:6px}
+  .cblk .opt{font-weight:500;color:var(--mut);font-size:12px;margin-left:8px}
+  .cblk textarea{width:100%;min-height:96px;resize:vertical;line-height:1.6;font-family:"SF Mono",Consolas,monospace;font-size:13px}
+  .cdel{background:none;border:0;color:#9aa3a9;font-size:14px;cursor:pointer;padding:0 4px;line-height:1}
+  .cdel:hover{color:#b42318}
+  .addc{margin-top:8px;background:none;border:1px dashed #C6CFD5;border-radius:8px;padding:6px 14px;font:inherit;font-size:13px;font-weight:600;color:var(--sh-green-d);cursor:pointer}
+  .addc:hover{border-color:var(--sh-green)}
+  table.loo td.cn{width:44px;color:var(--mut);font-variant-numeric:tabular-nums;text-align:center}
+  .lobtns{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+  .gobtn.ghost{background:linear-gradient(180deg,#FBFCFC,#E8EDF0);color:#25292D;border:1px solid #CCD4DA;font-weight:600}
+  .gobtn:disabled{opacity:.55;cursor:default}
+  #status{font-size:12.5px;color:var(--mut)}
+  #status b{color:var(--sh-green-d)}
+  .keyrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--mut)}
+  .keyrow input{width:260px;font-family:"SF Mono",Consolas,monospace;font-size:12.5px;padding:6px 9px}
+  .modenote.warnred{color:#c0392b}
+  .modenote{font-size:12.5px;color:var(--mut);margin-top:8px}
+  .parseinfo{margin:12px 0 0;padding:2px 0 2px 12px;border-left:3px solid var(--sh-green);font-size:12.5px;color:#2F4A3F;line-height:1.7}
+  .parseinfo code{font-family:"SF Mono",Consolas,monospace;font-size:12px}
+  .parseinfo .bad{color:#b42318;font-weight:600}
+  /* 結果表 */
+  .restot{display:flex;gap:18px;flex-wrap:wrap;align-items:baseline;margin:2px 0 10px;font-size:13px;color:var(--mut)}
+  .restot b{font-size:18px;color:var(--sh-ink);font-variant-numeric:tabular-nums}
+  table.loo{width:100%;border-collapse:collapse;font-size:13.5px}
+  table.loo th{text-align:left;font-size:12px;font-weight:700;color:var(--mut);padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+  table.loo th.n,table.loo td.n{text-align:right;font-variant-numeric:tabular-nums}
+  table.loo td{padding:8px 8px;border-bottom:1px solid #E7EBEE;vertical-align:top}
+  table.loo td.rk{color:var(--mut);width:28px;font-variant-numeric:tabular-nums}
+  table.loo td.tm{font-family:"SF Mono",Consolas,monospace;font-size:13px;word-break:break-word}
+  table.loo td.n{white-space:nowrap;width:110px}
+  table.loo td.u{width:190px}
+  .ubar{height:4px;background:#E6ECE8;border-radius:2px;margin-top:5px;overflow:hidden}
+  .ubar i{display:block;height:100%;background:var(--sh-green);border-radius:2px}
+  .upct{font-size:11.5px;color:var(--mut);margin-left:6px}
+  .tag{display:inline-block;font-family:-apple-system,"Segoe UI","Noto Sans TC",sans-serif;font-size:11.5px;font-weight:700;margin-left:8px;white-space:nowrap}
+  .tag.top{color:var(--sh-amber)}
+  .tag.cov{color:#7B6840}
+  .tag.zero{color:#8a8f93}
+  .tag.dup{color:#b42318}
+  .tag.wn{color:#b42318;font-weight:600}
+  .pend{color:#a0a7ad}
+  .neg{color:#b42318}
+  @media(max-width:640px){table.loo td.u{width:auto}input.cnt{width:76px}.fullq .fqc input.cnt{width:110px}}
+  .empty{font-size:13px;color:var(--mut);padding:6px 0}
+  .vh .vctx{display:block;font-weight:400;color:var(--mut);font-size:11.5px;margin-top:1px}
+  table.loo td.tm .ctx{font-size:11.5px;color:var(--mut);margin-top:2px;line-height:1.45}
+  /* 結果表：完整策略、可排序欄、點筆數複製 */
+  .fullq{margin:2px 0 10px}
+  .fullq .fqh{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12.5px;font-weight:700;color:var(--mut)}
+  .fullq pre .qa{transition:color .12s}
+  .fullq pre .qa.hv{text-decoration:underline;text-decoration-color:#C9B48A;text-decoration-thickness:2px;text-underline-offset:3px}
+  .fullq pre .qa.hl{color:var(--sh-green-d);font-weight:800;text-decoration:underline;text-decoration-color:var(--sh-amber);text-decoration-thickness:3px;text-underline-offset:3px}
+  table.loo tbody tr{cursor:pointer}
+  table.loo tbody tr.sel td.tm{color:var(--sh-green-d);font-weight:700}
+  table.loo tbody tr.sel td.tm .ctx{font-weight:400;color:var(--mut)}
+  table.loo tbody tr.sel td.rk{color:var(--sh-amber);font-weight:800}
+  .fullq pre{position:relative;margin:4px 0 0;white-space:pre-wrap;word-break:break-word;font-family:"SF Mono",Consolas,monospace;font-size:12.5px;color:var(--code);max-height:9em;overflow:auto}
+  .fullq .fqc input.cnt{font-size:17px;font-weight:700;color:var(--sh-ink);width:130px}
+  .restot{margin:2px 0 8px;font-size:12.5px}
+  .restot b{font-size:inherit}
+  .restot,.restot b{color:#c0392b}
+  #resTot .restot{display:block}
+  .fillchip{display:inline-block;border:1px dashed #C9D0D5;border-radius:6px;padding:0 8px 0 22px;text-align:right;margin:0 3px;line-height:1.6;font-size:12px;color:#8f979d;background:transparent;font-weight:400}
+  table.loo th{padding:0}
+  table.loo th button.sortb{all:unset;box-sizing:border-box;display:block;width:100%;padding:6px 8px;cursor:pointer;font-size:12px;font-weight:700;color:var(--mut);white-space:nowrap}
+  table.loo th.n button.sortb{text-align:right}
+  table.loo th button.sortb:hover{color:var(--sh-green-d)}
+  table.loo th.on button.sortb{color:var(--sh-ink)}
+  table.loo th button.sortb i{font-style:normal;font-size:10px;margin-left:3px;color:var(--sh-amber)}
+  table.loo th.rkh{width:52px}
+  table.loo th.rkh button.sortb,table.loo td.rk{text-align:center}
+  table.loo th.cnh button.sortb{text-align:center}
+  input.cnt{width:96px;text-align:right;font-variant-numeric:tabular-nums;font-family:inherit;font-size:13.5px;padding:3px 6px;border:1px solid transparent;border-radius:6px;background:transparent;color:var(--ink);cursor:pointer}
+  input.cnt:hover{border-color:var(--line)}
+  input.cnt:focus{outline:none;border-color:var(--sh-green);background:#fff;cursor:text}
+  input.cnt.empty{border:1px dashed #C9D0D5}
+  input.cnt.auto{color:var(--ink)}
+  .cnt0{display:inline-block;padding:3px 7px;color:#a0a7ad}
+  .cerr{color:#b42318;font-weight:800;margin-left:3px;cursor:help}
+  .tblwrap{overflow-x:auto}
+  .tipsbox{font-size:12px;color:var(--mut);margin-top:10px;line-height:1.75}
+  .tipsbox ul.tnote{margin:0}
+  ul.tnote{margin:10px 0 0;padding:0;list-style:none;font-size:12px;color:var(--mut);line-height:1.75}
+  ul.tnote li{padding-left:1em;text-indent:-1em}
+  ul.tnote li::before{content:"．"}
+  .ctoast{position:fixed;z-index:9999;display:none;background:#1c2733;color:#fff;font-size:12px;padding:5px 9px;border-radius:6px;pointer-events:none;white-space:nowrap}
+</style>
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+</head>
+<body>
+<header class="sh">
+  <div class="sh-in">
+    <a class="sh-logo" href="index.html" aria-label="SR × EBM Happy SearchHen"><svg class="mark" viewBox="4 0 40 48" fill="none" aria-hidden="true"><path d="M24 1.8 C33.5 1.8 42.2 14.5 42.2 27 C42.2 38.6 34.4 46.2 24 46.2 C13.6 46.2 5.8 38.6 5.8 27 C5.8 14.5 14.5 1.8 24 1.8 Z" fill="#FBF9F4" stroke="#2A5A49" stroke-width="1.5"/><g transform="translate(0 3)"><path d="M19.2 34v3.6m0 0-2.4 1.7m2.4-1.7v1.9m0-1.9 2.4 1.7M25.6 33.9v3.7m0 0-2.4 1.7m2.4-1.7v1.9m0-1.9 2.4 1.7" stroke="#D98E2E" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 15c0-2.4-2-4.3-4.4-4.3-1.3 0-2.5.6-3.3 1.5-.6-1.6-2.1-2.7-3.9-2.7-1.4 0-2.6.6-3.4 1.6" stroke="#A96D55" stroke-width="1.8" stroke-linecap="round"/><path d="M17 16c-3.4 1.3-5.8 4.6-5.8 8.4 0 3.1 1.6 5.9 4 7.5 2.2 1.5 4.6 2.2 7.2 2.2 4.3 0 7.9-2.7 9.4-6.4.4-1.2.6-2.3.6-3.6 0-2.2-.8-4.2-2.1-5.7" stroke="#2A5A49" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" fill="#fff"/><path d="M30 19.5 L34.6 20.5 L30.6 22.7 Z" fill="#D98E2E" stroke="#B07420" stroke-width=".5" stroke-linejoin="round"/><circle cx="27" cy="20.2" r="1.15" fill="#2A5A49"/></g></svg><span class="sh-wm"><b>SR × EBM Happy SearchHen</b><i>搜尋策略生成雞</i></span></a>
+    <div class="sh-sp"></div>
+    <nav class="sh-nav">
+      <a class="sh-link toolbtn" href="pico-builder.html"><span data-zh>PICO 檢索策略產生器</span><span data-en>PICO Strategy Builder</span></a>
+      <a class="sh-link toolbtn" href="syntax-converter.html"><span data-zh>資料庫檢索語法轉換器</span><span data-en>Syntax Converter</span></a>
+      <a class="sh-link toolbtn" href="proximity-builder.html"><span data-zh>鄰近字分堆組合器</span><span data-en>Proximity Builder</span></a>
+      <a class="sh-link toolbtn" href="pubmed-light.html">PubMed Light ✦</a>
+    </nav>
+    <button class="sh-lang" id="langBtn" onclick="toggleLang()">English</button>
+  </div>
+</header>
+<div class="sh-sub"><span data-zh>揪出那個詞｜抽一個字測試：借用統合分析「逐一剔除敏感度分析」（leave-one-out sensitivity analysis）的概念，每個概念逐一拿掉一個詞，看每個詞帶進多少筆、哪個詞的獨有筆數最多，能幫助剔除或保留檢索詞，平衡檢索策略之周全與精準。（PubMed 可自動取得筆數）</span><span data-en>Leave-One-Out Term Test | Borrowing the idea of the leave-one-out sensitivity analysis used in meta-analysis, it drops one term at a time from each concept to show how many records each term brings in and which adds the most unique records — helping you decide which terms to drop or keep, balancing sensitivity and precision. (PubMed counts can be fetched automatically.)</span></div>
+<main class="pxmain">
+<div class="pxtool">
+  <div class="panel">
+    <div class="controls">
+      <div>
+        <label class="fld" for="db"><span data-zh>資料庫</span><span data-en>Database</span></label>
+        <select id="db"></select>
+      </div>
+      <div id="keyWrap" class="keyrow">
+        <label for="apikey"><span data-zh>NCBI API key（選填，加快取得速度）</span><span data-en>NCBI API key (optional, faster)</span></label>
+        <input type="text" id="apikey" autocomplete="off" spellcheck="false" placeholder="—">
+      </div>
+    </div>
+    <div class="modenote" id="modeNote"></div>
+  </div>
+
+  <div class="panel">
+    <h2 class="inh"><span><span data-zh>① 輸入</span><span data-en>① Input</span></span>
+      <span class="projbtns">
+        <button type="button" class="projb" onclick="saveProject()" title="把目前的資料庫、概念與筆數存成專案檔(.json)到你的電腦，日後可開啟繼續 / Save the database, concepts and counts as a project file (.json) on your computer"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11"/><polyline points="7 10 12 15 17 10"/><path d="M4 20h16"/></svg><span data-zh>儲存專案檔</span><span data-en>Save project file</span></button>
+        <button type="button" class="projb" onclick="document.getElementById('projFile').click()" title="開啟先前儲存的專案檔(.json)，還原概念與筆數 / Open a saved project file (.json) and restore concepts and counts"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4"/><polyline points="7 9 12 4 17 9"/><path d="M4 20h16"/></svg><span data-zh>開啟專案檔</span><span data-en>Open project file</span></button>
+        <input type="file" id="projFile" accept=".json,application/json" style="display:none">
+      </span></h2>
+    <div id="concepts"></div>
+    <button type="button" class="addc" onclick="addConcept('')"><span data-zh>＋ 新增概念</span><span data-en>+ Add concept</span></button>
+    <div class="lobtns">
+      <button class="gobtn" id="runBtn" onclick="runAll()"></button>
+      <button class="gobtn ghost" id="stopBtn" onclick="stopFetch()" style="display:none"><span data-zh>停止</span><span data-en>Stop</span></button>
+      <button class="gobtn ghost" onclick="clearAll()"><span data-zh>清空</span><span data-en>Clear</span></button>
+      <span id="status"></span>
+    </div>
+    <div id="parseInfo"></div>
+    <div class="tipsbox" data-zh><div>提示：</div><ul class="tnote">
+      <li>每個輸入框填寫一個概念，框內的詞為 OR 關係（用 OR 連接，或一行一個詞），概念之間以 AND 連接。</li>
+      <li>片語詞彙輸入：可用雙引號"hand washing"；或一行寫成 NEAR／ADJ／AND 組合，如 (hand OR hands) AND (wash* OR rub)，組合內的每個詞也會拆開測試。</li>
+      <li>所有概念的每個詞都會逐一測試；但若拿掉某個詞後，整個概念就空了，這個詞不測。</li>
+      <li>欄位限定：需附加語法，否則依資料庫預設處理。</li>
+    </ul></div>
+    <div class="tipsbox" data-en><div>Tips:</div><ul class="tnote">
+      <li>Enter one concept per box; terms inside a box are OR-ed (separate with OR, or one per line), and concepts are AND-ed.</li>
+      <li>Phrases: use double quotes, e.g. "hand washing", or write a NEAR/ADJ/AND combination on one line, e.g. (hand OR hands) AND (wash* OR rub); each word in the combination is tested too.</li>
+      <li>Every term in every concept is tested one by one; but if removing a term would leave its concept empty, that term is not tested.</li>
+      <li>Field limits: add the field syntax yourself; otherwise the database default applies.</li>
+    </ul></div>
+  </div>
+
+  <div class="panel" id="resPanel" style="display:none">
+    <h2><span data-zh>② 結果</span><span data-en>② Results</span><span class="h2note"><span data-zh>預設依獨有貢獻排序 · 點欄位標題可改排序</span><span data-en>sorted by unique contribution · click a heading to re-sort</span></span></h2>
+    <div id="resTot"></div>
+    <div id="resTable"></div>
+  </div>
+</div>
+  <aside class="pxside">
+    <div class="panel expanel">
+      <h2><span data-zh>範例</span><span data-en>Examples</span></h2>
+      <div class="sub"><span data-zh>點一下即載入</span><span data-en>Click to load</span></div>
+      <button class="excard" onclick="loadEx(1)"><span class="exn">PubMed</span><span class="ext"><b><span data-zh>手部衛生</span><span data-en>Hand hygiene</span> × <span data-zh>護理</span><span data-en>nursing</span></b><i><span data-zh>兩個概念、一行一個詞（含 AND 組合）；看 hygiene 單一個字帶進多少</span><span data-en>Two concepts, one term per line (incl. an AND combination); see how much “hygiene” alone brings in</span></i></span></button>
+      <button class="excard" onclick="loadEx(2)"><span class="exn">PubMed</span><span class="ext"><b><span data-zh>中央靜脈導管</span><span data-en>Central venous catheter</span> CVC</b><i><span data-zh>只有一個概念；子群組 (catheter* AND central) 裡的詞也拆開</span><span data-en>One concept; terms inside (catheter* AND central) are split too</span></i></span></button>
+      <button class="excard" onclick="loadEx(3)"><span class="exn">Scopus</span><span class="ext"><b><span data-zh>害怕跌倒</span><span data-en>Fear of falling</span></b><i><span data-zh>外層 TITLE-ABS-KEY(…) 自動保留；複製到 Scopus 後填回筆數</span><span data-en>Outer TITLE-ABS-KEY(…) kept; copy to Scopus and enter the counts</span></i></span></button>
+    </div>
+    <div class="panel tippanel">
+      <h2><span data-zh>怎麼看結果</span><span data-en>Reading the results</span></h2>
+      <ul class="blk" data-zh>
+        <li><b>方法：</b>類似統合分析的逐一剔除敏感度分析——一次拿掉一項，看整體結果改變多少；這裡拿掉的是檢索詞，看的是筆數變化，藉此判斷每個詞對檢索結果的影響程度。</li>
+        <li><b>點擊筆數即複製：</b>點任一格筆數或[填入]，會複製那一版檢索式；手動模式貼到資料庫執行後，可人工填入筆數於該格（或資料庫畫面自行評估不回填）。</li>
+        <li><b>單獨保留筆數：</b>這個詞所在的概念只留它，其他詞彙維持。</li>
+        <li><b>抽掉後總數：</b>這個詞所在的概念拿掉它，其餘照舊。</li>
+        <li><b>獨有貢獻：</b>總數 − 抽掉後總數，也就是只有這個詞才找得到的筆數。數字最大的，就是讓總數暴增的那個詞。獨有多不代表該刪，先到資料庫看那批獨有的文獻是不是雜訊，再決定刪、改寫或加限制。</li>
+        <li><b>單獨保留多、獨有貢獻少：</b>這個詞找到的大多已被其他詞涵蓋，保留或抽掉的影響都不大。</li>
+        <li><b>子群組內的詞：</b>抽掉＝從它所在的 OR 拿掉；若它是 AND／NEAR 某一邊唯一的詞，整個子群組一起拿掉。單獨保留＝那一層 OR 只留它，AND／NEAR 的另一邊照舊。</li>
+        <li><b>獨有為 0：</b>標示「已被涵蓋」，抽掉沒影響，通常可以保留；兩個詞寫法相同時標「重複」。</li>
+      </ul>
+      <ul class="blk" data-en>
+        <li><b>Method:</b> like a leave-one-out sensitivity analysis in meta-analysis — remove one item at a time and see how much the overall result changes; here the item is a search term and the result is the record count, showing how much each term influences the search.</li>
+        <li><b>Click a count to copy:</b> clicking any count or [enter] cell copies that search string; in manual mode, run it in the database and type the count into that cell (or just judge it on the database screen without entering it).</li>
+        <li><b>Alone:</b> only this term is kept in its concept; the other concepts stay.</li>
+        <li><b>Total without:</b> this term is removed from its concept; everything else unchanged.</li>
+        <li><b>Unique:</b> total − total without, i.e. records only this term finds. The largest number is the term inflating the total. A high unique count doesn’t mean the term should go — check those unique records in the database for noise first, then decide whether to drop, rewrite or restrict it.</li>
+        <li><b>High alone, low unique:</b> most of what this term finds is already covered by other terms, so keeping or dropping it makes little difference.</li>
+        <li><b>Terms in sub-groups:</b> “without” removes the term from its OR list; if it is the only term on one side of an AND/NEAR, the whole sub-group goes. “Alone” keeps only this term in that OR list, with the other side of the AND/NEAR unchanged.</li>
+        <li><b>Unique = 0:</b> marked “covered” — removing it changes nothing, and it can usually stay; identical terms are marked “duplicate”.</li>
+      </ul>
+    </div>
+  </aside>
+</main>
+<footer class="shfoot"><div class="shfoot-in">
+  <p><span data-zh>此工具為純網頁程式，未使用到AI運作，僅在您的瀏覽器本機執行與暫存，不會上傳任何研究資料到網路。筆數為執行當下的結果，資料庫每天更新；是否刪詞請以實際文獻判斷。</span>
+    <span data-en>A pure web-based tool with no AI — it runs and is cached entirely in your browser and never uploads any of your research data. Counts reflect the moment they were run and databases update daily; decide on dropping a term by looking at the actual records.</span></p>
+  <p><span data-zh>工具引用：方靜如，SR x EBM Happy SearchHen 搜尋策略生成雞。<br>Fang CJ, SR x EBM Happy SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/</a><br></span>
+    <span data-en>Cite this tool: Fang CJ, SR x EBM Happy SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/</a></span></p>
+  <div class="frow"><span class="brandline">SR × EBM Happy SearchHen　搜尋策略生成雞</span><span>© 2026 Ching-Ju Fang <a href="https://orcid.org/0000-0002-7892-8840" target="_blank" rel="noopener" title="ORCID iD" style="text-decoration:none;white-space:nowrap;color:inherit" onclick="try{if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:'author-orcid',title:'作者-ORCID',event:true})}catch(e){}"><svg width="13" height="13" viewBox="0 0 256 256" style="vertical-align:-2px;margin-right:3px" aria-hidden="true"><circle cx="128" cy="128" r="128" fill="#A6CE39"/><g fill="#fff"><path d="M86.3 186.2H70.9V79.1h15.4v107.1z"/><path d="M108.9 79.1h41.6c39.6 0 57 28.3 57 53.6 0 27.5-21.5 53.6-56.8 53.6h-41.8V79.1zm15.4 93.3h24.5c34.9 0 42.9-26.5 42.9-39.7 0-21.5-13.7-39.7-43.7-39.7h-23.7v79.4z"/><circle cx="78.6" cy="56.8" r="10.1"/></g></svg>https://orcid.org/0000-0002-7892-8840</a> · All rights reserved · <a href="https://github.com/sunfloraf-sketch/sr-ebm-happy-searchhen/blob/main/LICENSE" target="_blank" rel="noopener"><span data-zh>使用條款</span><span data-en>Terms of use</span></a> · v3.2.7</span></div>
+</div></footer>
+
+<script>
+var DBS=["pubmed","embase","ovid","cochrane","ebsco","wos","scopus"];
+var DB_LABEL={pubmed:"PubMed",embase:"Embase.com",ovid:"Ovid (MEDLINE/Embase)",cochrane:"Cochrane Library",ebsco:"EBSCOhost (CINAHL/MEDLINE)",wos:"Web of Science",scopus:"Scopus"};
+var LS_KEY="sr_loo_draft";
+var ESEARCH="https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi";
+function isEn(){ return document.body.classList.contains("en"); }
+function T(zh,en){ return isEn()?en:zh; }
+function esc(s){ return String(s).replace(/[&<>"']/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+function fmt(n){ return (n==null||isNaN(n))?"":Number(n).toLocaleString("en-US"); }
+function srCount(p,t){ try{ var _e=window.event; if(_e&&(_e.type==="click"||_e.type==="change")&&_e.target&&_e.target.closest){ var _b=_e.target.closest("button,[role=button],.btn,a,input,select,th,label"); if(_b) _b.__srExplicit=_e.timeStamp; } }catch(_x){} var c=function(o){ var n=0;(function f(){ try{ if(window.goatcounter&&window.goatcounter.count){ window.goatcounter.count(o); return; } }catch(e){ return; } if(n++<40) setTimeout(f,250); })(); }; c({path:p,title:t||p,event:true}); c({path:p+'-all',title:(t||p)+'（累計）',event:true,no_session:true}); }
+(function autoTrack(){ var P="loo";
+  function nm(el){ return el.getAttribute("data-ev")||el.id||el.getAttribute("name")||el.value||(el.textContent||"").trim().slice(0,24)||el.tagName.toLowerCase(); }
+  function slug(s){ return (String(s).toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9一-鿿_-]+/g,"").replace(/^-+|-+$/g,"").slice(0,40))||"x"; }
+  document.addEventListener("change", function(e){ var el=e.target; if(!el||!el.matches||el.hasAttribute("data-noauto")) return; if(el.matches("select")) srCount(P+"-sel-"+slug(nm(el))+"-"+slug(el.value)); }, false);
+  document.addEventListener("click", function(e){ var el=e.target&&e.target.closest?e.target.closest("button,[role=button],.btn,a.toolbtn,a.sendbtn"):null; if(!el||el.hasAttribute("data-noauto")||el.__srExplicit===e.timeStamp) return; srCount(P+"-btn-"+slug(nm(el))); }, false);
+})();
+
+/* ---------- 解析 ---------- */
+// 找出與 s[i] 的左括弧配對的右括弧（略過引號內）；找不到回傳 -1
+function matchClose(s,i){
+  var d=0,q=false;
+  for(var k=i;k<s.length;k++){
+    var c=s[k];
+    if(q){ if(c==='"') q=false; continue; }
+    if(c==='"'){ q=true; continue; }
+    if(c==='('||c==='['||c==='{') d++;
+    else if(c===')'||c===']'||c==='}'){ d--; if(d===0) return k; }
+  }
+  return -1;
+}
+var SUF_RE=/^\s*(\[[^\]]+\]|\.[a-z]{2,3}(,[a-z]{2,3})*\.)\s*$/i;
+var PRE_RE=/^([A-Z][A-Z\-]*\s*=\s*|[A-Z][A-Z\-]+\s*)\(/;
+// 其他概念：判斷是否已被括號或欄位包住
+function isEnclosed(s){
+  s=s.trim();
+  if(s.charAt(0)==='(' && matchClose(s,0)===s.length-1) return true;
+  var m=s.match(PRE_RE);
+  if(m && matchClose(s,m[0].length-1)===s.length-1) return true;
+  if(s.charAt(0)==='('){ var c=matchClose(s,0); if(c>0 && SUF_RE.test(s.slice(c+1))) return true; }
+  return false;
+}
+function balanceIssues(s){
+  var iss=[], q=(s.match(/"/g)||[]).length;
+  if(q%2) iss.push(T("雙引號不成對","unpaired double quote"));
+  var d=0,inq=false,bad=false;
+  for(var i=0;i<s.length;i++){ var c=s[i]; if(c==='"'){ inq=!inq; continue; } if(inq) continue; if(c==='(') d++; else if(c===')'){ d--; if(d<0) bad=true; } }
+  if(d!==0||bad) iss.push(T("圓括弧不成對","unbalanced parentheses"));
+  return iss;
+}
+
+/* 詞法：括號（含前置欄位 TITLE-ABS-KEY( / TS=( / TI ( 與後置欄位 )[tiab] / ).ti,ab.）、運算子、詞；換行與分號在最外層當 OR */
+function isOp(w,db){
+  if(db==="pubmed") return /^(AND|OR|NOT)$/.test(w);
+  return /^(and|or|not|near\/\d+|next\/\d+|w\/\d+|pre\/\d+|adj\d*|n\d+|w\d+)$/i.test(w) || w==="SAME";
+}
+function tokenize(s,db){
+  var out=[], i=0, n=s.length, lastEnd=-1;
+  while(i<n){
+    var c=s[i];
+    if(c==='\n'||c==='\r'||c===';'){ out.push({t:"NL"}); i++; continue; }
+    if(/\s/.test(c)){ i++; continue; }
+    if(c==='('){
+      var pre="", lt=out[out.length-1];
+      if(lt&&lt.t==="W"){
+        if(lastEnd===i && /^[A-Z][A-Z\-]*=?$/.test(lt.v)){ pre=lt.v; out.pop(); }
+        else if(/^[A-Z][A-Z\-]*\s*=$/.test(lt.v)||/^[A-Z]{2}$/.test(lt.v)){ pre=lt.v+(/=$/.test(lt.v)?"":" "); out.pop(); }
+      }
+      out.push({t:"LP",pre:pre}); i++; continue;
+    }
+    if(c===')'){
+      var j=i+1;
+      while(j<n && !/[\s();]/.test(s[j])){ if(s[j]==='['){ var e=s.indexOf(']',j); j=e<0?n:e+1; } else j++; }
+      out.push({t:"RP",suf:s.slice(i+1,j)}); i=j; continue;
+    }
+    var k=i;
+    while(k<n){
+      var ch=s[k];
+      if(ch==='"'){ var e2=s.indexOf('"',k+1); k=e2<0?n:e2+1; continue; }
+      if(ch==='['){ var e3=s.indexOf(']',k); k=e3<0?n:e3+1; continue; }
+      if(/[\s();]/.test(ch)) break;
+      k++;
+    }
+    var w=s.slice(i,k);
+    out.push(isOp(w,db)?{t:"OP",v:w}:{t:"W",v:w});
+    lastEnd=k; i=k;
+  }
+  return out;
+}
+/* 語法樹：a=詞、g=括號群組、or=OR 清單、ch=AND／NOT／NEAR 等串接 */
+function parseQuery(s,db){
+  var tk=tokenize(s,db), pos=0, flags={mixed:false};
+  function isOr(o){ return /^or$/i.test(o); }
+  function build(items,ops){
+    if(!items.length) return null;
+    if(items.length===1) return items[0];
+    var segs=[], ci=[items[0]], co=[];
+    for(var k=0;k<ops.length;k++){
+      if(isOr(ops[k])){ segs.push(ci.length===1?ci[0]:{type:"ch",items:ci,ops:co}); ci=[items[k+1]]; co=[]; }
+      else { ci.push(items[k+1]); co.push(ops[k]); }
+    }
+    segs.push(ci.length===1?ci[0]:{type:"ch",items:ci,ops:co});
+    if(segs.length>1){ if(segs.some(function(x){ return x.type==="ch" && x.ops.some(function(o){ return /^(and|not|and not)$/i.test(o); }); })) flags.mixed=true; return {type:"or",items:segs}; }
+    return segs[0];
+  }
+  function seq(depth){
+    var items=[], ops=[], pend=null, lines=[];
+    while(pos<tk.length){
+      var t=tk[pos];
+      if(t.t==="RP"){ if(depth>0) break; pos++; continue; }
+      if(t.t==="NL"){
+        pos++;
+        // 換行＝OR（括號內也一樣）；但行尾或下一行開頭是運算子時，視為同一個式子跨行
+        var nx=tk[pos]; while(nx&&nx.t==="NL"){ pos++; nx=tk[pos]; }
+        if(items.length && pend===null && !(nx&&(nx.t==="OP"||nx.t==="RP"))){ lines.push(build(items,ops)); items=[]; ops=[]; }
+        continue;
+      }
+      if(t.t==="OP"){ pos++; if(pend && /^and$/i.test(pend) && /^not$/i.test(t.v)) pend=pend+" "+t.v; else pend=t.v; continue; }
+      var node;
+      if(t.t==="LP"){
+        pos++; var inner=seq(depth+1), suf="";
+        if(pos<tk.length && tk[pos].t==="RP"){ suf=tk[pos].suf; pos++; }
+        if(!inner) continue;
+        node={type:"g",pre:t.pre,suf:suf,inner:inner};
+      } else {
+        pos++;
+        var last=items[items.length-1];
+        if(last && last.type==="a" && pend===null){ last.text+=" "+t.v; continue; }
+        node={type:"a",text:t.v};
+      }
+      if(items.length) ops.push(pend===null?" ":pend);
+      items.push(node); pend=null;
+    }
+    if(lines.length){
+      if(items.length) lines.push(build(items,ops));
+      var res=[];
+      lines.forEach(function(n){
+        if(n.type==="or") res=res.concat(n.items);
+        else if(n.type==="ch") res.push({type:"g",pre:"",suf:"",inner:n});   // 整行是 AND／NEAR 組合：加括號當一個單位
+        else res.push(n);
+      });
+      return res.length===1?res[0]:{type:"or",items:res};
+    }
+    return build(items,ops);
+  }
+  var root=seq(0);
+  return {root:root, mixed:flags.mixed};
+}
+// 同 pr()，但輸出 HTML，每個詞包成可凸顯的 span
+function prH(n){
+  if(!n) return "";
+  if(n.type==="a") return '<span class="qa" data-a="'+(n.__id||"")+'">'+esc(n.text)+'</span>';
+  if(n.type==="g"){ if(!n.pre && !n.suf && n.inner.type==="a") return prH(n.inner); var inn=n.inner; while(inn.type==="g"&&!inn.pre&&!inn.suf&&inn.inner.type!=="a") inn=inn.inner; return esc(n.pre)+"("+prH(inn)+")"+esc(n.suf); }
+  if(n.type==="or") return n.items.map(prH).join(" OR ");
+  var s=prH(n.items[0]);
+  for(var k=1;k<n.items.length;k++) s+=(n.ops[k-1]===" "?" ":" "+esc(n.ops[k-1])+" ")+prH(n.items[k]);
+  return s;
+}
+function totalHtml(){
+  var roots=P.concepts.map(function(c){ return c.root; });
+  if(roots.length===1) return prH(roots[0]);
+  return roots.map(function(r){ return (r.type==="a"||r.type==="g")?prH(r):"("+prH(r)+")"; }).join(" AND ");
+}
+function pr(n){
+  if(!n) return "";
+  if(n.type==="a") return n.text;
+  if(n.type==="g"){ if(!n.pre && !n.suf && n.inner.type==="a") return n.inner.text; var inn=n.inner; while(inn.type==="g"&&!inn.pre&&!inn.suf&&inn.inner.type!=="a") inn=inn.inner; return n.pre+"("+pr(inn)+")"+n.suf; }
+  if(n.type==="or") return n.items.map(pr).join(" OR ");
+  var s=pr(n.items[0]);
+  for(var k=1;k<n.items.length;k++) s+=(n.ops[k-1]===" "?" ":" "+n.ops[k-1]+" ")+pr(n.items[k]);
+  return s;
+}
+function atomsOf(n,acc){ acc=acc||[]; if(!n) return acc; if(n.type==="a") acc.push(n); else if(n.type==="g") atomsOf(n.inner,acc); else n.items.forEach(function(x){ atomsOf(x,acc); }); return acc; }
+function hasAtom(n,a){ return atomsOf(n).indexOf(a)>=0; }
+function clone(n,ch){ var o={}; for(var k in n) o[k]=n[k]; for(var k2 in ch) o[k2]=ch[k2]; return o; }
+// 抽掉一個詞：從它所在的 OR 清單拿掉；若它是 AND／NEAR 的唯一一邊，整個組合跟著拿掉；若在 NOT 右邊，只拿掉那段 NOT
+function rm(n,a){
+  if(!n) return null;
+  if(n.type==="a") return n===a?null:n;
+  if(n.type==="g"){ var i=rm(n.inner,a); return i?clone(n,{inner:i}):null; }
+  if(n.type==="or"){ var it=n.items.map(function(x){ return rm(x,a); }).filter(Boolean); return !it.length?null:(it.length===1?it[0]:{type:"or",items:it}); }
+  var r=n.items.map(function(x){ return rm(x,a); });
+  if(!r[0]) return null;
+  var ni=[r[0]], no=[];
+  for(var k=1;k<r.length;k++){
+    if(!r[k]){ if(/not/i.test(n.ops[k-1])) continue; return null; }
+    ni.push(r[k]); no.push(n.ops[k-1]);
+  }
+  return ni.length===1?ni[0]:{type:"ch",items:ni,ops:no};
+}
+// 單獨：這個詞所在的每一層 OR 只留它，其餘結構（AND 另一邊、NEAR 另一邊）照舊
+function keep(n,a){
+  if(n.type==="a") return n;
+  if(n.type==="g") return clone(n,{inner:keep(n.inner,a)});
+  if(n.type==="or"){ for(var k=0;k<n.items.length;k++) if(hasAtom(n.items[k],a)) return keep(n.items[k],a); }
+  return {type:"ch",items:n.items.map(function(x){ return hasAtom(x,a)?keep(x,a):x; }),ops:n.ops};
+}
+function topItems(root){
+  if(!root) return [];
+  var r=root;
+  if(r.type==="g") r=r.inner;
+  return r.type==="or"?r.items:[r];
+}
+function normTerm(t){ return t.toLowerCase().replace(/["\s]+/g," ").trim(); }
+
+/* ---------- 組檢索式 ---------- */
+var P=null;   // 目前的解析結果
+// 各概念以 AND 連接；第 ci 個概念可換成 alt
+function buildQ(ci,alt){
+  var roots=P.concepts.map(function(c,k){ return k===ci?alt:c.root; }).filter(Boolean);
+  if(!roots.length) return "";
+  if(roots.length===1) return pr(roots[0]);
+  return roots.map(function(r){ return (r.type==="a"||r.type==="g")?pr(r):"("+pr(r)+")"; }).join(" AND ");
+}
+
+/* ---------- 狀態 ---------- */
+var counts={};   // query -> number
+var meta={};     // query -> {trans, warn, err, auto}
+var running=false, stopReq=false;
+var FETCH_GEN=0, curAbort=null;   // 每批取得筆數的代號；換範例／重新產生時作廢上一批
+function cancelFetch(){
+  FETCH_GEN++; stopReq=false;
+  if(curAbort){ try{ curAbort.abort(); }catch(e){} curAbort=null; }
+  if(running){ running=false; document.getElementById("runBtn").disabled=false; document.getElementById("stopBtn").style.display="none"; }
+}
+var CACHE={};    // PubMed 結果快取（同一頁面內）
+
+function curDb(){ return document.getElementById("db").value; }
+
+function conceptTexts(){ return Array.prototype.map.call(document.querySelectorAll("#concepts textarea"),function(t){ return t.value; }); }
+function analyse(){
+  var db=curDb(), texts=conceptTexts();
+  P={db:db, concepts:[], mixed:false, wraps:[], issues:balanceIssues(texts.join("\n")), rows:[], skipped:[], nested:0};
+  texts.forEach(function(t,k){
+    if(!t.trim()) return;
+    var pq=parseQuery(t,db); if(!pq.root) return;
+    if(pq.mixed) P.mixed=true;
+    var r=pq.root; if(r.type==="g"&&(r.pre||r.suf)) P.wraps.push(esc(r.pre)+"( … )"+esc(r.suf));
+    P.concepts.push({no:k+1, root:r});
+  });
+  P.qTotal=buildQ(-1);
+  P.concepts.forEach(function(c,ci){
+    var tops=topItems(c.root), seen={};
+    // 每個詞所屬的 OR 清單（同一份清單裡寫法相同才算「重複」）
+    var listId=new Map(), nid=0;
+    (function walk(n,lid){
+      if(n.type==="a") listId.set(n,lid);
+      else if(n.type==="g") walk(n.inner,lid);
+      else if(n.type==="or"){ var my=++nid; n.items.forEach(function(x){ walk(x,my); }); }
+      else n.items.forEach(function(x){ walk(x,++nid); });   // AND／NEAR 的每一邊各自獨立
+    })(c.root,++nid);
+    atomsOf(c.root).forEach(function(a,ai){
+      a.__id=ci+"-"+ai;
+      var w=rm(c.root,a);
+      if(!w){ P.skipped.push(c.no); return; }   // 概念只剩這個詞，拿掉就沒有這個概念了：不測
+      var ctx="";
+      for(var k=0;k<tops.length;k++) if(hasAtom(tops[k],a)){ if(tops[k]!==a){ ctx=pr(tops[k]); P.nested++; } break; }
+      P.rows.push({i:P.rows.length, ci:ci, cno:c.no, term:a.text, aid:a.__id, key:normTerm(a.text), lid:listId.get(a), ctx:ctx, qAlone:buildQ(ci,keep(c.root,a)), qWithout:buildQ(ci,w)});
+    });
+  });
+  P.terms=P.rows.map(function(r){ return r.term; });
+  P.dup=P.rows.map(function(r){ return P.rows.some(function(o){ return o!==r && o.ci===r.ci && o.lid===r.lid && o.key===r.key; }); });
+  // 同一概念裡出現不只一次的詞（不同位置）：表格顯示所在位置以便分辨
+  P.rows.forEach(function(r){ r.same=P.rows.some(function(o){ return o!==r && o.ci===r.ci && o.key===r.key; }); });
+  return P;
+}
+
+
+/* ---------- 版面 ---------- */
+function fillDb(){
+  var sel=document.getElementById("db"), cur=sel.value;
+  sel.innerHTML="";
+  DBS.forEach(function(k){ var o=document.createElement("option"); o.value=k; o.textContent=DB_LABEL[k]+(k==="pubmed"?T("（自動取得筆數）"," (auto counts)"):""); sel.appendChild(o); });
+  if(cur) sel.value=cur;
+}
+function syncMode(){
+  var pm=curDb()==="pubmed";
+  document.getElementById("keyWrap").style.display=pm?"flex":"none";
+  document.getElementById("runBtn").textContent=pm?T("產生並取得筆數 →","Build & fetch counts →"):T("產生檢索式 →","Build search strings →");
+  document.getElementById("modeNote").classList.toggle("warnred",!pm);
+  document.getElementById("modeNote").textContent=pm
+    ? T("PubMed：用 E-utilities（esearch）逐一取得筆數，每次請求間隔約 0.35 秒（有 API key 約 0.12 秒）。點表格中的筆數會複製該版檢索式，筆數也可手動修改。",
+        "PubMed: counts are fetched one by one via E-utilities (esearch), about 0.35 s apart (0.12 s with an API key). Clicking a count copies that search string; counts can also be edited by hand.")
+    : T("⚠ 此資料庫無法自動取得筆數：點表格中的筆數格會複製該版檢索式，貼到資料庫執行後，把筆數填回同一格，獨有貢獻會即時計算。",
+        "⚠ Counts can’t be fetched for this database: clicking a count cell copies that search string; run it in the database and type the count into the same cell — the unique column updates as you type.");
+  renderConceptLabels();
+}
+
+function renderParseInfo(){
+  var el=document.getElementById("parseInfo");
+  if(!P||!P.concepts.length){ el.innerHTML=""; return; }
+  var h=[], per=P.concepts.map(function(c,ci){ var n=P.rows.filter(function(r){ return r.ci===ci; }).length; return T("概念 "+c.no+"：<b>"+n+"</b> 個詞","Concept "+c.no+": <b>"+n+"</b> terms"); });
+  h.push(per.join(T("　","   ")));
+  if(P.skipped.length) h.push(T("概念 "+P.skipped.filter(function(v,i,a){ return a.indexOf(v)===i; }).join("、")+" 只有一個詞，不測，維持原樣 AND 上去。","Concept "+P.skipped.filter(function(v,i,a){ return a.indexOf(v)===i; }).join(", ")+" has a single term: not tested, kept as is."));
+  if(P.nested) h.push(T("子群組內的詞（"+P.nested+" 個）：抽掉＝從它所在的 OR 拿掉；若它是 AND／NEAR 一邊唯一的詞，整組跟著拿掉。單獨＝該層 OR 只留它，AND／NEAR 的另一邊照舊。",
+    "Sub-group terms ("+P.nested+"): “without” removes the term from its OR list (if it is the only term on one side of an AND/NEAR, the whole sub-group goes); “alone” keeps only this term in its OR list, with the other side of the AND/NEAR unchanged."));
+  if(P.mixed) h.push('<span class="bad">'+T("同一行同時有 OR 與 AND／NOT 而沒有括號：各資料庫運算順序不同，建議加括號或改成一行一個詞。","OR is mixed with AND/NOT on one line without brackets; databases differ in precedence, so add brackets or put one term per line.")+'</span>');
+  if(P.wraps.length) h.push(T("偵測到外層欄位 ","Outer field wrapper detected: ")+"<code>"+P.wraps.join("</code>、<code>")+"</code>"+T("，每一版都會保留",", kept in every version"));
+  if(!P.rows.length) h.push('<span class="bad">'+T("沒有可測試的詞：每個概念內請用 OR 連接，或一行一個詞。","Nothing to test: within a concept, separate terms with OR or put one per line.")
+    +((P.db==="pubmed"&&P.concepts.some(function(c){ return /\sor\s/.test(pr(c.root)); }))?T("PubMed 只認大寫 OR。"," PubMed only recognises uppercase OR."):"")+'</span>');
+  if(P.issues.length) h.push('<span class="bad">'+T("請檢查：","Please check: ")+P.issues.join(T("、",", "))+'</span>');
+  if(P.dup.some(Boolean)) h.push('<span class="bad">'+T("同一概念內有重複的詞（標「重複」）","Duplicate terms within a concept (marked “duplicate”)")+'</span>');
+  el.innerHTML='<div class="parseinfo">'+h.join("<br>")+'</div>';
+}
+
+/* ---------- 概念輸入框 ---------- */
+function renderConcepts(vals){
+  var box=document.getElementById("concepts"); box.innerHTML="";
+  (vals&&vals.length?vals:["",""]).forEach(function(v){ addConcept(v,true); });
+  renderConceptLabels();
+}
+function addConcept(v,silent){
+  var box=document.getElementById("concepts"), d=document.createElement("div");
+  d.className="cblk";
+  d.innerHTML='<div class="cand">AND</div><div class="chd"><label class="fld"></label><button type="button" class="cdel" data-noauto title="移除此概念 / Remove this concept" onclick="delConcept(this)">✕</button></div><textarea spellcheck="false"></textarea>';
+  d.querySelector("textarea").value=v||"";
+  var ta=d.querySelector("textarea");
+  function fit(){ ta.style.height="auto"; ta.style.height=Math.max(96,Math.min(ta.scrollHeight+2,420))+"px"; }
+  ta.addEventListener("input",function(){ fit(); saveDraft(); scheduleRefresh(); });
+  box.appendChild(d); fit();
+  if(!silent){ renderConceptLabels(); d.querySelector("textarea").focus(); saveDraft(); }
+}
+// 輸入有變動時自動更新策略與表格（不自動抓 PubMed 筆數；已有的筆數依檢索式保留）
+var _rfT=null;
+function scheduleRefresh(){ clearTimeout(_rfT); _rfT=setTimeout(refreshFromInput,450); }
+function refreshFromInput(){
+  analyse(); renderParseInfo();
+  var panel=document.getElementById("resPanel");
+  if(!P.rows.length){ panel.style.display="none"; setStatus(""); return; }
+  if(SELA && !P.rows.some(function(r){ return r.aid===SELA; })) SELA=null;
+  HOVA=null;
+  panel.style.display="";
+  renderResults();
+  var qs=[P.qTotal]; P.rows.forEach(function(r){ qs.push(r.qAlone); if(r.qWithout) qs.push(r.qWithout); });
+  var miss=qs.filter(function(q){ return counts[q]==null; }).length;
+  if(miss && DONE_N){ DONE_N=null; renderResults(); }
+  setStatus(miss?(P.db==="pubmed"
+    ? T("策略已更新；還有 <b>"+miss+"</b> 版沒有筆數，按「產生並取得筆數」取得。","Strategy updated; <b>"+miss+"</b> strings have no count yet — press “Build & fetch counts”.")
+    : T("策略已更新；還有 <b>"+miss+"</b> 版待填筆數。","Strategy updated; <b>"+miss+"</b> counts still to enter.")):"");
+}
+function delConcept(btn){
+  var b=btn.closest(".cblk"), box=document.getElementById("concepts");
+  if(box.children.length<=1){ b.querySelector("textarea").value=""; } else b.remove();
+  renderConceptLabels(); saveDraft(); scheduleRefresh();
+}
+function renderConceptLabels(){
+  var bl=document.querySelectorAll("#concepts .cblk"), n=bl.length;
+  Array.prototype.forEach.call(bl,function(b,k){
+    b.querySelector("label").innerHTML=T("概念 "+(k+1)+"<span class=\"opt\">同義詞或控制詞彙・OR 連接或一行一個詞</span>","Concept "+(k+1)+"<span class=\"opt\">synonyms or controlled vocabulary · OR-separated or one per line</span>");
+    b.querySelector(".cdel").style.visibility=n>1?"visible":"hidden";
+    b.querySelector("textarea").placeholder=k===0
+      ? T('例如：\n"hand hygiene"\n"hand washing"\n(hand OR hands) AND disinfect*\n"Hand Hygiene"[mh]','e.g.\n"hand hygiene"\n"hand washing"\n(hand OR hands) AND disinfect*\n"Hand Hygiene"[mh]')
+      : (k===1?T("例如：nurse* OR nursing OR \"Nurses\"[mh]","e.g. nurse* OR nursing OR \"Nurses\"[mh]"):"");
+  });
+}
+
+var SORT={k:"u",d:-1};
+var SELA=null, HOVA=null;   // 點選／滑過的那一列對應的詞
+function applyHl(){
+  var pre=document.getElementById("fullPre"); if(!pre) return;
+  Array.prototype.forEach.call(pre.querySelectorAll(".qa"),function(s){
+    var a=s.getAttribute("data-a");
+    s.classList.toggle("hl",a===SELA); s.classList.toggle("hv",a===HOVA&&a!==SELA);
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("table.loo tbody tr"),function(tr){ tr.classList.toggle("sel",tr.getAttribute("data-a")===SELA); });
+  var t=SELA&&pre.querySelector('.qa[data-a="'+SELA+'"]');
+  if(t){ var top=t.offsetTop-pre.offsetTop; if(top<pre.scrollTop||top>pre.scrollTop+pre.clientHeight-20) pre.scrollTop=Math.max(0,top-20); }
+}
+function bindRows(){
+  Array.prototype.forEach.call(document.querySelectorAll("table.loo tbody tr"),function(tr){
+    var a=tr.getAttribute("data-a");
+    tr.addEventListener("click",function(e){
+      if(e.target.closest("input")){ SELA=a; } else SELA=(SELA===a?null:a);
+      applyHl();
+    });
+    tr.addEventListener("mouseenter",function(){ HOVA=a; applyHl(); });
+    tr.addEventListener("mouseleave",function(){ if(HOVA===a){ HOVA=null; applyHl(); } });
+  });
+}
+function hasN(x){ return x!=null&&!isNaN(x); }
+function cval(q){ return q===""?0:counts[q]; }
+function cntCell(q){
+  if(q==="") return '<span class="cnt0" title="'+T("抽掉後檢索式為空，以 0 筆計","Nothing left after removal — counted as 0")+'">0</span>';
+  var m=meta[q]||{}, v=counts[q];
+  return '<input type="text" inputmode="numeric" class="cnt'+(m.auto?' auto':'')+(v==null?' empty':'')+'" data-q="'+esc(q)+'" data-noauto value="'+(v==null?"":fmt(v))+'" placeholder="'+T("填入","enter")+'"'
+    +' title="'+T("點一下複製這一版檢索式","Click to copy this search string")+'">'
+    +(m.err?'<span class="cerr" title="'+esc(m.err)+'">!</span>':'');
+}
+function rowData(){
+  var tot=cval(P.qTotal);
+  return P.rows.map(function(r){
+    var a=cval(r.qAlone), w=cval(r.qWithout);
+    return {r:r,a:a,w:w,u:(hasN(tot)&&hasN(w))?tot-w:null};
+  });
+}
+function tagsHtml(x,maxU,isTop){
+  var r=x.r, t="", m=meta[r.qAlone]||{};
+  if(P.dup[r.i]) t+='<span class="tag dup">'+T("重複","duplicate")+'</span>';
+  if(isTop) t+='<span class="tag top">'+T("獨有最多","most unique")+'</span>';
+  if(hasN(x.u)&&x.u===0&&!P.dup[r.i]) t+=(hasN(x.a)&&x.a===0)?'<span class="tag zero">'+T("0 筆","no hits")+'</span>':'<span class="tag cov">'+T("已被涵蓋","covered")+'</span>';
+  if(m.warn) t+='<br><span class="tag wn" style="margin-left:0">'+esc(m.warn)+'</span>';
+  return t;
+}
+function uHtml(x,maxU,tot){
+  if(!hasN(x.u)) return '<span class="pend">—</span>';
+  var pct=(hasN(tot)&&tot>0)?Math.round(x.u/tot*1000)/10:null;
+  return '<span class="'+(x.u<0?'neg':'')+'">'+fmt(x.u)+'</span>'+(pct!=null?'<span class="upct">'+pct+'%</span>':'')
+    +'<div class="ubar"><i style="width:'+(maxU>0&&x.u>0?Math.max(2,x.u/maxU*100):0)+'%"></i></div>';
+}
+function stats(rows){
+  var maxU=0, topI=-1;
+  rows.forEach(function(x){ if(hasN(x.u)&&x.u>maxU){ maxU=x.u; topI=x.r.i; } });
+  var done=rows.filter(function(x){ return hasN(x.u)&&hasN(x.a); }).length;
+  return {maxU:maxU, topI:topI, done:done};
+}
+function renderResults(){
+  var tot=cval(P.qTotal), rows=rowData(), st=stats(rows);
+  var k=SORT.k, d=SORT.d;
+  rows.sort(function(x,y){
+    var a,b;
+    if(k==="term"){ a=x.r.term.toLowerCase(); b=y.r.term.toLowerCase(); return a<b?-d:a>b?d:x.r.i-y.r.i; }
+    if(k==="i"){ return (x.r.i-y.r.i)*d; }
+    if(k==="c"){ return (x.r.ci-y.r.ci)*d || x.r.i-y.r.i; }
+    a=x[k]; b=y[k];
+    var ha=hasN(a), hb=hasN(b);
+    if(ha!==hb) return ha?-1:1;          // 未填的排最後
+    if(ha&&a!==b) return (a-b)*d;
+    return x.r.i-y.r.i;
+  });
+  document.getElementById("resTot").innerHTML=
+    '<div class="fullq"><div class="fqh"><span>'+T("完整檢索策略","Full search strategy")+'</span>'
+    +'<span class="fqc">'+cntCell(P.qTotal)+'</span></div>'
+    +'<pre id="fullPre">'+totalHtml()+'</pre></div>'
+    +(P.db!=="pubmed"?'<div class="restot">'+genMsg()+'</div>':(DONE_N?'<div class="restot">'+doneMsg()+'</div>':''));
+  var multi=P.concepts.length>1;
+  function th(key,label,cls){ var on=SORT.k===key; return '<th class="'+(cls||"")+(on?' on':'')+'"><button class="sortb" data-noauto onclick="sortBy(\''+key+'\')">'+label+'<i>'+(on?(SORT.d<0?'▼':'▲'):'')+'</i></button></th>'; }
+  var h=['<div class="tblwrap"><table class="loo"><thead><tr>'+th("i",T("詞序","No."),"rkh")+(multi?th("c",T("概念","Concept"),"cnh"):"")+th("term",T("測試詞彙","Test term"))+th("a",T("單獨筆數","Alone"),"n")+th("w",T("抽掉後總數","Total without"),"n")+th("u",T("獨有貢獻","Unique"),"n")+'</tr></thead><tbody>'];
+  rows.forEach(function(x){
+    var r=x.r;
+    h.push('<tr data-i="'+r.i+'" data-a="'+r.aid+'"'+(r.aid===SELA?' class="sel"':'')+'><td class="rk">'+(r.i+1)+'</td>'+(multi?'<td class="cn">'+r.cno+'</td>':'')+'<td class="tm">'+esc(r.term)+'<span class="tags">'+tagsHtml(x,st.maxU,r.i===st.topI)+'</span>'
+      +((r.same&&r.ctx)?'<div class="ctx" title="'+esc(r.ctx)+'">'+T("於 ","in ")+esc(r.ctx.length>90?r.ctx.slice(0,88)+"…":r.ctx)+'</div>':'')+'</td>'
+      +'<td class="n">'+cntCell(r.qAlone)+'</td>'
+      +'<td class="n">'+cntCell(r.qWithout)+'</td>'
+      +'<td class="n u">'+uHtml(x,st.maxU,tot)+'</td></tr>');
+  });
+  h.push('</tbody></table></div>');
+  var zh=["點擊特定欄位標題可排序","點擊特定列可在完整檢索策略中標出該詞"],
+      en=["Click a column heading to sort","Click a row to mark the term in the full strategy"];
+  h.push('<ul class="tnote">'+(isEn()?en:zh).map(function(s){ return '<li>'+esc(s)+'</li>'; }).join("")+'</ul>');
+  document.getElementById("resTable").innerHTML=h.join("");
+  bindCnt(document.getElementById("resPanel"));
+  bindRows();
+  applyHl();
+}
+// 輸入時只就地更新數字，不重排（避免游標跳走）
+function refreshInPlace(){
+  var tot=cval(P.qTotal), rows=rowData(), st=stats(rows), byI={};
+  rows.forEach(function(x){ byI[x.r.i]=x; });
+  Array.prototype.forEach.call(document.querySelectorAll("table.loo tbody tr"),function(tr){
+    var x=byI[tr.getAttribute("data-i")]; if(!x) return;
+    tr.querySelector(".tags").innerHTML=tagsHtml(x,st.maxU,x.r.i===st.topI);
+    tr.querySelector("td.u").innerHTML=uHtml(x,st.maxU,tot);
+  });
+  var nd=document.getElementById("nDone"); if(nd) nd.textContent=st.done;
+}
+function sortBy(k){
+  if(SORT.k===k) SORT.d=-SORT.d; else { SORT.k=k; SORT.d=(k==="i"||k==="term")?1:-1; }
+  renderResults();
+}
+var _toast=null;
+function toast(el,msg){
+  if(!_toast){ _toast=document.createElement("div"); _toast.className="ctoast"; document.body.appendChild(_toast); }
+  var r=el.getBoundingClientRect();
+  _toast.textContent=msg; _toast.style.display="block";
+  _toast.style.left=Math.max(6,Math.min(r.right-_toast.offsetWidth, window.innerWidth-_toast.offsetWidth-6))+"px";
+  _toast.style.top=(r.top-_toast.offsetHeight-6<4?r.bottom+6:r.top-_toast.offsetHeight-6)+"px";
+  clearTimeout(_toast._t); _toast._t=setTimeout(function(){ _toast.style.display="none"; },1300);
+}
+function bindCnt(root){
+  Array.prototype.forEach.call(root.querySelectorAll("input.cnt"),function(inp){
+    var q=inp.getAttribute("data-q");
+    var fresh=false;
+    inp.addEventListener("focus",function(){
+      copyText(q,null,function(){ toast(inp,T("已複製這一版檢索式","Search string copied")); });
+      try{ inp.select(); }catch(e){} fresh=true;
+    });
+    inp.addEventListener("mouseup",function(e){ if(fresh){ e.preventDefault(); fresh=false; } });
+    inp.addEventListener("keydown",function(){ fresh=false; });
+    inp.addEventListener("input",function(){
+      var dgt=inp.value.replace(/[^\d]/g,"");
+      if(dgt===""){ delete counts[q]; } else counts[q]=parseInt(dgt,10);
+      if(meta[q]){ meta[q].auto=false; delete meta[q].err; }
+      inp.classList.remove("auto"); inp.classList.toggle("empty",dgt==="");
+      Array.prototype.forEach.call(document.querySelectorAll("#resPanel input.cnt"),function(o){ if(o!==inp && o.getAttribute("data-q")===q){ o.value=inp.value; o.classList.remove("auto"); o.classList.toggle("empty",dgt===""); } });
+      refreshInPlace();
+    });
+    inp.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); inp.blur(); renderResults(); } });
+    inp.addEventListener("change",function(){
+      if(counts[q]!=null) inp.value=fmt(counts[q]);
+      // 全部填完、且游標已離開筆數格時才重新排序
+      setTimeout(function(){ var a=document.activeElement; if(!(a&&a.classList&&a.classList.contains("cnt"))) renderResults(); },150);
+    });
+  });
+}
+
+/* ---------- 執行 ---------- */
+function setStatus(html){ document.getElementById("status").innerHTML=html||""; }
+var DONE_N=null;   // 最近一次完成取得筆數：{n 版數, f 失敗數, t 時間}
+// 非 PubMed：共產生幾種版本的檢索式（不重複、不含空白版）
+function genMsg(){
+  var seen={}, n=0;
+  [P.qTotal].concat.apply([P.qTotal],P.rows.map(function(r){ return [r.qAlone,r.qWithout]; })).forEach(function(q){ if(q&&!seen[q]){ seen[q]=1; n++; } });
+  return T("產生 <b>"+n+"</b> 種版本檢索式，請點擊<span class=\"fillchip\">填入</span>以複製檢索式","Built <b>"+n+"</b> search-string versions — click an <span class=\"fillchip\">enter</span> cell to copy its string");
+}
+function doneMsg(){
+  if(!DONE_N) return "";
+  return T("完成 <b>"+DONE_N.n+"</b> 種版本檢索式","Done: <b>"+DONE_N.n+"</b> search-string versions")+(DONE_N.f?T("（"+DONE_N.f+" 版失敗）"," ("+DONE_N.f+" failed)"):"")+" · "+DONE_N.t.toLocaleString(isEn()?"en-GB":"zh-TW",{hour12:false});
+}
+function runAll(){
+  DONE_N=null;
+  cancelFetch(); clearTimeout(_rfT);
+  saveDraft();
+  analyse(); renderParseInfo();
+  if(!P.rows.length){ document.getElementById("resPanel").style.display="none"; setStatus(P.concepts.length?"":T("請先輸入概念。","Enter a concept first.")); return; }
+  // 換了輸入：只保留仍在使用的檢索式筆數
+  var inUse={}, all=[P.qTotal]; P.rows.forEach(function(r){ all.push(r.qAlone); if(r.qWithout) all.push(r.qWithout); });
+  all.forEach(function(q){ inUse[q]=1; });
+  Object.keys(counts).forEach(function(q){ if(!inUse[q]) delete counts[q]; });
+  document.getElementById("resPanel").style.display="";
+  SORT={k:"u",d:-1}; SELA=null; HOVA=null;
+  renderResults();
+  if(P.db==="pubmed") fetchAll(all); else setStatus("");
+}
+function sleep(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
+async function esearch(q,key,signal){
+  var body=new URLSearchParams({db:"pubmed",term:q,retmode:"json",retmax:"0",tool:"sr-ebm-happy-searchhen"});
+  if(key) body.set("api_key",key);
+  for(var attempt=0;attempt<4;attempt++){
+    var res=await fetch(ESEARCH,{method:"POST",body:body,signal:signal});
+    if(res.status===429){ await sleep(1200*(attempt+1)); continue; }
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    var j=await res.json();
+    if(j&&j.error&&/rate limit/i.test(j.error)){ await sleep(1200*(attempt+1)); continue; }
+    var r=j&&j.esearchresult;
+    if(!r) throw new Error((j&&j.error)||"no result");
+    if(r.ERROR) throw new Error(r.ERROR);
+    var w=[], wl=r.warninglist||{}, el=r.errorlist||{};
+    (el.phrasesnotfound||[]).forEach(function(p){ if(p) w.push(T("找不到：","Not found: ")+p); });
+    (wl.quotedphrasesnotfound||[]).forEach(function(p){ if(p) w.push(T("引號片語找不到：","Quoted phrase not found: ")+p); });
+    (wl.phrasesignored||[]).forEach(function(p){ if(p) w.push(T("被忽略：","Ignored: ")+p); });
+    return {count:parseInt(r.count,10), trans:r.querytranslation||"", warn:w.join(T("；","; "))};
+  }
+  throw new Error(T("請求過於頻繁，請稍後再試","Rate limited — try again shortly"));
+}
+async function fetchAll(qs){
+  var uniq=[]; qs.forEach(function(q){ if(q&&uniq.indexOf(q)<0) uniq.push(q); });
+  var key=document.getElementById("apikey").value.trim(), gap=key?120:350;
+  var my=++FETCH_GEN; curAbort=(typeof AbortController!=="undefined")?new AbortController():null;
+  var sig=curAbort?curAbort.signal:undefined;
+  running=true; stopReq=false;
+  document.getElementById("runBtn").disabled=true; document.getElementById("stopBtn").style.display="";
+  var done=0, fails=0, netFail=false;
+  for(var k=0;k<uniq.length;k++){
+    if(my!==FETCH_GEN) return;          // 已被新的一批取代：安靜結束
+    if(stopReq) break;
+    var q=uniq[k];
+    setStatus(T("取得筆數中 <b>"+(done+1)+"</b> / "+uniq.length,"Fetching <b>"+(done+1)+"</b> / "+uniq.length));
+    var cached=CACHE[q];
+    if(!cached){
+      try{ cached=await esearch(q,key,sig); CACHE[q]=cached; }
+      catch(e){
+        if(my!==FETCH_GEN || (e&&e.name==="AbortError")) return;
+        fails++; var msg=String(e&&e.message||e);
+        if(/Failed to fetch|NetworkError|Load failed/i.test(msg)){ netFail=true; meta[q]={err:T("無法連到 PubMed（網路或瀏覽器擋下）","Couldn’t reach PubMed (network or browser blocked)")}; renderResults(); break; }
+        meta[q]={err:"PubMed: "+msg}; renderResults(); done++; if(k<uniq.length-1) await sleep(gap); continue;
+      }
+      if(k<uniq.length-1) await sleep(gap);
+      if(my!==FETCH_GEN) return;
+    }
+    counts[q]=cached.count; meta[q]={trans:cached.trans, warn:cached.warn, auto:true};
+    renderResults(); done++;
+  }
+  if(my!==FETCH_GEN) return;
+  running=false; curAbort=null;
+  document.getElementById("runBtn").disabled=false; document.getElementById("stopBtn").style.display="none";
+  if(netFail) setStatus('<span style="color:#b42318">'+T("無法連到 PubMed，請檢查網路後重試；或點筆數格複製檢索式，到 PubMed 執行後手動填入。","Couldn’t reach PubMed — check the connection and retry, or click a count cell to copy the string, run it in PubMed and type the count.")+'</span>');
+  else if(stopReq) setStatus(T("已停止（完成 "+done+" / "+uniq.length+"）；再按一次會接著取得。","Stopped ("+done+" / "+uniq.length+"); run again to continue."));
+  else { DONE_N={n:done,f:fails,t:new Date()}; setStatus(""); renderResults(); }
+  srCount("loo-pubmed-fetch","抽一個字-PubMed取得筆數");
+}
+function stopFetch(){ stopReq=true; }
+
+/* ---------- 複製 ---------- */
+function copyText(t,btn,cb){
+  function ok(){ if(cb) cb(); if(!btn) return; var o=btn.innerHTML; btn.classList.add("done"); btn.textContent=T("已複製","Copied"); setTimeout(function(){ btn.classList.remove("done"); btn.innerHTML=o; },1200); }
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(ok,function(){ fb(); }); } else fb();
+  function fb(){ var ta=document.createElement("textarea"); ta.value=t; ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta); ta.select(); try{ document.execCommand("copy"); ok(); }catch(e){} ta.remove(); }
+}
+
+/* ---------- 其他 ---------- */
+function saveDraft(){ try{ localStorage.setItem(LS_KEY,JSON.stringify({db:curDb(),concepts:conceptTexts()})); }catch(e){} }
+function loadDraft(){ var v=null; try{ var d=JSON.parse(localStorage.getItem(LS_KEY)||"null"); if(d){ if(d.db&&DB_LABEL[d.db]) document.getElementById("db").value=d.db; v=d.concepts||([d.grp||""].concat(d.other?[d.other]:[])); } }catch(e){} renderConcepts(v); }
+/* ---------- 專案檔（.json）：存到使用者自己的電腦，不上傳 ---------- */
+function _dlBlob(blob,name){ var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(function(){ try{ URL.revokeObjectURL(a.href); }catch(_){} a.remove(); },1500); }
+function _tsName(){ var d=new Date(), z=function(n){ return (n<10?"0":"")+n; }; return ""+d.getFullYear()+z(d.getMonth()+1)+z(d.getDate())+"_"+z(d.getHours())+z(d.getMinutes()); }
+function saveProject(){
+  var texts=conceptTexts();
+  if(!texts.some(function(t){ return t.trim(); })){ alert(T("目前沒有可儲存的內容。","Nothing to save yet.")); return; }
+  var c={}, m={};
+  if(P&&P.rows&&P.rows.length){
+    var qs=[P.qTotal]; P.rows.forEach(function(r){ qs.push(r.qAlone); if(r.qWithout) qs.push(r.qWithout); });
+    qs.forEach(function(q){ if(counts[q]!=null) c[q]=counts[q]; if(meta[q]&&(meta[q].warn||meta[q].auto)) m[q]={warn:meta[q].warn||"",auto:!!meta[q].auto}; });
+  }
+  var payload={_type:"sr-loo-project", ver:"1", savedAt:new Date().toISOString(), lang:(isEn()?"en":"zh"),
+    state:{db:curDb(), concepts:texts, counts:c, meta:m, sort:SORT, sel:SELA}};
+  _dlBlob(new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}), (isEn()?"Leave-One-Out-Term-Test_":"揪出那個詞_")+_tsName()+".json");
+  srCount("loo-proj-save","抽一個字-儲存專案檔");
+}
+function openProjectFile(file){
+  var rd=new FileReader();
+  rd.onload=function(){
+    var data; try{ data=JSON.parse(rd.result); }catch(e){ alert(T("這不是有效的專案檔（JSON 無法解析）。","Not a valid project file (JSON could not be parsed).")); return; }
+    var st=data&&data.state;
+    if(!data||data._type!=="sr-loo-project"||!st||!st.concepts){
+      alert(data&&data._type==="sr-pico-project"?T("這是 PICO 檢索策略產生器的專案檔，請到 PICO 頁開啟。","This is a PICO Strategy Builder project; open it on the PICO page."):T("這個檔案看起來不是「抽一個字測試」的專案檔。","This file doesn’t look like a leave-one-out project.")); return;
+    }
+
+    if(conceptTexts().some(function(t){ return t.trim(); }) && !confirm(T("載入會覆蓋目前的概念與筆數，確定載入嗎？","Loading will replace the current concepts and counts. Continue?"))) return;
+    cancelFetch();
+    if(st.db&&DB_LABEL[st.db]) document.getElementById("db").value=st.db;
+    syncMode(); renderConcepts(st.concepts);
+    counts={}; meta={};
+    Object.keys(st.counts||{}).forEach(function(q){ var v=parseInt(st.counts[q],10); if(!isNaN(v)) counts[q]=v; });
+    Object.keys(st.meta||{}).forEach(function(q){ meta[q]={warn:st.meta[q].warn||"",auto:!!st.meta[q].auto}; });
+    saveDraft();
+    analyse(); renderParseInfo();
+    if(P.rows.length && Object.keys(counts).length){
+      SORT=(st.sort&&st.sort.k)?{k:st.sort.k,d:st.sort.d===1?1:-1}:{k:"u",d:-1};
+      SELA=st.sel||null; HOVA=null;
+      document.getElementById("resPanel").style.display="";
+      renderResults();
+      var d=data.savedAt?new Date(data.savedAt):null;
+      setStatus(T("已開啟專案檔","Project opened")+(d&&!isNaN(d)?T("（筆數為 "+d.toLocaleString("zh-TW",{hour12:false})+" 存檔時的結果；要更新請再按一次產生）"," (counts as saved on "+d.toLocaleString("en-GB",{hour12:false})+"; build again to refresh)"):""));
+    } else {
+      document.getElementById("resPanel").style.display="none";
+      setStatus(T("已開啟專案檔","Project opened"));
+    }
+    srCount("loo-proj-open","抽一個字-開啟專案檔");
+  };
+  rd.readAsText(file);
+}
+document.getElementById("projFile").addEventListener("change",function(e){ var f=e.target.files&&e.target.files[0]; if(f) openProjectFile(f); e.target.value=""; });
+
+function clearAll(){
+  cancelFetch();
+  renderConcepts(null);
+  counts={}; meta={}; P=null;
+  document.getElementById("parseInfo").innerHTML=""; document.getElementById("resPanel").style.display="none"; setStatus("");
+  saveDraft();
+}
+var EX={
+  1:{db:"pubmed",c:['"hand hygiene"\n"hand washing"\nhandwashing\n(hand OR hands) AND (disinfect* OR rub OR rubs)\nhygiene\n"Hand Hygiene"[mh]','nurse* OR nursing OR "Nurses"[mh]']},
+  2:{db:"pubmed",c:['"central venous catheter*" OR "central line*" OR CVC OR PICC OR (catheter* AND central)']},
+  3:{db:"scopus",c:['TITLE-ABS-KEY("fear of falling" OR "fear of falls" OR "falls efficacy" OR "fall-related anxiety" OR falls)','TITLE-ABS-KEY(elderly OR "older adult*" OR aged)']}
+};
+function loadEx(n){
+  cancelFetch(); clearTimeout(_rfT);
+  var e=EX[n]; document.getElementById("db").value=e.db; syncMode();
+  renderConcepts(e.c);
+  counts={}; meta={};
+  runAll();
+}
+
+document.getElementById("db").addEventListener("change",function(){ syncMode(); saveDraft(); if(P&&document.getElementById("resPanel").style.display!=="none"){ runAll(); } });
+
+window.toggleLang=function(){
+  var b=document.body; b.classList.toggle("en");
+  var en=b.classList.contains("en");
+  document.getElementById("langBtn").textContent=en?"中文":"English";
+  document.documentElement.lang=en?"en":"zh-Hant";
+  try{ localStorage.setItem("sr_lang", en?"en":"zh"); }catch(e){}
+  fillDb(); syncMode();
+  if(P&&P.rows.length){ renderParseInfo(); renderResults(); }
+};
+fillDb(); loadDraft(); syncMode();
+(function(){ var q=((location.search.match(/[?&]lang=(en|zh)/i)||[])[1]||(location.hash.match(/^#(en|zh)\b/i)||[])[1]||"").toLowerCase(); var want=q||(function(){try{return localStorage.getItem("sr_lang");}catch(e){return null;}})(); try{ if(want==="en" && !document.body.classList.contains("en")) window.toggleLang(); }catch(e){} if(q){ try{ localStorage.setItem("sr_lang", q); }catch(e){} } })();
+(function countLang(){ var lang=document.body.classList.contains("en")?"en":"zh"; var n=0;(function f(){ if(window.goatcounter&&window.goatcounter.count){window.goatcounter.count({path:"lang-"+lang,title:"介面語言-"+lang,event:true});window.goatcounter.count({path:"lang-"+lang+"-all",title:"介面語言-"+lang+"（累計）",event:true,no_session:true});}else if(n++<40){setTimeout(f,250);} })(); })();
+</script>
+<script>/* 頁面瀏覽路徑正規化：去除 ?lang 等 query，避免同頁被拆成多筆（不影響功能事件的顯式 path） */window.goatcounter={path:function(p){try{return location.pathname;}catch(e){return p;}}};</script>
+<script>
+/* 全域提示：把所有原生 title 改成 ⓘ 同款黑底白字氣泡；已用 .hastip（data-tip）者維持原樣。 */
+(function(){
+  var tip=document.createElement("div"); tip.id="gtip"; document.body.appendChild(tip);
+  var cur=null, orig=null;
+  function textFor(el){
+    var en=document.body.classList.contains("en");
+    if(en && el.getAttribute("data-tip-en")) return el.getAttribute("data-tip-en");
+    if(!en && el.getAttribute("data-tip-zh")) return el.getAttribute("data-tip-zh");
+    return el.getAttribute("title");
+  }
+  function hide(){ if(!cur) return; if(orig!=null && cur.getAttribute("title")==="") cur.setAttribute("title",orig); tip.classList.remove("show"); tip.style.display="none"; cur=null; orig=null; }
+  function show(el){
+    var txt=textFor(el); if(!txt) return;
+    orig=el.getAttribute("title"); if(orig!=null) el.setAttribute("title","");
+    cur=el; tip.textContent=txt; tip.style.display="block"; tip.classList.remove("show");
+    var r=el.getBoundingClientRect(), tb=tip.getBoundingClientRect();
+    var cx=r.left+r.width/2;
+    var left=Math.max(6, Math.min(cx-tb.width/2, window.innerWidth-tb.width-6));
+    var above=r.top > tb.height+14;
+    var top=above ? (r.top-tb.height-10) : (r.bottom+10);
+    tip.style.left=left+"px"; tip.style.top=top+"px";
+    tip.classList.toggle("above",above); tip.classList.toggle("below",!above);
+    tip.style.setProperty("--ax",(cx-left)+"px");
+    requestAnimationFrame(function(){ if(cur===el) tip.classList.add("show"); });
+  }
+  document.addEventListener("mouseover",function(e){
+    var t=e.target; if(!t||!t.closest) return;
+    var el=t.closest("[title],[data-tip-zh],[data-tip-en]");
+    if(!el){ if(cur) hide(); return; }
+    if(el.classList && el.classList.contains("hastip")) return;
+    if(el.closest(".hastip")) return;
+    if(el===cur) return;
+    hide(); show(el);
+  });
+  document.addEventListener("mouseout",function(e){
+    if(!cur) return; var to=e.relatedTarget;
+    if(to && (to===cur || (cur.contains && cur.contains(to)))) return;
+    hide();
+  });
+  window.addEventListener("scroll",hide,true);
+  document.addEventListener("click",hide,true);
+  window.addEventListener("blur",hide);
+})();
+</script>
+<script data-goatcounter="https://sr-toolkit.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<script id="srPrefScript">
+/* 共用：① 提示文字只顯示目前語言（「中文 / English」雙語提示依語言切開）② 右上角「偏好設定」：提示文字 顯示／不顯示（localStorage: sr_pref_tips） */
+(function(){
+  var KEY="sr_pref_tips", cjk=/[一-鿿]/;
+  function isEn(){ return document.body.classList.contains("en") || document.documentElement.getAttribute("lang")==="en"; }
+  function lsGet(){ try{ return localStorage.getItem(KEY); }catch(e){ return null; } }
+  function lsSet(v){ try{ localStorage.setItem(KEY,v); }catch(e){} }
+
+  /* ① 雙語提示切語言 */
+  function split(v){ var i=String(v||"").lastIndexOf(" / "); if(i<0) return null; var a=v.slice(0,i).trim(), b=v.slice(i+3).trim(); return (cjk.test(a)&&!cjk.test(b)&&/[A-Za-z]{2}/.test(b))?{zh:a,en:b}:null; }
+  var ATTRS=["data-tip","title","data-title-keep","aria-label"];
+  function syncLang(){
+    var en=isEn();
+    ATTRS.forEach(function(at){
+      Array.prototype.forEach.call(document.querySelectorAll("["+at+"]"), function(el){
+        var bk="data-both-"+at, both=el.getAttribute(bk), cur=el.getAttribute(at)||"";
+        if(both===null){ if(!split(cur)) return; both=cur; el.setAttribute(bk,both); }
+        var sp=split(both); if(!sp){ el.removeAttribute(bk); return; }
+        if(cur!==both && cur!==sp.zh && cur!==sp.en){ var sp2=split(cur); if(!sp2){ el.removeAttribute(bk); return; } both=cur; el.setAttribute(bk,both); sp=sp2; }   // 程式改成新的雙語文字：改用新值；改成單語則不再覆蓋
+        var want=en?sp.en:sp.zh; if(cur!==want) el.setAttribute(at,want);
+      });
+    });
+  }
+
+  /* ② 提示文字 顯示／不顯示 */
+  function keepTitle(el){ var t=el.getAttribute&&el.getAttribute("title"); if(t){ el.setAttribute("data-title-keep",t); el.removeAttribute("title"); } }
+  function strip(root){ if(root.nodeType!==1) return; keepTitle(root); Array.prototype.forEach.call(root.querySelectorAll("[title]"), keepTitle); }
+  function restore(){ Array.prototype.forEach.call(document.querySelectorAll("[data-title-keep]"), function(el){ if(!el.hasAttribute("title")) el.setAttribute("title", el.getAttribute("data-title-keep")); el.removeAttribute("data-title-keep"); }); }
+  var tobs=null;
+  function applyTips(show){
+    document.body.classList.toggle("notips", !show);
+    if(!show){
+      strip(document.body);
+      if(!tobs){
+        tobs=new MutationObserver(function(muts){ muts.forEach(function(m){
+          if(m.type==="attributes") keepTitle(m.target);
+          else Array.prototype.forEach.call(m.addedNodes, strip);
+        }); });
+        tobs.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:["title"]});
+      }
+    } else { if(tobs){ tobs.disconnect(); tobs=null; } restore(); syncLang(); }
+  }
+
+  var css=document.createElement("style"); css.id="srPrefStyle";
+  css.textContent=
+    ".srpref{position:relative;display:inline-flex;align-items:center;margin-left:8px;flex:none}"+
+    ".srpref>button{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;padding:0;border:1px solid var(--sh-line,#C9D2CD);border-radius:50%;background:transparent;color:var(--sh-ink,#2b3a35);cursor:pointer;box-shadow:none}"+
+    ".srpref>button:hover,.srpref>button[aria-expanded=true]{border-color:var(--sh-green,#0f766e);color:var(--sh-green-d,#0f766e);background:transparent}"+
+    ".srpref svg{width:17px;height:17px}"+
+    ".srpop{position:absolute;z-index:10000;top:calc(100% + 8px);right:0;min-width:210px;padding:10px 12px;background:#fff;color:#23282D;border:1px solid #D5DCE0;border-radius:10px;box-shadow:0 8px 22px rgba(0,0,0,.16);font-size:13px;line-height:1.5;text-align:left;white-space:nowrap}"+
+    ".srpop[hidden]{display:none}"+
+    ".srph{font-weight:700;font-size:12px;color:#66717A;margin-bottom:6px}"+
+    ".srprow{display:flex;align-items:center;gap:12px;padding:5px 0;line-height:1.6}"+
+    ".srprow .srpl{font-weight:600;margin-right:2px}"+
+    ".srprow label{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-weight:600}"+
+    ".srprow input{margin:0;accent-color:#0f766e;width:15px;height:15px}"+
+    "body.notips #gtip{display:none !important}"+
+    "body.notips .hastip::after,body.notips .hastip::before{display:none !important}"+
+    "body.notips .infotip:hover .tip{display:none}body.notips .infotip.show .tip,body.notips .infotip.show:hover .tip{display:block}";
+  document.head.appendChild(css);
+
+  var lang=document.getElementById("langBtn");
+  if(lang){
+    var wrap=document.createElement("span"); wrap.className="srpref";
+    wrap.innerHTML=
+      '<button type="button" id="srPrefBtn" aria-haspopup="true" aria-expanded="false" title="偏好設定 / Preferences" aria-label="偏好設定 / Preferences">'+
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>'+
+      '</button>'+
+      '<div class="srpop" id="srPrefPop" hidden role="dialog">'+
+        '<div class="srph"><span data-zh>偏好設定</span><span data-en>Preferences</span></div>'+
+        '<div class="srprow"><label><input type="checkbox" id="srTipsCb"><span data-zh>提示文字</span><span data-en>Tooltips</span></label></div>'+
+      '</div>';
+    lang.insertAdjacentElement("beforebegin", wrap);
+    var btn=wrap.querySelector("#srPrefBtn"), pop=wrap.querySelector("#srPrefPop"), tipsCb=wrap.querySelector("#srTipsCb");
+    function setOpen(o){ pop.hidden=!o; btn.setAttribute("aria-expanded", o?"true":"false"); }
+    btn.addEventListener("click", function(e){ e.stopPropagation(); setOpen(pop.hidden); });
+    pop.addEventListener("click", function(e){ e.stopPropagation(); });
+    document.addEventListener("click", function(){ setOpen(false); });
+    document.addEventListener("keydown", function(e){ if(e.key==="Escape") setOpen(false); });
+    if(tipsCb) tipsCb.addEventListener("change", function(){ var show=tipsCb.checked; lsSet(show?"1":"0"); applyTips(show); });
+    var saved=lsGet(), show=(saved!=="0");
+    if(tipsCb) tipsCb.checked=show;
+    applyTips(show);
+  }
+
+  new MutationObserver(function(){ syncLang(); }).observe(document.body,{attributes:true,attributeFilter:["class"]});
+  var _slRaf=0; new MutationObserver(function(){ if(_slRaf) return; _slRaf=requestAnimationFrame(function(){ _slRaf=0; syncLang(); }); }).observe(document.body,{subtree:true,attributes:true,attributeFilter:["data-tip","title","aria-label"]});   // 程式動態設定的雙語提示（如 拉高／還原）也依語言切開
+  new MutationObserver(function(){ syncLang(); }).observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
+  syncLang();
+})();
+</script>
+<script id="srMoreScript">
+/* 共用：頁首「⋯ 更多工具」選單（放在偏好設定齒輪與語言鈕之前）。新增工具只要在 ITEMS 加一筆。 */
+(function(){
+  var ITEMS=[
+    {href:"leave-one-out.html", zh:"揪出那個詞", en:"Leave-One-Out Term Test"}
+  ];
+  var lang=document.getElementById("langBtn"); if(!lang||document.querySelector(".srmore")) return;
+  var css=document.createElement("style"); css.id="srMoreStyle";
+  css.textContent=
+    ".srmore{position:relative;display:inline-flex;align-items:center;flex:none}"+
+    ".srmore>button{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;padding:0;border:1px solid var(--sh-line,#C9D2CD);border-radius:50%;background:transparent;color:var(--sh-ink,#2b3a35);cursor:pointer;box-shadow:none}"+
+    ".srmore>button:hover,.srmore>button[aria-expanded=true]{border-color:var(--sh-green,#0f766e);color:var(--sh-green-d,#0f766e);background:transparent}"+
+    ".srmore svg{width:17px;height:17px}"+
+    ".srmenu{position:absolute;z-index:10000;top:calc(100% + 8px);right:0;min-width:180px;padding:6px;background:#fff;border:1px solid #D5DCE0;border-radius:10px;box-shadow:0 8px 22px rgba(0,0,0,.16);text-align:left}"+
+    ".srmenu[hidden]{display:none}"+
+    ".srmi{display:block;padding:8px 12px;border-radius:7px;font-size:13.5px;font-weight:600;color:#23302A;text-decoration:none;white-space:nowrap;line-height:1.5}"+
+    ".srmi:hover{background:#F1F4F2;color:var(--sh-green-d,#0f766e)}"+
+    ".srmi.active{color:var(--sh-green-d,#0f766e)}"+
+    ".srmi.active::before{content:\"\";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--sh-amber,#AE7430);margin-right:8px;vertical-align:2px}";
+  document.head.appendChild(css);
+  var here=(location.pathname.split("/").pop()||"index.html").toLowerCase();
+  var w=document.createElement("span"); w.className="srmore";
+  w.innerHTML='<button type="button" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg></button>'+
+    '<div class="srmenu" hidden role="menu">'+ITEMS.map(function(it){ var on=(it.href.toLowerCase()===here);
+      return '<a class="srmi'+(on?' active':'')+'" href="'+it.href+'"'+(on?' aria-current="page"':'')+' role="menuitem"><span data-zh>'+it.zh+'</span><span data-en>'+it.en+'</span></a>'; }).join("")+'</div>';
+  (document.querySelector(".srpref")||lang).insertAdjacentElement("beforebegin", w);
+  var btn=w.querySelector("button"), menu=w.querySelector(".srmenu");
+  function isEn(){ return document.body.classList.contains("en")||document.documentElement.getAttribute("lang")==="en"; }
+  function label(){ var t=isEn()?"More tools":"更多工具"; btn.setAttribute("aria-label",t); btn.setAttribute("data-tip-zh","更多工具"); btn.setAttribute("data-tip-en","More tools"); if(!document.body.classList.contains("notips")) btn.setAttribute("title",t); }
+  function setOpen(o){
+    menu.hidden=!o; btn.setAttribute("aria-expanded",o?"true":"false");
+    if(o){ menu.style.left=""; menu.style.right=""; if(menu.getBoundingClientRect().left<6){ menu.style.right="auto"; menu.style.left="0"; } }
+  }
+  btn.addEventListener("click",function(e){ e.stopPropagation(); setOpen(menu.hidden); });
+  menu.addEventListener("click",function(e){ e.stopPropagation(); });
+  document.addEventListener("click",function(){ setOpen(false); });
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape") setOpen(false); });
+  label(); new MutationObserver(label).observe(document.body,{attributes:true,attributeFilter:["class"]});
+})();
+</script>
+</body>
+</html>
