@@ -147,6 +147,7 @@
   .tippanel li b{color:var(--sh-ink)}
   body.en .tippanel ul.blk[data-en]{display:block}
   .panel h2 .h2note{margin-left:10px;font-size:12.5px;font-weight:600;color:var(--mut)}
+  .sh-sub .subname{color:#c0392b;font-weight:700}
   .panel h2.inh{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px}
   .projbtns{display:flex;gap:4px;flex-wrap:wrap}
   .projb{display:inline-flex;align-items:center;gap:6px;background:none;border:0;padding:4px 8px;border-radius:7px;font:inherit;font-size:12.5px;font-weight:600;color:var(--sh-green-d);cursor:pointer}
@@ -185,7 +186,7 @@
   table.loo td.rk{color:var(--mut);width:28px;font-variant-numeric:tabular-nums}
   table.loo td.tm{font-family:"SF Mono",Consolas,monospace;font-size:13px;word-break:break-word}
   table.loo td.n{white-space:nowrap;width:110px}
-  table.loo td.u{width:190px}
+  table.loo td.u{width:190px;cursor:copy}
   .ubar{height:4px;background:#E6ECE8;border-radius:2px;margin-top:5px;overflow:hidden}
   .ubar i{display:block;height:100%;background:var(--sh-green);border-radius:2px}
   .upct{font-size:11.5px;color:var(--mut);margin-left:6px}
@@ -260,7 +261,7 @@
     <button class="sh-lang" id="langBtn" onclick="toggleLang()">English</button>
   </div>
 </header>
-<div class="sh-sub"><span data-zh>揪出那個詞｜抽一個字測試：借用統合分析「逐一剔除敏感度分析」（leave-one-out sensitivity analysis）的概念，每個概念逐一拿掉一個詞，看每個詞帶進多少筆、哪個詞的獨有筆數最多，能幫助剔除或保留檢索詞，平衡檢索策略之周全與精準。（PubMed 可自動取得筆數）</span><span data-en>Leave-One-Out Term Test | Borrowing the idea of the leave-one-out sensitivity analysis used in meta-analysis, it drops one term at a time from each concept to show how many records each term brings in and which adds the most unique records — helping you decide which terms to drop or keep, balancing sensitivity and precision. (PubMed counts can be fetched automatically.)</span></div>
+<div class="sh-sub"><span data-zh><b class="subname">揪出那個詞</b>：借用統合分析「逐一剔除敏感度分析」（leave-one-out sensitivity analysis）的概念，每個概念逐一拿掉一個詞，看每個詞帶進多少筆、哪個詞的獨有筆數最多，能幫助剔除或保留檢索詞，平衡檢索策略之周全與精準。（PubMed 可自動取得筆數）</span><span data-en><b class="subname">Leave-One-Out Term Test</b>: borrowing the idea of the leave-one-out sensitivity analysis used in meta-analysis, it drops one term at a time from each concept to show how many records each term brings in and which adds the most unique records — helping you decide which terms to drop or keep, balancing sensitivity and precision. (PubMed counts can be fetched automatically.)</span></div>
 <main class="pxmain">
 <div class="pxtool">
   <div class="panel">
@@ -325,7 +326,7 @@
       <h2><span data-zh>怎麼看結果</span><span data-en>Reading the results</span></h2>
       <ul class="blk" data-zh>
         <li><b>方法：</b>類似統合分析的逐一剔除敏感度分析——一次拿掉一項，看整體結果改變多少；這裡拿掉的是檢索詞，看的是筆數變化，藉此判斷每個詞對檢索結果的影響程度。</li>
-        <li><b>點擊筆數即複製：</b>點任一格筆數或[填入]，會複製那一版檢索式；手動模式貼到資料庫執行後，可人工填入筆數於該格（或資料庫畫面自行評估不回填）。</li>
+        <li><b>點擊筆數即複製：</b>點任一格筆數或<span class="fillchip">填入</span>，會複製那一版檢索式；手動模式貼到資料庫執行後，可人工填入筆數於該格（或資料庫畫面自行評估不回填）。</li>
         <li><b>單獨保留筆數：</b>這個詞所在的概念只留它，其他詞彙維持。</li>
         <li><b>抽掉後總數：</b>這個詞所在的概念拿掉它，其餘照舊。</li>
         <li><b>獨有貢獻：</b>總數 − 抽掉後總數，也就是只有這個詞才找得到的筆數。數字最大的，就是讓總數暴增的那個詞。獨有多不代表該刪，先到資料庫看那批獨有的文獻是不是雜訊，再決定刪、改寫或加限制。</li>
@@ -335,7 +336,7 @@
       </ul>
       <ul class="blk" data-en>
         <li><b>Method:</b> like a leave-one-out sensitivity analysis in meta-analysis — remove one item at a time and see how much the overall result changes; here the item is a search term and the result is the record count, showing how much each term influences the search.</li>
-        <li><b>Click a count to copy:</b> clicking any count or [enter] cell copies that search string; in manual mode, run it in the database and type the count into that cell (or just judge it on the database screen without entering it).</li>
+        <li><b>Click a count to copy:</b> clicking any count or <span class="fillchip">enter</span> cell copies that search string; in manual mode, run it in the database and type the count into that cell (or just judge it on the database screen without entering it).</li>
         <li><b>Alone:</b> only this term is kept in its concept; the other concepts stay.</li>
         <li><b>Total without:</b> this term is removed from its concept; everything else unchanged.</li>
         <li><b>Unique:</b> total − total without, i.e. records only this term finds. The largest number is the term inflating the total. A high unique count doesn’t mean the term should go — check those unique records in the database for noise first, then decide whether to drop, rewrite or restrict it.</li>
@@ -560,6 +561,12 @@ function normTerm(t){ return t.toLowerCase().replace(/["\s]+/g," ").trim(); }
 
 /* ---------- 組檢索式 ---------- */
 var P=null;   // 目前的解析結果
+// 獨有文獻：完整策略 NOT 抽掉後（Scopus 用 AND NOT）
+function notQ(a,b){
+  if(!b) return a;
+  var op=(P&&P.db==="scopus")?" AND NOT ":" NOT ";
+  return "("+a+")"+op+"("+b+")";
+}
 // 各概念以 AND 連接；第 ci 個概念可換成 alt
 function buildQ(ci,alt){
   var roots=P.concepts.map(function(c,k){ return k===ci?alt:c.root; }).filter(Boolean);
@@ -610,7 +617,7 @@ function analyse(){
       if(!w){ P.skipped.push(c.no); return; }   // 概念只剩這個詞，拿掉就沒有這個概念了：不測
       var ctx="";
       for(var k=0;k<tops.length;k++) if(hasAtom(tops[k],a)){ if(tops[k]!==a){ ctx=pr(tops[k]); P.nested++; } break; }
-      P.rows.push({i:P.rows.length, ci:ci, cno:c.no, term:a.text, aid:a.__id, key:normTerm(a.text), lid:listId.get(a), ctx:ctx, qAlone:buildQ(ci,keep(c.root,a)), qWithout:buildQ(ci,w)});
+      P.rows.push({i:P.rows.length, ci:ci, cno:c.no, term:a.text, aid:a.__id, key:normTerm(a.text), lid:listId.get(a), ctx:ctx, qAlone:buildQ(ci,keep(c.root,a)), qWithout:buildQ(ci,w), qUnique:notQ(P.qTotal,buildQ(ci,w))});
     });
   });
   P.terms=P.rows.map(function(r){ return r.term; });
@@ -725,6 +732,9 @@ function bindRows(){
   Array.prototype.forEach.call(document.querySelectorAll("table.loo tbody tr"),function(tr){
     var a=tr.getAttribute("data-a");
     tr.addEventListener("click",function(e){
+      var ut=e.target.closest("td.u");
+      if(ut){ var row=P.rows.filter(function(r){ return r.aid===a; })[0];
+        if(row) copyText(row.qUnique,null,function(){ toast(ut,T("已複製獨有文獻檢索式","Unique-records string copied")); }); }
       if(e.target.closest("input")){ SELA=a; } else SELA=(SELA===a?null:a);
       applyHl();
     });
@@ -796,7 +806,7 @@ function renderResults(){
       +((r.same&&r.ctx)?'<div class="ctx" title="'+esc(r.ctx)+'">'+T("於 ","in ")+esc(r.ctx.length>90?r.ctx.slice(0,88)+"…":r.ctx)+'</div>':'')+'</td>'
       +'<td class="n">'+cntCell(r.qAlone)+'</td>'
       +'<td class="n">'+cntCell(r.qWithout)+'</td>'
-      +'<td class="n u">'+uHtml(x,st.maxU,tot)+'</td></tr>');
+      +'<td class="n u" title="'+T("點一下複製獨有文獻的檢索式（完整策略 NOT 抽掉後）","Click to copy the unique-records string (full strategy NOT without)")+'">'+uHtml(x,st.maxU,tot)+'</td></tr>');
   });
   h.push('</tbody></table></div>');
   var zh=["點擊特定欄位標題可排序","點擊特定列可在完整檢索策略中標出該詞"],
