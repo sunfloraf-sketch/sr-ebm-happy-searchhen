@@ -111,6 +111,7 @@
   .pt-dd.alignR .pt-menu{left:auto;right:0}
   .pt-mi{display:flex;align-items:center;gap:9px;width:100%;white-space:nowrap;border:none;background:none;text-align:left;text-decoration:none;padding:9px 12px;border-radius:7px;font-size:13px;color:#25292D;cursor:pointer;font-weight:500;font-family:inherit}
   .pt-mi:hover{background:#f0f4f6}
+  body.en .pt-mi[data-en]{display:flex}   /* 英文版的「下載樣板」連結：[data-en]{display:revert} 會把它變成 inline，圖示與文字擠在一起 */
   /* 自訂組合：行號 L1、L2… 與 C／L 快速插入 */
   .ccwrap{display:flex;border:1px solid var(--line);border-radius:8px;background:#fff;overflow:hidden}
   .ccwrap:focus-within{border-color:#AAB7BC;box-shadow:0 0 0 3px rgba(127,153,149,.14)}
@@ -2437,6 +2438,33 @@ if (typeof module !== "undefined" && module.exports) {
     return { rows:out, hasCore:(col.ft>=0||col.zh>=0), hasCV:(col.cvall>=0||CV_DBS.some(function(id){return col[id]>=0;})) };
   }
   // 把多個網格依「概念代號」合併成一組列物件（AI 有時分兩表、有時一表；紀錄表為一表）
+  // Word 匯入：一格內以分號（; ；）或大寫 OR 串起的同義詞 → 拆成一行一個。
+  //   只在最外層（圓括弧與引號以外）拆，保留 (a OR b) NEAR/3 c 這類分組；整行被一對括弧包住且整格沒有鄰近／AND／NOT 時，先去掉外層括弧再拆。
+  function _synSplit(cell){
+    var t=String(cell||""); if(!/[;；]|\sOR\s/.test(t)) return t;
+    var hasOp=/\b(?:NEAR|ADJ\d*|NEXT|PRE\/\d+|AND|NOT)\b|\bW\/\d|\bN\d+\b|鄰\s*近?\s*\d|\bwithin\s+\d+\s+words?\b/.test(t);
+    function cut(s){ var parts=[], cur="", d=0, q=false;
+      for(var i=0;i<s.length;i++){ var ch=s.charAt(i);
+        if(ch==='"'||ch==='“'||ch==='”'){ q=!q; cur+=ch; continue; }
+        if(!q){ if(ch==="("||ch==="（") d++; else if((ch===")"||ch==="）")&&d>0) d--; }
+        if(!q && d===0){
+          if(ch===";"||ch==="；"){ parts.push(cur); cur=""; continue; }
+          var m=/^\s+OR\s+/.exec(s.slice(i)); if(m && /\s/.test(ch)){ parts.push(cur); cur=""; i+=m[0].length-1; continue; }
+        }
+        cur+=ch; }
+      parts.push(cur); return parts; }
+    function outer(s){ var x=s.trim(); if(x.charAt(0)!=="("||x.charAt(x.length-1)!==")") return null; var d=0;
+      for(var i=0;i<x.length;i++){ var ch=x.charAt(i); if(ch==="(") d++; else if(ch===")"){ d--; if(d===0 && i<x.length-1) return null; } }
+      return x.slice(1,-1); }
+    var out=[];
+    t.split("\n").forEach(function(line){
+      var parts=cut(line);
+      if(parts.length===1 && !hasOp){ var inner=outer(line); if(inner!=null){ var p2=cut(inner); if(p2.length>1) parts=p2; } }
+      if(parts.length===1){ out.push(line); return; }
+      parts.forEach(function(p){ p=p.trim(); if(p) out.push(p); });
+    });
+    return out.join("\n");
+  }
   function _incomingFromGrids(grids){
     var order=[], byLab={};
     grids.forEach(function(gr){ _extractRows(gr).rows.forEach(function(r){
@@ -2444,6 +2472,7 @@ if (typeof module !== "undefined" && module.exports) {
       if(!byLab[key]){ byLab[key]={label:r.label||"",zh:"",ft:"",cv:{}}; order.push(key); }
       var t=byLab[key]; if(r.zh)t.zh=r.zh; if(r.ft)t.ft=r.ft; if(r.label&&!t.label)t.label=r.label; CV_DBS.forEach(function(id){ if(r.cv&&r.cv[id])t.cv[id]=r.cv[id]; });
     }); });
+    order.forEach(function(k){ var r=byLab[k]; r.zh=_synSplit(r.zh); r.ft=_synSplit(r.ft); if(r.cv) Object.keys(r.cv).forEach(function(id){ r.cv[id]=_synSplit(r.cv[id]); }); });   // 分號／OR 串起的詞 → 一行一個（貼上與上傳 Word 共用）
     return order.map(function(k){return byLab[k];});
   }
   // 套用匯入的列：若現有表已有相同概念代號 → 併入（保留既有、補上新欄）；否則取代。回傳統計供訊息用。
@@ -2661,7 +2690,7 @@ if (typeof module !== "undefined" && module.exports) {
         var grids=_allGrids(xml,false);
         if(!grids.length){ srAlert(isEn()?"No table found in the file.":"檔案中找不到表格。"); ev.target.value=""; return; }
         var _ti=_pickSearchTable(grids); if(_ti<0) _ti=0;
-        var incoming=_incomingFromGrids([grids[_ti]]);   // 同一套：兩列式表頭、Before/After、泛用控制詞彙欄（依庫名分段）、跳過說明列、「-」視為空
+        var incoming=_incomingFromGrids([grids[_ti]]);
         if(!incoming.length){ srAlert(isEn()?"No term rows found — please check the file uses the term template.":"找不到可匯入的檢索詞列 —— 請確認檔案為檢索詞樣板格式。"); ev.target.value=""; return; }
         _applyImportedRows(incoming);
         recordDocx={ buf:buf, name:(f.name||"SR檢索紀錄表.docx") };   // 保留原檔，供回填下載

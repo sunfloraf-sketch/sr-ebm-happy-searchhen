@@ -139,6 +139,8 @@
   .pxtool{min-width:0}
   .pxside{position:sticky;top:14px}
   .pxside .panel h2{color:var(--sh-green-d)}
+  .gamelink{font-size:13px;font-weight:650;color:var(--sh-amber);text-decoration:none;white-space:nowrap}
+  .gamelink:hover{text-decoration:underline}
   .excard{display:flex;gap:11px;align-items:flex-start;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 12px;margin-top:10px;cursor:pointer;font:inherit;color:inherit;transition:border-color .15s,box-shadow .15s}
   .excard:hover{border-color:var(--sh-green);box-shadow:0 2px 10px rgba(31,69,56,.10)}
   .exn{flex:0 0 auto;font-size:12px;font-weight:700;border-radius:7px;padding:3px 9px;margin-top:1px;white-space:nowrap;background:#F1F2EF;color:#4E5752;border:1px solid #DEE1DC;min-width:82px;text-align:center;box-sizing:border-box}
@@ -294,7 +296,7 @@
     </div>
     <div class="solowrap">
       <label class="fld"><span data-zh>單獨保留（縮寫等，會以 OR 併入，多個以逗號或換行分隔）</span><span data-en>Keep separate (abbreviations; OR-ed in; comma/line separated)</span></label>
-      <textarea id="solo" spellcheck="false" placeholder="GDM" rows="2"></textarea>
+      <textarea id="solo" spellcheck="false" rows="2"></textarea>
     </div>
     <div class="hint" data-zh>提示：每堆是鄰近關係的一個位置。距離依來源資料庫自動換算（Ovid/Embase/Cochrane 需 +1）。「有次序」僅 Embase.com（NEXT）、EBSCO（W）、Scopus（PRE）支援；其餘資料庫維持無次序並於輸出加註。</div>
     <div class="hint" data-en>Tip: each stack is one position of the proximity relation. Distance is auto-adjusted per database (Ovid/Embase/Cochrane +1). Ordered proximity is only supported by Embase.com (NEXT), EBSCO (W) and Scopus (PRE); other databases stay unordered and the output says so.</div>
@@ -304,7 +306,7 @@
 </div>
   <aside class="pxside">
     <div class="panel expanel">
-      <h2><span data-zh>範例</span><span data-en>Examples</span></h2>
+      <h2 style="display:flex;align-items:baseline;justify-content:space-between;gap:10px"><span><span data-zh>範例</span><span data-en>Examples</span></span><a class="gamelink" href="proximity-game.html"><span data-zh>練習：闖關遊戲 →</span><span data-en>Practice game →</span></a></h2>
       <div class="sub"><span data-zh>點一下即載入並自動分堆</span><span data-en>Click to load and auto-split</span></div>
       <button class="excard" onclick="loadEx(2)"><span class="exn"><span data-zh>二堆</span><span data-en>2 stacks</span></span><span class="ext"><b><span data-zh>妊娠糖尿病</span><span data-en>Gestational diabetes</span> GDM</b><i><span data-zh>時期 × 疾病；縮寫 GDM 單獨保留</span><span data-en>Period × disease; abbreviation GDM kept separate</span></i></span></button>
       <button class="excard" onclick="loadEx(3)"><span class="exn"><span data-zh>二堆＋三堆</span><span data-en>2 + 3</span></span><span class="ext"><b><span data-zh>中央靜脈導管</span><span data-en>Central venous catheter</span> CVC</b><i><span data-zh>37 個詞混了品牌名、括號註記、逗號倒裝與修飾字；縮寫片語與 central line 做二堆，其餘做三堆</span><span data-en>37 terms mixing brand names, bracketed notes, inverted terms and qualifiers; abbreviation phrases + central line as 2 stacks, the rest as 3</span></i></span></button>
@@ -405,7 +407,7 @@ var EX_BY_N={
 };
 window.loadExample=function(){ beforeTa.value=EX_BY_N[nSel.value]||EX_BY_N["2"]; autoSplit(); };
 var EX_MORE={icu:{n:3,text:"ICU\nICUs\ncritical care\ncritically ill\ncritical illness\ncritically ill patient\nintensive care\nintensive therapy unit\nintensive treatment unit\nrespiratory care unit\nrespiratory care units\ncoronary care unit\nspecial care unit\nintensive care department"}};
-window.loadEx=function(n,key){ var ex=key&&EX_MORE[key]; if(ex) n=ex.n; srCount('prox-example-'+(key||n),'鄰近字-範例'+(key||n+'堆')); nSel.value=String(n); renderStacks(); beforeTa.value=ex?ex.text:EX_BY_N[String(n)]; autoSplit();
+window.loadEx=function(n,key){ var ex=key&&EX_MORE[key]; if(ex) n=ex.n; srCount('prox-example-'+(key||n),'鄰近字-範例'+(key||n+'堆')); nSel.value=String(n); renderStacks(); if(soloIn) soloIn.placeholder=""; beforeTa.value=ex?ex.text:EX_BY_N[String(n)]; autoSplit();
   if(window.innerWidth<1000){ var s1=document.getElementById("step1"); if(s1) s1.scrollIntoView({behavior:"smooth",block:"start"}); } };
 window.clearProx=function(){
   if(soloIn){ soloIn.value=""; soloIn.placeholder=""; }   // 連同 placeholder 一起清（避免殘留灰字 GDM）

@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<!--
+  SR x EBM Happy SearchHen (搜尋策略生成雞) — 鄰近字分堆闖關（遊戲版）
+  Copyright (c) 2026 Ching-Ju Fang (方靜如). All rights reserved. 著作權所有，保留一切權利。
+  使用條款 / Terms: https://github.com/sunfloraf-sketch/sr-ebm-happy-searchhen/blob/main/LICENSE
+  官方網址 / Official: https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/
+  引用 / Cite: Fang CJ, SR x EBM Happy SearchHen. doi:10.5281/zenodo.21960702
+-->
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>鄰近字分堆闖關 · Proximity Quest</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+  :root{--sh-paper:#F3F0E8;--sh-paper2:#FBF9F4;--sh-ink:#23302A;--sh-mut:#6C726B;--sh-line:#E5E0D4;--sh-green:#2A5A49;--sh-green-d:#1F4538;--sh-amber:#AE7430;--shw:1280px;
+        --card:#FFFFFF;--tile:#FFFDF8;--tileb:#D9CFBC;--ok:#2F7A55;--okbg:#E7F3EC;--bad:#B4442F;--badbg:#FBEAE5;--form:#B07420;--formbg:#FCF2E2;--s1:#3E6B8A;--s2:#7A5A9A;--s3:#2F7A6B;--s4:#9A5A3E}
+  *{box-sizing:border-box}
+  html{scrollbar-gutter:stable}
+  html,body{background:var(--sh-paper)}
+  body{margin:0;font-family:-apple-system,"Segoe UI","PingFang TC","Microsoft JhengHei","Noto Sans TC",Roboto,Arial,sans-serif;color:var(--sh-ink);line-height:1.5;font-size:15px}
+  [data-en]{display:none} body.en [data-zh]{display:none} body.en [data-en]{display:revert}
+  button{font-family:inherit}
+  /* ===== 頁頭／頁尾（與其他頁一致） ===== */
+  header.sh{background:rgba(243,240,232,.94);color:var(--sh-ink);border-bottom:1px solid var(--sh-line)}
+  header.sh .sh-in{max-width:var(--shw);margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:8px 18px;flex-wrap:wrap;min-height:64px;line-height:1.5}
+  header.sh .sh-logo{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--sh-green-d)}
+  header.sh .sh-logo svg{width:37px;height:40px;flex:0 0 auto;display:block}
+  header.sh .sh-wm{display:flex;flex-direction:column;line-height:1.12}
+  header.sh .sh-wm b{font-size:16px;font-weight:800;letter-spacing:.2px;color:var(--sh-green-d)}
+  header.sh .sh-wm i{font-style:normal;font-size:11px;color:var(--sh-mut);letter-spacing:3px}
+  header.sh .sh-sp{flex:1}
+  header.sh .sh-nav{display:flex;gap:6px 18px;flex-wrap:wrap;align-items:center}
+  header.sh a.sh-link{padding:6px 4px;color:var(--sh-ink);font-size:14px;font-weight:600;text-decoration:none;position:relative;white-space:nowrap}
+  header.sh a.sh-link:hover{color:var(--sh-amber)}
+  header.sh button.sh-lang{background:transparent;border:1px solid var(--sh-line);color:var(--sh-ink);border-radius:20px;cursor:pointer;font-size:12.5px;font-weight:600;width:80px;padding:6px 0;text-align:center}
+  header.sh button.sh-lang:hover{border-color:var(--sh-green);color:var(--sh-green-d)}
+  .sh-sub{max-width:var(--shw);margin:0 auto;padding:14px 24px 0;font-size:13px;color:var(--sh-mut)}
+  footer.shfoot{margin-top:28px;border-top:1px solid var(--sh-line);background:var(--sh-paper2)}
+  footer.shfoot .shfoot-in{max-width:var(--shw);margin:0 auto;padding:22px 24px 32px;color:var(--sh-mut);font-size:12.5px;line-height:1.7}
+  footer.shfoot p{margin:0 0 8px} footer.shfoot a{color:var(--sh-green-d)}
+  footer.shfoot .frow{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:baseline;margin-top:6px}
+  footer.shfoot .brandline{font-weight:700;color:var(--sh-ink)}
+
+  main.gm{max-width:1080px;margin:0 auto;padding:18px 24px 40px}
+  .card{background:var(--card);border:1px solid var(--sh-line);border-radius:14px;padding:18px 20px;margin-bottom:16px}
+  .btn{border:1px solid var(--sh-line);background:#fff;color:var(--sh-ink);border-radius:999px;padding:8px 16px;font-size:14px;font-weight:650;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+  .btn:hover{border-color:var(--sh-green);color:var(--sh-green-d)}
+  .btn.pri{background:var(--sh-green);border-color:var(--sh-green);color:#fff}
+  .btn.pri:hover{background:var(--sh-green-d);color:#fff}
+  .btn:disabled{opacity:.45;cursor:default}
+  .btn:focus-visible,.tile:focus-visible,.bin:focus-visible,.lvcard:focus-visible{outline:3px solid #E3B36B;outline-offset:2px}
+  .egg{display:inline-block;vertical-align:-3px}
+  .eggs{display:inline-flex;gap:3px;align-items:center}
+
+  /* ===== 關卡地圖 ===== */
+  .hero{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+  .hero .hen{width:118px;height:132px;flex:0 0 auto}
+  .hero h1{margin:0 0 6px;font-size:26px;color:var(--sh-green-d);letter-spacing:.5px}
+  .hero p{margin:0;color:var(--sh-mut);max-width:620px}
+  .howto{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}
+  .howto div{font-size:13.5px}
+  .howto b{display:block;color:var(--sh-green-d);margin-bottom:2px}
+  .maphd{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:4px 0 10px}
+  .maphd h2{margin:0;font-size:17px;color:var(--sh-green-d)}
+  .total{font-size:14px;color:var(--sh-mut);display:flex;align-items:center;gap:6px}
+  .map{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+  .lvcard{position:relative;text-align:left;background:#fff;border:1.5px solid var(--sh-line);border-radius:14px;padding:14px 14px 12px;cursor:pointer;display:flex;flex-direction:column;gap:6px;min-height:150px;transition:transform .12s, box-shadow .12s}
+  .lvcard:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(42,90,73,.12);border-color:var(--sh-green)}
+  .lvcard .no{font-size:12px;font-weight:800;color:var(--sh-amber);letter-spacing:1px}
+  .lvcard .nm{font-size:16px;font-weight:750;color:var(--sh-ink);line-height:1.3}
+  .lvcard .en2{font-size:12.5px;color:var(--sh-mut)}
+  .lvcard .tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:auto}
+  .tag{font-size:11.5px;border-radius:999px;padding:1px 8px;background:var(--sh-paper);color:var(--sh-green-d);border:1px solid var(--sh-line)}
+  .lvcard.locked{cursor:not-allowed;background:#F7F5F0;color:#A7A49C}
+  .lvcard.locked:hover{transform:none;box-shadow:none;border-color:var(--sh-line)}
+  .lvcard.locked .nm{color:#A7A49C}
+  .lvcard .lock{position:absolute;right:12px;top:12px;color:#B9B4A8}
+  .teach{font-size:12.5px;color:var(--sh-mut);display:flex;align-items:center;gap:6px;cursor:pointer}
+
+  /* ===== 關卡畫面 ===== */
+  .lvtop{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .lvtop h2{margin:0;font-size:20px;color:var(--sh-green-d)}
+  .lvtop .meta{display:flex;gap:6px;flex-wrap:wrap}
+  .lvtop .sp{flex:1}
+  .mission{display:flex;gap:16px;align-items:flex-start}
+  .mission .hen{width:60px;height:68px;flex:0 0 auto}
+  .bubble{position:relative;background:var(--sh-paper2);border:1px solid var(--sh-line);border-radius:12px;padding:10px 14px;font-size:14px;flex:1}
+  .bubble::before{content:"";position:absolute;left:-8px;top:18px;border:8px solid transparent;border-left:0;border-right-color:var(--sh-line)}
+  .bubble::after{content:"";position:absolute;left:-6px;top:19px;border:7px solid transparent;border-left:0;border-right-color:var(--sh-paper2)}
+  .before{margin-top:12px}
+  .before .lab{font-size:12.5px;font-weight:700;color:var(--sh-mut);margin-bottom:6px}
+  .phl{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+  .phl li{font-family:"SF Mono",Consolas,monospace;font-size:16px;font-weight:600;background:#F6F4EE;border:0;border-radius:10px;padding:9px 12px;display:flex;align-items:center;flex-wrap:wrap;gap:0;min-height:44px;transition:background .3s,opacity .4s,font-size .3s,padding .3s}
+  .phl .tk{display:inline-block;border:1.5px solid transparent;border-radius:7px;padding:0 1px;transition:border-color .35s,background .35s,margin .35s,padding .35s}
+  .phl .sp_{display:inline-block;width:.6em;transition:width .35s}
+  .phl .sep{display:inline-block;transition:opacity .35s,width .35s;color:var(--sh-amber)}
+  .phl.split li{gap:6px}
+  .phl.split .tk{border-color:var(--tileb);background:var(--tile);padding:1px 7px}
+  .phl.split .sp_{width:0}
+  .phl.split .sep{opacity:0;width:0;overflow:hidden}
+  .phl.done li{font-size:13px;padding:5px 10px;min-height:0;opacity:.75}
+  .phl.done .tk{padding:0 5px}
+  .phl .tk.gone{border-style:dashed;color:#857F72;background:transparent}
+  .splitbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:14px}
+  .splitbar[hidden],#playCard[hidden],#sortArea[hidden]{display:none}
+  .splitbar .btn.pri{font-size:15.5px;padding:10px 22px}
+  .splitbar .note{margin:0}
+  .flyer{position:fixed;z-index:8500;pointer-events:none;margin:0;font-family:"SF Mono",Consolas,monospace;font-size:14px;font-weight:650;background:var(--tile);border:1.5px solid var(--sh-amber);border-radius:8px;padding:1px 7px;color:var(--sh-ink);box-shadow:0 6px 14px rgba(0,0,0,.14)}
+  .tile.pending{visibility:hidden}
+  .tile .cnt{font-size:11px;font-weight:800;color:var(--sh-amber);background:#FFF1DA;border-radius:999px;padding:0 6px;line-height:1.5;font-family:-apple-system,"Segoe UI",sans-serif}
+  .tile .cnt.bump{animation:pop .3s}
+  .mission .big{display:block;font-size:17px;font-weight:800;color:var(--sh-green-d);margin-bottom:2px}
+  #sortArea{animation:pop .35s}
+  .task{position:relative;margin:16px 0 0;padding:0 2px;font-size:14px;color:var(--sh-ink)}
+  .task .big{display:block;font-size:17px;font-weight:800;color:var(--sh-green-d);margin-bottom:2px}
+
+  .bin{position:relative;border:2px dashed var(--tileb);border-radius:14px;padding:30px 10px 10px;min-height:96px;background:rgba(255,255,255,.55);display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;transition:background .12s,border-color .12s}
+  .bin .bl{position:absolute;left:10px;top:6px;font-size:12px;font-weight:800;letter-spacing:.5px;color:var(--sh-mut);pointer-events:none}
+  .bin .bl .snm{font-weight:800;letter-spacing:0;font-size:13px}
+  .bin .bl small{font-weight:600;letter-spacing:0;margin-left:5px;opacity:.85}
+  .bin,.tile,.lvcard,.btn{-webkit-tap-highlight-color:transparent}
+  .bin:focus:not(:focus-visible){outline:none}
+  .bin.over,.bin.target{background:#FFF6E6;border-color:var(--sh-amber)}
+  body.selecting .bin:not(#bin-pool){cursor:pointer}
+  #bin-pool{border:0;background:none;min-height:70px;padding-left:0;padding-right:0}
+  #bin-pool .bl{left:0}
+  #bin-pool.over,#bin-pool.target{background:#FFF6E6}
+  .stackrow{display:flex;align-items:stretch;gap:0;margin:14px 0 10px;flex-wrap:wrap}
+  .stackrow .bin{flex:1 1 160px;min-width:150px}
+  .stackrow .bin.st1{border-color:color-mix(in srgb,var(--s1) 45%,#fff)} .stackrow .bin.st1 .bl{color:var(--s1)}
+  .stackrow .bin.st2{border-color:color-mix(in srgb,var(--s2) 45%,#fff)} .stackrow .bin.st2 .bl{color:var(--s2)}
+  .stackrow .bin.st3{border-color:color-mix(in srgb,var(--s3) 45%,#fff)} .stackrow .bin.st3 .bl{color:var(--s3)}
+  .stackrow .bin.st4{border-color:color-mix(in srgb,var(--s4) 45%,#fff)} .stackrow .bin.st4 .bl{color:var(--s4)}
+  .near{flex:0 0 auto;align-self:center;margin:0 6px;font-size:12px;font-weight:800;color:var(--sh-amber);background:#FFF6E6;border:1px solid #EBCB97;border-radius:999px;padding:3px 9px;white-space:nowrap}
+  .siderow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .bin.keep .bl{color:var(--sh-green-d)}
+  .bin.drop{background:repeating-linear-gradient(135deg,rgba(255,255,255,.6) 0 10px,rgba(240,236,227,.6) 10px 20px)}
+  .bin.drop .bl{color:#8C8577}
+
+  .tile{position:relative;display:inline-flex;align-items:center;gap:6px;background:var(--tile);border:1.5px solid var(--tileb);border-bottom-width:3px;border-radius:10px;padding:6px 11px;font-family:"SF Mono",Consolas,monospace;font-size:14px;font-weight:650;color:var(--sh-ink);cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none;transition:transform .1s, box-shadow .1s}
+  .tile:hover{transform:translateY(-1px);box-shadow:0 3px 8px rgba(0,0,0,.08)}
+  .tile.sel{border-color:var(--sh-amber);box-shadow:0 0 0 3px #F6DDB2}
+  .tile.dragging{opacity:.35}
+  .tile .cut{border:0;background:#F1ECE0;border-radius:6px;font-size:12px;padding:1px 5px;cursor:pointer;color:var(--sh-amber);line-height:1.4}
+  .tile .cut:hover{background:#EBDDC2}
+  .bin.drop .tile{color:#8C8577;text-decoration:line-through;text-decoration-color:rgba(140,133,119,.5)}
+  .tile.ok{border-color:var(--ok);background:var(--okbg)}
+  .tile.bad{border-color:var(--bad);background:var(--badbg);animation:shake .38s}
+  .tile.badform{border-color:var(--form);background:var(--formbg);border-style:dashed;animation:shake .38s}
+  .tile.hinted{box-shadow:0 0 0 3px #CFE6D9}
+  .ghost{position:fixed;z-index:9000;pointer-events:none;transform:translate(-50%,-60%) rotate(-3deg);box-shadow:0 10px 24px rgba(0,0,0,.18);cursor:grabbing}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+  @keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.12);opacity:1}100%{transform:scale(1)}}
+
+  .formpop{position:absolute;z-index:8000;background:#fff;border:1px solid var(--sh-line);border-radius:12px;box-shadow:0 10px 28px rgba(0,0,0,.16);padding:8px;min-width:190px}
+  .formpop .fh{font-size:12px;color:var(--sh-mut);padding:2px 6px 6px}
+  .formpop button{display:block;width:100%;text-align:left;border:0;background:none;padding:7px 9px;border-radius:8px;font-family:"SF Mono",Consolas,monospace;font-size:14px;cursor:pointer;color:var(--sh-ink)}
+  .formpop button:hover,.formpop button.cur{background:var(--sh-paper)}
+  .formpop button.cur::after{content:" ✓";color:var(--sh-green)}
+
+  .preview{margin-top:12px;background:#1F2A25;color:#EAF2EC;border-radius:12px;padding:12px 14px}
+  .preview .ph{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12.5px;color:#B9CCC1;margin-bottom:6px}
+  .preview select{font-family:inherit;font-size:12.5px;border-radius:8px;border:1px solid #4A5D54;background:#2A3832;color:#EAF2EC;padding:3px 8px}
+  .preview code{display:block;font-family:"SF Mono",Consolas,monospace;font-size:14px;line-height:1.6;white-space:pre-wrap;word-break:break-word;min-height:1.6em}
+  .preview code .op{color:#F2C46D;font-weight:700}
+  .preview code .em{color:#7E9488}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+  .actions .sp{flex:1}
+  .fb{margin-top:12px;padding:0 2px;font-size:14px;display:none}
+  .fb.show{display:block;animation:pop .25s}
+  .fb.warn{color:#8A5A12}
+  .fb.badfb{color:#9A3A28}
+  .fb.okfb{color:var(--sh-green-d)}
+  .fb ul{margin:6px 0 0;padding-left:20px} .fb li{margin:3px 0}
+  .fb code{font-family:"SF Mono",Consolas,monospace;font-size:13px;font-weight:700}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--sh-mut);margin-top:8px}
+  .legend > span{display:inline-flex;align-items:center;gap:5px}
+  .legend i{display:inline-block;width:14px;height:10px;border-radius:3px;border:1.5px solid}
+
+  /* ===== 對話框 ===== */
+  .modal{position:fixed;inset:0;z-index:9500;background:rgba(31,42,37,.45);display:none;align-items:center;justify-content:center;padding:16px}
+  .modal.show{display:flex}
+  .dlg{background:#fff;border-radius:18px;max-width:640px;width:100%;max-height:calc(100vh - 32px);overflow:auto;padding:22px 24px;box-shadow:0 24px 60px rgba(0,0,0,.25);animation:pop .28s}
+  .dlg h3{margin:0 0 8px;font-size:19px;color:var(--sh-green-d)}
+  .dlg .q{font-size:15px;margin:6px 0 12px}
+  .opts{display:grid;gap:8px}
+  .opts button{text-align:left;border:1.5px solid var(--sh-line);background:#fff;border-radius:12px;padding:10px 14px;font-family:"SF Mono",Consolas,monospace;font-size:15px;cursor:pointer}
+  .opts button:hover:not(:disabled){border-color:var(--sh-green)}
+  .opts button.right{border-color:var(--ok);background:var(--okbg)}
+  .opts button.wrong{border-color:var(--bad);background:var(--badbg)}
+  .opts button:disabled{cursor:default}
+  .bq-code{font-family:"SF Mono",Consolas,monospace;font-size:13px;background:#1F2A25;color:#EAF2EC;border-radius:10px;padding:8px 12px;margin:0 0 12px;word-break:break-word}
+  .titles{display:grid;gap:8px}
+  .titles label{display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--sh-line);border-radius:12px;padding:10px 12px;cursor:pointer;font-size:14.5px;background:#fff}
+  .titles label:hover{border-color:var(--sh-green)}
+  .titles input{margin-top:3px;width:17px;height:17px;accent-color:var(--sh-green);flex:0 0 auto}
+  .titles .tt{flex:1}
+  .titles .tt i{font-style:italic}
+  .titles .res{display:none;font-size:13px;margin-top:4px;color:var(--sh-ink)}
+  .titles.shown label{cursor:default}
+  .titles.shown .res{display:block}
+  .titles label.right{border-color:var(--ok);background:var(--okbg)}
+  .titles label.wrong{border-color:var(--bad);background:var(--badbg)}
+  .titles .mk{font-weight:800;margin-right:4px}
+  #bonusNext[hidden],#bonusSubmit[hidden]{display:none}
+  .explain{margin-top:12px;font-size:14px;font-weight:650;color:var(--sh-green-d);display:none}
+  .explain.show{display:block}
+  .dlg .row{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+  .result-top{display:flex;gap:16px;align-items:center}
+  .result-top .hen{width:84px;height:94px;flex:0 0 auto}
+  .bigeggs{display:flex;gap:6px;margin:4px 0}
+  .bigeggs .egg{animation:pop .4s both}
+  .ans{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}
+  .ans td{border-top:1px solid var(--sh-line);padding:6px 6px;vertical-align:top}
+  .ans td:first-child{white-space:nowrap;color:var(--sh-mut);font-weight:650;width:1%}
+  .ans code{font-family:"SF Mono",Consolas,monospace;font-size:13px;word-break:break-word}
+  .dlg.wide{max-width:820px}
+  .cmp{display:none;margin-top:18px}
+  .cmp.show{display:block;animation:pop .25s}
+  .cmp h4{margin:0 0 4px;font-size:15px;color:var(--sh-green-d)}
+  .cmp p{margin:0 0 8px;font-size:13px;color:var(--sh-mut)}
+  .cmpt{width:100%;border-collapse:collapse;font-size:13px}
+  .cmpt th{text-align:left;font-size:12px;color:var(--sh-mut);font-weight:700;padding:4px 6px;border-bottom:1px solid var(--sh-line)}
+  .cmpt td{padding:6px;border-bottom:1px solid var(--sh-line);vertical-align:middle}
+  .cmpt td:first-child{font-weight:650;color:var(--sh-ink);white-space:nowrap}
+  .cmpt tr.syn td{padding-top:0;border-bottom:1px solid var(--sh-line)}
+  .cpy{border:1px solid var(--sh-line);background:#fff;border-radius:999px;padding:4px 11px;font-size:12.5px;font-weight:650;cursor:pointer;white-space:nowrap;color:var(--sh-ink)}
+  .cpy:hover{border-color:var(--sh-green);color:var(--sh-green-d)}
+  .cpy.key{background:var(--sh-green);border-color:var(--sh-green);color:#fff}
+  .cpy.key:hover{background:var(--sh-green-d);color:#fff}
+  .cpy.done{background:var(--okbg);border-color:var(--ok);color:var(--ok)}
+  .cmpt details{font-size:12px}
+  .cmpt details summary{cursor:pointer;color:var(--sh-mut)}
+  .cmpt details code{display:block;font-family:"SF Mono",Consolas,monospace;font-size:12px;margin-top:2px;word-break:break-word;white-space:pre-wrap;color:var(--sh-ink)}
+  .cmpt details code b{display:inline;margin:0;font-weight:800;color:var(--sh-green-d);font-size:inherit}
+  .cmpt details b{display:block;margin-top:6px;color:var(--sh-ink);font-size:12px}
+  @media (max-width:720px){ .cmpt th:nth-child(n+2){font-size:11px} .cpy{padding:4px 8px;font-size:12px} }
+  .learn{margin:12px 0 0;padding-left:20px;font-size:14px} .learn li{margin:4px 0}
+  .note{font-size:12.5px;color:var(--sh-mut);margin-top:8px}
+  .confetti{position:fixed;inset:0;pointer-events:none;z-index:9400;overflow:hidden}
+  .confetti span{position:absolute;top:-30px;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+
+  @media (max-width:720px){
+    main.gm{padding:14px 16px 30px}
+    .howto{grid-template-columns:1fr}
+    .siderow{grid-template-columns:1fr}
+    .stackrow{flex-direction:column}
+    .stackrow .bin{flex:1 1 auto;width:100%}
+    .near{margin:6px auto}
+    .hero .hen{width:86px;height:96px}
+    .hero h1{font-size:21px}
+  }
+  @media (prefers-reduced-motion:reduce){ *{animation:none !important;transition:none !important} }
+</style>
+</head>
+<body>
+<header class="sh">
+  <div class="sh-in">
+    <a class="sh-logo" href="index.html" aria-label="SR × EBM Happy SearchHen"><svg class="mark" viewBox="4 0 40 48" fill="none" aria-hidden="true"><path d="M24 1.8 C33.5 1.8 42.2 14.5 42.2 27 C42.2 38.6 34.4 46.2 24 46.2 C13.6 46.2 5.8 38.6 5.8 27 C5.8 14.5 14.5 1.8 24 1.8 Z" fill="#FBF9F4" stroke="#2A5A49" stroke-width="1.5"/><g transform="translate(0 3)"><path d="M19.2 34v3.6m0 0-2.4 1.7m2.4-1.7v1.9m0-1.9 2.4 1.7M25.6 33.9v3.7m0 0-2.4 1.7m2.4-1.7v1.9m0-1.9 2.4 1.7" stroke="#D98E2E" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 15c0-2.4-2-4.3-4.4-4.3-1.3 0-2.5.6-3.3 1.5-.6-1.6-2.1-2.7-3.9-2.7-1.4 0-2.6.6-3.4 1.6" stroke="#A96D55" stroke-width="1.8" stroke-linecap="round"/><path d="M17 16c-3.4 1.3-5.8 4.6-5.8 8.4 0 3.1 1.6 5.9 4 7.5 2.2 1.5 4.6 2.2 7.2 2.2 4.3 0 7.9-2.7 9.4-6.4.4-1.2.6-2.3.6-3.6 0-2.2-.8-4.2-2.1-5.7" stroke="#2A5A49" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" fill="#fff"/><path d="M30 19.5 L34.6 20.5 L30.6 22.7 Z" fill="#D98E2E" stroke="#B07420" stroke-width=".5" stroke-linejoin="round"/><circle cx="27" cy="20.2" r="1.15" fill="#2A5A49"/></g></svg><span class="sh-wm"><b>SR × EBM Happy SearchHen</b><i>搜尋策略生成雞</i></span></a>
+    <div class="sh-sp"></div>
+    <nav class="sh-nav">
+      <a class="sh-link toolbtn" href="pico-builder.html"><span data-zh>PICO 檢索策略產生器</span><span data-en>PICO Strategy Builder</span></a>
+      <a class="sh-link toolbtn" href="syntax-converter.html"><span data-zh>資料庫檢索語法轉換器</span><span data-en>Syntax Converter</span></a>
+      <a class="sh-link toolbtn active" href="proximity-builder.html" aria-current="page"><span data-zh>鄰近字分堆組合器</span><span data-en>Proximity Builder</span></a>
+      <a class="sh-link toolbtn" href="pubmed-light.html">PubMed Light ✦</a>
+    </nav>
+    <button class="sh-lang" id="langBtn" onclick="toggleLang()">English</button>
+  </div>
+</header>
+<div class="sh-sub"><span data-zh>遊戲版：把同義詞拖進詞堆、選好切截，組出正確的鄰近字檢索式</span><span data-en>Game version: drag synonyms into stacks, pick truncation, and build a correct proximity search</span></div>
+
+<main class="gm">
+  <!-- ===== 關卡地圖 ===== -->
+  <section id="scrMap">
+    <div class="card">
+      <div class="hero">
+        <svg class="hen" viewBox="9.6 11 27 33" fill="none" aria-hidden="true"><g transform="translate(0 3)"><path d="M19.2 34v3.6m0 0-2.4 1.7m2.4-1.7v1.9m0-1.9 2.4 1.7M25.6 33.9v3.7m0 0-2.4 1.7m2.4-1.7v1.9m0-1.9 2.4 1.7" stroke="#D98E2E" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 15c0-2.4-2-4.3-4.4-4.3-1.3 0-2.5.6-3.3 1.5-.6-1.6-2.1-2.7-3.9-2.7-1.4 0-2.6.6-3.4 1.6" stroke="#A96D55" stroke-width="1.8" stroke-linecap="round"/><path d="M17 16c-3.4 1.3-5.8 4.6-5.8 8.4 0 3.1 1.6 5.9 4 7.5 2.2 1.5 4.6 2.2 7.2 2.2 4.3 0 7.9-2.7 9.4-6.4.4-1.2.6-2.3.6-3.6 0-2.2-.8-4.2-2.1-5.7" stroke="#2A5A49" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" fill="#fff"/><path d="M30 19.5 L34.6 20.5 L30.6 22.7 Z" fill="#D98E2E" stroke="#B07420" stroke-width=".5" stroke-linejoin="round"/><circle cx="27" cy="20.2" r="1.15" fill="#2A5A49"/></g></svg>
+        <div>
+          <h1><span data-zh>鄰近字分堆闖關</span><span data-en>Proximity Stacking Quest</span></h1>
+          <p><span data-zh>一個詞由兩個以上的字組成時，用鄰近字可以一次涵蓋各種寫法。幫生成雞把同義詞拆成詞堆，每關收集雞蛋！</span><span data-en>When a concept is written with two or more words, proximity searching catches all its variants at once. Help SearchHen split the synonyms into stacks and collect eggs on every level!</span></p>
+        </div>
+      </div>
+      <div class="howto">
+        <div><b><span data-zh>① 拖字分堆</span><span data-en>① Drag into stacks</span></b><span data-zh>每一堆是鄰近關係的一個位置，堆內同義字用 OR 相連。也可以先點字、再點詞堆。</span><span data-en>Each stack is one position of the proximity relation; words in a stack are OR-ed. You can also tap a word, then tap a stack.</span></div>
+        <div><b><span data-zh>② 切截與取捨</span><span data-en>② Truncate or drop</span></b><span data-zh>點字上的 ✂ 選擇寫法；縮寫、單一字放「單獨保留」，重複或已被涵蓋的字丟進「不需要」。</span><span data-en>Tap ✂ on a word to pick its form. Abbreviations and one-word terms go to “Keep separate”; repeated or already-covered words go to “Not needed”.</span></div>
+        <div><b><span data-zh>③ 檢查與加分題</span><span data-en>③ Check &amp; bonus</span></b><span data-zh>一次答對得 3 顆蛋，用提示或答錯會少蛋；過關後判斷組好的檢索式「找得到哪幾篇」，全對多拿一顆金蛋。</span><span data-en>Get it right first time for 3 eggs; hints and wrong checks cost eggs. Then decide which article titles your search would find — all correct wins a golden egg.</span></div>
+      </div>
+    </div>
+    <div class="maphd">
+      <h2><span data-zh>選擇關卡</span><span data-en>Choose a level</span></h2>
+      <div class="total" id="totalEggs"></div>
+    </div>
+    <div class="map" id="map"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px">
+      <label class="teach"><input type="checkbox" id="unlockAll"><span data-zh>全部關卡開放（老師試玩）</span><span data-en>Unlock all levels (teacher preview)</span></label>
+      <button class="btn" id="resetAll" type="button"><span data-zh>清除紀錄</span><span data-en>Reset progress</span></button>
+    </div>
+  </section>
+
+  <!-- ===== 關卡畫面 ===== -->
+  <section id="scrLevel" hidden>
+    <div class="lvtop">
+      <button class="btn" id="backMap" type="button">← <span data-zh>關卡</span><span data-en>Levels</span></button>
+      <h2 id="lvTitle"></h2>
+      <div class="meta" id="lvMeta"></div>
+      <div class="sp"></div>
+      <div class="total" id="lvEggs"></div>
+    </div>
+    <div class="card">
+      <div class="mission">
+        <svg class="hen" viewBox="9.6 11 27 33" fill="none" aria-hidden="true"><g transform="translate(0 3)"><path d="M19.2 34v3.6m0 0-2.4 1.7m2.4-1.7v1.9m0-1.9 2.4 1.7M25.6 33.9v3.7m0 0-2.4 1.7m2.4-1.7v1.9m0-1.9 2.4 1.7" stroke="#D98E2E" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 15c0-2.4-2-4.3-4.4-4.3-1.3 0-2.5.6-3.3 1.5-.6-1.6-2.1-2.7-3.9-2.7-1.4 0-2.6.6-3.4 1.6" stroke="#A96D55" stroke-width="1.8" stroke-linecap="round"/><path d="M17 16c-3.4 1.3-5.8 4.6-5.8 8.4 0 3.1 1.6 5.9 4 7.5 2.2 1.5 4.6 2.2 7.2 2.2 4.3 0 7.9-2.7 9.4-6.4.4-1.2.6-2.3.6-3.6 0-2.2-.8-4.2-2.1-5.7" stroke="#2A5A49" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" fill="#fff"/><path d="M30 19.5 L34.6 20.5 L30.6 22.7 Z" fill="#D98E2E" stroke="#B07420" stroke-width=".5" stroke-linejoin="round"/><circle cx="27" cy="20.2" r="1.15" fill="#2A5A49"/></g></svg>
+        <div class="bubble" id="lvMission"></div>
+      </div>
+      <div class="before">
+        <div class="lab"><span data-zh>同義詞清單（Before）</span><span data-en>Synonym list (Before)</span></div>
+        <ol class="phl" id="lvBefore"></ol>
+      </div>
+      <div class="splitbar" id="splitBar">
+        <button class="btn pri" id="splitBtn" type="button">✂ <span data-zh>拆成單字</span><span data-en>Split into words</span></button>
+        <span class="note"><span data-zh>每個同義詞會拆成一個個單字，相同的字合併，數字表示出現在幾個同義詞裡。</span><span data-en>Each synonym is broken into single words; identical words merge, and the number shows how many synonyms contain it.</span></span>
+      </div>
+    </div>
+
+    <div class="card" id="playCard">
+      <div class="bin" id="bin-pool" data-bin="pool" tabindex="0" aria-label="字庫 / Word pool"><span class="bl"><span data-zh>字庫</span><span data-en>Word pool</span><small><span data-zh>拖曳或點選</span><span data-en>drag or tap</span></small></span></div>
+      <div id="sortArea">
+      <div class="task" id="sortTask"></div>
+      <div class="stackrow" id="stackRow"></div>
+      <div class="siderow">
+        <div class="bin keep" id="bin-keep" data-bin="keep" tabindex="0"><span class="bl"><span data-zh>單獨保留</span><span data-en>Keep separate</span><small><span data-zh>縮寫、單一字、品牌名：以 OR 併入</span><span data-en>abbreviations, one-word terms, brands: OR-ed in</span></small></span></div>
+        <div class="bin drop" id="bin-drop" data-bin="drop" tabindex="0"><span class="bl"><span data-zh>不需要</span><span data-en>Not needed</span><small><span data-zh>贅字、重複、已被涵蓋</span><span data-en>filler words, repeats, already covered</span></small></span></div>
+      </div>
+      <div class="legend">
+        <span><i style="border-color:var(--ok);background:var(--okbg)"></i><span data-zh>正確</span><span data-en>Correct</span></span>
+        <span><i style="border-color:var(--bad);background:var(--badbg)"></i><span data-zh>放錯位置</span><span data-en>Wrong place</span></span>
+        <span><i style="border-color:var(--form);background:var(--formbg);border-style:dashed"></i><span data-zh>位置對，切截再想想</span><span data-en>Right place, rethink the form</span></span>
+      </div>
+
+      <div class="preview">
+        <div class="ph"><span data-zh>即時檢索式（未加欄位）</span><span data-en>Live search string (no field tags)</span><select id="pvDb" aria-label="Database"></select></div>
+        <code id="pvCode"></code>
+      </div>
+
+      <div class="actions">
+        <button class="btn" id="hintBtn" type="button">💡 <span data-zh>提示</span><span data-en>Hint</span></button>
+        <button class="btn" id="resetLv" type="button">↺ <span data-zh>重來</span><span data-en>Restart</span></button>
+        <div class="sp"></div>
+        <button class="btn pri" id="checkBtn" type="button"><span data-zh>檢查答案</span><span data-en>Check</span></button>
+      </div>
+      <div class="fb" id="fb" role="status" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- 加分題 -->
+<div class="modal" id="mBonus" role="dialog" aria-modal="true" aria-labelledby="bonusH">
+  <div class="dlg">
+    <h3 id="bonusH">🥚 <span data-zh>金蛋加分題</span><span data-en>Golden-egg bonus</span></h3>
+    <div class="q" id="bonusQ"></div>
+    <div class="bq-code" id="bonusCode"></div>
+    <div class="titles" id="bonusOpts"></div>
+    <div class="explain" id="bonusEx"></div>
+    <div class="row"><button class="btn" id="bonusSubmit" type="button"><span data-zh>送出</span><span data-en>Submit</span></button><button class="btn pri" id="bonusNext" type="button" hidden><span data-zh>看結果</span><span data-en>See results</span></button></div>
+  </div>
+</div>
+<!-- 過關 -->
+<div class="modal" id="mDone" role="dialog" aria-modal="true" aria-labelledby="doneH">
+  <div class="dlg wide">
+    <div class="result-top">
+      <svg class="hen" viewBox="9.6 11 27 33" fill="none" aria-hidden="true"><g transform="translate(0 3)"><path d="M19.2 34v3.6m0 0-2.4 1.7m2.4-1.7v1.9m0-1.9 2.4 1.7M25.6 33.9v3.7m0 0-2.4 1.7m2.4-1.7v1.9m0-1.9 2.4 1.7" stroke="#D98E2E" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 15c0-2.4-2-4.3-4.4-4.3-1.3 0-2.5.6-3.3 1.5-.6-1.6-2.1-2.7-3.9-2.7-1.4 0-2.6.6-3.4 1.6" stroke="#A96D55" stroke-width="1.8" stroke-linecap="round"/><path d="M17 16c-3.4 1.3-5.8 4.6-5.8 8.4 0 3.1 1.6 5.9 4 7.5 2.2 1.5 4.6 2.2 7.2 2.2 4.3 0 7.9-2.7 9.4-6.4.4-1.2.6-2.3.6-3.6 0-2.2-.8-4.2-2.1-5.7" stroke="#2A5A49" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" fill="#fff"/><path d="M30 19.5 L34.6 20.5 L30.6 22.7 Z" fill="#D98E2E" stroke="#B07420" stroke-width=".5" stroke-linejoin="round"/><circle cx="27" cy="20.2" r="1.15" fill="#2A5A49"/></g></svg>
+      <div>
+        <h3 id="doneH"></h3>
+        <div class="bigeggs" id="doneEggs"></div>
+        <div class="note" id="doneNote"></div>
+      </div>
+    </div>
+    <ul class="learn" id="doneLearn"></ul>
+    <table class="ans" id="doneAns"></table>
+    <div class="note"><span data-zh>PubMed 的鄰近字（[tiab:~N]）不支援切截，需展開成片語組合，請用正式的「鄰近字分堆組合器」產生。</span><span data-en>PubMed proximity ([tiab:~N]) doesn’t support truncation and must be expanded into phrase combinations — use the full Proximity Builder for that.</span></div>
+    <div class="cmp" id="cmpBox"></div>
+    <div class="row">
+      <button class="btn" id="cmpBtn" type="button" style="margin-right:auto">🔍 <span data-zh>實際檢索</span><span data-en>Try it for real</span></button>
+      <button class="btn" id="doneReplay" type="button">↺ <span data-zh>再玩一次</span><span data-en>Play again</span></button>
+      <button class="btn" id="doneMap" type="button"><span data-zh>回關卡</span><span data-en>Levels</span></button>
+      <button class="btn pri" id="doneNextLv" type="button"><span data-zh>下一關 →</span><span data-en>Next level →</span></button>
+    </div>
+  </div>
+</div>
+
+<footer class="shfoot"><div class="shfoot-in">
+  <p><span data-zh>此工具為純網頁程式，未使用到AI運作，僅在您的瀏覽器本機執行與暫存，不會上傳任何研究資料到網路。遊戲題目為教學示範，實際檢索請依研究主題調整。</span>
+    <span data-en>A pure web-based tool with no AI — it runs and is cached entirely in your browser and never uploads any of your research data. Game items are teaching examples — adapt real searches to your own topic.</span></p>
+  <p><span data-zh>工具引用：方靜如，SR x EBM Happy SearchHen 搜尋策略生成雞。<br>Fang CJ, SR x EBM Happy SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/</a><br></span>
+    <span data-en>Cite this tool: Fang CJ, SR x EBM Happy SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/</a></span></p>
+  <div class="frow"><span class="brandline">SR × EBM Happy SearchHen　搜尋策略生成雞</span><span>© 2026 Ching-Ju Fang <a href="https://orcid.org/0000-0002-7892-8840" target="_blank" rel="noopener" title="ORCID iD" style="text-decoration:none;white-space:nowrap;color:inherit" onclick="try{if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:'author-orcid',title:'作者-ORCID',event:true})}catch(e){}"><svg width="13" height="13" viewBox="0 0 256 256" style="vertical-align:-2px;margin-right:3px" aria-hidden="true"><circle cx="128" cy="128" r="128" fill="#A6CE39"/><g fill="#fff"><path d="M86.3 186.2H70.9V79.1h15.4v107.1z"/><path d="M108.9 79.1h41.6c39.6 0 57 28.3 57 53.6 0 27.5-21.5 53.6-56.8 53.6h-41.8V79.1zm15.4 93.3h24.5c34.9 0 42.9-26.5 42.9-39.7 0-21.5-13.7-39.7-43.7-39.7h-23.7v79.4z"/><circle cx="78.6" cy="56.8" r="10.1"/></g></svg>https://orcid.org/0000-0002-7892-8840</a> · All rights reserved · <a href="https://github.com/sunfloraf-sketch/sr-ebm-happy-searchhen/blob/main/LICENSE" target="_blank" rel="noopener"><span data-zh>使用條款</span><span data-en>Terms of use</span></a> · v3.2.7</span></div>
+</div></footer>
+
+<script>
+(function(){
+"use strict";
+function isEn(){ return document.body.classList.contains("en"); }
+function T(zh,en){ return isEn()?en:zh; }
+function L(o){ return o? (isEn()?o.en:o.zh) : ""; }
+function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+function $(id){ return document.getElementById(id); }
+
+/* ---------- 資料庫鄰近運算子（與鄰近字組合器相同：Embase／Ovid／Cochrane 需 +1） ---------- */
+var DBS=["embase","ovid","cochrane","ebsco","wos","scopus"];
+var DB_LABEL={embase:"Embase.com",ovid:"Ovid (MEDLINE/Embase)",cochrane:"Cochrane Library",ebsco:"EBSCOhost (CINAHL)",wos:"Web of Science",scopus:"Scopus"};
+var PROX={embase:{tpl:"NEAR/%N",off:1},ovid:{tpl:"ADJ%N",off:1},cochrane:{tpl:"NEAR/%N",off:1},ebsco:{tpl:"N%N",off:0},wos:{tpl:"NEAR/%N",off:0},scopus:{tpl:"W/%N",off:0}};
+function opFor(db,n){ var p=PROX[db]; return p.tpl.replace("%N", String(n+p.off)); }
+
+/* ---------- 關卡 ----------
+   tiles: w＝字、bin＝正確位置（s1..s4／keep／drop）、forms＝可選寫法、ok＝可接受的寫法索引、why＝說明 */
+var LEVELS=[
+ { id:"hand", n:2, stacks:2, stackNames:[{zh:"手",en:"Hand"},{zh:"清潔方式",en:"Cleaning"}],
+   name:{zh:"手部衛生",en:"Hand hygiene"},
+   mission:{zh:"把同義詞拆成「手」×「清潔方式」兩堆。合成一個字的詞放「單獨保留」，重複或已被涵蓋的字丟進「不需要」。放進詞堆的字可以點 ✂ 選寫法——注意短字怎麼處理。",en:"Split the synonyms into two stacks: hand × cleaning. Put words written as one in “Keep separate” and drop repeated or already-covered words. Tap ✂ on a stacked word to choose its form — watch out for short words."},
+   before:["hand hygiene","hand washing","washing hands","hand cleansing","hand disinfection","hand antisepsis","hand-washing","handwashing"],
+   tiles:[
+    {w:"hand",okWith:{f:[0],w:["hands"]},bin:"s1",forms:["hand","hand*","hand OR hands"],ok:[2],why:{zh:"4 個字母以內的短字不切截，改補複數：hand* 會找到 handle、handicap。",en:"Don’t truncate words of 4 letters or fewer — add the plural instead: hand* finds handle and handicap."}},
+    {w:"hands",alt:"hand",bin:"drop",forms:["hands"],ok:[0],why:{zh:"hand 寫成 hand OR hands 時就不用再列；或把 hand、hands 兩張都放進同一堆也可以。",en:"Not needed once hand is written as hand OR hands — or put both hand and hands in the same stack."}},
+    {w:"hygiene",bin:"s2",forms:["hygiene","hygien*"],ok:[0,1],why:{zh:"hygiene 或 hygien*（含 hygienic）都可以。",en:"Either hygiene or hygien* (adds hygienic) works."}},
+    {w:"washing",bin:"s2",forms:["washing","wash*"],ok:[1],why:{zh:"wash* 涵蓋 wash、washes、washing。",en:"wash* covers wash, washes, washing."}},
+    {w:"cleansing",bin:"s2",forms:["cleansing","cleans*","clean*"],ok:[1,2],why:{zh:"cleans* 涵蓋 cleanse、cleansing、cleanser；clean* 範圍更廣，連 cleaning 也找得到，兩者都可以。",en:"cleans* covers cleanse, cleansing, cleanser; clean* is broader and also finds cleaning — either works."}},
+    {w:"disinfection",bin:"s2",forms:["disinfection","disinfect*"],ok:[1],why:{zh:"disinfect* 涵蓋 disinfection、disinfectant。",en:"disinfect* covers disinfection and disinfectant."}},
+    {w:"antisepsis",bin:"s2",forms:["antisepsis","antisep*","anti*"],ok:[1],why:{zh:"antisep* 涵蓋 antisepsis、antiseptic；anti* 會找到所有 anti- 開頭的字。",en:"antisep* covers antisepsis and antiseptic; anti* finds every anti- word."}},
+    {w:"handwashing",bin:"keep",forms:["handwashing","handwash*"],ok:[1],why:{zh:"合成一個字就拆不開，無法鄰近，單獨保留：handwash*。",en:"A compound written as one word can’t be split for proximity — keep it separate: handwash*."}}
+   ],
+   learn:[{zh:"短字（4 個字母以內）不切截，改補複數：hand OR hands。",en:"Short words (4 letters or fewer) aren’t truncated; add the plural: hand OR hands."},
+          {zh:"連字號視為空格：hand-washing 拆開就是 hand washing，已被 hand 鄰近 wash* 涵蓋。",en:"A hyphen counts as a space: hand-washing splits into hand washing, already covered by hand near wash*."},
+          {zh:"合成一字（handwashing）無法鄰近，單獨保留。",en:"A one-word compound (handwashing) can’t use proximity — keep it separate."}],
+   bonus:{titles:[
+     {t:"Washing of hands among nurses",hit:true,why:{zh:"washing 和 hands 中間只夾 of 1 個字；鄰近不限順序。",en:"Only one word (of) sits between washing and hands, in any order."}},
+     {t:"Handwashing compliance in intensive care units",hit:true,why:{zh:"handwash* 單獨保留，直接找到。",en:"handwash* is kept separate and matches directly."}},
+     {t:"Hand-held devices for disinfection monitoring",hit:false,why:{zh:"連字號當空格：hand 和 disinfection 中間夾 held、devices、for 3 個字，超過「鄰 2」——這正是鄰近字擋掉的雜訊。",en:"With the hyphen as a space, three words (held, devices, for) sit between hand and disinfection — more than “within 2”. Proximity keeps this noise out."}},
+     {t:"Hand rub with alcohol",hit:false,why:{zh:"rub 不在任何一堆裡，所以找不到；要找 hand rub，得把 rub 加進第二堆。",en:"rub isn’t in any stack, so it’s missed — add rub to stack 2 to catch hand rub."}}]}
+ },
+ { id:"gdm", n:3, stacks:2, stackNames:[{zh:"懷孕／母親",en:"Pregnancy / mother"},{zh:"疾病",en:"Disease"}],
+   name:{zh:"妊娠糖尿病",en:"Gestational diabetes"},
+   mission:{zh:"把同義詞拆成「懷孕／母親」×「疾病」兩堆。獨立的縮寫放「單獨保留」，夾在中間、重複或已被涵蓋的字丟進「不需要」。放進詞堆的字可以點 ✂ 選寫法。",
+            en:"Split the synonyms into two stacks: pregnancy/mother × disease. Put stand-alone abbreviations in “Keep separate” and drop words that sit in between, repeat or are already covered. Tap ✂ on a stacked word to choose its form."},
+   before:["gestational diabetes","gestational diabetes mellitus","gestational DM","pregnancy diabetes","pregnancy-induced diabetes","diabetes in pregnancy","maternal diabetes mellitus","diabetic mother","GDM"],
+   tiles:[
+    {w:"gestational",bin:"s1",forms:["gestational","gestation*","gest*"],ok:[1],why:{zh:"gestation* 同時找到 gestation、gestational；gest* 太短，會帶進 gesture。",en:"gestation* finds gestation and gestational; gest* is too short and pulls in gesture."}},
+    {w:"pregnancy",bin:"s1",forms:["pregnancy","pregnan*","preg*"],ok:[1],why:{zh:"pregnan* 涵蓋 pregnancy、pregnant、pregnancies；preg* 太短。",en:"pregnan* covers pregnancy, pregnant, pregnancies; preg* is too short."}},
+    {w:"maternal",bin:"s1",forms:["maternal","matern*","mater*"],ok:[1],why:{zh:"matern* 涵蓋 maternal、maternity；mater* 太短，會帶進 material。",en:"matern* covers maternal and maternity; mater* is too short and pulls in material."}},
+    {w:"mother",bin:"s1",forms:["mother","mother*","mother OR mothers"],ok:[1,2],why:{zh:"diabetic mother 的 mother 和懷孕同一堆；mother* 或 mother OR mothers 都可以。鄰近不限順序，mother 在後面也找得到。",en:"In diabetic mother, mother belongs with pregnancy; mother* or mother OR mothers both work. Proximity is unordered, so mother coming second is fine."}},
+    {w:"diabetes",okWith:{f:[0],w:["diabetic"]},bin:"s2",forms:["diabetes","diabet*"],ok:[1],why:{zh:"diabet* 同時找到 diabetes、diabetic。",en:"diabet* finds both diabetes and diabetic."}},
+    {w:"DM",bin:"s2",forms:["DM","DM*"],ok:[0],why:{zh:"gestational DM 的 DM 是 diabetes mellitus 的縮寫，要放進疾病那一堆才會和 gestation* 鄰近；單獨保留會找到大量無關的 DM。",en:"In gestational DM, DM stands for diabetes mellitus — put it in the disease stack so it sits near gestation*; on its own DM retrieves a lot of noise."}},
+    {w:"diabetic",alt:"diabetes",bin:"drop",forms:["diabetic"],ok:[0],why:{zh:"diabetes 寫成 diabet* 時已涵蓋 diabetic；或 diabetes、diabetic 兩張都放疾病那一堆。",en:"diabet* already covers diabetic — or put both diabetes and diabetic in the disease stack."}},
+    {w:"mellitus",bin:"drop",forms:["mellitus"],ok:[0],why:{zh:"gestational diabetes mellitus 已被「gestation* 鄰近 diabet*」涵蓋，mellitus 不用列。",en:"gestational diabetes mellitus is already caught by gestation* near diabet*, so mellitus isn’t needed."}},
+    {w:"induced",bin:"drop",forms:["induced"],ok:[0],why:{zh:"pregnancy-induced diabetes 的 induced 夾在中間，鄰近距離已涵蓋（連字號視為空格）。",en:"In pregnancy-induced diabetes, induced sits in between and the distance already covers it (hyphens count as spaces)."}},
+    {w:"in",bin:"drop",forms:["in"],ok:[0],why:{zh:"in 是贅字；鄰近不限前後順序，diabetes in pregnancy 自然會找到。",en:"in is a filler word; unordered proximity finds diabetes in pregnancy anyway."}},
+    {w:"GDM",bin:"keep",forms:["GDM"],ok:[0],why:{zh:"縮寫無法參與鄰近，單獨以 OR 併入。",en:"An abbreviation can’t take part in proximity, so it is OR-ed in on its own."}}
+   ],
+   learn:[{zh:"每一堆是鄰近關係的一個位置；堆內同義字用 OR 相連。",en:"Each stack is one position of the proximity relation; synonyms inside a stack are OR-ed."},
+          {zh:"夾在中間的字（mellitus、induced、in）不用列出，鄰近距離已涵蓋。",en:"Words in between (mellitus, induced, in) need not be listed — the distance covers them."},
+          {zh:"獨立的縮寫（GDM）以 OR 單獨併入；詞中的縮寫（gestational DM 的 DM）要放進對應的堆。",en:"A stand-alone abbreviation (GDM) is OR-ed in; an abbreviation inside a term (DM in gestational DM) goes into its stack."},
+          {zh:"同一個概念換個說法（maternal、mother）也要放進同一堆。",en:"Other wordings of the same idea (maternal, mother) go into the same stack."}],
+   bonus:{titles:[
+     {t:"Diabetes during gestation and neonatal outcomes",hit:true,why:{zh:"diabetes 和 gestation 中間只夾 during 1 個字；鄰近不限前後順序。",en:"Only one word (during) sits between diabetes and gestation, and proximity is unordered."}},
+     {t:"Maternal obesity, physical activity and the risk of type 2 diabetes",hit:false,why:{zh:"maternal 和 diabetes 中間夾了 9 個字，超過「鄰 3」。",en:"Nine words sit between maternal and diabetes — more than “within 3”."}},
+     {t:"Gestagen therapy in diabetic women",hit:false,why:{zh:"gestagen 不是 gestation*（字根不同）；若切成 gest* 就會誤找到它。",en:"gestagen doesn’t match gestation* (different stem) — a short gest* would have pulled it in."}},
+     {t:"GDM screening in primary care",hit:true,why:{zh:"GDM 單獨保留，以 OR 併入，直接找到。",en:"GDM is OR-ed in on its own, so it matches directly."}}]}
+ },
+ { id:"icu", n:1, stacks:3, stackNames:[{zh:"加護／重症",en:"Intensive / critical"},{zh:"照護／治療",en:"Care / therapy"},{zh:"病房",en:"Unit"}],
+   name:{zh:"加護病房",en:"Intensive care unit"},
+   mission:{zh:"三個字的詞就做三堆：「加護／重症」×「照護／治療」×「病房」。小心太短的切截。",en:"Three-word terms make three stacks: intensive/critical × care/therapy × unit. Careful with short truncations."},
+   before:["intensive care unit","intensive care units","critical care unit","intensive therapy unit","ICU","ICUs"],
+   tiles:[
+    {w:"intensive",bin:"s1",forms:["intensive","intensiv*"],ok:[0,1],why:{zh:"intensive 或 intensiv* 都可以。",en:"intensive or intensiv* both work."}},
+    {w:"critical",bin:"s1",forms:["critical","critic*"],ok:[0],why:{zh:"critic* 會找到 critic、criticism，不要切。",en:"critic* finds critic and criticism — don’t truncate."}},
+    {w:"care",bin:"s2",forms:["care","care*","care OR cares"],ok:[0,2],why:{zh:"care* 會找到 career、careful；保留 care 即可。",en:"care* finds career and careful; keep care as is."}},
+    {w:"therapy",bin:"s2",forms:["therapy","therap*"],ok:[1],why:{zh:"therap* 涵蓋 therapy、therapies、therapeutic。",en:"therap* covers therapy, therapies, therapeutic."}},
+    {w:"unit",okWith:{f:[0],w:["units"]},bin:"s3",forms:["unit","unit*","unit OR units"],ok:[2],why:{zh:"unit* 會找到 united、unity；短字改補複數 unit OR units。",en:"unit* finds united and unity; use unit OR units for short words."}},
+    {w:"units",alt:"unit",bin:"drop",forms:["units"],ok:[0],why:{zh:"unit 寫成 unit OR units 時就不用再列；或 unit、units 兩張都放同一堆。",en:"Not needed once unit is written as unit OR units — or put both in the same stack."}},
+    {w:"ICU",okWith:{f:[0],w:["ICUs"]},bin:"keep",forms:["ICU","ICU OR ICUs"],ok:[1],why:{zh:"縮寫單獨保留，並補上複數 ICUs。",en:"Keep the abbreviation separate and add the plural ICUs."}},
+    {w:"ICUs",alt:"ICU",bin:"drop",forms:["ICUs"],ok:[0],why:{zh:"ICU 寫成 ICU OR ICUs 時就不用再列；或 ICU、ICUs 兩張都放「單獨保留」。",en:"Not needed once ICU is written as ICU OR ICUs — or put both in “Keep separate”."}}
+   ],
+   learn:[{zh:"三個字的詞做三堆，每一堆是一個位置。",en:"A three-word term makes three stacks — one per position."},
+          {zh:"care*、unit* 會帶進 career、united：短字補複數比切截安全。",en:"care* and unit* pull in career and united: adding plurals is safer for short words."},
+          {zh:"同一個字的單複數只放一次，其餘丟進「不需要」。",en:"Put singular/plural of a word in once; drop the rest."}],
+   bonus:{titles:[
+     {t:"Critical care units in rural hospitals",hit:true,why:{zh:"critical、care、units 三個字緊鄰，三堆都找到。",en:"critical, care and units sit side by side — all three stacks match."}},
+     {t:"Intensive nursing care in a neonatal unit",hit:false,why:{zh:"intensive 到 care 夾 1 個字可以，但 care 到 unit 夾了 3 個字，超過「鄰 1」。",en:"intensive–care (1 word between) is fine, but care–unit has 3 words between — more than “within 1”."}},
+     {t:"Mortality in ICUs",hit:true,why:{zh:"ICUs 單獨保留，直接找到。",en:"ICUs is kept separate and matches directly."}},
+     {t:"Intensive care of critically ill patients",hit:false,why:{zh:"沒有 unit 這一堆的字；三堆都要有字才算命中。",en:"No word from the unit stack — all three stacks must match."}}]}
+ },
+ { id:"copd", n:1, stacks:4, stackNames:[{zh:"慢性",en:"Chronic"},{zh:"阻塞",en:"Obstructive"},{zh:"肺／呼吸道",en:"Lung / airway"},{zh:"疾病",en:"Disease"}],
+   name:{zh:"慢性阻塞性肺病",en:"Chronic obstructive pulmonary disease"},
+   mission:{zh:"四個字、四堆：「慢性」×「阻塞」×「肺／呼吸道」×「疾病」。器官那一堆的同義字最多！",en:"Four words, four stacks: chronic × obstructive × lung/airway × disease. The organ stack has the most synonyms!"},
+   before:["chronic obstructive pulmonary disease","chronic obstructive pulmonary diseases","chronic obstructive lung disease","chronic obstructive airway disease","chronic obstructive respiratory disease","COPD","COAD"],
+   tiles:[
+    {w:"chronic",bin:"s1",forms:["chronic","chronic*"],ok:[0,1],why:{zh:"chronic 或 chronic*（含 chronically）都可以。",en:"chronic or chronic* (adds chronically) both work."}},
+    {w:"obstructive",bin:"s2",forms:["obstructive","obstruct*"],ok:[1],why:{zh:"obstruct* 涵蓋 obstructive、obstruction。",en:"obstruct* covers obstructive and obstruction."}},
+    {w:"pulmonary",bin:"s3",forms:["pulmonary","pulmon*"],ok:[0,1],why:{zh:"pulmonary 或 pulmon* 都可以。",en:"pulmonary or pulmon* both work."}},
+    {w:"lung",bin:"s3",forms:["lung","lung*","lung OR lungs"],ok:[1,2],why:{zh:"lung* 或 lung OR lungs 都可以（lung* 雜訊不多）。",en:"lung* or lung OR lungs both work (lung* adds little noise)."}},
+    {w:"airway",bin:"s3",forms:["airway","airway*"],ok:[1],why:{zh:"airway* 同時找到 airways。",en:"airway* also finds airways."}},
+    {w:"respiratory",bin:"s3",forms:["respiratory","respirat*","resp*"],ok:[1],why:{zh:"respirat* 涵蓋 respiratory、respiration；resp* 太短。",en:"respirat* covers respiratory and respiration; resp* is too short."}},
+    {w:"disease",okWith:{f:[0],w:["diseases"]},bin:"s4",forms:["disease","disease*"],ok:[1],why:{zh:"disease* 同時找到 diseases。",en:"disease* also finds diseases."}},
+    {w:"diseases",alt:"disease",bin:"drop",forms:["diseases"],ok:[0],why:{zh:"disease* 已涵蓋；或 disease、diseases 兩張都放同一堆。",en:"Covered by disease* — or put both disease and diseases in the same stack."}},
+    {w:"COPD",bin:"keep",forms:["COPD"],ok:[0],why:{zh:"縮寫單獨保留。",en:"Keep the abbreviation separate."}},
+    {w:"COAD",bin:"keep",forms:["COAD"],ok:[0],why:{zh:"舊縮寫（chronic obstructive airway disease）也別漏。",en:"Don’t miss the older abbreviation (chronic obstructive airway disease)."}}
+   ],
+   learn:[{zh:"器官那堆最豐富：pulmonary／lung／airway／respiratory。",en:"The organ stack is the richest: pulmonary / lung / airway / respiratory."},
+          {zh:"整堆只有泛用詞（disease）時，可考慮拿掉那一堆來放寬檢索。",en:"If a stack holds only a generic word (disease), consider removing it to broaden the search."},
+          {zh:"COAD 這類舊縮寫也要列。",en:"List older abbreviations such as COAD too."}],
+   bonus:{titles:[
+     {t:"Chronic obstructive lung diseases in smokers",hit:true,why:{zh:"四堆各有一個字且彼此緊鄰（lung*、disease*）。",en:"Each of the four stacks matches and the words sit side by side (lung*, disease*)."}},
+     {t:"Chronic airway obstruction",hit:false,why:{zh:"沒有 disease 那一堆的字。整堆只有泛用詞時，可考慮拿掉那一堆來放寬。",en:"No word from the disease stack. When a stack holds only a generic word, consider removing it to broaden the search."}},
+     {t:"COPD exacerbations",hit:true,why:{zh:"COPD 單獨保留，直接找到。",en:"COPD is kept separate and matches directly."}},
+     {t:"Chronic lung disease of prematurity",hit:false,why:{zh:"少了 obstruct* 那一堆，這是另一種疾病，不找到正好。",en:"The obstruct* stack is missing — it’s a different disease, so missing it is right."}}]}
+ },
+ { id:"cvc", n:2, stacks:3, stackNames:[{zh:"中央",en:"Central"},{zh:"靜脈",en:"Vein"},{zh:"器材",en:"Device"}],
+   name:{zh:"中央靜脈導管",en:"Central venous catheter"},
+   mission:{zh:"最終關！清單裡混了品牌名、逗號倒裝、靜脈的形容詞與名詞，以及不同的器材說法。「中央」×「靜脈」×「器材」三堆。",en:"Final level! The list mixes a brand name, an inverted term, adjective and noun forms of vein, and different device words. Three stacks: central × vein × device."},
+   before:["central venous catheter","central venous catheters","central vein catheter","central intravenous catheter","central venous line","central venous access device","catheterization, central venous","Hickman catheter","CVC"],
+   tiles:[
+    {w:"central",bin:"s1",forms:["central","centr*"],ok:[0],why:{zh:"centr* 會帶進 centrifuge 等字，central 不切。",en:"centr* pulls in centrifuge and more — leave central whole."}},
+    {w:"intravenous",bin:"s2",forms:["intravenous","intraven*","intra*"],ok:[0,1],why:{zh:"central intravenous catheter 的 intravenous 也是「靜脈」，和 venous、vein 同一堆；intravenous 或 intraven* 都可以，intra* 太短。",en:"In central intravenous catheter, intravenous also means vein — same stack as venous and vein; intravenous or intraven* both work, intra* is too short."}},
+    {w:"venous",bin:"s2",forms:["venous","ven*","veno*"],ok:[0],why:{zh:"ven*、veno* 太短（venom、venography），venous 不切。",en:"ven* and veno* are too short (venom, venography) — leave venous whole."}},
+    {w:"vein",bin:"s2",forms:["vein","vein*","vein OR veins"],ok:[2],why:{zh:"vein 和 venous 同一堆（靜脈）。vein 只有 4 個字母，不切截、改補複數：vein OR veins。",en:"vein goes with venous (the vein stack). It has only 4 letters, so don’t truncate — add the plural: vein OR veins."}},
+    {w:"catheter",okWith:{f:[0],w:["catheters","catheterization"]},bin:"s3",forms:["catheter","catheter*","cath*"],ok:[1],why:{zh:"catheter* 涵蓋 catheters、catheterization；cath* 太短。",en:"catheter* covers catheters and catheterization; cath* is too short."}},
+    {w:"line",bin:"s3",forms:["line","line*","line OR lines"],ok:[2],why:{zh:"line* 會找到 linear、lineage；短字補複數。",en:"line* finds linear and lineage; add the plural for short words."}},
+    {w:"access",bin:"s3",forms:["access","access*"],ok:[0,1],why:{zh:"access device 的 access 屬於「器材」這一堆（工具自動分堆常把它放錯）。",en:"In access device, access belongs to the device stack (auto-split often gets this wrong)."}},
+    {w:"device",bin:"s3",forms:["device","device*"],ok:[1],why:{zh:"device* 同時找到 devices。",en:"device* also finds devices."}},
+    {w:"catheters",alt:"catheter",bin:"drop",forms:["catheters"],ok:[0],why:{zh:"catheter* 已涵蓋；或不切截，把 catheter、catheters、catheterization 都放同一堆。",en:"Covered by catheter* — or skip truncation and put catheter, catheters and catheterization in the same stack."}},
+    {w:"catheterization",alt:"catheter",bin:"drop",forms:["catheterization"],ok:[0],why:{zh:"逗號倒裝轉正後就是 central venous catheterization，catheter* 已涵蓋。",en:"Put back in order it reads central venous catheterization — already covered by catheter*."}},
+    {w:"Hickman",bin:"keep",okBins:["drop"],forms:["Hickman","Hickman*"],ok:[0,1],why:{zh:"品牌名可單獨保留，找回只寫品牌名的文章；這類文章篇名多半也會寫 central venous catheter，所以丟進「不需要」也可以。",en:"Keep the brand name separate to catch articles that only use it — or drop it, since such titles usually also say central venous catheter."}},
+    {w:"CVC",bin:"keep",forms:["CVC","CVC OR CVCs"],ok:[0,1],why:{zh:"縮寫單獨保留。",en:"Keep the abbreviation separate."}}
+   ],
+   learn:[{zh:"品牌名（Hickman）單獨保留。",en:"Brand names (Hickman) are kept separate."},
+          {zh:"逗號倒裝（catheterization, central venous）先轉正再拆字。",en:"Inverted terms (catheterization, central venous) are put back in order first."},
+          {zh:"工具只看字的位置不懂詞義：access device 的 access 屬於「器材」堆。",en:"Tools see word position, not meaning: the access of access device belongs to the device stack."},
+          {zh:"central、venous 不切：centr*、ven* 太短會帶進大量雜訊。",en:"central and venous stay whole: centr* and ven* add lots of noise."},
+          {zh:"靜脈那一堆別漏名詞：venous 之外還有 vein OR veins。",en:"Don’t forget the noun in the vein stack: vein OR veins alongside venous."}],
+   bonus:{titles:[
+     {t:"Central venous catheterisation in children",hit:true,why:{zh:"catheter* 也涵蓋英式拼法 catheterisation。",en:"catheter* also covers the British spelling catheterisation."}},
+     {t:"Peripherally inserted central catheters",hit:false,why:{zh:"沒有 venous／vein 那一堆的字。PICC 這類詞需要另外加入。",en:"No word from the venous/vein stack. Terms like PICC need to be added separately."}},
+     {t:"Tunnelled central venous access devices",hit:true,why:{zh:"central、venous、access 緊鄰，device* 也在器材堆。",en:"central, venous and access sit side by side, and device* is in the device stack too."}},
+     {t:"Central line-associated bloodstream infection",hit:false,why:{zh:"沒有 venous／vein 那一堆。常見的 central line 會漏掉，可另外把 \"central line*\" 片語以 OR 加入。",en:"No word from the venous/vein stack, so the common central line is missed — add the phrase \"central line*\" with OR."}}]}
+ }
+];
+var BIN_STACKS=["s1","s2","s3","s4"];
+
+/* ---------- 進度（每位瀏覽者本機） ---------- */
+var SKEY="sr_pxgame_v1";
+function loadProg(){ try{ var o=JSON.parse(localStorage.getItem(SKEY)||"{}"); return (o&&typeof o==="object")?o:{}; }catch(e){ return {}; } }
+function saveProg(){ try{ localStorage.setItem(SKEY, JSON.stringify(PROG)); }catch(e){} }
+var PROG=loadProg(); if(!PROG.lv) PROG.lv={};
+function lvProg(id){ return PROG.lv[id]||{stars:0,gold:false}; }
+function totalEggs(){ var n=0; LEVELS.forEach(function(lv){ var p=lvProg(lv.id); n+=p.stars+(p.gold?1:0); }); return n; }
+function unlocked(i){ if(PROG.all) return true; if(i===0) return true; return lvProg(LEVELS[i-1].id).stars>0; }
+
+/* ---------- 蛋 SVG ---------- */
+function eggSvg(kind,size){ size=size||18;
+  var fill=kind==="gold"?"#F2C14E":(kind==="on"?"#FBF6EA":"#EEEAE0"), stroke=kind==="gold"?"#B07420":(kind==="on"?"#AE7430":"#CFC8B8");
+  var shine=kind==="off"?"":'<path d="M8.2 7.2c.9-1.8 2.2-3 3.4-3.4" stroke="#fff" stroke-width="1.4" stroke-linecap="round" fill="none" opacity=".9"/>';
+  var dots=kind==="on"?'<circle cx="13.5" cy="15" r=".9" fill="#E0C79A"/><circle cx="10" cy="17.5" r=".7" fill="#E0C79A"/>':'';
+  return '<svg class="egg" width="'+size+'" height="'+Math.round(size*1.2)+'" viewBox="0 0 20 24" aria-hidden="true"><path d="M10 1.5C14.6 1.5 18.5 8.6 18.5 14.2 18.5 19.3 14.8 22.5 10 22.5S1.5 19.3 1.5 14.2C1.5 8.6 5.4 1.5 10 1.5Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1.3"/>'+shine+dots+'</svg>'; }
+function starEggs(stars,gold,size){ var h='<span class="eggs">'; for(var i=0;i<3;i++) h+=eggSvg(i<stars?"on":"off",size); h+=eggSvg(gold?"gold":"off",size)+'</span>'; return h; }
+
+/* ---------- 地圖 ---------- */
+function renderMap(){
+  var m=$("map"); m.innerHTML="";
+  LEVELS.forEach(function(lv,i){
+    var p=lvProg(lv.id), ok=unlocked(i);
+    var b=document.createElement("button"); b.type="button"; b.className="lvcard"+(ok?"":" locked"); b.disabled=!ok;
+    b.innerHTML='<span class="no">'+T("第 "+(i+1)+" 關","LEVEL "+(i+1))+'</span>'+
+      '<span class="nm">'+esc(L(lv.name))+'</span>'+(isEn()?'':'<span class="en2">'+esc(lv.name.en)+'</span>')+
+      '<span class="tags"><span class="tag">'+T(["","","二","三","四"][lv.stacks]+"堆",lv.stacks+" stacks")+'</span><span class="tag">'+T("鄰 "+lv.n+" 單字內","within "+lv.n+" word"+(lv.n>1?"s":""))+'</span></span>'+
+      starEggs(p.stars,p.gold,16)+
+      (ok?'':'<span class="lock" aria-hidden="true">🔒</span>');
+    b.setAttribute("aria-label", T("第 "+(i+1)+" 關 ","Level "+(i+1)+" ")+L(lv.name)+(ok?"":T("（未解鎖）"," (locked)")));
+    if(ok) b.onclick=function(){ startLevel(i); };
+    m.appendChild(b);
+  });
+  $("totalEggs").innerHTML=eggSvg("on",16)+' <b>'+totalEggs()+'</b> / '+(LEVELS.length*4);
+  $("unlockAll").checked=!!PROG.all;
+}
+$("unlockAll").onchange=function(){ PROG.all=this.checked; saveProg(); renderMap(); };
+$("resetAll").onclick=function(){ PROG={lv:{},all:PROG.all}; saveProg(); renderMap(); };
+
+/* ---------- 關卡狀態 ---------- */
+var S=null;   // {i, lv, place:{tid:bin}, form:{tid:idx}, penalty, wrongChecks, hints, done, marks:{}}
+function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+
+/* 同義詞 → 單字：以空白、連字號、逗號切開（連字號視為空格、逗號倒裝只取字） */
+function tokenize(ph){ var parts=ph.split(/(\s+|-|,\s*)/), out=[];
+  parts.forEach(function(x){ if(!x) return; if(/^\s+$/.test(x)) out.push({sp:true}); else if(x==="-"||/^,/.test(x)) out.push({sep:x.trim()||x}); else out.push({w:x}); });
+  return out; }
+function levelWords(lv){ var order=[], freq={}; lv.before.forEach(function(ph){ var seen={}; tokenize(ph).forEach(function(t){ if(!t.w) return; if(!(t.w in freq)){ freq[t.w]=0; order.push(t.w); } if(!seen[t.w]){ seen[t.w]=1; freq[t.w]++; } }); }); return {order:order,freq:freq}; }
+function startLevel(i, skipIntro){
+  var lv=LEVELS[i], lw=levelWords(lv), idx={};
+  lv.tiles.forEach(function(t,k){ idx[t.w]=k; });
+  var order=lw.order.map(function(w){ return idx[w]; }).filter(function(k){ return k!=null; });
+  lv.tiles.forEach(function(t,k){ if(order.indexOf(k)<0) order.push(k); });
+  S={i:i, lv:lv, place:{}, form:{}, order:order, freq:{}, penalty:0, wrongChecks:0, hints:0, done:false, marks:{}, hinted:{}, phase:skipIntro?"sort":"read"};
+  lv.tiles.forEach(function(t,k){ S.place[k]="pool"; S.form[k]=0; S.freq[k]=lw.freq[t.w]||1; });
+  $("scrMap").hidden=true; $("scrLevel").hidden=false;
+  hideFb(); renderLevelStatic(); renderTiles(); window.scrollTo(0,0);
+}
+function setMission(){
+  var lv=S.lv, nw=lv.tiles.length, m=$("lvMission");
+  if(S.phase==="read"){
+    m.innerHTML='<span class="big">'+T("先看清楚有哪些字","First, look at the words")+'</span>'+esc(T("這 "+lv.before.length+" 個同義詞由哪些字組成？準備好了，點下方「拆成單字」。","Which words make up these "+lv.before.length+" synonyms? When you’re ready, press “Split into words” below."));
+  } else if(S.phase==="splitting"){
+    m.innerHTML='<span class="big">'+T("拆字中…","Splitting…")+'</span>'+esc(T("連字號、逗號當成空格，相同的字合併。","Hyphens and commas count as spaces; identical words merge."));
+  } else {
+    m.innerHTML='<span class="big">'+T("拆好了！","Split done!")+'</span>'+esc(T("共 "+nw+" 個不同的字，字旁數字＝出現在幾個同義詞裡。請看下方，開始分堆。",nw+" different words; the number shows how many synonyms contain each. See below to start sorting."));
+    $("sortTask").innerHTML='<span class="big">'+T("請分成 "+lv.stacks+" 堆","Sort into "+lv.stacks+" stacks")+'</span>'+esc(L(lv.mission));
+  }
+}
+function applyPhase(){
+  var ph=S.phase, list=$("lvBefore");
+  list.classList.toggle("split", ph!=="read"); list.classList.toggle("done", ph==="sort");
+  $("splitBar").hidden=(ph!=="read"); $("splitBtn").disabled=(ph!=="read");
+  $("playCard").hidden=(ph==="read"); $("sortArea").hidden=(ph!=="sort");
+  if(ph==="sort") list.querySelectorAll(".tk").forEach(function(t){ t.classList.add("gone"); });
+  setMission();
+}
+var REDUCED=!!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+function runSplit(){
+  if(!S||S.phase!=="read") return;
+  S.phase="splitting"; applyPhase();
+  var shown={}, tiles={};
+  document.querySelectorAll("#bin-pool .tile").forEach(function(el){ var k=+el.dataset.k; tiles[k]=el; shown[k]=0; el.classList.add("pending"); var c=el.querySelector(".cnt"); if(c) c.textContent="×0"; });
+  var idx={}; S.lv.tiles.forEach(function(t,k){ idx[t.w]=k; });
+  var toks=Array.prototype.slice.call(document.querySelectorAll("#lvBefore .tk"));
+  function land(k){ var el=tiles[k]; if(!el) return; el.classList.remove("pending"); shown[k]++; var c=el.querySelector(".cnt"); if(c){ c.textContent="×"+shown[k]; c.classList.remove("bump"); void c.offsetWidth; c.classList.add("bump"); } }
+  function finish(){ toks.forEach(function(t){ t.classList.add("gone"); }); S.phase="sort"; renderTiles(); applyPhase(); var pc=$("playCard"); if(pc && pc.scrollIntoView && !REDUCED) pc.scrollIntoView({behavior:"smooth",block:"start"}); }
+  if(REDUCED || !Element.prototype.animate){ toks.forEach(function(t){ var k=idx[t.dataset.w]; if(k!=null) land(k); }); finish(); return; }
+  var seenPh=[];   // 同一同義詞內重複的字只算一次
+  setTimeout(function(){
+    var step=Math.max(45, Math.min(110, 1700/toks.length)), last=0;
+    toks.forEach(function(t,ti){
+      var k=idx[t.dataset.w]; if(k==null) return; var tgt=tiles[k]; if(!tgt) return;
+      var key=t.dataset.ph+"|"+t.dataset.w, dupe=seenPh.indexOf(key)>=0; seenPh.push(key);
+      var delay=ti*step; last=Math.max(last, delay+650);
+      setTimeout(function(){
+        var a=t.getBoundingClientRect(), b=tgt.getBoundingClientRect();
+        var f=document.createElement("span"); f.className="flyer"; f.textContent=t.dataset.w; f.style.left=a.left+"px"; f.style.top=a.top+"px"; document.body.appendChild(f);
+        t.classList.add("gone");
+        var dx=(b.left+b.width/2)-(a.left+a.width/2), dy=(b.top+b.height/2)-(a.top+a.height/2);
+        var an=f.animate([{transform:"translate(0,0) scale(1)",opacity:1},{transform:"translate("+(dx*0.5)+"px,"+(dy*0.5-40)+"px) scale(1.08)",opacity:1,offset:.55},{transform:"translate("+dx+"px,"+dy+"px) scale(.9)",opacity:.2}],{duration:620,easing:"cubic-bezier(.4,.1,.3,1)"});
+        an.onfinish=function(){ f.remove(); if(!dupe) land(k); else land2(k); };
+      }, delay);
+    });
+    setTimeout(finish, last+250);
+  }, 520);
+  function land2(k){ var el=tiles[k]; if(el){ el.classList.remove("pending"); } }
+}
+$("splitBtn").onclick=runSplit;
+function backToMap(){ closePop(); $("scrLevel").hidden=true; $("scrMap").hidden=false; S=null; renderMap(); window.scrollTo(0,0); }
+$("backMap").onclick=backToMap;
+$("resetLv").onclick=function(){ if(S) startLevel(S.i, true); };
+
+function renderLevelStatic(){
+  var lv=S.lv;
+  $("lvTitle").textContent=T("第 "+(S.i+1)+" 關　","Level "+(S.i+1)+" · ")+L(lv.name);
+  $("lvMeta").innerHTML='<span class="tag">'+T(["","","二","三","四"][lv.stacks]+"堆",lv.stacks+" stacks")+'</span><span class="tag">'+T("鄰 "+lv.n+" 單字內","within "+lv.n+" word"+(lv.n>1?"s":""))+'</span>';
+  var p=lvProg(lv.id); $("lvEggs").innerHTML=T("最佳 ","Best ")+starEggs(p.stars,p.gold,15);
+  $("lvBefore").innerHTML=lv.before.map(function(b,pi){ return "<li>"+tokenize(b).map(function(t){ return t.w?'<span class="tk" data-ph="'+pi+'" data-w="'+esc(t.w)+'">'+esc(t.w)+'</span>':(t.sp?'<span class="sp_"> </span>':'<span class="sep">'+esc(t.sep)+'</span>'); }).join("")+"</li>"; }).join("");
+  var row=$("stackRow"); row.innerHTML="";
+  for(var s=1;s<=lv.stacks;s++){
+    if(s>1){ var nr=document.createElement("span"); nr.className="near"; nr.textContent=T("鄰 "+lv.n,"within "+lv.n); nr.setAttribute("aria-hidden","true"); row.appendChild(nr); }
+    var b=document.createElement("div"); b.className="bin st"+s; b.id="bin-s"+s; b.dataset.bin="s"+s; b.tabIndex=0;
+    var sn=lv.stackNames&&lv.stackNames[s-1];
+    b.innerHTML='<span class="bl">'+T("堆 "+s,"Stack "+s)+(sn?'<span class="snm">'+esc(T("「"+sn.zh+"」"," · "+sn.en))+'</span>':'')+'<small>'+T("堆內 OR","OR within")+'</small></span>';
+    row.appendChild(b);
+  }
+  var sel=$("pvDb"), cur=sel.value||"embase"; sel.innerHTML=DBS.map(function(d){ return '<option value="'+d+'">'+esc(DB_LABEL[d])+'</option>'; }).join(""); sel.value=DBS.indexOf(cur)>=0?cur:"embase";
+  bindBins();
+}
+function binEl(bin){ return $("bin-"+bin); }
+function tileLabel(k){ var t=S.lv.tiles[k], b=S.place[k]; return (b==="pool"||b==="drop")? t.w : t.forms[S.form[k]]; }
+function renderTiles(){
+  closePop();
+  document.querySelectorAll("#scrLevel .tile").forEach(function(e){ e.remove(); });
+  S.order.forEach(function(k){
+    var t=S.lv.tiles[k], b=S.place[k];
+    var el=document.createElement("div"); el.className="tile"; el.tabIndex=0; el.setAttribute("role","button"); el.dataset.k=k;
+    var mk=S.marks[k]; if(mk) el.classList.add(mk); if(S.hinted[k]) el.classList.add("hinted"); if(S.sel===k) el.classList.add("sel");
+    var lab=document.createElement("span"); lab.textContent=tileLabel(k); el.appendChild(lab);
+    if(b==="pool"){ var cn=document.createElement("span"); cn.className="cnt"; cn.textContent="×"+(S.freq[k]||1); cn.title=T("出現在幾個同義詞裡","number of synonyms containing it"); el.appendChild(cn); }
+    if((b!=="pool"&&b!=="drop") && t.forms.length>1){
+      var c=document.createElement("button"); c.type="button"; c.className="cut"; c.textContent="✂"; c.title=T("選擇寫法（切截）","Choose form (truncation)"); c.setAttribute("aria-label",c.title+": "+t.w);
+      c.addEventListener("pointerdown",function(e){ e.stopPropagation(); });
+      c.onclick=function(e){ e.stopPropagation(); openPop(k,el); };
+      el.appendChild(c);
+    }
+    el.setAttribute("aria-label", t.w+" — "+binName(b));
+    bindTile(el,k);
+    binEl(b).appendChild(el);
+  });
+  document.body.classList.toggle("selecting", S.sel!=null);
+  renderPreview(); applyPhase();
+}
+function binName(b){ if(b==="pool") return T("字庫","word pool"); if(b==="keep") return T("單獨保留","keep separate"); if(b==="drop") return T("不需要","not needed"); return T("堆 "+b.slice(1),"stack "+b.slice(1)); }
+
+/* ---------- 移動、拖曳、點選 ---------- */
+function moveTile(k,bin){
+  if(S.done) return;
+  if(S.place[k]!==bin){ S.place[k]=bin; delete S.marks[k]; }
+  S.sel=null; renderTiles(); hideFbSoft();
+}
+function bindTile(el,k){
+  var st=null;
+  el.addEventListener("pointerdown",function(e){
+    if(S.done || (e.pointerType==="mouse" && e.button!==0)) return;
+    st={x:e.clientX,y:e.clientY,drag:false,ghost:null,id:e.pointerId};
+    try{ el.setPointerCapture(e.pointerId); }catch(_e){}
+  });
+  el.addEventListener("pointermove",function(e){
+    if(!st) return;
+    if(!st.drag && Math.abs(e.clientX-st.x)+Math.abs(e.clientY-st.y)>6){
+      st.drag=true; closePop(); el.classList.add("dragging");
+      var g=el.cloneNode(true); g.classList.remove("dragging","sel"); g.classList.add("ghost"); var cb=g.querySelector(".cut"); if(cb) cb.remove(); document.body.appendChild(g); st.ghost=g;
+    }
+    if(st.drag){ st.ghost.style.left=e.clientX+"px"; st.ghost.style.top=e.clientY+"px"; hiliteBin(binAt(e.clientX,e.clientY)); }
+  });
+  function end(e,cancel){
+    if(!st) return; var s0=st; st=null;
+    try{ el.releasePointerCapture(s0.id); }catch(_e){}
+    if(s0.drag){ if(s0.ghost) s0.ghost.remove(); el.classList.remove("dragging"); hiliteBin(null); var b=cancel?null:binAt(e.clientX,e.clientY); if(b) moveTile(k,b.dataset.bin); }
+    else if(!cancel){ toggleSel(k); }
+  }
+  el.addEventListener("pointerup",function(e){ end(e,false); });
+  el.addEventListener("pointercancel",function(e){ end(e,true); });
+  el.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); toggleSel(k); } });
+}
+function binAt(x,y){ var e=document.elementFromPoint(x,y); return e&&e.closest? e.closest("#scrLevel .bin") : null; }
+function hiliteBin(b){ document.querySelectorAll("#scrLevel .bin.over").forEach(function(x){ if(x!==b) x.classList.remove("over"); }); if(b) b.classList.add("over"); }
+function toggleSel(k){ if(S.done) return; S.sel=(S.sel===k)?null:k; renderTiles(); var el=document.querySelector('#scrLevel .tile[data-k="'+k+'"]'); if(el) el.focus(); }
+function bindBins(){
+  document.querySelectorAll("#scrLevel .bin").forEach(function(b){
+    if(b._bound) return; b._bound=true;
+    b.addEventListener("click",function(e){ if(e.target.closest(".tile")) return; if(S && S.sel!=null) moveTile(S.sel,b.dataset.bin); });
+    b.addEventListener("keydown",function(e){ if((e.key==="Enter"||e.key===" ") && e.target===b && S && S.sel!=null){ e.preventDefault(); var k=S.sel; moveTile(k,b.dataset.bin); var t=document.querySelector('#scrLevel .tile[data-k="'+k+'"]'); if(t) t.focus(); } });
+  });
+}
+document.addEventListener("keydown",function(e){ if(e.key==="Escape"){ if(POP){ closePop(); return; } if(S&&S.sel!=null){ S.sel=null; renderTiles(); } } });
+
+/* ---------- 切截選單 ---------- */
+var POP=null;
+function openPop(k,anchor){
+  closePop(); if(S.done) return;
+  var t=S.lv.tiles[k], p=document.createElement("div"); p.className="formpop"; p.setAttribute("role","menu");
+  p.innerHTML='<div class="fh">'+T("選擇「"+esc(t.w)+"」的寫法","Choose a form for “"+esc(t.w)+"”")+'</div>';
+  t.forms.forEach(function(f,fi){ var b=document.createElement("button"); b.type="button"; b.setAttribute("role","menuitemradio"); b.textContent=f; if(S.form[k]===fi){ b.className="cur"; b.setAttribute("aria-checked","true"); }
+    b.onclick=function(){ if(S.form[k]!==fi){ S.form[k]=fi; delete S.marks[k]; } closePop(); renderTiles(); hideFbSoft(); var el=document.querySelector('#scrLevel .tile[data-k="'+k+'"]'); if(el) el.focus(); };
+    p.appendChild(b); });
+  document.body.appendChild(p);
+  var r=anchor.getBoundingClientRect(), pw=p.offsetWidth, left=Math.min(window.scrollX+r.left, window.scrollX+document.documentElement.clientWidth-pw-12);
+  p.style.left=Math.max(window.scrollX+8,left)+"px"; p.style.top=(window.scrollY+r.bottom+6)+"px";
+  POP=p; var first=p.querySelector("button.cur")||p.querySelector("button"); if(first) first.focus();
+}
+function closePop(){ if(POP){ POP.remove(); POP=null; } }
+document.addEventListener("pointerdown",function(e){ if(POP && !POP.contains(e.target)) closePop(); },true);
+
+/* ---------- 即時檢索式 ---------- */
+function splitForm(f){ return f.split(/\s+OR\s+/); }
+function buildExpr(db, stacks, keep, n, html){
+  var op=opFor(db,n), O=function(s){ return html?'<span class="op">'+s+'</span>':s; };
+  var used=stacks.filter(function(s){ return s.length; });
+  var parts=used.map(function(s){ var terms=[]; s.forEach(function(f){ terms=terms.concat(splitForm(f)); }); var e=terms.map(function(x){ return html?esc(x):x; }).join(" "+O("OR")+" "); return terms.length>1?"("+e+")":e; });
+  var core=parts.join(" "+O(op)+" ");
+  var kt=[]; keep.forEach(function(f){ kt=kt.concat(splitForm(f)); });
+  var ks=kt.map(function(x){ return html?esc(x):x; }).join(" "+O("OR")+" ");
+  if(core && ks) return (used.length>1?"(":"")+core+(used.length>1?")":"")+" "+O("OR")+" "+ks;
+  return core||ks;
+}
+function playerGroups(){ var st=[], keep=[]; for(var s=1;s<=S.lv.stacks;s++) st.push([]);
+  S.order.forEach(function(k){ var b=S.place[k], f=S.lv.tiles[k].forms[S.form[k]]; if(b==="keep") keep.push(f); else if(b.charAt(0)==="s") st[+b.slice(1)-1].push(f); });
+  return {stacks:st, keep:keep}; }
+function answerGroups(lv){ var st=[], keep=[]; for(var s=1;s<=lv.stacks;s++) st.push([]);
+  lv.tiles.forEach(function(t){ var f=t.forms[t.ok[0]]; if(t.bin==="keep") keep.push(f); else if(t.bin.charAt(0)==="s") st[+t.bin.slice(1)-1].push(f); });
+  return {stacks:st, keep:keep}; }
+function renderPreview(){ var g=playerGroups(), db=$("pvDb").value||"embase";
+  var h=buildExpr(db,g.stacks,g.keep,S.lv.n,true);
+  $("pvCode").innerHTML=h||('<span class="em">'+T("把字拖進詞堆，這裡會即時組出檢索式…","Drag words into the stacks to build the search here…")+'</span>');
+  if(g.stacks.filter(function(s){return s.length;}).length===1 && g.stacks.length>1) $("pvCode").innerHTML+='<br><span class="em">'+T("（至少要兩堆有字，才會出現鄰近運算子）","(at least two stacks need words for a proximity operator)")+'</span>';
+}
+$("pvDb").onchange=function(){ if(S) renderPreview(); };
+
+/* ---------- 檢查 ---------- */
+function perms(a){ if(a.length<=1) return [a.slice()]; var r=[]; a.forEach(function(x,i){ var rest=a.slice(0,i).concat(a.slice(i+1)); perms(rest).forEach(function(p){ r.push([x].concat(p)); }); }); return r; }
+// 玩家的堆號 → 正確堆號：堆的次序可互換（無次序鄰近），取吻合最多的對應
+function bestMap(){ var n=S.lv.stacks, ids=[]; for(var s=1;s<=n;s++) ids.push(s); var best=null, bs=-1;
+  if(S.lv.stackNames) return ids;   // 堆已標名稱（懷孕／母親、疾病…）：照名稱放，不互換
+  perms(ids).forEach(function(p){ var sc=0; S.lv.tiles.forEach(function(t,k){ var b=S.place[k]; if(b.charAt(0)==="s" && t.bin==="s"+p[+b.slice(1)-1]) sc++; }); if(sc>bs){ bs=sc; best=p; } });
+  return best; }
+function mappedBin(k,map){ var b=S.place[k]; return b.charAt(0)==="s" ? "s"+map[+b.slice(1)-1] : b; }
+// 等效解也算對：變化形（hands）和原字（hand）放同一堆＝(hand OR hands)，原字就可維持原形
+function grade(){ var map=bestMap(), res=[], kOf={};
+  S.lv.tiles.forEach(function(t,k){ kOf[t.w]=k; });
+  function binOf(w){ var k=kOf[w]; return k==null? null : mappedBin(k,map); }
+  function altNeeded(w){ var k=kOf[w]; if(k==null) return false; var bt=S.lv.tiles[k]; return !!(bt.okWith && bt.okWith.f.indexOf(S.form[k])>=0); }
+  S.lv.tiles.forEach(function(t,k){ var b=mappedBin(k,map), r;
+    if(S.place[k]==="pool") r="todo";
+    else if(t.alt && b!=="drop" && b!=="pool" && b===binOf(t.alt) && altNeeded(t.alt)) r="ok";   // 變化形和原字同堆：只有原字沒切截／沒補複數時才需要；原字已涵蓋（catheter*、hand OR hands）就是重複，要移到「不需要」
+    else if(t.okBins && t.okBins.indexOf(b)>=0 && (b==="drop" || t.ok.indexOf(S.form[k])>=0)) r="ok";   // 兩種放法都可以（例：品牌名 Hickman 可保留也可不要）
+    else if(b!==t.bin) r="bad";
+    else if(t.bin!=="drop" && t.ok.indexOf(S.form[k])<0){
+      r = (t.okWith && t.okWith.f.indexOf(S.form[k])>=0 && t.okWith.w.every(function(w){ return binOf(w)===b; })) ? "ok" : "badform"; }
+    else r="ok";
+    res.push(r); });
+  return {res:res,map:map}; }
+function showFb(cls,html){ var f=$("fb"); f.className="fb show "+cls; f.innerHTML=html; }
+function hideFb(){ var f=$("fb"); f.className="fb"; f.innerHTML=""; }
+function hideFbSoft(){ var f=$("fb"); if(f.classList.contains("warn")) hideFb(); }
+$("checkBtn").onclick=function(){
+  if(!S||S.done) return; closePop();
+  var g=grade(), todo=g.res.filter(function(r){return r==="todo";}).length;
+  if(todo){ showFb("warn", T("還有 <b>"+todo+"</b> 個字留在字庫裡，每個字都要放進一個區塊（用不到的放「不需要」）。","<b>"+todo+"</b> word"+(todo>1?"s are":" is")+" still in the pool — every word needs a place (unused ones go to “Not needed”).")); return; }
+  var bad=[], i;
+  for(i=0;i<g.res.length;i++){ S.marks[i]= g.res[i]==="ok"?"ok":g.res[i]; if(g.res[i]!=="ok") bad.push(i); }
+  if(!bad.length){ S.marks={}; S.lv.tiles.forEach(function(_,k){ S.marks[k]="ok"; }); S.done=true; S.sel=null; renderTiles(); levelClear(); return; }
+  S.wrongChecks++; S.penalty++; S.sel=null; renderTiles();
+  var nb=bad.filter(function(k){return g.res[k]==="bad";}).length, nf=bad.length-nb;
+  var msg=T("還差一點！","Almost!")+" "+
+    (nb?T("<b>"+nb+"</b> 個字放錯位置（紅框）","<b>"+nb+"</b> word"+(nb>1?"s are":" is")+" in the wrong place (red)"):"")+
+    (nb&&nf?T("、",", "):"")+
+    (nf?T("<b>"+nf+"</b> 個字位置對、切截再想想（橘虛線）","<b>"+nf+"</b> in the right place but need a different form (orange dashed)"):"")+T("。","." );
+  if(S.wrongChecks>=2){ msg+="<ul>"+bad.map(function(k){ var t=S.lv.tiles[k]; return "<li><code>"+esc(t.w)+"</code>："+esc(L(t.why))+"</li>"; }).join("")+"</ul>"; }
+  else msg+=T(" 再檢查一次答錯時會顯示說明，或按「提示」。"," Check again to see explanations, or use a hint.");
+  showFb("badfb",msg);
+};
+$("hintBtn").onclick=function(){
+  if(!S||S.done) return; closePop();
+  var g=grade(), k=-1, i;
+  for(i=0;i<S.order.length;i++){ var kk=S.order[i]; if(g.res[kk]!=="ok"){ k=kk; break; } }
+  if(k<0){ showFb("okfb",T("目前都放對了，按「檢查答案」吧！","Everything is in place — press Check!")); return; }
+  var t=S.lv.tiles[k], target=t.bin;
+  if(target.charAt(0)==="s"){ var want=+target.slice(1), ps=g.map.indexOf(want)+1; target="s"+ps; }
+  S.place[k]=target; S.form[k]=t.ok[0]; S.marks[k]="ok"; S.hinted[k]=true; S.hints++; S.penalty++; S.sel=null;
+  renderTiles();
+  showFb("okfb","💡 <code>"+esc(t.w)+"</code> → "+esc(binName(target))+(t.bin!=="drop"&&t.forms.length>1?"（<code>"+esc(t.forms[S.form[k]])+"</code>）":"")+"："+esc(L(t.why)));
+};
+
+/* ---------- 過關 ---------- */
+var RUN={};
+function levelClear(){
+  var stars=S.penalty===0?3:(S.penalty<=2?2:1);
+  RUN={stars:stars,gold:false};
+  showFb("okfb",T("🎉 全部正確！","🎉 All correct!"));
+  confetti();
+  setTimeout(openBonus,650);
+}
+// 加分題：判斷組好的檢索式找得到哪幾篇（篇名，可複選）——練鄰近距離與切截的效果，不用背運算子
+function openBonus(){
+  var lv=S.lv, bq=lv.bonus, a=answerGroups(lv);
+  $("bonusQ").innerHTML=esc(T("用這一關的檢索式（鄰 "+lv.n+" 單字內）在篇名搜尋，下面哪幾篇找得到？","Searching titles with this level’s search (within "+lv.n+" word"+(lv.n>1?"s":"")+"), which articles would be found?"))+"<br>"+esc(T("可複選，全對得金蛋","Tick all that apply — all correct wins a golden egg"));
+  $("bonusCode").textContent=buildExpr("embase",a.stacks,a.keep,lv.n,false);
+  var o=$("bonusOpts"); o.className="titles"; o.innerHTML="";
+  bq.titles.forEach(function(it,i){ var lab=document.createElement("label");
+    lab.innerHTML='<input type="checkbox" value="'+i+'"><span class="tt"><i>'+esc(it.t)+'</i><span class="res"></span></span>';
+    o.appendChild(lab); });
+  $("bonusEx").className="explain"; $("bonusEx").innerHTML="";
+  $("bonusSubmit").hidden=false; $("bonusNext").hidden=true;
+  showModal("mBonus"); var f=o.querySelector("input"); if(f) f.focus();
+}
+$("bonusSubmit").onclick=function(){
+  var bq=S.lv.bonus, o=$("bonusOpts"), allOk=true;
+  o.querySelectorAll("label").forEach(function(lab,i){ var it=bq.titles[i], cb=lab.querySelector("input"), right=(cb.checked===it.hit);
+    if(!right) allOk=false; cb.disabled=true; lab.classList.add(right?"right":"wrong");
+    lab.querySelector(".res").innerHTML='<span class="mk">'+(it.hit?T("✓ 找得到","✓ Found"):T("✗ 找不到","✗ Not found"))+'</span>'+esc(L(it.why)); });
+  o.classList.add("shown"); RUN.gold=allOk;
+  var ex=$("bonusEx"); ex.innerHTML= allOk ? T("全部判斷正確，獲得金蛋！","All correct — golden egg earned!") : T("有幾篇判斷錯了（紅框），看看說明。","Some answers were off (red) — see the notes."); ex.classList.add("show");
+  $("bonusSubmit").hidden=true; $("bonusNext").hidden=false; $("bonusNext").focus();
+};
+$("bonusNext").onclick=function(){ hideModal("mBonus"); openDone(); };
+/* ---------- 實際檢索比較：片語 vs 鄰近字（都限篇名、同樣切截） ---------- */
+// 片語檢索式：每個同義詞當成片語，字換成本關正解的切截寫法（含 OR 的寫法、不需要的字則用原字）；逗號倒裝先轉正、連字號當空格
+function phraseTerms(lv){
+  var byW={}, out=[], seen={}; lv.tiles.forEach(function(t){ byW[t.w]=t; });
+  lv.before.forEach(function(ph){
+    var m=ph.match(/^([^,]+),\s*(.+)$/); if(m) ph=m[2]+" "+m[1];
+    var ws=tokenize(ph).filter(function(t){ return t.w; }).map(function(t){ return t.w; });
+    var forms=ws.map(function(w){ var t=byW[w]; if(!t) return w;
+      if(t.bin==="drop"){ if(!t.alt || !byW[t.alt]) return w; t=byW[t.alt]; }   // 變化形（diabetic、catheters…）用原字的切截寫法，維持「同樣切截」
+      var f=t.forms[t.ok[0]]; return /\sOR\s/.test(f)?w:f; });
+    var add=[];
+    if(ws.length===1){ var t=byW[ws[0]]; var f=(t && t.bin!=="drop")? t.forms[t.ok[0]] : ws[0]; add=f.split(/\s+OR\s+/); }
+    else add=['"'+forms.join(" ")+'"'];
+    add.forEach(function(x){ var k=x.toLowerCase(); if(!seen[k]){ seen[k]=1; out.push(x); } });
+  });
+  return out;
+}
+// html＝true：欄位外層那一對圓括弧用粗體（顯示用；複製時為純文字）
+function titleWrap(db,expr,html){
+  var L=html?"<b>(</b>":"(", R=html?"<b>)</b>":")", e=html?esc(expr):expr;
+  if(db==="embase"||db==="cochrane") return L+e+R+":ti";
+  if(db==="ovid") return L+e+R+".ti.";
+  if(db==="ebsco") return "TI "+L+e+R;
+  if(db==="wos") return "TI="+L+e+R;
+  if(db==="scopus") return "TITLE"+L+e+R;
+  return e;
+}
+function cmpStrings(db,lv){
+  var a=answerGroups(lv), pe=buildExpr(db,a.stacks,a.keep,lv.n,false), fe=phraseTerms(lv).join(" OR ");
+  var notOp=(db==="scopus")?"AND NOT":"NOT";
+  var prox=titleWrap(db,pe), phr=titleWrap(db,fe);
+  return {phrase:phr, prox:prox, diff:prox+" "+notOp+" "+phr,
+          diffHtml:titleWrap(db,pe,true)+" <b>"+notOp+"</b> "+titleWrap(db,fe,true)};
+}
+function copyText(txt,btn){
+  function ok(){ if(!btn) return; var o=btn.innerHTML; btn.classList.add("done"); btn.textContent=T("✓ 已複製","✓ Copied"); setTimeout(function(){ btn.classList.remove("done"); btn.innerHTML=o; },1400); }
+  function fb(){ try{ var ta=document.createElement("textarea"); ta.value=txt; ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); ok(); }catch(e){} }
+  try{ if(navigator.clipboard && window.isSecureContext){ navigator.clipboard.writeText(txt).then(ok,fb); } else fb(); }catch(e){ fb(); }
+}
+function renderCmp(){
+  var lv=S.lv, box=$("cmpBox");
+  var rows=[{db:"embase",lab:"Embase.com<br>Cochrane Library"},{db:"ovid"},{db:"ebsco"},{db:"wos"},{db:"scopus"}];
+  var h='<h4>'+T("實際檢索：片語 vs 鄰近字（都限篇名、同樣切截）","Try it: phrase vs proximity (title only, same truncation)")+'</h4>'+
+    '<p>'+T("片語只找得到字緊緊相連、順序一樣的寫法；鄰近字還能找到中間夾字或前後顛倒的寫法。複製「鄰近字 NOT 片語」貼到資料庫，看看鄰近字多找到哪些文章。","A phrase finds only words side by side in that order; proximity also finds them with words in between or reversed. Copy “Proximity NOT phrase” into a database to see what proximity adds.")+'</p>'+
+    '<table class="cmpt"><thead><tr><th>'+T("資料庫","Database")+'</th><th>'+T("① 片語檢索","① Phrase")+'</th><th>'+T("② 鄰近字檢索","② Proximity")+'</th><th>'+T("② NOT ①","② NOT ①")+'</th></tr></thead><tbody>';
+  rows.forEach(function(r,ri){ var c=cmpStrings(r.db,lv);
+    h+='<tr><td>'+(r.lab||esc(DB_LABEL[r.db]))+'</td>'+
+       '<td><button type="button" class="cpy" data-r="'+ri+'" data-k="phrase">'+T("複製","Copy")+'</button></td>'+
+       '<td><button type="button" class="cpy" data-r="'+ri+'" data-k="prox">'+T("複製","Copy")+'</button></td>'+
+       '<td><button type="button" class="cpy key" data-r="'+ri+'" data-k="diff">'+T("複製鄰近字 NOT 片語","Copy proximity NOT phrase")+'</button></td></tr>'+
+       '<tr class="syn"><td></td><td colspan="3"><details><summary>'+T("看語法","Show syntax")+'</summary>'+
+       '<b>'+T("① 片語檢索","① Phrase")+'</b><code>'+esc(c.phrase)+'</code>'+
+       '<b>'+T("② 鄰近字檢索","② Proximity")+'</b><code>'+esc(c.prox)+'</code>'+
+       '<b>'+T("② NOT ①（只有鄰近字找得到的）","② NOT ① (found only by proximity)")+'</b><code>'+c.diffHtml+'</code></details></td></tr>'; });
+  h+='</tbody></table>';
+  box.innerHTML=h;
+  box.querySelectorAll(".cpy").forEach(function(b){ b.onclick=function(){ var r=rows[+b.dataset.r], c=cmpStrings(r.db,lv); copyText(c[b.dataset.k], b); }; });
+}
+$("cmpBtn").onclick=function(){ var box=$("cmpBox"); if(box.classList.contains("show")){ box.classList.remove("show"); return; } renderCmp(); box.classList.add("show"); box.scrollIntoView({behavior:REDUCED?"auto":"smooth",block:"nearest"}); };
+function openDone(){
+  var lv=S.lv, p=lvProg(lv.id);
+  PROG.lv[lv.id]={stars:Math.max(p.stars,RUN.stars), gold:p.gold||RUN.gold}; saveProg();
+  $("doneH").textContent=T("第 "+(S.i+1)+" 關過關！","Level "+(S.i+1)+" cleared!");
+  var h=""; for(var i=0;i<3;i++) h+=eggSvg(i<RUN.stars?"on":"off",30).replace('class="egg"','class="egg" style="animation-delay:'+(i*0.15)+'s"'); h+=eggSvg(RUN.gold?"gold":"off",30).replace('class="egg"','class="egg" style="animation-delay:.45s"');
+  $("doneEggs").innerHTML=h;
+  var parts=[]; if(S.wrongChecks) parts.push(T("答錯 "+S.wrongChecks+" 次",S.wrongChecks+" wrong check"+(S.wrongChecks>1?"s":""))); if(S.hints) parts.push(T("提示 "+S.hints+" 次",S.hints+" hint"+(S.hints>1?"s":"")));
+  $("doneNote").textContent=parts.length? (T("本次：","This run: ")+parts.join(T("、",", "))+T("（一次答對可得 3 顆蛋）"," (get it right first time for 3 eggs)")) : T("一次就答對，太厲害了！","Right on the first try — brilliant!");
+  $("doneLearn").innerHTML=lv.learn.map(function(x){ return "<li>"+esc(L(x))+"</li>"; }).join("");
+  var a=answerGroups(lv), rows="";
+  // 寫法相同的資料庫合併一列（Embase.com 與 Cochrane Library 都是 NEAR/n，n＝間隔字數＋1）
+  [{db:"embase",lab:"Embase.com<br>Cochrane Library"},{db:"ovid"},{db:"ebsco"},{db:"wos"},{db:"scopus"}].forEach(function(r){ rows+="<tr><td>"+(r.lab||esc(DB_LABEL[r.db]))+"</td><td><code>"+esc(buildExpr(r.db,a.stacks,a.keep,lv.n,false))+"</code></td></tr>"; });
+  $("cmpBox").classList.remove("show"); $("cmpBox").innerHTML="";
+  $("doneAns").innerHTML="<tr><td colspan='2' style='border-top:0;padding-left:0;color:var(--sh-green-d)'>"+T("參考答案（鄰 "+lv.n+" 單字內）","Model answer (within "+lv.n+" word"+(lv.n>1?"s":"")+")")+"</td></tr>"+rows;
+  var last=S.i>=LEVELS.length-1; $("doneNextLv").innerHTML= last ? T("完成！看總成績","Finish — see total") : T("下一關 →","Next level →");
+  showModal("mDone"); $("doneNextLv").focus();
+}
+$("doneReplay").onclick=function(){ hideModal("mDone"); startLevel(S.i); };
+$("doneMap").onclick=function(){ hideModal("mDone"); backToMap(); };
+$("doneNextLv").onclick=function(){ hideModal("mDone"); if(S.i<LEVELS.length-1) startLevel(S.i+1); else backToMap(); };
+function showModal(id){ $(id).classList.add("show"); }
+function hideModal(id){ $(id).classList.remove("show"); }
+
+function confetti(){
+  if(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var c=document.createElement("div"); c.className="confetti"; var kinds=["on","on","gold"];
+  for(var i=0;i<26;i++){ var s=document.createElement("span"); s.innerHTML=eggSvg(kinds[i%3],14+Math.round(Math.random()*12)); s.style.left=(Math.random()*100)+"%"; s.style.animationDuration=(1.6+Math.random()*1.4)+"s"; s.style.animationDelay=(Math.random()*.5)+"s"; c.appendChild(s); }
+  document.body.appendChild(c); setTimeout(function(){ c.remove(); },3600);
+}
+
+/* ---------- 語言 ---------- */
+window.toggleLang=function(){
+  var b=document.body; b.classList.toggle("en"); var en=b.classList.contains("en");
+  $("langBtn").textContent=en?"中文":"English"; document.documentElement.lang=en?"en":"zh-Hant";
+  try{ localStorage.setItem("sr_lang", en?"en":"zh"); }catch(e){}
+  if(S && S.phase==="splitting"){ setMission(); return; }
+  if(S){ var keepFb=$("fb").className; renderLevelStatic(); renderTiles(); if(keepFb.indexOf("show")>=0) hideFb(); } else renderMap();
+};
+(function(){ var q=((location.search.match(/[?&]lang=(en|zh)/i)||[])[1]||"").toLowerCase(); var want=q||(function(){ try{ return localStorage.getItem("sr_lang"); }catch(e){ return null; } })(); if(want==="en") window.toggleLang(); })();
+renderMap();
+})();
+</script>
+</body>
+</html>

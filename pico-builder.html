@@ -111,6 +111,7 @@
   .pt-dd.alignR .pt-menu{left:auto;right:0}
   .pt-mi{display:flex;align-items:center;gap:9px;width:100%;white-space:nowrap;border:none;background:none;text-align:left;text-decoration:none;padding:9px 12px;border-radius:7px;font-size:13px;color:#25292D;cursor:pointer;font-weight:500;font-family:inherit}
   .pt-mi:hover{background:#f0f4f6}
+  body.en .pt-mi[data-en]{display:flex}   /* 英文版的「下載樣板」連結：[data-en]{display:revert} 會把它變成 inline，圖示與文字擠在一起 */
   /* 自訂組合：行號 L1、L2… 與 C／L 快速插入 */
   .ccwrap{display:flex;border:1px solid var(--line);border-radius:8px;background:#fff;overflow:hidden}
   .ccwrap:focus-within{border-color:#AAB7BC;box-shadow:0 0 0 3px rgba(127,153,149,.14)}
@@ -3565,6 +3566,33 @@ function befPluralOf(w){
   // 控制詞彙欄：移除 AI 附加的說明句（Includes entry terms such as…、Note: …）
   // 樣板內的說明行（以 ↑ 開頭，例「↑ 鄰近字分堆整理時…」「↑ 標註灰字，不加入檢索」）與只填「-」的佔位格不匯入
   function _dropArrowNotes(cell){ return String(cell||"").split("\n").filter(function(l){ return !/^\s*[↑⬆]/.test(l) && !/^\s*[-–—]+\s*$/.test(l); }).join("\n"); }
+  // Word 匯入：一格內以分號（; ；）或大寫 OR 串起的同義詞 → 拆成一行一個。
+  //   只在最外層（圓括弧與引號以外）拆，保留 (a OR b) NEAR/3 c 這類分組；整行被一對括弧包住且整格沒有鄰近／AND／NOT 時，先去掉外層括弧再拆。
+  function _synSplit(cell){
+    var t=String(cell||""); if(!/[;；]|\sOR\s/.test(t)) return t;
+    var hasOp=/\b(?:NEAR|ADJ\d*|NEXT|PRE\/\d+|AND|NOT)\b|\bW\/\d|\bN\d+\b|鄰\s*近?\s*\d|\bwithin\s+\d+\s+words?\b/.test(t);
+    function cut(s){ var parts=[], cur="", d=0, q=false;
+      for(var i=0;i<s.length;i++){ var ch=s.charAt(i);
+        if(ch==='"'||ch==='“'||ch==='”'){ q=!q; cur+=ch; continue; }
+        if(!q){ if(ch==="("||ch==="（") d++; else if((ch===")"||ch==="）")&&d>0) d--; }
+        if(!q && d===0){
+          if(ch===";"||ch==="；"){ parts.push(cur); cur=""; continue; }
+          var m=/^\s+OR\s+/.exec(s.slice(i)); if(m && /\s/.test(ch)){ parts.push(cur); cur=""; i+=m[0].length-1; continue; }
+        }
+        cur+=ch; }
+      parts.push(cur); return parts; }
+    function outer(s){ var x=s.trim(); if(x.charAt(0)!=="("||x.charAt(x.length-1)!==")") return null; var d=0;
+      for(var i=0;i<x.length;i++){ var ch=x.charAt(i); if(ch==="(") d++; else if(ch===")"){ d--; if(d===0 && i<x.length-1) return null; } }
+      return x.slice(1,-1); }
+    var out=[];
+    t.split("\n").forEach(function(line){
+      var parts=cut(line);
+      if(parts.length===1 && !hasOp){ var inner=outer(line); if(inner!=null){ var p2=cut(inner); if(p2.length>1) parts=p2; } }
+      if(parts.length===1){ out.push(line); return; }
+      parts.forEach(function(p){ p=p.trim(); if(p) out.push(p); });
+    });
+    return out.join("\n");
+  }
   function _cvDropNotes(cell){ return String(cell||"").split("\n").filter(function(l){ var t=l.trim(); if(!t) return false;
       if(/^(?:includes?|including|note|notes|see|use|also|e\.g\.|i\.e\.|entry terms?|such as|search|verify|check)\b/i.test(t) && t.split(/\s+/).length>=4) return false;
       if(t.split(/\s+/).length>=6 && /[.。]$/.test(t)) return false;
@@ -3726,7 +3754,7 @@ function befPluralOf(w){
     data.forEach(function(c){ if(!c.length||c.every(function(x){return !x;}))return; var _lab=String(g(c,col.label)||"").trim(); if(_isHdrLike.test(_lab)) return;  // 略過殘留的表頭／群組列
       filled.push({label:labClean(g(c,col.label)),zh:toLines(g(c,col.zh),false),ft:toLines(g(c,col.ft),false),before:toLines(g(c,col.before),false),mesh:toLines(g(c,col.mesh),true),emtree:toLines(g(c,col.emtree),true),cinahl:toLines(g(c,col.cinahl),true)}); });
     var _glued=[], _gluedRows=[];   // 來源遺失換行、詞黏在一起：盡量拆開，仍可疑者提醒並標示儲存格
-    filled.forEach(function(r, _ri){ ["zh","ft","before","mesh","emtree","cinahl"].forEach(function(k){ r[k]=_dropArrowNotes(r[k]); }); r.ft=_unglueFt(r.ft); r.before=_unglueFt(r.before); ["mesh","emtree","cinahl"].forEach(function(k){ r[k]=_cvDropNotes(r[k]); });
+    filled.forEach(function(r, _ri){ ["zh","ft","before","mesh","emtree","cinahl"].forEach(function(k){ r[k]=_synSplit(_dropArrowNotes(r[k])); });   // 分號／OR 串起的詞 → 一行一個 r.ft=_unglueFt(r.ft); r.before=_unglueFt(r.before); ["mesh","emtree","cinahl"].forEach(function(k){ r[k]=_cvDropNotes(r[k]); });
       var cols=[], keys=[]; if(_gluedSuspect(r.zh,"zh")){ cols.push(en?"Chinese synonyms":"中文同義詞"); keys.push("zh"); }
       if(_gluedSuspect(r.before,"en")){ cols.push(en?"English synonyms (Before)":"英文同義詞（整理前）"); keys.push("before"); }
       if(_gluedSuspect(r.ft,"en")){ cols.push(en?"English synonyms":"英文同義詞"); keys.push("ft"); }
@@ -3898,8 +3926,13 @@ function befPluralOf(w){
         while((mm=tre.exec(seg))) txt+=mm[1];
         txt=txt.replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/\s+/g," ").trim();
         if(!txt) continue;
-        var cm=seg.match(/<w:color[^>]*w:val="([0-9A-Fa-f]{6})"/);
-        lines.push({text:txt, cls: cm?_colorClass(cm[1]):""});
+        // 顏色依「文字 run」判斷：略過段落標記（pPr）的顏色，並以英文字母／中文字數加權（引號、斜線等符號不算），取最多者
+        var body=seg.replace(/<w:pPr>[\s\S]*?<\/w:pPr>/,""), rRe=/<w:r\b[\s\S]*?<\/w:r>/g, rm, wt={};
+        while((rm=rRe.exec(body))){ var rs=rm[0], rt="", t2=/<w:t(?:\s[^>]*)?>([\s\S]*?)<\/w:t>/g, m2; while((m2=t2.exec(rs))) rt+=m2[1];
+          var n=(rt.match(/[A-Za-z\u4e00-\u9fff]/g)||[]).length; if(!n) continue;
+          var cc=rs.match(/<w:color[^>]*w:val="([0-9A-Fa-f]{6})"/), cl=cc?_colorClass(cc[1]):""; if(cl) wt[cl]=(wt[cl]||0)+n; }
+        var best="", bw=0; Object.keys(wt).forEach(function(k){ if(wt[k]>bw){ bw=wt[k]; best=k; } });
+        lines.push({text:txt, cls:best});
       }
       return lines;
     };
@@ -3969,7 +4002,9 @@ function befPluralOf(w){
         var colorStyle = (Object.keys(colUsed).length<=1) && (Object.keys(seen).length>=1);
         function _colorSplit(k2){
           var buckets={emtree:[],mesh:[],cinahl:[]}, tcr=tcRows[k2]||[];
-          for(var i=cvStart;i<tcr.length;i++){ _cellColorLines(tcr[i]).forEach(function(ln){ if(buckets[ln.cls]) buckets[ln.cls].push(ln.text); }); }
+          // 「Emtree」「MeSH」「CINAHL」標題行：不當成詞彙，並作為該段的預設歸屬（該行文字沒有可辨識顏色時使用）
+          var sec="", LAB=/^(emtree|mesh|cinahl(?:\s+(?:subject\s+)?headings?)?)\s*[:：]?$/i;
+          for(var i=cvStart;i<tcr.length;i++){ _cellColorLines(tcr[i]).forEach(function(ln){ var lm=ln.text.match(LAB); if(lm){ sec=lm[1].toLowerCase().indexOf("cinahl")===0?"cinahl":lm[1].toLowerCase(); return; } var k=ln.cls||sec; if(buckets[k]) buckets[k].push(ln.text); }); }
           return { emtree:buckets.emtree.join("\n"), mesh:buckets.mesh.join("\n"), cinahl:buckets.cinahl.join("\n") };
         }
         picoBody.innerHTML="";
@@ -3978,12 +4013,13 @@ function befPluralOf(w){
           var r=rows[k2], g=function(i){ return (i>=0 && r[i]!=null)?_dropArrowNotes(r[i]):""; };
           var em=g(ci.emtree), me=g(ci.mesh), cn=g(ci.cinahl);
           if(colorStyle){ var cs=_colorSplit(k2); em=cs.emtree; me=cs.mesh; cn=cs.cinahl; }
+          em=_synSplit(em); me=_synSplit(me); cn=_synSplit(cn);   // 分號／OR 串起的詞 → 一行一個
           // 整理前欄：保留灰字（原始詞收集區，樣板常整欄標灰）；整理後／控制詞彙欄：灰字不加入檢索
           var _bi=(ci.before!=null?ci.before:-1), _rr=rowsRaw[k2]||[];
           var _bef=(_bi>=0 && _rr[_bi]!=null)?_dropArrowNotes(_rr[_bi]):"";
-          var sp=_importSplit(g(ci.ft), _bef, _bi>=0);
+          var sp=_importSplit(_synSplit(g(ci.ft)), _synSplit(_bef), _bi>=0);
           if(sp.before) _anyBefDocx=true;
-          addRow(g(ci.concept).replace(/\s+/g," ").trim(), g(ci.zh), sp.ft, me, em, cn, undefined, undefined, sp.before);
+          addRow(g(ci.concept).replace(/\s+/g," ").trim(), _synSplit(g(ci.zh)), sp.ft, me, em, cn, undefined, undefined, sp.before);
         });
         if(_anyBefDocx && window._srShowBefore) window._srShowBefore();
         recordDocx={ buf:buf, name:(f.name||"SR檢索紀錄表.docx") };   // 保留原檔，供回填下載
