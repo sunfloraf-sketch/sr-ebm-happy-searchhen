@@ -488,7 +488,7 @@ var LEVELS=[
      {t:"Critical care units in rural hospitals",hit:true,why:{zh:"critical、care、units 三個字緊鄰，三堆都找到。",en:"critical, care and units sit side by side — all three stacks match."}},
      {t:"Intensive nursing care in a neonatal unit",hit:false,why:{zh:"intensive 到 care 夾 1 個字可以，但 care 到 unit 夾了 3 個字，超過「鄰 1」。",en:"intensive–care (1 word between) is fine, but care–unit has 3 words between — more than “within 1”."}},
      {t:"Mortality in ICUs",hit:true,why:{zh:"ICUs 單獨保留，直接找到。",en:"ICUs is kept separate and matches directly."}},
-     {t:"Intensive care of critically ill patients",hit:false,why:{zh:"沒有 unit 這一堆的字；三堆都要有字才算命中。",en:"No word from the unit stack — all three stacks must match."}}]}
+     {t:"Intensive care of critically ill patients",hit:false,why:{zh:"沒有 unit 這一堆的字；三堆都要有字才算命中。實際檢索需要評估加入重症相關檢索詞（critically ill、critical care 等）。",en:"No word from the unit stack — all three stacks must match. In a real search, consider adding critical-illness terms that don’t name a place (critically ill, critical care, etc.)."}}]}
  },
  { id:"copd", n:1, stacks:4, stackNames:[{zh:"慢性",en:"Chronic"},{zh:"阻塞",en:"Obstructive"},{zh:"肺／呼吸道",en:"Lung / airway"},{zh:"疾病",en:"Disease"}],
    name:{zh:"慢性阻塞性肺病",en:"Chronic obstructive pulmonary disease"},
