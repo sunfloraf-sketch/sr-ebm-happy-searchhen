@@ -244,6 +244,9 @@
   .cnt0{display:inline-block;padding:3px 7px;color:#a0a7ad}
   .cerr{color:#b42318;font-weight:800;margin-left:3px;cursor:help}
   .tblwrap{overflow-x:auto}
+  .tw{display:inline-block;font-family:"SF Mono",Consolas,monospace;font-size:11px;font-weight:700;color:var(--sh-green-d);border:1px solid #BFD3C9;border-radius:4px;padding:0 4px;margin:0 2px;line-height:1.5;vertical-align:1px}
+  th.on .tw{border-color:var(--sh-green)}
+  .fullq .fqwarn{font-size:12px;color:#b42318;margin-top:3px}
   .tfoot{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
   .refetch{display:inline-flex;align-items:center;gap:6px;margin-top:10px;background:none;border:1px solid var(--line);border-radius:8px;padding:6px 12px;font:inherit;font-size:12.5px;font-weight:600;color:var(--sh-green-d);cursor:pointer;white-space:nowrap}
   .refetch:hover{border-color:var(--sh-green)}
@@ -328,7 +331,7 @@
     <div class="panel expanel">
       <h2><span data-zh>範例</span><span data-en>Examples</span></h2>
       <div class="sub"><span data-zh>點一下即載入</span><span data-en>Click to load</span></div>
-      <button class="excard" onclick="loadEx(1)"><span class="exn">PubMed</span><span class="ext"><b><span data-zh>手部衛生</span><span data-en>Hand hygiene</span> × <span data-zh>護理</span><span data-en>nursing</span></b><i><span data-zh>兩個概念、一行一個詞（含 AND 組合）；看 hygiene 單一個字帶進多少</span><span data-en>Two concepts, one term per line (incl. an AND combination); see how much “hygiene” alone brings in</span></i></span></button>
+      <button class="excard" onclick="loadEx(1)"><span class="exn">PubMed</span><span class="ext"><b><span data-zh>手部衛生</span><span data-en>Hand hygiene</span> × <span data-zh>護理</span><span data-en>nursing</span></b><i><span data-zh>兩個概念、一行一個詞（含 AND 組合）；看 hygiene 一個字帶進多少獨有筆數</span><span data-en>Two concepts, one term per line (incl. an AND combination); see how many unique records “hygiene” brings in</span></i></span></button>
       <button class="excard" onclick="loadEx(2)"><span class="exn">PubMed</span><span class="ext"><b><span data-zh>中央靜脈導管</span><span data-en>Central venous catheter</span> CVC</b><i><span data-zh>只有一個概念；子群組 (catheter* AND central) 裡的詞也拆開</span><span data-en>One concept; terms inside (catheter* AND central) are split too</span></i></span></button>
       <button class="excard" onclick="loadEx(3)"><span class="exn">Scopus</span><span class="ext"><b><span data-zh>害怕跌倒</span><span data-en>Fear of falling</span></b><i><span data-zh>外層 TITLE-ABS-KEY (…) 自動保留；複製到 Scopus 後填回筆數</span><span data-en>Outer TITLE-ABS-KEY (…) kept; copy to Scopus and enter the counts</span></i></span></button>
     </div>
@@ -340,7 +343,6 @@
       <div class="tipintro" data-en>Click any count or <span class="fillchip">enter</span> cell to copy that search string; in manual mode, run it in the database and type the count into that cell (or just judge it on the database screen without entering it).</div>
       <h3 class="tipsub"><span data-zh>欄位定義</span><span data-en>Columns</span></h3>
       <ul class="blk" data-zh>
-        <li><b>單獨保留筆數：</b>這個詞所在的概念只留它，其他詞彙維持。</li>
         <li><b>抽掉後總數：</b>這個詞所在的概念拿掉它，其餘照舊。</li>
         <li><b>獨有貢獻：</b>完整策略總數 − 抽掉後總數，也就是只有這個詞才找得到的筆數。
           <ul class="sub">
@@ -351,7 +353,6 @@
         </li>
       </ul>
       <ul class="blk" data-en>
-        <li><b>Alone:</b> only this term is kept in its concept; the other terms stay.</li>
         <li><b>Total without:</b> this term is removed from its concept; everything else unchanged.</li>
         <li><b>Unique:</b> full-strategy total − total without, i.e. records only this term finds.
           <ul class="sub">
@@ -365,13 +366,11 @@
       <ul class="blk" data-zh>
         <li>所有概念的每個詞都會逐一測試；但若拿掉某個詞後，整個概念就空了，這個詞不測。</li>
         <li>NEAR／ADJ／AND 組合內的每個詞也會拆開測試。</li>
-        <li><b>單獨保留＝</b>將測試詞彙所在子群組 ( … OR … ) 的其他詞彙都移除，只留下測試詞彙，AND／NEAR ( … ) 的另一邊照原樣。</li>
         <li><b>抽掉＝</b>將測試詞彙從所在的子群組 ( … OR … ) 移除；若它是 ( … ) AND / NEAR ( … ) 某一邊唯一的詞，整個子群組一起拿掉。</li>
       </ul>
       <ul class="blk" data-en>
         <li>Every term in every concept is tested one by one; but if removing a term would leave its concept empty, that term is not tested.</li>
         <li>Each word inside a NEAR/ADJ/AND combination is tested too.</li>
-        <li><b>Alone =</b> all other terms in the test term’s sub-group ( … OR … ) are removed, leaving only the test term; the other side of the AND/NEAR ( … ) stays as it is.</li>
         <li><b>Without =</b> the test term is removed from its sub-group ( … OR … ); if it is the only term on one side of ( … ) AND / NEAR ( … ), the whole sub-group goes.</li>
       </ul>
     </div>
@@ -685,8 +684,8 @@ function renderParseInfo(){
   var h=[], per=P.concepts.map(function(c,ci){ var n=P.rows.filter(function(r){ return r.ci===ci; }).length; return T("概念 "+c.no+"：<b>"+n+"</b> 個詞","Concept "+c.no+": <b>"+n+"</b> terms"); });
   h.push(per.join(T("　","   ")));
   if(P.skipped.length) h.push(T("概念 "+P.skipped.filter(function(v,i,a){ return a.indexOf(v)===i; }).join("、")+" 只有一個詞，不測，維持原樣 AND 上去。","Concept "+P.skipped.filter(function(v,i,a){ return a.indexOf(v)===i; }).join(", ")+" has a single term: not tested, kept as is."));
-  if(P.nested) h.push(T("子群組內的詞（"+P.nested+" 個）：抽掉＝從它所在的 OR 拿掉；若它是 AND／NEAR 一邊唯一的詞，整組跟著拿掉。單獨＝該層 OR 只留它，AND／NEAR 的另一邊照舊。",
-    "Sub-group terms ("+P.nested+"): “without” removes the term from its OR list (if it is the only term on one side of an AND/NEAR, the whole sub-group goes); “alone” keeps only this term in its OR list, with the other side of the AND/NEAR unchanged."));
+  if(P.nested) h.push(T("子群組內的詞（"+P.nested+" 個）：抽掉＝從它所在的 OR 拿掉；若它是 AND／NEAR 一邊唯一的詞，整組跟著拿掉。",
+    "Sub-group terms ("+P.nested+"): “without” removes the term from its OR list (if it is the only term on one side of an AND/NEAR, the whole sub-group goes)."));
   if(P.mixed) h.push('<span class="bad">'+T("同一行同時有 OR 與 AND／NOT 而沒有括號：各資料庫運算順序不同，建議加括號或改成一行一個詞。","OR is mixed with AND/NOT on one line without brackets; databases differ in precedence, so add brackets or put one term per line.")+'</span>');
   if(P.wraps.length) h.push(T("偵測到外層欄位 ","Outer field wrapper detected: ")+"<code>"+P.wraps.join("</code>、<code>")+"</code>"+T("，每一版都會保留",", kept in every version"));
   if(!P.rows.length) h.push('<span class="bad">'+T("沒有可測試的詞：每個概念內請用 OR 連接，或一行一個詞。","Nothing to test: within a concept, separate terms with OR or put one per line.")
@@ -724,7 +723,7 @@ function refreshFromInput(){
   HOVA=null;
   panel.style.display="";
   renderResults();
-  var qs=[P.qTotal]; P.rows.forEach(function(r){ qs.push(r.qAlone); if(r.qWithout) qs.push(r.qWithout); });
+  var qs=allQs();
   var miss=qs.filter(function(q){ return counts[q]==null; }).length;
   if(miss && DONE_N){ DONE_N=null; renderResults(); }
   setStatus(miss?(P.db==="pubmed"
@@ -798,16 +797,16 @@ function cntCell(q){
 function rowData(){
   var tot=cval(P.qTotal);
   return P.rows.map(function(r){
-    var a=cval(r.qAlone), w=cval(r.qWithout);
+    var a=null, w=cval(r.qWithout);
     return {r:r,a:a,w:w,u:(hasN(tot)&&hasN(w))?tot-w:null};
   });
 }
 function tagsHtml(x,maxU,isTop){
-  var r=x.r, t="", m=meta[r.qAlone]||{};
+  var r=x.r, t="", m={};
   var tip=' title="'+T("點一下看說明","Click for an explanation")+'"';
   if(P.dup[r.i]) t+='<span class="tag dup tl" data-tk="zero"'+tip+'>'+T("重複","duplicate")+'</span>';
   if(isTop) t+='<span class="tag top tl" data-tk="high"'+tip+'>'+T("獨有最多","most unique")+'</span>';
-  if(hasN(x.u)&&x.u===0&&!P.dup[r.i]) t+=(hasN(x.a)&&x.a===0)?'<span class="tag zero">'+T("0 筆","no hits")+'</span>':'<span class="tag cov tl" data-tk="zero"'+tip+'>'+T("已被涵蓋","covered")+'</span>';
+  if(hasN(x.u)&&x.u===0&&!P.dup[r.i]) t+='<span class="tag cov tl" data-tk="zero"'+tip+'>'+T("已被涵蓋","covered")+'</span>';
   if(m.warn) t+='<br><span class="tag wn" style="margin-left:0">'+esc(m.warn)+'</span>';
   return t;
 }
@@ -820,7 +819,7 @@ function uHtml(x,maxU,tot){
 function stats(rows){
   var maxU=0, topI=-1;
   rows.forEach(function(x){ if(hasN(x.u)&&x.u>maxU){ maxU=x.u; topI=x.r.i; } });
-  var done=rows.filter(function(x){ return hasN(x.u)&&hasN(x.a); }).length;
+  var done=rows.filter(function(x){ return hasN(x.u); }).length;
   return {maxU:maxU, topI:topI, done:done};
 }
 function renderResults(){
@@ -840,16 +839,16 @@ function renderResults(){
   document.getElementById("resTot").innerHTML=
     '<div class="fullq"><div class="fqh"><span>'+T("完整檢索策略","Full search strategy")+'</span>'
     +'<span class="fqc">'+cntCell(P.qTotal)+'</span></div>'
-    +'<pre id="fullPre">'+totalHtml()+'</pre></div>'
+    +'<pre id="fullPre">'+totalHtml()+'</pre>'+((meta[P.qTotal]&&meta[P.qTotal].warn)?'<div class="fqwarn">'+esc(meta[P.qTotal].warn)+'</div>':'')+'</div>'
     +(P.db!=="pubmed"?'<div class="restot">'+genMsg()+'</div>':(DONE_N?'<div class="restot">'+doneMsg()+'</div>':''));
   var multi=P.concepts.length>1;
-  function th(key,label,cls){ var on=SORT.k===key; return '<th class="'+(cls||"")+(on?' on':'')+'"><button class="sortb" data-noauto onclick="sortBy(\''+key+'\')">'+label+'<i>'+(on?(SORT.d<0?'▼':'▲'):'')+'</i></button></th>'; }
-  var h=['<div class="tblwrap"><table class="loo"><thead><tr>'+th("i",T("詞序","No."),"rkh")+(multi?th("c",T("概念","Concept"),"cnh"):"")+th("term",T("測試詞彙","Test term"))+th("a",T("單獨保留筆數","Alone"),"n")+th("w",T("抽掉後總數","Total without"),"n")+th("u",T("獨有貢獻","Unique"),"n")+'</tr></thead><tbody>'];
+  var TW='<span class="tw">'+T("測試詞","test term")+'</span>';   // 欄位名稱中的［測試詞］：特殊樣式，與一般文字區隔
+  function th(key,label,cls,tip){ var on=SORT.k===key; return '<th class="'+(cls||"")+(on?' on':'')+'"><button class="sortb" data-noauto onclick="sortBy(\''+key+'\')"'+(tip?' title="'+esc(tip)+'"':'')+'>'+label+'<i>'+(on?(SORT.d<0?'▼':'▲'):'')+'</i></button></th>'; }
+  var h=['<div class="tblwrap"><table class="loo"><thead><tr>'+th("i",T("詞序","No."),"rkh")+(multi?th("c",T("概念","Concept"),"cnh"):"")+th("term",T("測試詞","Test term"))+th("w",T("不放"+TW+"後總篇數","Total without "+TW),"n")+th("u",T(TW+"獨有貢獻",TW+" unique"),"n",T("完整檢索策略 − 不放［測試詞］後總篇數","Full strategy total − total without [test term]"))+'</tr></thead><tbody>'];
   rows.forEach(function(x){
     var r=x.r;
     h.push('<tr data-i="'+r.i+'" data-a="'+r.aid+'"'+(r.aid===SELA?' class="sel"':'')+'><td class="rk">'+(r.i+1)+'</td>'+(multi?'<td class="cn">'+r.cno+'</td>':'')+'<td class="tm">'+esc(r.term)+'<span class="tags">'+tagsHtml(x,st.maxU,r.i===st.topI)+'</span>'
       +((r.same&&r.ctx)?'<div class="ctx" title="'+esc(r.ctx)+'">'+T("於 ","in ")+esc(r.ctx.length>90?r.ctx.slice(0,88)+"…":r.ctx)+'</div>':'')+'</td>'
-      +'<td class="n">'+cntCell(r.qAlone)+'</td>'
       +'<td class="n">'+cntCell(r.qWithout)+'</td>'
       +'<td class="n u" title="'+T("點一下複製獨有文獻的檢索式（完整策略 NOT 抽掉後）","Click to copy the unique-records string (full strategy NOT without)")+'">'+uHtml(x,st.maxU,tot)+'</td></tr>');
   });
@@ -920,7 +919,7 @@ var DONE_N=null;   // 最近一次完成取得筆數：{n 版數, f 失敗數, t
 // 非 PubMed：共產生幾種版本的檢索式（不重複、不含空白版）
 function genMsg(){
   var seen={}, n=0;
-  [P.qTotal].concat.apply([P.qTotal],P.rows.map(function(r){ return [r.qAlone,r.qWithout]; })).forEach(function(q){ if(q&&!seen[q]){ seen[q]=1; n++; } });
+  allQs().forEach(function(q){ if(q&&!seen[q]){ seen[q]=1; n++; } });
   return T("已產生 <b>"+n+"</b> 條檢索式，請點擊<span class=\"fillchip\">填入</span>以複製檢索式","<b>"+n+"</b> search strings built — click an <span class=\"fillchip\">enter</span> cell to copy one");
 }
 function doneMsg(){
@@ -934,7 +933,7 @@ function runAll(){
   analyse(); renderParseInfo();
   if(!P.rows.length){ document.getElementById("resPanel").style.display="none"; setStatus(P.concepts.length?"":T("請先輸入概念。","Enter a concept first.")); return; }
   // 換了輸入：只保留仍在使用的檢索式筆數
-  var inUse={}, all=[P.qTotal]; P.rows.forEach(function(r){ all.push(r.qAlone); if(r.qWithout) all.push(r.qWithout); });
+  var inUse={}, all=allQs();
   all.forEach(function(q){ inUse[q]=1; });
   Object.keys(counts).forEach(function(q){ if(!inUse[q]) delete counts[q]; });
   document.getElementById("resPanel").style.display="";
@@ -1012,7 +1011,7 @@ async function fetchAll(qs,force){
 }
 function stopFetch(){ stopReq=true; }
 // 表格右下「重新檢索 PubMed」：有缺漏（沒筆數或失敗）時只補抓缺的；全部都有時整批重新檢索
-function allQs(){ var qs=[P.qTotal]; P.rows.forEach(function(r){ qs.push(r.qAlone); if(r.qWithout) qs.push(r.qWithout); }); return qs; }
+function allQs(){ var qs=[P.qTotal]; P.rows.forEach(function(r){ if(r.qWithout) qs.push(r.qWithout); }); return qs; }
 function refetchPubMed(){
   if(!P||!P.rows.length||P.db!=="pubmed") return;
   cancelFetch(); DONE_N=null;
@@ -1039,7 +1038,7 @@ function saveProject(){
   if(!texts.some(function(t){ return t.trim(); })){ alert(T("目前沒有可儲存的內容。","Nothing to save yet.")); return; }
   var c={}, m={};
   if(P&&P.rows&&P.rows.length){
-    var qs=[P.qTotal]; P.rows.forEach(function(r){ qs.push(r.qAlone); if(r.qWithout) qs.push(r.qWithout); });
+    var qs=allQs();
     qs.forEach(function(q){ if(counts[q]!=null) c[q]=counts[q]; if(meta[q]&&(meta[q].warn||meta[q].auto)) m[q]={warn:meta[q].warn||"",auto:!!meta[q].auto}; });
   }
   var payload={_type:"sr-loo-project", ver:"1", savedAt:new Date().toISOString(), lang:(isEn()?"en":"zh"),
