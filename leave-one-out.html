@@ -212,8 +212,9 @@
   table.loo td.tm .ctx{font-size:11.5px;color:var(--mut);margin-top:2px;line-height:1.45}
   /* 結果表：完整策略、可排序欄、點筆數複製 */
   .fullq{margin:2px 0 10px}
-  .fullq .fqlabel{font-size:17px;font-weight:700;color:var(--sh-ink)}
-  .fullq .fqh{display:flex;align-items:center;justify-content:flex-end;gap:4px;font-size:12.5px;font-weight:700;color:var(--mut)}
+  .fullq .fqlabel{font-size:17px;font-weight:700;color:var(--sh-ink);line-height:1.3}
+  .fullq .fqc{display:inline-flex;align-items:baseline}
+  .fullq .fqh{display:flex;align-items:baseline;justify-content:flex-end;gap:4px;font-size:12.5px;font-weight:700;color:var(--mut)}
   .fullq pre .qa{transition:color .12s}
   .fullq pre .qa.hv{text-decoration:underline;text-decoration-color:#C9B48A;text-decoration-thickness:2px;text-underline-offset:3px}
   .fullq pre .qa.hl{color:var(--sh-green-d);font-weight:800;text-decoration:underline;text-decoration-color:var(--sh-amber);text-decoration-thickness:3px;text-underline-offset:3px}
@@ -346,7 +347,7 @@
       <h3 class="tipsub"><span data-zh>欄位定義</span><span data-en>Columns</span></h3>
       <ul class="blk" data-zh>
         <li><b><span class="tw">測試詞</span>不加入時總數：</b>這個詞所在的概念拿掉它，其餘照舊。</li>
-        <li><b><span class="tw">測試詞</span>獨有貢獻：</b>完整檢索策略總數 − <span class="tw">測試詞</span>不加入時總數，也就是只有這個詞才找得到的筆數。
+        <li><b><span class="tw">測試詞</span>獨有貢獻：</b>〔完整檢索策略總數〕 − 〔<span class="tw">測試詞</span>不加入時總數〕，也就是只有這個詞才找得到的筆數。
           <ul class="sub">
             <li data-tk="high"><b>獨有貢獻多：</b>讓總數暴增的詞彙。獨有多不代表該刪或該留，先到資料庫看那批獨有的文獻是不是雜訊，再決定刪、改寫或加限制。</li>
             <li data-tk="low"><b>獨有貢獻少：</b>這個詞找到的文獻大多已被其他詞涵蓋，保留或刪除影響都不大，大多狀況下可保留著。</li>
@@ -356,7 +357,7 @@
       </ul>
       <ul class="blk" data-en>
         <li><b>Total without <span class="tw">test term</span>:</b> this term is removed from its concept; everything else unchanged.</li>
-        <li><b><span class="tw">test term</span> unique:</b> full-strategy total − total without <span class="tw">test term</span>, i.e. records only this term finds.
+        <li><b><span class="tw">test term</span> unique:</b> [full-strategy total] − [total without <span class="tw">test term</span>], i.e. records only this term finds.
           <ul class="sub">
             <li data-tk="high"><b>High unique:</b> the term inflating the total. A high unique count doesn’t mean the term should go or stay — check those unique records in the database for noise first, then decide whether to drop, rewrite or restrict it.</li>
             <li data-tk="low"><b>Low unique:</b> most of what this term finds is already covered by other terms, so keeping or deleting it makes little difference; it can usually stay.</li>
@@ -558,7 +559,7 @@ function pr(n){
 function atomsOf(n,acc){ acc=acc||[]; if(!n) return acc; if(n.type==="a") acc.push(n); else if(n.type==="g") atomsOf(n.inner,acc); else n.items.forEach(function(x){ atomsOf(x,acc); }); return acc; }
 function hasAtom(n,a){ return atomsOf(n).indexOf(a)>=0; }
 function clone(n,ch){ var o={}; for(var k in n) o[k]=n[k]; for(var k2 in ch) o[k2]=ch[k2]; return o; }
-// 抽掉一個詞：從它所在的 OR 清單拿掉；若它是 AND／NEAR 的唯一一邊，整個組合跟著拿掉；若在 NOT 右邊，只拿掉那段 NOT
+// 測試詞不加入時：從它所在的 OR 清單移除；若它是 AND／NEAR 的唯一一邊，整個組合一起移除；若在 NOT 右邊，只移除那段 NOT
 function rm(n,a){
   if(!n) return null;
   if(n.type==="a") return n===a?null:n;
@@ -573,7 +574,7 @@ function rm(n,a){
   }
   return ni.length===1?ni[0]:{type:"ch",items:ni,ops:no};
 }
-// 單獨：這個詞所在的每一層 OR 只留它，其餘結構（AND 另一邊、NEAR 另一邊）照舊
+// 單獨保留（2026-10-28 起結果表已不顯示，保留函式備用）：這個詞所在的每一層 OR 只留它，其餘結構（AND 另一邊、NEAR 另一邊）照舊
 function keep(n,a){
   if(n.type==="a") return n;
   if(n.type==="g") return clone(n,{inner:keep(n.inner,a)});
@@ -590,7 +591,7 @@ function normTerm(t){ return t.toLowerCase().replace(/["\s]+/g," ").trim(); }
 
 /* ---------- 組檢索式 ---------- */
 var P=null;   // 目前的解析結果
-// 獨有文獻：完整策略 NOT 抽掉後（Scopus 用 AND NOT）
+// 獨有文獻：完整檢索策略 NOT 測試詞不加入時的檢索式（Scopus 用 AND NOT）
 function notQ(a,b){
   if(!b) return a;
   var op=(P&&P.db==="scopus")?" AND NOT ":" NOT ";
@@ -644,7 +645,7 @@ function analyse(){
     atomsOf(c.root).forEach(function(a,ai){
       a.__id=ci+"-"+ai;
       var w=rm(c.root,a);
-      if(!w){ P.skipped.push(c.no); return; }   // 概念只剩這個詞，拿掉就沒有這個概念了：不測
+      if(!w){ P.skipped.push(c.no); return; }   // 概念只剩這個詞，不加入就沒有這個概念了：不測
       var ctx="";
       for(var k=0;k<tops.length;k++) if(hasAtom(tops[k],a)){ if(tops[k]!==a){ ctx=pr(tops[k]); P.nested++; } break; }
       P.rows.push({i:P.rows.length, ci:ci, cno:c.no, term:a.text, aid:a.__id, key:normTerm(a.text), lid:listId.get(a), ctx:ctx, qAlone:buildQ(ci,keep(c.root,a)), qWithout:buildQ(ci,w), qUnique:notQ(P.qTotal,buildQ(ci,w))});
