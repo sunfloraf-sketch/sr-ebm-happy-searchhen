@@ -579,6 +579,7 @@
   .pcopy{display:inline;margin:0;padding:1px 9px;border:1px solid #9BB9B3;border-radius:999px;background:#EDF7F5;color:#0f766e;font:inherit;font-size:12px;font-weight:600;cursor:pointer;vertical-align:baseline}
   .pcopy:hover{background:#DCEFEA}
   .pcopy.done{background:#0f766e;color:#fff;border-color:#0f766e}
+  table.pico td textarea.cellparen{border-color:#C0392B !important;background:#FEF6F5 !important;box-shadow:0 0 0 2px rgba(192,57,43,.13) !important}
 </style>
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -2084,6 +2085,22 @@ if (typeof module !== "undefined" && module.exports) {
     c2.ta.value=_cvOut[0]; c3.ta.value=_cvOut[1]; c4.ta.value=_cvOut[2];
     if(_cvOut.join("\n")!==_cvIn.join("\n")) _cvCleanToast();
     [c2,c3,c4].forEach(function(cc){ cc.ta.addEventListener("paste", function(){ setTimeout(function(){ _cvCleanTa(cc.ta); }, 0); }); });   // 直接貼進控制詞彙格：貼上後清除檢索語法
+    // 英文同義詞（整理前／整理後）貼上逐行檢索式（Ovid 等）：自動去語法、拆行；主題詞行移到 MeSH 欄
+    [cbTa, c1.ta].forEach(function(ta){ ta.addEventListener("paste", function(e){
+      var cd=e.clipboardData||window.clipboardData; if(!cd) return; var txt=cd.getData("text/plain")||cd.getData("Text")||"";
+      if(!_strategyLike(txt)) return;
+      e.preventDefault();
+      var en=isEn(), r=_strategyClean(txt, en);
+      var v=ta.value, s=ta.selectionStart==null?v.length:ta.selectionStart, eN=ta.selectionEnd==null?v.length:ta.selectionEnd;
+      var before=v.slice(0,s), after=v.slice(eN), ins=r.free.join("\n");
+      if(ins){ if(before && !/\n$/.test(before)) ins="\n"+ins; if(after && !/^\n/.test(after)) ins=ins+"\n"; }
+      ta.value=before+ins+after; var pos=(before+ins).length; try{ ta.setSelectionRange(pos,pos); }catch(_e){}
+      ta.dispatchEvent(new Event("input",{bubbles:true}));
+      var _h=function(x){ return String(x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }, hl=r.heads.map(function(x){ return "〈"+_h(x)+"〉"; }).join(en?" ":"");
+      if(typeof _commaShow==="function") _commaShow(en
+        ? ("Search strategy cleaned: "+r.free.length+" free-text line(s) (line numbers, field tags and combination lines removed; $ → *, adjN → within N−1 words)."+(r.heads.length?(" "+r.heads.length+" subject-heading line(s) ending in / were left out (not assigned to any vocabulary — MEDLINE and Embase headings differ); paste them into the right controlled-vocabulary column yourself: "+hl):"")+" Please check.")
+        : ("已清理貼上的檢索式：自由詞彙 "+r.free.length+" 行（去行號、欄位碼與組合行；$ → *、adjN → 鄰 N−1）。"+(r.heads.length?("主題詞行（/ 結尾）"+r.heads.length+" 行未放入（不自動判斷屬於哪個詞表，以免 MEDLINE／Embase 誤歸），請自行貼到對應的控制詞彙欄："+hl+"。"):"")+"請確認。"));
+    }); });
     c0.ta.dataset.kind="zh"; c1.ta.dataset.kind="ft"; c2.ta.dataset.kind="mesh"; c3.ta.dataset.kind="emtree"; c4.ta.dataset.kind="cinahl";   // 供浮動工具列辨識欄位類型（不含狹義詞／日後 @欄位、次標目）
     c3.td.classList.add("emtreecell"); c4.td.classList.add("cinahlcell"); c2.td.classList.add("meshcell"); var _mv=document.createElement("div"); _mv.className="mview"; _mv.style.display="none"; c2.td.appendChild(_mv);   // MeSH 欄：驗證後的「已驗證檢視」容器（與輸入框切換）
     var rmTd=document.createElement("td"); rmTd.style.verticalAlign="middle";   // 功能鍵垂直置中
@@ -3527,6 +3544,37 @@ function befPluralOf(w){
   $("#addRow").onclick=function(){ addRow(""); saveDraftDebounced(); };
   // 使用者在表格內手動編輯 → 不再視為「剛載入的範例」（清空時會改為先確認）
   if(picoBody) picoBody.addEventListener("input", function(){ _exampleActive=false; }, true);
+  // 括弧不成對：游標離開儲存格時檢查（整張表重算），標紅框並在表格下方提示；改好、離開該格後自動消失
+  (function(){
+    if(!picoBody) return;
+    var tbl=picoBody.closest("table"); if(!tbl) return;
+    var box=document.createElement("div"); box.className="inwarn"; box.id="parenWarn"; box.style.display="none"; box.setAttribute("role","status");
+    tbl.insertAdjacentElement("afterend", box);
+    function colName(ta){ var td=ta.closest("td"); if(!td) return ""; var th=tbl.querySelectorAll("thead tr:first-child th")[td.cellIndex];
+      var t=th?(th.innerText||th.textContent||""):""; t=t.split("\n")[0].replace(/\s+/g," ").replace(/\s*(整理前|整理後|Before|After|工具|Tools)[\s\S]*$/,"").trim();
+      if(ta.classList.contains("beftxt")) t+=isEn()?" (Before)":"（整理前）";
+      else if(tbl.querySelector("th.bef") && td.cellIndex===tbl.querySelector("th.bef").cellIndex+1) t+=isEn()?" (After)":"（整理後）";
+      return t; }
+    function scan(){
+      var bad=[];
+      Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr,ri){
+        var lab=(tr._get&&tr._get().label)||"", code="L"+(ri+1);
+        Array.prototype.forEach.call(tr.querySelectorAll("textarea"), function(ta){
+          if(inputUnbalanced(ta.value)){
+            var o=(ta.value.match(/\(/g)||[]).length, c=(ta.value.match(/\)/g)||[]).length;
+            ta.classList.add("cellparen");
+            ta.title=isEn()?("Unbalanced parentheses: ( ×"+o+", ) ×"+c):("圓括弧無法成對：左括號 "+o+" 個、右括號 "+c+" 個");
+            bad.push(code+(lab?(" "+lab):"")+(isEn()?" · ":"・")+colName(ta)+(isEn()?(" ( "+o+" / ) "+c):("（左 "+o+"、右 "+c+"）")));
+          } else if(ta.classList.contains("cellparen")){ ta.classList.remove("cellparen"); ta.removeAttribute("title"); }
+        });
+      });
+      if(bad.length){ box.innerHTML="\u26A0 "+(isEn()?"Unbalanced parentheses: ":"圓括弧無法成對：")+bad.map(function(x){ return x.replace(/&/g,"&amp;").replace(/</g,"&lt;"); }).join(isEn()?"; ":"、")+(isEn()?" — the numbers of ( and ) don’t match; please check the red cells.":"——左、右括號數量不一致，請檢查紅框儲存格。"); box.style.display="block"; }
+      else { box.style.display="none"; box.innerHTML=""; }
+    }
+    picoBody.addEventListener("focusout", function(e){ if(e.target && e.target.tagName==="TEXTAREA") scan(); });
+    window._parenScan=scan;
+  })();
+
 
   // 工具列下拉選單（Word編輯 / 專案）：點按鈕開關、點外面或選項後關閉
   (function(){
@@ -3622,6 +3670,39 @@ function befPluralOf(w){
     return en ? ("English synonyms contain a comma: "+list+" — the comma may separate two terms (split them onto two lines) or mark an inverted term (e.g. Catheterization, Central Venous → put it back in order). Please check (orange cells).")
               : ("英文同義詞含逗號："+list+"——逗號可能是隔開兩個詞（請拆成兩行），也可能是倒裝寫法（如 Catheterization, Central Venous，請轉正）；請自行確認（橘框）。"); }
   function _commaShow(html){ if(!picoWarn || !html) return; picoWarn.innerHTML="\u26A0 "+html; picoWarn.style.display="block"; picoWarn.classList.remove("flash"); void picoWarn.offsetWidth; picoWarn.classList.add("flash"); }
+  // 貼上 Ovid 等逐行檢索式到英文同義詞欄：去行號、欄位碼（.tw. 等）、組合行（or/1-6）；$ → *；adjN → 鄰(N−1)；小寫 or/and/not → 大寫；
+  //   整行被外層括號包住時去括號並依最外層 OR 拆成一行一個（內部分組括號保留）；主題詞行（… / 結尾）另外回傳，交給 MeSH 欄
+  function _strategyLike(text){
+    var ls=String(text||"").split(/\r?\n/).filter(function(l){ return l.trim(); }); if(ls.length<1) return false;
+    var num=ls.filter(function(l){ return /^\s*\d+\s*[.、)]\s+\S/.test(l); }).length;
+    var fld=ls.filter(function(l){ return /\.(?:tw|ti|ab|kf|kw|mp|af|ot|sh|hw|pt|ti,ab(?:,kf|,kw)?|ab,ti)\.?\s*$/i.test(l.trim()); }).length;
+    return num>=2 || fld>=1;
+  }
+  function _strategyClean(text, en){
+    var free=[], heads=[], skipped=0;
+    function unwrap(x){ x=x.trim(); for(var g=0; g<5 && x.charAt(0)==="(" && x.charAt(x.length-1)===")"; g++){ var d=0, ok=true;
+        for(var i=0;i<x.length;i++){ var ch=x.charAt(i); if(ch==="(") d++; else if(ch===")"){ d--; if(d===0 && i<x.length-1){ ok=false; break; } } }
+        if(!ok) break; x=x.slice(1,-1).trim(); } return x; }
+    function topOr(x){ var parts=[], cur="", d=0, q=false; for(var i=0;i<x.length;i++){ var ch=x.charAt(i);
+        if(ch==='"'){ q=!q; cur+=ch; continue; }
+        if(!q){ if(ch==="(") d++; else if(ch===")"&&d>0) d--; }
+        if(!q && d===0){ var m=/^\s+OR\s+/.exec(x.slice(i)); if(m && /\s/.test(ch)){ parts.push(cur); cur=""; i+=m[0].length-1; continue; } }
+        cur+=ch; } parts.push(cur); return parts.map(function(p){ return p.trim(); }).filter(Boolean); }
+    function emit(x){ x=unwrap(x); var ps=topOr(x); if(ps.length>1){ ps.forEach(emit); return; } if(x) free.push(x); }
+    String(text||"").replace(/[‐‑‒–—]/g,"-").split(/\r?\n/).forEach(function(raw){
+      var l=raw.replace(/^\s*\d+\s*[.、)]\s*/,"").trim(); if(!l) return;
+      if(/^(?:or|and|not)\s*\/\s*[\d\s,\-]+$/i.test(l) || /^[#\d\s()]+(?:\b(?:or|and|not)\b[#\d\s()]+)+$/i.test(l) || /^limit\s+\d+/i.test(l) || /^remove duplicates/i.test(l)){ skipped++; return; }   // 組合行
+      var h=l.match(/^(exp\s+)?\*?\s*(.+?)\s*\/\s*(?:[a-z]{2}(?:,\s*[a-z]{2})*)?\s*$/i);
+      if(h && !/\.\w+\.?\s*$/.test(l)){ heads.push(l); return; }   // 主題詞行（… / 結尾）：不自動歸到任何控制詞彙欄（Ovid MEDLINE／Embase 等詞表不同，避免誤歸），只列出原文
+      l=l.replace(/\.(?:[a-z]{2,3})(?:,[a-z]{2,3})*\.?\s*$/i,"");            // 欄位碼 .tw. .ti,ab. …
+      l=l.replace(/\$\d*/g,"*").replace(/#/g,"*");                            // Ovid 切截 $、$n、# → *
+      l=l.replace(/\badj(\d*)\b/gi, function(m,n){ var k=Math.max(0,(n?parseInt(n,10):1)-1); return en?("within "+k+" words"):("鄰"+k); });   // adjN（相距 N）→ 中間最多夾 N−1 字
+      l=l.replace(/\b(or|and|not)\b(?=(?:[^"]*"[^"]*")*[^"]*$)/gi, function(m){ return m.toUpperCase(); });
+      emit(l);
+    });
+    var seen={}; free=free.filter(function(x){ var k=x.toLowerCase(); if(seen[k]) return false; seen[k]=1; return true; });
+    return {free:free, heads:heads, skipped:skipped};
+  }
   function _cvDropNotes(cell){ return String(cell||"").split("\n").filter(function(l){ var t=l.trim(); if(!t) return false;
       if(/^(?:includes?|including|note|notes|see|use|also|e\.g\.|i\.e\.|entry terms?|such as|search|verify|check)\b/i.test(t) && t.split(/\s+/).length>=4) return false;
       if(t.split(/\s+/).length>=6 && /[.。]$/.test(t)) return false;
@@ -4197,7 +4278,7 @@ function befPluralOf(w){
   // 不展開（不含下位／狹義詞）
   var CV_NOEXP = { pubmed:'"%T"[mh:noexp]', ovid:'"%T"/', jbi:'"%T"/', embase:'"%T"/de', cochrane:'[mh ^"%T"]', ebsco:'MH ("%T")' };
   var CV_NOEXP_MJ = { pubmed:'"%T"[majr:noexp]', ovid:'*"%T"/', jbi:'"%T"/', embase:'"%T"/mj', cochrane:'[mh ^"%T"[mj]]', ebsco:'MM ("%T")' };   // L3 精準：不展開但取主要焦點（PubMed majr:noexp、Ovid *、Embase /mj、Cochrane ^…[mj]、CINAHL MM）
-  var CV_NOEXP_RE=/[（(]\s*(?:不含[^)）]{0,12}|不狹[義詞]{0,2}|no[\s-]?exp\w*)\s*[)）]|(?:^|\s)no[\s-]?exp(?=\s|$)/i;  // (不含狹義詞)/(不含下位詞)/(不狹)/(noexp)/(no exp) 或行末 noexp、no exp
+  var CV_NOEXP_RE=/[（(]\s*(?:不含[^)）]{0,12}|不狹[義詞]{0,2}|no[\s-]?exp\w*)\s*[)）]|(?:^|\s)no[\s-]?exp(?=\s|$)|\s*(?:不含(?:所有)?(?:狹義詞?|狹|下位詞?)|不狹(?:義詞?|詞)?)\s*$/i;  // (不含狹義詞)/(不含下位詞)/(不狹)/(noexp)/(no exp) 或行末 noexp、no exp
   // 補充概念（Supplementary Concept）標註：詞後加「(補充概念：化學物質)」；PubMed 用 [nm]，Ovid MEDLINE 依類型用 .nm./.rx./.px./.ox./.ux./.mx.
   var SCR_TYPES=[{k:"chem",zh:"化學物質",en:"chemical",ovid:"nm",ph:"nm"},{k:"dis",zh:"罕見疾病",en:"rare disease",ovid:"rx",ph:"rs"},{k:"prot",zh:"方案",en:"protocol",ovid:"px",ph:"ps"},{k:"org",zh:"生物",en:"organism",ovid:"ox",ph:"os"},{k:"pop",zh:"族群",en:"population",ovid:"ux",ph:"ul"},{k:"anat",zh:"解剖",en:"anatomy",ovid:"mx",ph:"my"}]   /* ovid＝Word 欄位；ph＝Concept/Phrase 欄位（化學物質沒有獨立 Phrase 欄位，用 .nm.）；輸出優先用 ph */;
   var CV_SCR_RE=/\s*[（(]\s*(?:補充概念|supplementary(?:\s+concept)?)\s*(?:[:：]\s*([^)）]*?))?\s*[)）]\s*$/i;

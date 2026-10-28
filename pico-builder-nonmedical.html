@@ -402,6 +402,7 @@
   #pasteZone:focus{outline:none;background:#fff;border-style:solid !important;box-shadow:0 0 0 3px rgba(15,118,110,.18)}
   /* PICO 表格各儲存格（中文／整理前／整理後）行距加大 */
   table.pico td textarea{line-height:1.8}
+  table.pico td textarea.cellparen{border-color:#C0392B !important;background:#FEF6F5 !important;box-shadow:0 0 0 2px rgba(192,57,43,.13) !important}
 </style>
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -2163,6 +2164,37 @@ if (typeof module !== "undefined" && module.exports) {
   $("#addRow").onclick=function(){ addRow(""); saveDraftDebounced(); };
   // 使用者在表格內手動編輯 → 不再視為「剛載入的範例」（清空時會改為先確認）
   if(picoBody) picoBody.addEventListener("input", function(){ _exampleActive=false; }, true);
+  // 括弧不成對：游標離開儲存格時檢查（整張表重算），標紅框並在表格下方提示；改好、離開該格後自動消失
+  (function(){
+    if(!picoBody) return;
+    var tbl=picoBody.closest("table"); if(!tbl) return;
+    var box=document.createElement("div"); box.className="inwarn"; box.id="parenWarn"; box.style.display="none"; box.setAttribute("role","status");
+    tbl.insertAdjacentElement("afterend", box);
+    function colName(ta){ var td=ta.closest("td"); if(!td) return ""; var th=tbl.querySelectorAll("thead tr:first-child th")[td.cellIndex];
+      var t=th?(th.innerText||th.textContent||""):""; t=t.split("\n")[0].replace(/\s+/g," ").replace(/\s*(整理前|整理後|Before|After|工具|Tools)[\s\S]*$/,"").trim();
+      if(ta.classList.contains("beftxt")) t+=isEn()?" (Before)":"（整理前）";
+      else if(tbl.querySelector("th.bef") && td.cellIndex===tbl.querySelector("th.bef").cellIndex+1) t+=isEn()?" (After)":"（整理後）";
+      return t; }
+    function scan(){
+      var bad=[];
+      Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr,ri){
+        var lab=(tr._get&&tr._get().label)||"", code="L"+(ri+1);
+        Array.prototype.forEach.call(tr.querySelectorAll("textarea"), function(ta){
+          if(inputUnbalanced(ta.value)){
+            var o=(ta.value.match(/\(/g)||[]).length, c=(ta.value.match(/\)/g)||[]).length;
+            ta.classList.add("cellparen");
+            ta.title=isEn()?("Unbalanced parentheses: ( ×"+o+", ) ×"+c):("圓括弧無法成對：左括號 "+o+" 個、右括號 "+c+" 個");
+            bad.push(code+(lab?(" "+lab):"")+(isEn()?" · ":"・")+colName(ta)+(isEn()?(" ( "+o+" / ) "+c):("（左 "+o+"、右 "+c+"）")));
+          } else if(ta.classList.contains("cellparen")){ ta.classList.remove("cellparen"); ta.removeAttribute("title"); }
+        });
+      });
+      if(bad.length){ box.innerHTML="\u26A0 "+(isEn()?"Unbalanced parentheses: ":"圓括弧無法成對：")+bad.map(function(x){ return x.replace(/&/g,"&amp;").replace(/</g,"&lt;"); }).join(isEn()?"; ":"、")+(isEn()?" — the numbers of ( and ) don’t match; please check the red cells.":"——左、右括號數量不一致，請檢查紅框儲存格。"); box.style.display="block"; }
+      else { box.style.display="none"; box.innerHTML=""; }
+    }
+    picoBody.addEventListener("focusout", function(e){ if(e.target && e.target.tagName==="TEXTAREA") scan(); });
+    window._parenScan=scan;
+  })();
+
 
   // 工具列下拉選單（Word編輯 / 專案）：點按鈕開關、點外面或選項後關閉
   (function(){
@@ -2791,7 +2823,7 @@ if (typeof module !== "undefined" && module.exports) {
   // 不展開（不含下位／狹義詞）
   var CV_NOEXP = { pubmed:'"%T"[mh:noexp]', ovid:'"%T"/', embase:'"%T"/de', cochrane:'[mh ^"%T"]', ebsco:'MH ("%T")' };
   var CV_NOEXP_MJ = { pubmed:'"%T"[majr:noexp]', ovid:'*"%T"/', embase:'"%T"/mj', cochrane:'[mh ^"%T"[mj]]', ebsco:'MM ("%T")' };   // L3 精準：不展開但取主要焦點（PubMed majr:noexp、Ovid *、Embase /mj、Cochrane ^…[mj]、CINAHL MM）
-  var CV_NOEXP_RE=/[（(]\s*(?:不含[^)）]{0,12}|不狹[義詞]{0,2}|no[\s-]?exp\w*)\s*[)）]|(?:^|\s)no[\s-]?exp(?=\s|$)/i;  // (不含狹義詞)/(不含下位詞)/(不狹)/(noexp)/(no exp) 或行末 noexp、no exp
+  var CV_NOEXP_RE=/[（(]\s*(?:不含[^)）]{0,12}|不狹[義詞]{0,2}|no[\s-]?exp\w*)\s*[)）]|(?:^|\s)no[\s-]?exp(?=\s|$)|\s*(?:不含(?:所有)?(?:狹義詞?|狹|下位詞?)|不狹(?:義詞?|詞)?)\s*$/i;  // (不含狹義詞)/(不含下位詞)/(不狹)/(noexp)/(no exp) 或行末 noexp、no exp
   function cvTermRender(term, eng, level, noexp){
     term=String(term).replace(/^[,;]+|[,;]+$/g,"").trim();
     term=term.replace(/^["'“”‘’]+\s*([\s\S]*?)\s*["'“”‘’]+$/,"$1").trim();  // 移除使用者自行加的外層引號，避免與各庫模板引號重複（"exercise therapy" → exercise therapy）
