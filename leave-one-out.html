@@ -246,6 +246,7 @@
   .tblwrap{overflow-x:auto}
   .tw{display:inline-block;font-family:"SF Mono",Consolas,monospace;font-size:11px;font-weight:700;color:var(--sh-green-d);border:1px solid #BFD3C9;border-radius:4px;padding:0 4px;margin:0 2px;line-height:1.5;vertical-align:1px}
   th.on .tw{border-color:var(--sh-green)}
+  #gtip{white-space:pre-line}
   .fullq .fqwarn{font-size:12px;color:#b42318;margin-top:3px}
   .tfoot{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
   .refetch{display:inline-flex;align-items:center;gap:6px;margin-top:10px;background:none;border:1px solid var(--line);border-radius:8px;padding:6px 12px;font:inherit;font-size:12.5px;font-weight:600;color:var(--sh-green-d);cursor:pointer;white-space:nowrap}
@@ -842,7 +843,7 @@ function renderResults(){
   var multi=P.concepts.length>1;
   var TW='<span class="tw">'+T("測試詞","test term")+'</span>';   // 欄位名稱中的［測試詞］：特殊樣式，與一般文字區隔
   function th(key,label,cls,tip){ var on=SORT.k===key; return '<th class="'+(cls||"")+(on?' on':'')+'"><button class="sortb" data-noauto onclick="sortBy(\''+key+'\')"'+(tip?' title="'+esc(tip)+'"':'')+'>'+label+'<i>'+(on?(SORT.d<0?'▼':'▲'):'')+'</i></button></th>'; }
-  var h=['<div class="tblwrap"><table class="loo"><thead><tr>'+th("i",T("詞序","No."),"rkh")+(multi?th("c",T("概念","Concept"),"cnh"):"")+th("term",TW)+th("w",T(TW+"不加入時總篇數","Total without "+TW),"n")+th("u",T(TW+"獨有貢獻",TW+" unique"),"n",T("完整檢索策略 − ［測試詞］不加入時總篇數","Full strategy total − total without [test term]"))+'</tr></thead><tbody>'];
+  var h=['<div class="tblwrap"><table class="loo"><thead><tr>'+th("i",T("詞序","No."),"rkh")+(multi?th("c",T("概念","Concept"),"cnh"):"")+th("term",TW)+th("w",T(TW+"不加入時總篇數","Total without "+TW),"n")+th("u",T(TW+"獨有貢獻",TW+" unique"),"n",T("〔獨有貢獻〕＝只有這個詞才找得到的篇數\n＝〔完整檢索策略總篇數〕減〔測試詞不加入時總篇數〕","[Unique] = records only this term finds\n= [full-strategy total] minus [total without test term]"))+'</tr></thead><tbody>'];
   rows.forEach(function(x){
     var r=x.r;
     h.push('<tr data-i="'+r.i+'" data-a="'+r.aid+'"'+(r.aid===SELA?' class="sel"':'')+'><td class="rk">'+(r.i+1)+'</td>'+(multi?'<td class="cn">'+r.cno+'</td>':'')+'<td class="tm">'+esc(r.term)+'<span class="tags">'+tagsHtml(x,st.maxU,r.i===st.topI)+'</span>'
