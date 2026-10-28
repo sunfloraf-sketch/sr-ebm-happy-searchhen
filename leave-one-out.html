@@ -147,8 +147,15 @@
   .tippanel li b{color:var(--sh-ink)}
   body.en .tippanel ul.blk[data-en]{display:block}
   .panel h2 .h2note{margin-left:10px;font-size:12.5px;font-weight:600;color:var(--mut)}
+  .tippanel h2{font-size:17px}
+  .tippanel h3.tipsub{margin:14px 0 2px;font-size:13.5px;color:var(--sh-green-d)}
+  .tippanel ul.sub{margin:4px 0 0;padding-left:16px;list-style:circle}
+  .tippanel li[data-tk]{border-radius:6px;transition:background-color .6s,box-shadow .6s}
+  .tippanel li[data-tk].flash{background-color:#FBF0DA;box-shadow:0 0 0 4px #FBF0DA}
+  .tag.tl{cursor:pointer}
+  .tag.tl:hover{text-decoration:underline dotted;text-underline-offset:3px}
   .tippanel .tipintro{font-size:12.5px;color:#4b5650;line-height:1.65;margin:6px 0 2px}
-  @media(min-width:1001px){.sh-sub>span{display:block;max-width:calc(100% - 352px)}body.en .sh-sub>span[data-en]{display:block}}   /* 說明文字寬度對齊左側功能欄（右欄 330px＋間距 22px） */
+  @media(min-width:1001px){.sh-sub>span{max-width:calc(100% - 352px)}body:not(.en) .sh-sub>span[data-zh],body.en .sh-sub>span[data-en]{display:block}}   /* 說明文字寬度對齊左側功能欄（右欄 330px＋間距 22px） */
   .sh-sub .subname{display:block;color:#c0392b;font-weight:800;font-size:20px;line-height:1.35;margin-bottom:4px;letter-spacing:.5px}
   .panel h2.inh{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px}
   .projbtns{display:flex;gap:4px;flex-wrap:wrap}
@@ -331,24 +338,40 @@
     <div class="panel tippanel">
       <h2><span data-zh>怎麼看結果</span><span data-en>Reading the results</span></h2>
       <div class="tipintro" data-zh>類似統合分析的逐一剔除敏感度分析——一次拿掉一項，看整體結果改變多少；這裡拿掉的是檢索詞，看的是筆數變化，藉此判斷每個詞對檢索結果的影響程度。</div>
+      <div class="tipintro" data-zh>點任一格筆數或<span class="fillchip">填入</span>，即複製那一版檢索式；手動模式貼到資料庫執行後，可人工填入筆數於該格（或資料庫畫面自行評估不回填）。</div>
       <div class="tipintro" data-en>Like a leave-one-out sensitivity analysis in meta-analysis — remove one item at a time and see how much the overall result changes; here the item is a search term and the result is the record count, showing how much each term influences the search.</div>
+      <div class="tipintro" data-en>Click any count or <span class="fillchip">enter</span> cell to copy that search string; in manual mode, run it in the database and type the count into that cell (or just judge it on the database screen without entering it).</div>
+      <h3 class="tipsub"><span data-zh>欄位定義</span><span data-en>Columns</span></h3>
       <ul class="blk" data-zh>
-        <li><b>點擊筆數即複製：</b>點任一格筆數或<span class="fillchip">填入</span>，會複製那一版檢索式；手動模式貼到資料庫執行後，可人工填入筆數於該格（或資料庫畫面自行評估不回填）。</li>
         <li><b>單獨保留筆數：</b>這個詞所在的概念只留它，其他詞彙維持。</li>
         <li><b>抽掉後總數：</b>這個詞所在的概念拿掉它，其餘照舊。</li>
-        <li><b>獨有貢獻：</b>總數 − 抽掉後總數，也就是只有這個詞才找得到的筆數。數字最大的，就是讓總數暴增的那個詞。獨有多不代表該刪，先到資料庫看那批獨有的文獻是不是雜訊，再決定刪、改寫或加限制。</li>
-        <li><b>單獨保留多、獨有貢獻少：</b>這個詞找到的大多已被其他詞涵蓋，保留或抽掉的影響都不大。</li>
-        <li><b>子群組內的詞：</b>抽掉＝從它所在的 OR 拿掉；若它是 AND／NEAR 某一邊唯一的詞，整個子群組一起拿掉。單獨保留＝那一層 OR 只留它，AND／NEAR 的另一邊照舊。</li>
-        <li><b>獨有為 0：</b>標示「已被涵蓋」，抽掉沒影響，通常可以保留；兩個詞寫法相同時標「重複」。</li>
+        <li><b>獨有貢獻：</b>完整策略總數 − 抽掉後總數，也就是只有這個詞才找得到的筆數。
+          <ul class="sub">
+            <li data-tk="high"><b>獨有貢獻多：</b>讓總數暴增的詞彙。獨有多不代表該刪或該留，先到資料庫看那批獨有的文獻是不是雜訊，再決定刪、改寫或加限制。</li>
+            <li data-tk="low"><b>獨有貢獻少：</b>這個詞找到的文獻大多已被其他詞涵蓋，保留或抽掉影響都不大，大多狀況下可保留著。</li>
+            <li data-tk="zero"><b>獨有貢獻 0：</b>標示「已被涵蓋」，抽掉沒影響，大多狀況下可保留著（若有兩個詞寫法相同時標「重複」）。</li>
+          </ul>
+        </li>
       </ul>
       <ul class="blk" data-en>
-        <li><b>Click a count to copy:</b> clicking any count or <span class="fillchip">enter</span> cell copies that search string; in manual mode, run it in the database and type the count into that cell (or just judge it on the database screen without entering it).</li>
-        <li><b>Alone:</b> only this term is kept in its concept; the other concepts stay.</li>
+        <li><b>Alone:</b> only this term is kept in its concept; the other terms stay.</li>
         <li><b>Total without:</b> this term is removed from its concept; everything else unchanged.</li>
-        <li><b>Unique:</b> total − total without, i.e. records only this term finds. The largest number is the term inflating the total. A high unique count doesn’t mean the term should go — check those unique records in the database for noise first, then decide whether to drop, rewrite or restrict it.</li>
-        <li><b>High alone, low unique:</b> most of what this term finds is already covered by other terms, so keeping or dropping it makes little difference.</li>
-        <li><b>Terms in sub-groups:</b> “without” removes the term from its OR list; if it is the only term on one side of an AND/NEAR, the whole sub-group goes. “Alone” keeps only this term in that OR list, with the other side of the AND/NEAR unchanged.</li>
-        <li><b>Unique = 0:</b> marked “covered” — removing it changes nothing, and it can usually stay; identical terms are marked “duplicate”.</li>
+        <li><b>Unique:</b> full-strategy total − total without, i.e. records only this term finds.
+          <ul class="sub">
+            <li data-tk="high"><b>High unique:</b> the term inflating the total. A high unique count doesn’t mean the term should go or stay — check those unique records in the database for noise first, then decide whether to drop, rewrite or restrict it.</li>
+            <li data-tk="low"><b>Low unique:</b> most of what this term finds is already covered by other terms, so keeping or dropping it makes little difference; it can usually stay.</li>
+            <li data-tk="zero"><b>Unique = 0:</b> marked “covered” — removing it changes nothing, and it can usually stay (identical terms are marked “duplicate”).</li>
+          </ul>
+        </li>
+      </ul>
+      <h3 class="tipsub"><span data-zh>系統如何抽測子群組內的詞</span><span data-en>How terms inside sub-groups are tested</span></h3>
+      <ul class="blk" data-zh>
+        <li><b>抽掉＝</b>將測試詞彙從所在的子群組 ( … OR … ) 移除；若它是 ( … ) AND / NEAR ( … ) 某一邊唯一的詞，整個子群組一起拿掉。</li>
+        <li><b>單獨保留＝</b>將測試詞彙所在子群組 ( … OR … ) 的其他詞彙都移除，只留下測試詞彙，AND／NEAR ( … ) 的另一邊照原樣。</li>
+      </ul>
+      <ul class="blk" data-en>
+        <li><b>Without =</b> the test term is removed from its sub-group ( … OR … ); if it is the only term on one side of ( … ) AND / NEAR ( … ), the whole sub-group goes.</li>
+        <li><b>Alone =</b> all other terms in the test term’s sub-group ( … OR … ) are removed, leaving only the test term; the other side of the AND/NEAR ( … ) stays as it is.</li>
       </ul>
     </div>
   </aside>
@@ -582,7 +605,8 @@ function buildQ(ci,alt){
 }
 
 /* ---------- 狀態 ---------- */
-var counts={};   // query -> number
+var counts={};   // query -> number（目前資料庫）
+var DB_STORE={}, lastDb=null;   // 各資料庫各自記住筆數：{db:{c:counts,m:meta}}
 var meta={};     // query -> {trans, warn, err, auto}
 var running=false, stopReq=false;
 var FETCH_GEN=0, curAbort=null;   // 每批取得筆數的代號；換範例／重新產生時作廢上一批
@@ -734,6 +758,19 @@ function applyHl(){
   var t=SELA&&pre.querySelector('.qa[data-a="'+SELA+'"]');
   if(t){ var top=t.offsetTop-pre.offsetTop; if(top<pre.scrollTop||top>pre.scrollTop+pre.clientHeight-20) pre.scrollTop=Math.max(0,top-20); }
 }
+// 點標籤（獨有最多／已被涵蓋／重複）→ 右側「怎麼看結果」對應的說明標亮
+function flashTip(k){
+  var ul=document.querySelector('.tippanel ul.blk['+(isEn()?'data-en':'data-zh')+']');
+  var li=ul&&ul.querySelector('li[data-tk="'+k+'"]'); if(!li) return;
+  Array.prototype.forEach.call(document.querySelectorAll(".tippanel li.flash"),function(x){ x.classList.remove("flash"); });
+  li.classList.add("flash");
+  try{ li.scrollIntoView({block:"nearest",behavior:"smooth"}); }catch(e){ li.scrollIntoView(); }
+  clearTimeout(li._ft); li._ft=setTimeout(function(){ li.classList.remove("flash"); },2600);
+}
+document.addEventListener("click",function(e){
+  var t=e.target.closest&&e.target.closest(".tag.tl"); if(!t) return;
+  e.stopPropagation(); flashTip(t.getAttribute("data-tk"));
+},true);
 function bindRows(){
   Array.prototype.forEach.call(document.querySelectorAll("table.loo tbody tr"),function(tr){
     var a=tr.getAttribute("data-a");
@@ -766,9 +803,10 @@ function rowData(){
 }
 function tagsHtml(x,maxU,isTop){
   var r=x.r, t="", m=meta[r.qAlone]||{};
-  if(P.dup[r.i]) t+='<span class="tag dup">'+T("重複","duplicate")+'</span>';
-  if(isTop) t+='<span class="tag top">'+T("獨有最多","most unique")+'</span>';
-  if(hasN(x.u)&&x.u===0&&!P.dup[r.i]) t+=(hasN(x.a)&&x.a===0)?'<span class="tag zero">'+T("0 筆","no hits")+'</span>':'<span class="tag cov">'+T("已被涵蓋","covered")+'</span>';
+  var tip=' title="'+T("點一下看說明","Click for an explanation")+'"';
+  if(P.dup[r.i]) t+='<span class="tag dup tl" data-tk="zero"'+tip+'>'+T("重複","duplicate")+'</span>';
+  if(isTop) t+='<span class="tag top tl" data-tk="high"'+tip+'>'+T("獨有最多","most unique")+'</span>';
+  if(hasN(x.u)&&x.u===0&&!P.dup[r.i]) t+=(hasN(x.a)&&x.a===0)?'<span class="tag zero">'+T("0 筆","no hits")+'</span>':'<span class="tag cov tl" data-tk="zero"'+tip+'>'+T("已被涵蓋","covered")+'</span>';
   if(m.warn) t+='<br><span class="tag wn" style="margin-left:0">'+esc(m.warn)+'</span>';
   return t;
 }
@@ -882,11 +920,11 @@ var DONE_N=null;   // 最近一次完成取得筆數：{n 版數, f 失敗數, t
 function genMsg(){
   var seen={}, n=0;
   [P.qTotal].concat.apply([P.qTotal],P.rows.map(function(r){ return [r.qAlone,r.qWithout]; })).forEach(function(q){ if(q&&!seen[q]){ seen[q]=1; n++; } });
-  return T("產生 <b>"+n+"</b> 種版本檢索式，請點擊<span class=\"fillchip\">填入</span>以複製檢索式","Built <b>"+n+"</b> search-string versions — click an <span class=\"fillchip\">enter</span> cell to copy its string");
+  return T("已產生 <b>"+n+"</b> 條檢索式，請點擊<span class=\"fillchip\">填入</span>以複製檢索式","<b>"+n+"</b> search strings built — click an <span class=\"fillchip\">enter</span> cell to copy one");
 }
 function doneMsg(){
   if(!DONE_N) return "";
-  return T("完成 <b>"+DONE_N.n+"</b> 種版本檢索式","Done: <b>"+DONE_N.n+"</b> search-string versions")+(DONE_N.f?T("（"+DONE_N.f+" 版失敗）"," ("+DONE_N.f+" failed)"):"")+" · "+DONE_N.t.toLocaleString(isEn()?"en-GB":"zh-TW",{hour12:false});
+  return T("已查詢 <b>"+DONE_N.n+"</b> 條檢索式","<b>"+DONE_N.n+"</b> search strings queried")+(DONE_N.f?T("（"+DONE_N.f+" 條失敗）"," ("+DONE_N.f+" failed)"):"")+"．"+DONE_N.t.toLocaleString(isEn()?"en-GB":"zh-TW",{hour12:false});
 }
 function runAll(){
   DONE_N=null;
@@ -1021,7 +1059,7 @@ function openProjectFile(file){
     cancelFetch();
     if(st.db&&DB_LABEL[st.db]) document.getElementById("db").value=st.db;
     syncMode(); renderConcepts(st.concepts);
-    counts={}; meta={};
+    counts={}; meta={}; DB_STORE={}; lastDb=curDb();
     Object.keys(st.counts||{}).forEach(function(q){ var v=parseInt(st.counts[q],10); if(!isNaN(v)) counts[q]=v; });
     Object.keys(st.meta||{}).forEach(function(q){ meta[q]={warn:st.meta[q].warn||"",auto:!!st.meta[q].auto}; });
     saveDraft();
@@ -1046,7 +1084,7 @@ document.getElementById("projFile").addEventListener("change",function(e){ var f
 function clearAll(){
   cancelFetch();
   renderConcepts(null);
-  counts={}; meta={}; P=null;
+  counts={}; meta={}; P=null; DB_STORE={}; lastDb=curDb();
   document.getElementById("parseInfo").innerHTML=""; document.getElementById("resPanel").style.display="none"; setStatus("");
   saveDraft();
 }
@@ -1059,11 +1097,20 @@ function loadEx(n){
   cancelFetch(); clearTimeout(_rfT);
   var e=EX[n]; document.getElementById("db").value=e.db; syncMode();
   renderConcepts(e.c);
-  counts={}; meta={};
+  counts={}; meta={}; DB_STORE={}; lastDb=e.db;
   runAll();
 }
 
-document.getElementById("db").addEventListener("change",function(){ syncMode(); saveDraft(); if(P&&document.getElementById("resPanel").style.display!=="none"){ runAll(); } });
+document.getElementById("db").addEventListener("change",function(){
+  var nd=curDb();
+  if(lastDb && nd!==lastDb){
+    cancelFetch();
+    DB_STORE[lastDb]={c:counts,m:meta};
+    var s=DB_STORE[nd]; counts=s?s.c:{}; meta=s?s.m:{};
+    DONE_N=null;
+  }
+  lastDb=nd;
+  syncMode(); saveDraft(); if(P&&document.getElementById("resPanel").style.display!=="none"){ runAll(); } });
 
 window.toggleLang=function(){
   var b=document.body; b.classList.toggle("en");
@@ -1074,7 +1121,7 @@ window.toggleLang=function(){
   fillDb(); syncMode();
   if(P&&P.rows.length){ renderParseInfo(); renderResults(); }
 };
-fillDb(); loadDraft(); syncMode();
+fillDb(); loadDraft(); syncMode(); lastDb=curDb();
 (function(){ var q=((location.search.match(/[?&]lang=(en|zh)/i)||[])[1]||(location.hash.match(/^#(en|zh)\b/i)||[])[1]||"").toLowerCase(); var want=q||(function(){try{return localStorage.getItem("sr_lang");}catch(e){return null;}})(); try{ if(want==="en" && !document.body.classList.contains("en")) window.toggleLang(); }catch(e){} if(q){ try{ localStorage.setItem("sr_lang", q); }catch(e){} } })();
 (function countLang(){ var lang=document.body.classList.contains("en")?"en":"zh"; var n=0;(function f(){ if(window.goatcounter&&window.goatcounter.count){window.goatcounter.count({path:"lang-"+lang,title:"介面語言-"+lang,event:true});window.goatcounter.count({path:"lang-"+lang+"-all",title:"介面語言-"+lang+"（累計）",event:true,no_session:true});}else if(n++<40){setTimeout(f,250);} })(); })();
 </script>
