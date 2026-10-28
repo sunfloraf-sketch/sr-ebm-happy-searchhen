@@ -68,6 +68,10 @@
   table.pico td.ref textarea{font-family:inherit;font-size:12.5px}
   table.pico td.lab{width:52px;text-align:center;vertical-align:middle;background:linear-gradient(180deg,#F7F8F9,#EEF1F3)}
   table.pico td.lab input{width:100%;padding:0;margin:0;box-sizing:border-box;text-align:center;font-weight:700;color:#2B2B2B;border:none;background:transparent;font-size:21px}
+  /* 概念代號清空時：顯示可輸入的虛線框 */
+  table.pico td.lab input:placeholder-shown{border:1px dashed #b9c3c9;border-radius:6px;background:#fff;min-height:32px}
+  table.pico td.lab input::placeholder{color:#b9c3c9;font-size:15px;font-weight:400}
+  table.pico td.lab input:focus{outline:none;border:1px solid var(--brand2,#617B76);border-radius:6px;background:#fff}
   table.pico td.lab .ccode{text-align:center}
   table.pico td.lab .rowlvl{width:100%;min-width:0;box-sizing:border-box;-webkit-appearance:none;appearance:none;margin-top:4px;font-size:11px;font-weight:700;text-align:center;text-align-last:center;padding:1px 0;border:1px solid #cdd5da;border-radius:5px;background:#EEF1F3;color:#3f6f3f;cursor:pointer}
   #level{background:#4b5563;color:#fff;border-color:#374151}
@@ -112,7 +116,7 @@
   .pt-mi{display:flex;align-items:center;gap:9px;width:100%;white-space:nowrap;border:none;background:none;text-align:left;text-decoration:none;padding:9px 12px;border-radius:7px;font-size:13px;color:#25292D;cursor:pointer;font-weight:500;font-family:inherit}
   .pt-mi:hover{background:#f0f4f6}
   body.en .pt-mi[data-en]{display:flex}   /* 英文版的「下載樣板」連結：[data-en]{display:revert} 會把它變成 inline，圖示與文字擠在一起 */
-  /* 自訂組合：行號 L1、L2… 與 C／L 快速插入 */
+  /* 自訂組合：行號 R1、R2… 與 L／R 快速插入 */
   .ccwrap{display:flex;border:1px solid var(--line);border-radius:8px;background:#fff;overflow:hidden}
   .ccwrap:focus-within{border-color:#AAB7BC;box-shadow:0 0 0 3px rgba(127,153,149,.14)}
   .ccgut{flex:0 0 40px;overflow:hidden;background:#F4F6F5;border-right:1px solid var(--line);position:relative}
@@ -617,10 +621,10 @@ City blocks)</pre>
       <summary style="cursor:pointer;font-weight:700;font-size:13px;color:#0f766e"><span data-zh>自訂組合策略（選填）</span><span data-en>Custom combination (optional)</span></summary>
       <div style="margin-top:8px;padding-left:1.4em">
         <div class="sub" style="font-size:12px;color:var(--mut);margin-bottom:6px">
-          <span data-zh>預設跨行（列）間為 <b>AND</b> 關係<br>可輸入自訂組合：<br>　<b>C1、C2…</b>：代表每個主題概念列<br>　<b>L1、L2…</b>：引用自訂的組合行<br>例如：（大小寫皆可）<br>　<code>C1 AND C2 AND C3</code><br>　<code>C1 AND C4</code><br>　<code>L1 OR L2</code></span>
-          <span data-en>Rows are <b>AND</b>-ed by default<br>You can enter a custom combination:<br>　<b>C1, C2…</b>: each concept row<br>　<b>L1, L2…</b>: reference one of your combination lines<br>e.g. (any letter case):<br>　<code>C1 AND C2 AND C3</code><br>　<code>C1 AND C4</code><br>　<code>L1 OR L2</code></span>
+          <span data-zh>預設跨行（列）間為 <b>AND</b> 關係<br>可輸入自訂組合：<br>　<b>L1、L2…</b>：代表每個主題概念列<br>　<b>R1、R2…</b>：引用自訂的組合行<br>例如：（大小寫皆可）<br>　<code>L1 AND L2 AND L3</code><br>　<code>L1 AND L4</code><br>　<code>R1 OR R2</code></span>
+          <span data-en>Rows are <b>AND</b>-ed by default<br>You can enter a custom combination:<br>　<b>L1, L2…</b>: each concept row<br>　<b>R1, R2…</b>: reference one of your combination lines<br>e.g. (any letter case):<br>　<code>L1 AND L2 AND L3</code><br>　<code>L1 AND L4</code><br>　<code>R1 OR R2</code></span>
         </div>
-        <div class="ccwrap"><div class="ccgut" aria-hidden="true"><div class="ccgutin"></div></div><textarea id="customCombo" spellcheck="false" rows="4" wrap="off" style="width:100%;font-family:'SF Mono',Consolas,monospace;font-size:13px;line-height:1.7;border:none;border-radius:0 8px 8px 0;padding:9px 11px;resize:vertical;box-sizing:border-box;overflow-x:auto" placeholder="C1 AND C2 AND C3&#10;C1 AND C4&#10;L1 OR L2" aria-label="自訂組合策略 / Custom combination"></textarea></div><div class="ccchips" role="group" aria-label="插入 C／L / Insert C / L"><span class="ccclbl"><span data-zh>點選插入：</span><span data-en>Click to insert:</span></span><span class="ccrow"><span class="ccrow"><button type="button" class="ccchip" data-ins="C1">C1</button><button type="button" class="ccchip" data-ins="C2">C2</button><button type="button" class="ccchip" data-ins="C3">C3</button><button type="button" class="ccchip" data-ins="C4">C4</button><button type="button" class="ccchip" data-ins="C5">C5</button><button type="button" class="ccchip" data-ins="C6">C6</button><button type="button" class="ccchip" data-ins="C7">C7</button><button type="button" class="ccchip" data-ins="C8">C8</button><button type="button" class="ccchip" data-ins="C9">C9</button><button type="button" class="ccchip" data-ins="C10">C10</button></span><span class="ccrow"><button type="button" class="ccchip ccop" data-ins="AND">AND</button><button type="button" class="ccchip ccop" data-ins="OR">OR</button></span><span class="ccrow"><button type="button" class="ccchip ccl" data-ins="L1">L1</button><button type="button" class="ccchip ccl" data-ins="L2">L2</button><button type="button" class="ccchip ccl" data-ins="L3">L3</button><button type="button" class="ccchip ccl" data-ins="L4">L4</button><button type="button" class="ccchip ccl" data-ins="L5">L5</button><button type="button" class="ccchip ccl" data-ins="L6">L6</button><button type="button" class="ccchip ccl" data-ins="L7">L7</button><button type="button" class="ccchip ccl" data-ins="L8">L8</button><button type="button" class="ccchip ccl" data-ins="L9">L9</button><button type="button" class="ccchip ccl" data-ins="L10">L10</button></span></div>
+        <div class="ccwrap"><div class="ccgut" aria-hidden="true"><div class="ccgutin"></div></div><textarea id="customCombo" spellcheck="false" rows="4" wrap="off" style="width:100%;font-family:'SF Mono',Consolas,monospace;font-size:13px;line-height:1.7;border:none;border-radius:0 8px 8px 0;padding:9px 11px;resize:vertical;box-sizing:border-box;overflow-x:auto" placeholder="L1 AND L2 AND L3&#10;L1 AND L4&#10;R1 OR R2" aria-label="自訂組合策略 / Custom combination"></textarea></div><div class="ccchips" role="group" aria-label="插入 L／R / Insert L / R"><span class="ccclbl"><span data-zh>點選插入：</span><span data-en>Click to insert:</span></span><span class="ccrow"><span class="ccrow"><button type="button" class="ccchip" data-ins="L1">L1</button><button type="button" class="ccchip" data-ins="L2">L2</button><button type="button" class="ccchip" data-ins="L3">L3</button><button type="button" class="ccchip" data-ins="L4">L4</button><button type="button" class="ccchip" data-ins="L5">L5</button><button type="button" class="ccchip" data-ins="L6">L6</button><button type="button" class="ccchip" data-ins="L7">L7</button><button type="button" class="ccchip" data-ins="L8">L8</button><button type="button" class="ccchip" data-ins="L9">L9</button><button type="button" class="ccchip" data-ins="L10">L10</button></span><span class="ccrow"><button type="button" class="ccchip ccop" data-ins="AND">AND</button><button type="button" class="ccchip ccop" data-ins="OR">OR</button></span><span class="ccrow"><button type="button" class="ccchip ccl" data-ins="R1">R1</button><button type="button" class="ccchip ccl" data-ins="R2">R2</button><button type="button" class="ccchip ccl" data-ins="R3">R3</button><button type="button" class="ccchip ccl" data-ins="R4">R4</button><button type="button" class="ccchip ccl" data-ins="R5">R5</button><button type="button" class="ccchip ccl" data-ins="R6">R6</button><button type="button" class="ccchip ccl" data-ins="R7">R7</button><button type="button" class="ccchip ccl" data-ins="R8">R8</button><button type="button" class="ccchip ccl" data-ins="R9">R9</button><button type="button" class="ccchip ccl" data-ins="R10">R10</button></span></div>
       </div>
     </details>
   </div>
@@ -1664,13 +1668,13 @@ if (typeof module !== "undefined" && module.exports) {
   };
 
   var LEVEL_LABELS = {
-    zh: { L0:"L0 所有欄位（最廣）", L1:"L1 完整（SR 適用）", L2:"L2 平衡（偏精準）", L3:"L3 精準" },
-    en: { L0:"L0 All fields (broadest)", L1:"L1 Comprehensive (SR)", L2:"L2 Balanced", L3:"L3 Precise" }
+    zh: { L0:"LV0 所有欄位（最廣）", L1:"LV1 完整（SR 適用）", L2:"LV2 平衡（偏精準）", L3:"LV3 精準" },
+    en: { L0:"LV0 All fields (broadest)", L1:"LV1 Comprehensive (SR)", L2:"LV2 Balanced", L3:"LV3 Precise" }
   };
   // 每列（概念）完整度的精簡代號：最廣=L0、廣=L1、較精=L2、精=L3
   var LEVEL_CODE = {
     zh: { L0:"最廣", L1:"完整", L2:"平衡", L3:"精準" },
-    en: { L0:"L0", L1:"L1", L2:"L2", L3:"L3" }
+    en: { L0:"LV0", L1:"LV1", L2:"LV2", L3:"LV3" }
   };
   var srcSel = $("#src"), levelSel = $("#level"), dbchecks = $("#dbchecks"),
       picoBody = $("#picoBody"), outs = $("#outs"), lvlnote = $("#lvlnote"),
@@ -1902,7 +1906,7 @@ if (typeof module !== "undefined" && module.exports) {
     phs = phs || {}; cv = cv || {}; var pcv = phs.cv || {};
     var tr=document.createElement("tr");
     var labTd=document.createElement("td"); labTd.className="lab";
-    var labIn=document.createElement("input"); labIn.value=label||""; labIn.maxLength=4; labTd.appendChild(labIn);
+    var labIn=document.createElement("input"); labIn.value=label||""; labIn.maxLength=4; labIn.placeholder="✎"; labIn.title="概念代號（如 P、I、C、O）/ Concept label (e.g. P, I, C, O)"; labTd.appendChild(labIn);
     var ccode=document.createElement("div"); ccode.className="ccode"; ccode.style.cssText="font-size:11px;color:#3f6f3f;font-weight:700;margin-top:3px"; labTd.appendChild(ccode);
     // 每列完整度選單（廣／較精／精＝L1／L2／L3）；預設沿用上方全域值
     var lvlSel=document.createElement("select"); lvlSel.className="rowlvl";
@@ -1994,7 +1998,7 @@ if (typeof module !== "undefined" && module.exports) {
       tr._cvCustom=neu;
     });
   }
-  function updateCodes(){ Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr,i){ var b=tr.querySelector(".ccode"); if(b) b.textContent="C"+(i+1); }); }
+  function updateCodes(){ Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr,i){ var b=tr.querySelector(".ccode"); if(b) b.textContent="L"+(i+1); }); }
   function seedEmpty(){ picoBody.innerHTML=""; ["P","I","C","O"].forEach(function(l){ addRow(l,"","",{}, GDM_EX[l]); }); }
 
   // ===== 狀態保存：sessionStorage(每分頁草稿，多分頁不互蓋) + localStorage(離開快照) =====
@@ -2007,7 +2011,7 @@ if (typeof module !== "undefined" && module.exports) {
   function applyState(st){
     if(!st||!st.rows) return false;
     if(st.src && TARGET_BY_ID[st.src]) srcSel.value=st.src;
-    if(customCombo) customCombo.value=st.combo||"";
+    if(customCombo) customCombo.value=_ccMigrate(st.combo||"");
     picoBody.innerHTML="";
     st.rows.forEach(function(r){ addRow(r.label||"", r.zh||"", r.ft||"", r.cv||{}, undefined, r.level); });
     if(!picoBody.querySelector("tr")) seedEmpty();
@@ -2130,7 +2134,7 @@ if (typeof module !== "undefined" && module.exports) {
     var ta=document.getElementById("customCombo"); if(!ta) return;
     var wrap=ta.closest(".ccwrap"), gin=wrap&&wrap.querySelector(".ccgutin");
     var last="";
-    function gut(){ if(!gin) return; var n=Math.max(parseInt(ta.getAttribute("rows")||"4",10), ta.value.split("\n").length); var t=[]; for(var i=1;i<=n;i++) t.push("L"+i); var s=t.join("\n"); if(s!==last){ gin.textContent=s; last=s; } gin.style.transform="translateY("+(-ta.scrollTop)+"px)"; }
+    function gut(){ if(!gin) return; var n=Math.max(parseInt(ta.getAttribute("rows")||"4",10), ta.value.split("\n").length); var t=[]; for(var i=1;i<=n;i++) t.push("R"+i); var s=t.join("\n"); if(s!==last){ gin.textContent=s; last=s; } gin.style.transform="translateY("+(-ta.scrollTop)+"px)"; }
     ta.addEventListener("input", gut); ta.addEventListener("scroll", gut); ta.addEventListener("focus", gut);
     setInterval(gut, 700);   // 草稿還原、專案開啟等程式設定內容時也更新行號
     gut();
@@ -2965,14 +2969,16 @@ if (typeof module !== "undefined" && module.exports) {
   function _refPrefix(eng){ return (eng==="ebsco"||eng==="pqdt")?"S":eng==="ovid"?"":"#"; }
   function _dispRefs(text, eng){ var s=(text==null?"":String(text)); if(eng==="ebsco") return s.replace(/#(\d+)/g,"S$1"); if(eng==="pqdt") return s.replace(/#(\d+)/g,"[s$1]"); if(eng==="ovid") return s.replace(/#(\d+)/g,"$1"); return s; }
   // 自訂組合：每行一條；C1/C2… → 對應概念的行號群組（依各庫），L1/L2… → 上方已寫的組合行
+  // 舊版代號（概念 C1、組合行 L1）→ 新版（概念 L1、組合行 R1）；只有出現 C 數字時才視為舊格式
+  function _ccMigrate(t){ t=String(t||""); if(!/\bC\d+\b/i.test(t)) return t; return t.replace(/\bL(\d+)\b/gi,"R$1").replace(/\bC(\d+)\b/gi,"L$1"); }
   function buildCombos(text, conceptRefs, lastNum, eng){   // C1／L1 與 AND／OR／NOT 大小寫皆可；運算子輸出依資料庫（如國圖 and／or、Scopus AND NOT）
-    var lines=String(text).split(/\r?\n/).map(function(s){return s.trim();}).filter(Boolean);
+    var lines=_ccMigrate(text).split(/\r?\n/).map(function(s){return s.trim();}).filter(Boolean);
     var out=[], Lmap={};
     lines.forEach(function(line, idx){
       var num=lastNum+1+idx;
       var txt=line
-        .replace(/\bC(\d+)\b/gi, function(m,k){ var g=conceptRefs[parseInt(k,10)-1]; return (g!=null)?g:m; })
-        .replace(/\bL(\d+)\b/gi, function(m,k){ var n=Lmap[parseInt(k,10)]; return (n!=null)?("#"+n):m; })
+        .replace(/\bL(\d+)\b/gi, function(m,k){ var g=conceptRefs[parseInt(k,10)-1]; return (g!=null)?g:m; })
+        .replace(/\bR(\d+)\b/gi, function(m,k){ var n=Lmap[parseInt(k,10)]; return (n!=null)?("#"+n):m; })
         .replace(/\b(AND\s+NOT|AND|OR|NOT)\b/gi, function(m){ var k=m.toUpperCase().replace(/\s+/g," "); var B=(eng && SYNTAX_MAP.boolean[eng])||null; if(k==="AND NOT") k="NOT"; return B ? (B[k]||k) : k; });
       Lmap[idx+1]=num;
       out.push({n:num, text:txt});
@@ -3175,7 +3181,7 @@ if (typeof module !== "undefined" && module.exports) {
       if(lt.length) msgs.push(isEn()?("Leading truncation (word-initial *) in: "+lt.join(", ")+" — only Cochrane / Scopus / Web of Science support it; the leading * is removed for other databases."):("字頭切截（詞首 *）出現在："+lt.join("、")+" 概念 —— 僅 Cochrane / Scopus / Web of Science 支援，其餘資料庫的詞首 * 已自動移除。"));
       if(msgs.length){ picoWarn.innerHTML="\u26A0 "+msgs.join("<br>\u26A0 "); picoWarn.style.display="block"; } else picoWarn.style.display="none";
     }
-    var lvlLabel = level+"　"+(isEn()?({L0:"All fields",L1:"Comprehensive",L2:"Balanced",L3:"Precise"}[level]):({L0:"所有欄位",L1:"完整",L2:"平衡",L3:"精準"}[level]));
+    var lvlLabel = String(level).replace(/^L/,"LV")+"　"+(isEn()?({L0:"All fields",L1:"Comprehensive",L2:"Balanced",L3:"Precise"}[level]):({L0:"所有欄位",L1:"完整",L2:"平衡",L3:"精準"}[level]));
     var exportData=[]; RECORD_FILL={};
     var _stratWarn=document.createElement("div"); _stratWarn.style.cssText="color:#c0392b;font-size:13px;line-height:1.6;margin:2px 0 10px"; _stratWarn.textContent=_noteStrat(); outs.appendChild(_stratWarn);   // 檢索策略表上方提醒（三點）
     renderIds.forEach(function(tid){
@@ -3358,7 +3364,7 @@ if (typeof module !== "undefined" && module.exports) {
         rows.forEach(function(r,_ri){
           if(!_rf(r)) return;   // 空概念不顯示
           var rw=document.createElement("div"); rw.className="cvpaste-row";
-          var lb=document.createElement("span"); lb.className="cvpaste-lb"; lb.textContent="C"+(_ri+1)+(r.label?(" "+r.label):"");
+          var lb=document.createElement("span"); lb.className="cvpaste-lb"; lb.textContent="L"+(_ri+1)+(r.label?(" "+r.label):"");
           var ta=document.createElement("textarea"); ta.className="cvpaste-ta"; ta.spellcheck=false; ta.rows=2;
           ta.placeholder='DE "…" OR DE "…"'; ta.value=(PASTE_CV[tid][_ri]||"");
           ta.onchange=function(){ PASTE_CV[tid][_ri]=ta.value; $("#genBtn").click(); };
