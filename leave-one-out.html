@@ -147,7 +147,6 @@
   .tippanel li b{color:var(--sh-ink)}
   body.en .tippanel ul.blk[data-en]{display:block}
   .panel h2 .h2note{margin-left:10px;font-size:12.5px;font-weight:600;color:var(--mut)}
-  .tippanel h2{font-size:17px}
   .tippanel h3.tipsub{margin:14px 0 2px;font-size:13.5px;color:var(--sh-green-d)}
   .tippanel ul.sub{margin:4px 0 0;padding-left:16px;list-style:circle}
   .tippanel li[data-tk]{border-radius:6px;transition:background-color .6s,box-shadow .6s}
@@ -843,7 +842,7 @@ function renderResults(){
     +(P.db!=="pubmed"?'<div class="restot">'+genMsg()+'</div>':(DONE_N?'<div class="restot">'+doneMsg()+'</div>':''));
   var multi=P.concepts.length>1;
   function th(key,label,cls){ var on=SORT.k===key; return '<th class="'+(cls||"")+(on?' on':'')+'"><button class="sortb" data-noauto onclick="sortBy(\''+key+'\')">'+label+'<i>'+(on?(SORT.d<0?'▼':'▲'):'')+'</i></button></th>'; }
-  var h=['<div class="tblwrap"><table class="loo"><thead><tr>'+th("i",T("詞序","No."),"rkh")+(multi?th("c",T("概念","Concept"),"cnh"):"")+th("term",T("測試詞彙","Test term"))+th("a",T("單獨筆數","Alone"),"n")+th("w",T("抽掉後總數","Total without"),"n")+th("u",T("獨有貢獻","Unique"),"n")+'</tr></thead><tbody>'];
+  var h=['<div class="tblwrap"><table class="loo"><thead><tr>'+th("i",T("詞序","No."),"rkh")+(multi?th("c",T("概念","Concept"),"cnh"):"")+th("term",T("測試詞彙","Test term"))+th("a",T("單獨保留筆數","Alone"),"n")+th("w",T("抽掉後總數","Total without"),"n")+th("u",T("獨有貢獻","Unique"),"n")+'</tr></thead><tbody>'];
   rows.forEach(function(x){
     var r=x.r;
     h.push('<tr data-i="'+r.i+'" data-a="'+r.aid+'"'+(r.aid===SELA?' class="sel"':'')+'><td class="rk">'+(r.i+1)+'</td>'+(multi?'<td class="cn">'+r.cno+'</td>':'')+'<td class="tm">'+esc(r.term)+'<span class="tags">'+tagsHtml(x,st.maxU,r.i===st.topI)+'</span>'
