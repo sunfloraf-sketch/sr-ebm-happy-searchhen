@@ -212,7 +212,7 @@
   table.loo td.tm .ctx{font-size:11.5px;color:var(--mut);margin-top:2px;line-height:1.45}
   /* 結果表：完整策略、可排序欄、點筆數複製 */
   .fullq{margin:2px 0 10px}
-  .fullq .fqh{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12.5px;font-weight:700;color:var(--mut)}
+  .fullq .fqh{display:flex;align-items:center;justify-content:flex-end;gap:10px;font-size:12.5px;font-weight:700;color:var(--mut)}
   .fullq pre .qa{transition:color .12s}
   .fullq pre .qa.hv{text-decoration:underline;text-decoration-color:#C9B48A;text-decoration-thickness:2px;text-underline-offset:3px}
   .fullq pre .qa.hl{color:var(--sh-green-d);font-weight:800;text-decoration:underline;text-decoration-color:var(--sh-amber);text-decoration-thickness:3px;text-underline-offset:3px}
@@ -221,7 +221,7 @@
   table.loo tbody tr.sel td.tm .ctx{font-weight:400;color:var(--mut)}
   table.loo tbody tr.sel td.rk{color:var(--sh-amber);font-weight:800}
   .fullq pre{position:relative;margin:4px 0 0;white-space:pre-wrap;word-break:break-word;font-family:"SF Mono",Consolas,monospace;font-size:12.5px;color:var(--code);max-height:9em;overflow:auto}
-  .fullq .fqc input.cnt{font-size:17px;font-weight:700;color:var(--sh-ink);width:130px}
+  .fullq .fqc input.cnt{font-size:17px;font-weight:700;color:var(--sh-ink);width:130px;padding-left:4px;padding-right:4px}
   .restot{margin:2px 0 8px;font-size:12.5px}
   .restot b{font-size:inherit}
   .restot,.restot b{color:#c0392b}
@@ -323,7 +323,7 @@
   </div>
 
   <div class="panel" id="resPanel" style="display:none">
-    <h2><span data-zh>② 結果</span><span data-en>② Results</span><span class="h2note"><span data-zh>預設依獨有貢獻排序 · 點欄位標題可改排序</span><span data-en>sorted by unique contribution · click a heading to re-sort</span></span></h2>
+    <h2><span data-zh>② 結果</span><span data-en>② Results</span></h2>
     <div id="resTot"></div>
     <div id="resTable"></div>
   </div>
@@ -344,8 +344,8 @@
       <div class="tipintro" data-en>Click any count or <span class="fillchip">enter</span> cell to copy that search string; in manual mode, run it in the database and type the count into that cell (or just judge it on the database screen without entering it).</div>
       <h3 class="tipsub"><span data-zh>欄位定義</span><span data-en>Columns</span></h3>
       <ul class="blk" data-zh>
-        <li><b><span class="tw">測試詞</span>不加入時總篇數：</b>這個詞所在的概念拿掉它，其餘照舊。</li>
-        <li><b><span class="tw">測試詞</span>獨有貢獻：</b>完整檢索策略總數 − <span class="tw">測試詞</span>不加入時總篇數，也就是只有這個詞才找得到的筆數。
+        <li><b><span class="tw">測試詞</span>不加入時總數：</b>這個詞所在的概念拿掉它，其餘照舊。</li>
+        <li><b><span class="tw">測試詞</span>獨有貢獻：</b>完整檢索策略總數 − <span class="tw">測試詞</span>不加入時總數，也就是只有這個詞才找得到的筆數。
           <ul class="sub">
             <li data-tk="high"><b>獨有貢獻多：</b>讓總數暴增的詞彙。獨有多不代表該刪或該留，先到資料庫看那批獨有的文獻是不是雜訊，再決定刪、改寫或加限制。</li>
             <li data-tk="low"><b>獨有貢獻少：</b>這個詞找到的文獻大多已被其他詞涵蓋，保留或刪除影響都不大，大多狀況下可保留著。</li>
@@ -843,7 +843,7 @@ function renderResults(){
   var multi=P.concepts.length>1;
   var TW='<span class="tw">'+T("測試詞","test term")+'</span>';   // 欄位名稱中的［測試詞］：特殊樣式，與一般文字區隔
   function th(key,label,cls,tip){ var on=SORT.k===key; return '<th class="'+(cls||"")+(on?' on':'')+'"><button class="sortb" data-noauto onclick="sortBy(\''+key+'\')"'+(tip?' title="'+esc(tip)+'"':'')+'>'+label+'<i>'+(on?(SORT.d<0?'▼':'▲'):'')+'</i></button></th>'; }
-  var h=['<div class="tblwrap"><table class="loo"><thead><tr>'+th("i",T("詞序","No."),"rkh")+(multi?th("c",T("概念","Concept"),"cnh"):"")+th("term",TW)+th("w",T(TW+"不加入時總篇數","Total without "+TW),"n")+th("u",T(TW+"獨有貢獻",TW+" unique"),"n",T("〔獨有貢獻〕＝只有這個詞才找得到的篇數\n＝〔完整檢索策略總篇數〕減〔測試詞不加入時總篇數〕","[Unique] = records only this term finds\n= [full-strategy total] minus [total without test term]"))+'</tr></thead><tbody>'];
+  var h=['<div class="tblwrap"><table class="loo"><thead><tr>'+th("i",T("詞序","No."),"rkh")+(multi?th("c",T("概念","Concept"),"cnh"):"")+th("term",TW)+th("w",T(TW+"不加入時總數","Total without "+TW),"n")+th("u",T(TW+"獨有貢獻",TW+" unique"),"n",T("〔獨有貢獻〕＝只有這個詞才找得到的篇數\n＝〔完整檢索策略總數〕減〔測試詞不加入時總數〕","[Unique] = records only this term finds\n= [full-strategy total] minus [total without test term]"))+'</tr></thead><tbody>'];
   rows.forEach(function(x){
     var r=x.r;
     h.push('<tr data-i="'+r.i+'" data-a="'+r.aid+'"'+(r.aid===SELA?' class="sel"':'')+'><td class="rk">'+(r.i+1)+'</td>'+(multi?'<td class="cn">'+r.cno+'</td>':'')+'<td class="tm">'+esc(r.term)+'<span class="tags">'+tagsHtml(x,st.maxU,r.i===st.topI)+'</span>'
@@ -858,6 +858,7 @@ function renderResults(){
   h.push('<div class="tfoot"><ul class="tnote">'+(isEn()?en:zh).map(function(s){ return '<li>'+esc(s)+'</li>'; }).join("")+'</ul>'+refBtn+'</div>');
   document.getElementById("resTable").innerHTML=h.join("");
   bindCnt(document.getElementById("resPanel"));
+  fitTotalBox();
   bindRows();
   applyHl();
 }
@@ -871,6 +872,11 @@ function refreshInPlace(){
     tr.querySelector("td.u").innerHTML=uHtml(x,st.maxU,tot);
   });
   var nd=document.getElementById("nDone"); if(nd) nd.textContent=st.done;
+}
+// 完整檢索策略的筆數框寬度隨數字長度調整，讓標題緊貼筆數
+function fitTotalBox(){
+  var i=document.querySelector("#resTot .fqc input.cnt"); if(!i) return;
+  var n=(i.value||i.placeholder||"").length; i.style.width=Math.max(5,n+2.2)+"ch";
 }
 function sortBy(k){
   if(SORT.k===k) SORT.d=-SORT.d; else { SORT.k=k; SORT.d=(k==="i"||k==="term")?1:-1; }
@@ -899,7 +905,7 @@ function bindCnt(root){
       var dgt=inp.value.replace(/[^\d]/g,"");
       if(dgt===""){ delete counts[q]; } else counts[q]=parseInt(dgt,10);
       if(meta[q]){ meta[q].auto=false; delete meta[q].err; }
-      inp.classList.remove("auto"); inp.classList.toggle("empty",dgt==="");
+      inp.classList.remove("auto"); inp.classList.toggle("empty",dgt===""); fitTotalBox();
       Array.prototype.forEach.call(document.querySelectorAll("#resPanel input.cnt"),function(o){ if(o!==inp && o.getAttribute("data-q")===q){ o.value=inp.value; o.classList.remove("auto"); o.classList.toggle("empty",dgt===""); } });
       refreshInPlace();
     });
