@@ -308,14 +308,12 @@
     <div id="parseInfo"></div>
     <div class="tipsbox" data-zh><div>提示：</div><ul class="tnote">
       <li>每個輸入框填寫一個概念，框內的詞為 OR 關係（用 OR 連接，或一行一個詞），概念之間以 AND 連接。</li>
-      <li>片語詞彙輸入：可用雙引號"hand washing"；或一行寫成 NEAR／ADJ／AND 組合，如 (hand OR hands) AND (wash* OR rub)，組合內的每個詞也會拆開測試。</li>
-      <li>所有概念的每個詞都會逐一測試；但若拿掉某個詞後，整個概念就空了，這個詞不測。</li>
+      <li>片語詞彙輸入：可用雙引號"hand washing"；或一行寫成 NEAR／ADJ／AND 組合，如 (hand OR hands) AND (wash* OR rub)。</li>
       <li>欄位限定：需附加語法，否則依資料庫預設處理。</li>
     </ul></div>
     <div class="tipsbox" data-en><div>Tips:</div><ul class="tnote">
       <li>Enter one concept per box; terms inside a box are OR-ed (separate with OR, or one per line), and concepts are AND-ed.</li>
-      <li>Phrases: use double quotes, e.g. "hand washing", or write a NEAR/ADJ/AND combination on one line, e.g. (hand OR hands) AND (wash* OR rub); each word in the combination is tested too.</li>
-      <li>Every term in every concept is tested one by one; but if removing a term would leave its concept empty, that term is not tested.</li>
+      <li>Phrases: use double quotes, e.g. "hand washing", or write a NEAR/ADJ/AND combination on one line, e.g. (hand OR hands) AND (wash* OR rub).</li>
       <li>Field limits: add the field syntax yourself; otherwise the database default applies.</li>
     </ul></div>
   </div>
@@ -365,12 +363,16 @@
       </ul>
       <h3 class="tipsub"><span data-zh>系統如何抽測子群組內的詞</span><span data-en>How terms inside sub-groups are tested</span></h3>
       <ul class="blk" data-zh>
-        <li><b>抽掉＝</b>將測試詞彙從所在的子群組 ( … OR … ) 移除；若它是 ( … ) AND / NEAR ( … ) 某一邊唯一的詞，整個子群組一起拿掉。</li>
         <li><b>單獨保留＝</b>將測試詞彙所在子群組 ( … OR … ) 的其他詞彙都移除，只留下測試詞彙，AND／NEAR ( … ) 的另一邊照原樣。</li>
+        <li><b>抽掉＝</b>將測試詞彙從所在的子群組 ( … OR … ) 移除；若它是 ( … ) AND / NEAR ( … ) 某一邊唯一的詞，整個子群組一起拿掉。</li>
+        <li>NEAR／ADJ／AND 組合內的每個詞也會拆開測試。</li>
+        <li>所有概念的每個詞都會逐一測試；但若拿掉某個詞後，整個概念就空了，這個詞不測。</li>
       </ul>
       <ul class="blk" data-en>
-        <li><b>Without =</b> the test term is removed from its sub-group ( … OR … ); if it is the only term on one side of ( … ) AND / NEAR ( … ), the whole sub-group goes.</li>
         <li><b>Alone =</b> all other terms in the test term’s sub-group ( … OR … ) are removed, leaving only the test term; the other side of the AND/NEAR ( … ) stays as it is.</li>
+        <li><b>Without =</b> the test term is removed from its sub-group ( … OR … ); if it is the only term on one side of ( … ) AND / NEAR ( … ), the whole sub-group goes.</li>
+        <li>Each word inside a NEAR/ADJ/AND combination is tested too.</li>
+        <li>Every term in every concept is tested one by one; but if removing a term would leave its concept empty, that term is not tested.</li>
       </ul>
     </div>
   </aside>
