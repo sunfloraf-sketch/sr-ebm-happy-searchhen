@@ -212,7 +212,8 @@
   table.loo td.tm .ctx{font-size:11.5px;color:var(--mut);margin-top:2px;line-height:1.45}
   /* 結果表：完整策略、可排序欄、點筆數複製 */
   .fullq{margin:2px 0 10px}
-  .fullq .fqh{display:flex;align-items:center;justify-content:flex-end;gap:10px;font-size:12.5px;font-weight:700;color:var(--mut)}
+  .fullq .fqlabel{font-size:17px;font-weight:700;color:var(--sh-ink)}
+  .fullq .fqh{display:flex;align-items:center;justify-content:flex-end;gap:4px;font-size:12.5px;font-weight:700;color:var(--mut)}
   .fullq pre .qa{transition:color .12s}
   .fullq pre .qa.hv{text-decoration:underline;text-decoration-color:#C9B48A;text-decoration-thickness:2px;text-underline-offset:3px}
   .fullq pre .qa.hl{color:var(--sh-green-d);font-weight:800;text-decoration:underline;text-decoration-color:var(--sh-amber);text-decoration-thickness:3px;text-underline-offset:3px}
@@ -683,7 +684,7 @@ function renderParseInfo(){
   var h=[], per=P.concepts.map(function(c,ci){ var n=P.rows.filter(function(r){ return r.ci===ci; }).length; return T("概念 "+c.no+"：<b>"+n+"</b> 個詞","Concept "+c.no+": <b>"+n+"</b> terms"); });
   h.push(per.join(T("　","   ")));
   if(P.skipped.length) h.push(T("概念 "+P.skipped.filter(function(v,i,a){ return a.indexOf(v)===i; }).join("、")+" 只有一個詞，不測，維持原樣 AND 上去。","Concept "+P.skipped.filter(function(v,i,a){ return a.indexOf(v)===i; }).join(", ")+" has a single term: not tested, kept as is."));
-  if(P.nested) h.push(T("子群組內的詞（"+P.nested+" 個）：抽掉＝從它所在的 OR 拿掉；若它是 AND／NEAR 一邊唯一的詞，整組跟著拿掉。",
+  if(P.nested) h.push(T("子群組內的詞（"+P.nested+" 個）：測試詞不加入時＝從它所在的 OR 移除；若它是 AND／NEAR 一邊唯一的詞，整組一起移除。",
     "Sub-group terms ("+P.nested+"): “without” removes the term from its OR list (if it is the only term on one side of an AND/NEAR, the whole sub-group goes)."));
   if(P.mixed) h.push('<span class="bad">'+T("同一行同時有 OR 與 AND／NOT 而沒有括號：各資料庫運算順序不同，建議加括號或改成一行一個詞。","OR is mixed with AND/NOT on one line without brackets; databases differ in precedence, so add brackets or put one term per line.")+'</span>');
   if(P.wraps.length) h.push(T("偵測到外層欄位 ","Outer field wrapper detected: ")+"<code>"+P.wraps.join("</code>、<code>")+"</code>"+T("，每一版都會保留",", kept in every version"));
@@ -787,7 +788,7 @@ function bindRows(){
 function hasN(x){ return x!=null&&!isNaN(x); }
 function cval(q){ return q===""?0:counts[q]; }
 function cntCell(q){
-  if(q==="") return '<span class="cnt0" title="'+T("抽掉後檢索式為空，以 0 筆計","Nothing left after removal — counted as 0")+'">0</span>';
+  if(q==="") return '<span class="cnt0" title="'+T("測試詞不加入時檢索式為空，以 0 筆計","Nothing left after removal — counted as 0")+'">0</span>';
   var m=meta[q]||{}, v=counts[q];
   return '<input type="text" inputmode="numeric" class="cnt'+(m.auto?' auto':'')+(v==null?' empty':'')+'" data-q="'+esc(q)+'" data-noauto value="'+(v==null?"":fmt(v))+'" placeholder="'+T("填入","enter")+'"'
     +' title="'+T("點一下複製這一版檢索式","Click to copy this search string")+'">'
@@ -836,7 +837,7 @@ function renderResults(){
     return x.r.i-y.r.i;
   });
   document.getElementById("resTot").innerHTML=
-    '<div class="fullq"><div class="fqh"><span>'+T("完整檢索策略","Full search strategy")+'</span>'
+    '<div class="fullq"><div class="fqh"><span class="fqlabel">'+T("完整檢索策略：","Full search strategy:")+'</span>'
     +'<span class="fqc">'+cntCell(P.qTotal)+'</span></div>'
     +'<pre id="fullPre">'+totalHtml()+'</pre>'+((meta[P.qTotal]&&meta[P.qTotal].warn)?'<div class="fqwarn">'+esc(meta[P.qTotal].warn)+'</div>':'')+'</div>'
     +(P.db!=="pubmed"?'<div class="restot">'+genMsg()+'</div>':(DONE_N?'<div class="restot">'+doneMsg()+'</div>':''));
@@ -849,7 +850,7 @@ function renderResults(){
     h.push('<tr data-i="'+r.i+'" data-a="'+r.aid+'"'+(r.aid===SELA?' class="sel"':'')+'><td class="rk">'+(r.i+1)+'</td>'+(multi?'<td class="cn">'+r.cno+'</td>':'')+'<td class="tm">'+esc(r.term)+'<span class="tags">'+tagsHtml(x,st.maxU,r.i===st.topI)+'</span>'
       +((r.same&&r.ctx)?'<div class="ctx" title="'+esc(r.ctx)+'">'+T("於 ","in ")+esc(r.ctx.length>90?r.ctx.slice(0,88)+"…":r.ctx)+'</div>':'')+'</td>'
       +'<td class="n">'+cntCell(r.qWithout)+'</td>'
-      +'<td class="n u" title="'+T("點一下複製獨有文獻的檢索式（完整策略 NOT 抽掉後）","Click to copy the unique-records string (full strategy NOT without)")+'">'+uHtml(x,st.maxU,tot)+'</td></tr>');
+      +'<td class="n u" title="'+T("點一下複製獨有文獻的檢索式（完整檢索策略 NOT 測試詞不加入時的檢索式）","Click to copy the unique-records string (full strategy NOT without)")+'">'+uHtml(x,st.maxU,tot)+'</td></tr>');
   });
   h.push('</tbody></table></div>');
   var zh=["點擊特定欄位標題可排序","點擊特定列可在完整檢索策略中標出該詞"],
@@ -876,7 +877,7 @@ function refreshInPlace(){
 // 完整檢索策略的筆數框寬度隨數字長度調整，讓標題緊貼筆數
 function fitTotalBox(){
   var i=document.querySelector("#resTot .fqc input.cnt"); if(!i) return;
-  var n=(i.value||i.placeholder||"").length; i.style.width=Math.max(5,n+2.2)+"ch";
+  i.style.width=(i.value?Math.max(3,i.value.length+1):6)+"ch";
 }
 function sortBy(k){
   if(SORT.k===k) SORT.d=-SORT.d; else { SORT.k=k; SORT.d=(k==="i"||k==="term")?1:-1; }
