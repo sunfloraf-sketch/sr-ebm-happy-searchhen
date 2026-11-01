@@ -439,7 +439,7 @@ try{ var sv=JSON.parse(localStorage.getItem(STORE)||"null");
   } }catch(e){}
 if(!CONCEPTS.length){ CONCEPTS=DEF_ROWS.slice(); CONCEPTS.forEach(function(c){ state.concepts[c.k]=newRowState(c.type); }); }
 state.active=CONCEPTS[0].k;
-function save(){ state.defs=CONCEPTS; try{ localStorage.setItem(STORE, JSON.stringify(state)); }catch(e){} }
+function save(){ if(window._srPmlNoSave) return; state.defs=CONCEPTS; try{ localStorage.setItem(STORE, JSON.stringify(state)); }catch(e){} }   // 導覽示範期間不存檔，避免蓋掉使用者自己的內容
 
 function fillSelect(sel, opts, val){
   sel.innerHTML="";
@@ -761,9 +761,9 @@ function suggest(term){
   var key=term.toLowerCase(), toks=qToks(term);
   apiErrs=[];
   var whole=toks.slice(0,-1).sort(function(a,b){ return b.length-a.length; })[0];   // 已打完的字中最長的一個
-  var pD=Promise.all([lookupD(term,"startswith",10), lookupD(term,"contains",10), whole?lookupD(whole,"contains",60):Promise.resolve([])])
+  var pD=Promise.all([lookupD(term,"startswith",10), lookupD(term,"contains",10), whole?lookupD(whole,"contains",50):Promise.resolve([])])
     .then(function(r){ return r[0].concat(r[1], r[2].filter(function(d){ return pfxOK(d.label,toks); })); });
-  var pT=Promise.all([lookupT(term,"startswith",10), lookupT(term,"contains",10), whole?lookupT(whole,"contains",80):Promise.resolve([])])
+  var pT=Promise.all([lookupT(term,"startswith",10), lookupT(term,"contains",10), whole?lookupT(whole,"contains",50):Promise.resolve([])])
     .then(function(r){
       var seen={}, ts=[];
       r[0].concat(r[1], r[2].filter(function(t){ return pfxOK(t.label,toks); })).forEach(function(t){ if(t.resource&&!seen[t.resource]){ seen[t.resource]=1; ts.push(t); } });
@@ -1532,6 +1532,12 @@ liveCb.addEventListener("change", function(){ live=liveCb.checked; try{ localSto
 $("clearBtn").addEventListener("click", function(){ if(!confirm(T("確定清空所有欄位？","Clear all fields?"))) return; CONCEPTS.forEach(function(c){ state.concepts[c.k].items=[]; }); rowStatus={}; save(); renderRows(); renderStrategy(); sideCtx=null; renderSide(); });
 
 function renderAll(){ renderRows(); renderStrategy(); renderSide(); }
+// 供網站導覽使用：暫時換成示範內容，結束後還原（示範期間不存檔）
+window.srPmlState={
+  snap:function(){ return JSON.stringify({defs:CONCEPTS, concepts:state.concepts, active:state.active}); },
+  load:function(js){ var o=JSON.parse(js); if(!o||!o.defs||!o.defs.length) return; CONCEPTS=o.defs; state.concepts={}; CONCEPTS.forEach(function(c){ state.concepts[c.k]=(o.concepts&&o.concepts[c.k])||newRowState(c.type); }); state.active=o.active||CONCEPTS[0].k; sideCtx=null; renderAll(); },
+  side:function(dId,label,k){ showSide(dId,label,k); }
+};
 window.toggleLang=function(){
   var b=document.body; b.classList.toggle("en");
   var en=b.classList.contains("en");
@@ -1677,6 +1683,222 @@ renderAll();
   document.addEventListener("click",function(){ setOpen(false); });
   document.addEventListener("keydown",function(e){ if(e.key==="Escape") setOpen(false); });
   label(); new MutationObserver(label).observe(document.body,{attributes:true,attributeFilter:["class"]});
+})();
+</script>
+<script id="srTourSteps">
+/* PubMed Light：導覽步驟 */
+(function(){
+  var Q=function(s){ return document.querySelector(s); };
+  var row0=function(){ return Q("#rows .crow"); };
+  var circ='<span style="display:inline-flex;align-items:center;justify-content:center;width:1.55em;height:1.55em;border:1.5px solid currentColor;border-radius:50%;font-weight:800;font-size:.85em;line-height:1;vertical-align:.08em;margin:0 .15em">?</span>';
+  var DEMO="{\"defs\":[{\"k\":\"P\",\"type\":\"P\",\"code\":\"P\",\"name\":\"\"},{\"k\":\"I\",\"type\":\"I\",\"code\":\"I\",\"name\":\"\"},{\"k\":\"C\",\"type\":\"C\",\"code\":\"C\",\"name\":\"\"},{\"k\":\"O\",\"type\":\"O\",\"code\":\"O\",\"name\":\"\"},{\"k\":\"S\",\"type\":\"S\",\"code\":\"S\",\"name\":\"\"}],\"concepts\":{\"P\":{\"on\":true,\"level\":\"tiab\",\"prox\":\"\",\"items\":[{\"type\":\"mesh\",\"text\":\"Diabetes, Gestational\",\"dId\":\"D016640\",\"tag\":\"mh\"},{\"type\":\"ft\",\"text\":\"Gestational Diabetes\",\"from\":\"D016640\"},{\"type\":\"ft\",\"text\":\"Pregnancy-Induced Diabetes\",\"from\":\"D016640\"},{\"type\":\"ft\",\"text\":\"GDM\"}]},\"I\":{\"on\":true,\"level\":\"tiab\",\"prox\":\"\",\"items\":[{\"type\":\"mesh\",\"text\":\"Exercise\",\"dId\":\"D015444\",\"tag\":\"mh\"},{\"type\":\"ft\",\"text\":\"Exercise\",\"from\":\"D015444\"},{\"type\":\"ft\",\"text\":\"Physical Activity\",\"from\":\"D015444\"}]},\"C\":{\"on\":false,\"level\":\"tiab\",\"prox\":\"\",\"items\":[]},\"O\":{\"on\":true,\"level\":\"tiab\",\"prox\":\"\",\"items\":[]},\"S\":{\"on\":true,\"level\":\"tiab\",\"prox\":\"\",\"items\":[{\"type\":\"mesh\",\"text\":\"Randomized Controlled Trial\",\"dId\":\"D016449\",\"tag\":\"pt\"},{\"type\":\"ft\",\"text\":\"Randomized Controlled Trial\",\"from\":\"D016449\"}]}},\"active\":\"P\"}", bak=null;   // 導覽示範：P 妊娠糖尿病、I 運動、S RCT
+  window.SR_TOUR={ key:"pml_v1", video:"media/pubmed-light-demo.mp4", videoLen:{zh:"約 1 分 10 秒",en:"about 1:10"},
+    onStart:function(){ var A=window.srPmlState; if(!A) return; bak=A.snap(); window._srPmlNoSave=true; A.load(DEMO); setTimeout(function(){ try{ A.side("D016640","Diabetes, Gestational","P"); }catch(e){} },30); },
+    onEnd:function(){ var A=window.srPmlState; if(!A||bak===null) return; A.load(bak); bak=null; window._srPmlNoSave=false; },
+    steps:[
+    { el:null,
+      zh:{t:"歡迎使用 PubMed Light", d:"<b>輸入檢索詞 → 選 MeSH 標目 → 自動帶入同義詞 → 組成 PubMed 檢索策略</b>，還能即時看到每一列的筆數。可以按「自動播放」，或用鍵盤 ← → 切換、Esc 離開。"},
+      en:{t:"Welcome to PubMed Light", d:"<b>Type a term → pick a MeSH heading → its synonyms come along → a PubMed strategy is built</b>, with live counts for each row. Press Auto-play, or use ← → and Esc."} },
+    { el:row0,
+      zh:{t:"① 概念列", d:"每一列是一個概念（P、I、C、O）。同一列裡的詞以 <b>OR</b> 連結；右上角有勾選的列之間以 <b>AND</b> 組合，旁邊的數字是這一列的 PubMed 筆數。代號與名稱可以直接點選修改，拖曳 ⠿ 可調整順序。"},
+      en:{t:"① Concept rows", d:"Each row is one concept (P, I, C, O). Terms in a row are ORed; rows ticked at the top right are ANDed, and the number beside the tick is that row’s PubMed count. Click a code or name to rename it; drag ⠿ to reorder."} },
+    { el:function(){ var r=row0(); return r&&r.querySelector('input[id^="q-"]'); },
+      zh:{t:"輸入英文檢索詞", d:"在 <b>+</b> 輸入英文詞，從候選清單選 MeSH 標目，會同時加入<b>標目與同義詞（Entry Terms）</b>。找不到標目（例：縮寫 GDM）時，會由相關文章反推常用的 MeSH；不選標目也可以直接加為自由詞彙。"},
+      en:{t:"Type an English term", d:"Type at <b>+</b> and pick a MeSH heading — the <b>heading and its synonyms (Entry Terms)</b> are added together. If no heading matches (e.g. the abbreviation GDM), common MeSH are inferred from relevant articles; you can also add the word as free text."} },
+    { el:function(){ var r=row0(); return r&&r.querySelector(".pgrp"); },
+      zh:{t:"標目與同義詞", d:"點<b>標目旁的 ▾</b> 可切換：含／不含狹義詞、重點標目；點<b>「同義詞+N」</b>可勾選要帶入哪些 Entry Terms。"},
+      en:{t:"Heading and synonyms", d:"Click <b>▾ beside a heading</b> to switch: with / without narrower terms, major topic. Click <b>“Synonyms +N”</b> to choose which Entry Terms to include."} },
+    { el:function(){ var r=row0(); return r&&r.querySelector("select.fld"); },
+      zh:{t:"同義詞欄位", d:"這一列的自由詞彙要在哪個欄位找：<b>[tiab] 篇名／摘要</b>（預設）、<b>[ti] 篇名</b>、<b>[tw] 文字欄位</b>、<b>[all] 所有欄位</b>。欄位越窄，筆數越少。"},
+      en:{t:"Synonym field", d:"Where this row’s free-text terms are searched: <b>[tiab] title/abstract</b> (default), <b>[ti] title</b>, <b>[tw] text words</b> or <b>[all] all fields</b>. The narrower the field, the fewer the records."} },
+    { el:function(){ var r=row0(); return r&&r.querySelector("select.prx"); },
+      zh:{t:"鄰近字", d:"每列設定一次，套用到這一列所有兩個字以上的自由詞彙，例：<code>\"hip fracture\"[tiab:~3]</code> 也會找到 fracture of the hip。只能用在 [tiab]、[ti]，也不能和截字 * 一起用。"},
+      en:{t:"Proximity", d:"Set once per row; it applies to every multi-word free-text term in the row, e.g. <code>\"hip fracture\"[tiab:~3]</code> also finds fracture of the hip. Works only with [tiab] / [ti], and not with truncation *."} },
+    { el:function(){ var r=row0(); if(!r) return null; var a=[r.querySelector(".rc"), r.querySelector(".inc")].filter(function(x){ return x && x.offsetParent; }); return a.length?a:null; },
+      zh:{t:"勾選：加入組合", d:"右上角有勾選的列才會以 AND 組合；取消勾選，這一列就不加入（比較 C 預設不勾）。旁邊的數字是這一列的 PubMed 筆數。"},
+      en:{t:"Tick to combine", d:"Only ticked rows are ANDed; untick a row to leave it out (Comparison is unticked by default). The number beside it is that row’s PubMed count."} },
+    { el:"#addSlot",
+      zh:{t:"新增概念列", d:"PICO 只是引導框架：可以再加 P、I、C、O 或「其他」列；<b>更多欄位選項</b>可新增以特定欄位檢索的列，例如作者 [au]、期刊 [ta]、PMID。"},
+      en:{t:"Add concept rows", d:"PICO is only a guide: add more P, I, C, O or “Other” rows. <b>More field options</b> adds rows searched in one field, such as Author [au], Journal [ta] or PMID."} },
+    { el:function(){ return document.getElementById("row-S")||Q("#rows .crow:last-child"); },
+      zh:{t:"研究設計", d:"加入 Randomized Controlled Trial、Meta-Analysis 等標目時，預設用<b>出版類型 [pt]</b> 檢索；建議同時放自由詞彙（randomized、placebo），以免漏掉尚未標引的新文獻。"},
+      en:{t:"Study design", d:"Headings such as Randomized Controlled Trial or Meta-Analysis default to <b>publication type [pt]</b>. Add free text too (randomized, placebo) to catch records not yet indexed."} },
+    { el:function(){ var c=document.getElementById("liveCb"); return c&&c.closest("label"); },
+      zh:{t:"即時顯示 PubMed 筆數", d:"勾選後，每一列與組合後的筆數會即時更新，方便判斷哪個概念讓結果變太多或太少。"},
+      en:{t:"Live PubMed counts", d:"When ticked, counts for each row and the combination update as you go, so you can see which concept makes the results too broad or too narrow."} },
+    { el:"#totalBtn",
+      zh:{t:"在 PubMed 執行", d:"顯示組合後的總筆數，按下去就直接在 PubMed 開啟這個檢索式。"},
+      en:{t:"Run in PubMed", d:"Shows the combined count; click to open the search in PubMed."} },
+    { el:function(){ var s=document.getElementById("stratWrap"); return s&&s.closest(".panel"); },
+      zh:{t:"② PubMed 檢索策略", d:"自動列出逐行策略（#1、#2…）與各行筆數。可以<b>複製檢索式</b>、<b>複製逐行策略</b>，或直接在 PubMed 執行。"},
+      en:{t:"② PubMed strategy", d:"The line-by-line strategy (#1, #2…) with counts. <b>Copy the query</b>, <b>copy line-by-line</b>, or run it in PubMed."} },
+    { el:"#comboTa",
+      zh:{t:"自訂組合（選填）", d:"不想全部 AND？每行寫一個組合，例如 <code>(#1 OR #2) AND #3</code>，可用 AND／OR／NOT 與括號；最後一行就是最終檢索式。"},
+      en:{t:"Custom combination (optional)", d:"Not everything AND? Write one combination per line, e.g. <code>(#1 OR #2) AND #3</code>, with AND / OR / NOT and parentheses; the last line is the final query."} },
+    { el:"#side",
+      zh:{t:"右側：MeSH 上下位結構", d:"選了標目後，這裡會顯示它在 MeSH 樹中的<b>廣義（上位）與狹義（下位）標目</b>，按 <b>＋</b> 可直接加入該列；下方的 Entry Terms 可以勾選帶入。"},
+      en:{t:"Right: MeSH hierarchy", d:"After picking a heading, its <b>broader and narrower headings</b> appear here — press <b>+</b> to add one to the row. Tick Entry Terms below to include them."} },
+    { el:"details.tipsd > summary",
+      zh:{t:"使用提示", d:"含／不含狹義詞、補充概念 [nm]、鍵盤刪除、鄰近字的限制等細節都在這裡。"},
+      en:{t:"Tips", d:"Details on narrower terms, supplementary concepts [nm], keyboard deletion, proximity limits and more."} },
+    { el:".srtour-btn",
+      zh:{t:"隨時重看導覽、看示範影片", d:"之後想再看一次，按頁首這個 "+circ+" 可以重看導覽，或觀看示範影片。祝檢索順利！"},
+      en:{t:"Replay or watch the video", d:"Press this "+circ+" in the header to replay the tour or watch the demo video. Happy searching!"} }
+  ]};
+})();
+</script>
+<script id="srTourScript">
+/* 網站導覽（逐步框亮＋說明卡）：第一次開啟自動播放一次，之後由頁首「?」按鈕重看。
+   各頁只要提供 window.SR_TOUR = { key:"…", steps:[{el:function(){…}|"selector"|null, zh:{t,d}, en:{t,d}}] } 即可共用。 */
+(function(){
+  var T=window.SR_TOUR; if(!T||!T.steps||!T.steps.length) return;
+  var KEY="sr_tour_done_"+T.key, AUTO_MS=6500;
+  function en(){ return document.body.classList.contains("en"); }
+  function L(o){ return en()?o.en:o.zh; }
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  function seen(){ try{ return localStorage.getItem(KEY)==="1"; }catch(e){ return true; } }
+  function markSeen(){ try{ localStorage.setItem(KEY,"1"); }catch(e){} }
+
+  var css=document.createElement("style"); css.id="srTourStyle";
+  css.textContent=
+    ".srtour-ov{position:fixed;inset:0;z-index:20000;background:transparent}"+
+    ".srtour-hole{position:fixed;z-index:20001;border-radius:10px;box-shadow:0 0 0 3px #E3B36B,0 0 0 9999px rgba(24,34,29,.58);pointer-events:none;transition:all .28s ease}"+
+    ".srtour-hole.none{box-shadow:0 0 0 9999px rgba(24,34,29,.58);width:0!important;height:0!important;left:50%!important;top:40%!important}"+
+    ".srtour-card{position:fixed;z-index:20002;width:360px;max-width:calc(100vw - 24px);background:#fff;border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.28);padding:16px 18px 14px;font-size:14px;line-height:1.65;color:#23302A;font-family:inherit}"+
+    ".srtour-card h4{margin:0 0 4px;font-size:16px;color:#1F4538}"+
+    ".srtour-card .srt-d{margin:0}"+
+    ".srtour-card .srt-ft{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap}"+
+    ".srtour-card .srt-n{font-size:12px;color:#6C726B;margin-right:auto}"+
+    ".srtour-card button{font-family:inherit;font-size:13px;font-weight:650;border-radius:999px;padding:6px 13px;cursor:pointer;border:1px solid #D5DCE0;background:#fff;color:#23302A}"+
+    ".srtour-card button:hover{border-color:#2A5A49;color:#1F4538}"+
+    ".srtour-card button.pri{background:#2A5A49;border-color:#2A5A49;color:#fff}"+
+    ".srtour-card button.pri:hover{background:#1F4538;color:#fff}"+
+    ".srtour-card button.on{background:#FFF6E6;border-color:#E3B36B;color:#8A5A12}"+
+    ".srtour-card .srt-x{position:absolute;right:8px;top:6px;border:0;background:none;font-size:18px;line-height:1;padding:4px 6px;color:#8C8577}"+
+    ".srtour-card .srt-bar{height:3px;background:#EEF2EF;border-radius:3px;margin-top:10px;overflow:hidden}"+
+    ".srtour-card .srt-bar i{display:block;height:100%;width:0;background:#E3B36B}"+
+    ".srtour-btn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;padding:0;margin:0;border:1px solid var(--sh-line,#C9D2CD);border-radius:50%;background:transparent;color:var(--sh-ink,#2b3a35);cursor:pointer;flex:none;font-weight:800;font-size:15px;font-family:inherit}"+
+    ".srtour-btn:hover{border-color:var(--sh-green,#2A5A49);color:var(--sh-green-d,#1F4538)}"+
+    ".srtour-pop{position:fixed;z-index:20005;background:#fff;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.2);padding:6px;display:flex;flex-direction:column;min-width:180px;font-family:inherit}"+
+    ".srtour-pop button{border:0;background:none;text-align:left;padding:9px 12px;border-radius:8px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:#23302A;white-space:nowrap}"+
+    ".srtour-pop button:hover,.srtour-pop button:focus-visible{background:#F1F4F2;color:#1F4538;outline:none}"+
+    ".srtour-pop small{font-weight:400;color:#6C726B;margin-left:6px}"+
+    ".srtour-vbg{position:fixed;inset:0;z-index:20010;background:rgba(24,34,29,.78);display:flex;align-items:center;justify-content:center;padding:56px 16px 16px}"+
+    ".srtour-vbox{position:relative;width:min(1120px,100%)}"+
+    ".srtour-vbox video{width:100%;max-height:calc(100vh - 80px);display:block;border-radius:10px;background:#000}"+
+    ".srtour-vx{position:absolute;right:0;top:-44px;background:none;border:0;color:#fff;font-size:30px;line-height:1;padding:4px 8px;cursor:pointer}"+
+    "@media (prefers-reduced-motion:reduce){.srtour-hole{transition:none}}";
+  document.head.appendChild(css);
+
+  var ov=null, hole=null, card=null, idx=0, steps=[], auto=false, timer=null, barT=null, raf=0;
+  function _vis(e){ return e && !(e.offsetParent===null && getComputedStyle(e).position!=="fixed"); }
+  function targetOf(s){ var e=null; try{ e=(typeof s.el==="function")?s.el():(s.el?document.querySelector(s.el):null); }catch(_e){ e=null; }
+    if(Array.isArray(e)){ e=e.filter(_vis); return e.length?(e.length===1?e[0]:e):null; }   // 可框亮多個元素（取聯集），例：工具按鈕＋選單
+    return _vis(e)?e:null; }
+  function rectOf(e){ if(!Array.isArray(e)) return e.getBoundingClientRect();
+    var L=1e9,T=1e9,R=-1e9,B=-1e9; e.forEach(function(x){ var r=x.getBoundingClientRect(); L=Math.min(L,r.left); T=Math.min(T,r.top); R=Math.max(R,r.right); B=Math.max(B,r.bottom); });
+    return {left:L,top:T,right:R,bottom:B,width:R-L,height:B-T}; }
+  function liveSteps(){ return T.steps.filter(function(s){ return !s.el || s.before || targetOf(s); }); }
+  function place(){
+    if(!card) return; var s=steps[idx], e=s&&targetOf(s);
+    var vv=window.visualViewport, VW=vv?vv.width:innerWidth, VH=vv?vv.height:innerHeight, OX=vv?vv.offsetLeft:0, OY=vv?vv.offsetTop:0, narrow=VW<=640;
+    if(narrow){ card.style.width=(VW-24)+"px"; } else card.style.width="";
+    if(!e){ hole.className="srtour-hole none"; card.style.left=(OX+Math.max(12,(VW-card.offsetWidth)/2))+"px"; card.style.top=(OY+Math.max(12,(VH-card.offsetHeight)/2))+"px"; return; }
+    var r=rectOf(e), pad=6;
+    hole.className="srtour-hole"; hole.style.left=(r.left-pad)+"px"; hole.style.top=(r.top-pad)+"px"; hole.style.width=(r.width+pad*2)+"px"; hole.style.height=(r.height+pad*2)+"px";
+    var cw=card.offsetWidth, ch=card.offsetHeight, gap=14, top, left;
+    if(narrow){ left=OX+12; top=OY+VH-ch-12; }   // 窄螢幕：說明卡固定在可見範圍底部
+    else{
+      if(r.bottom+gap+ch<=OY+VH-8) top=r.bottom+gap; else if(r.top-gap-ch>=OY+8) top=r.top-gap-ch; else top=Math.max(OY+8,OY+VH-ch-12);
+      left=Math.min(Math.max(OX+12, r.left+r.width/2-cw/2), OX+VW-cw-12);
+    }
+    card.style.left=left+"px"; card.style.top=top+"px";
+  }
+  function loop(){ place(); raf=requestAnimationFrame(loop); }
+  function stopAuto(){ auto=false; clearTimeout(timer); if(card){ var b=card.querySelector(".srt-auto"); if(b){ b.classList.remove("on"); b.textContent=en()?"▶ Auto-play":"▶ 自動播放"; } var bar=card.querySelector(".srt-bar i"); if(bar){ bar.style.transition="none"; bar.style.width="0"; } } }
+  function armAuto(){ clearTimeout(timer); if(!auto) return; var bar=card.querySelector(".srt-bar i"); if(bar){ bar.style.transition="none"; bar.style.width="0"; void bar.offsetWidth; bar.style.transition="width "+AUTO_MS+"ms linear"; bar.style.width="100%"; }
+    timer=setTimeout(function(){ if(idx<steps.length-1) go(idx+1); else finish(); }, AUTO_MS); }
+  function render(){
+    var s=steps[idx], o=L(s), last=idx===steps.length-1;
+    card.innerHTML='<button type="button" class="srt-x" aria-label="'+(en()?"Close tour":"關閉導覽")+'">×</button>'+
+      '<h4>'+esc(o.t)+'</h4><p class="srt-d">'+o.d+'</p>'+
+      '<div class="srt-ft"><span class="srt-n">'+(idx+1)+' / '+steps.length+'</span>'+
+      (idx>0?'<button type="button" class="srt-prev">'+(en()?"Back":"上一步")+'</button>':'')+
+      '<button type="button" class="srt-auto'+(auto?' on':'')+'">'+(auto?(en()?"❚❚ Pause":"❚❚ 暫停"):(en()?"▶ Auto-play":"▶ 自動播放"))+'</button>'+
+      '<button type="button" class="pri srt-next">'+(last?(en()?"Done":"完成"):(en()?"Next":"下一步"))+'</button></div>'+
+      '<div class="srt-bar"><i></i></div>';
+    card.querySelector(".srt-x").onclick=finish;
+    var pv=card.querySelector(".srt-prev"); if(pv) pv.onclick=function(){ stopAuto(); go(idx-1); };
+    card.querySelector(".srt-next").onclick=function(){ stopAuto(); if(last) finish(); else go(idx+1); };
+    card.querySelector(".srt-auto").onclick=function(){ if(auto){ stopAuto(); } else { auto=true; render(); armAuto(); } };
+    card.setAttribute("aria-label", o.t);
+    place(); armAuto();
+    var nb=card.querySelector(".srt-next"); if(nb && !auto) nb.focus({preventScroll:true});
+  }
+  function go(i){
+    var ps=steps[idx]; if(ps&&ps.after&&card) try{ ps.after(); }catch(_e){}   // 離開上一步：收起它打開的選單
+    idx=Math.max(0,Math.min(steps.length-1,i)); var s=steps[idx];
+    if(s.before) try{ s.before(); }catch(_e){}   // 進入這一步：例如先打開選單，再框亮
+    var e=targetOf(s);
+    if(e){ var r=rectOf(e), vh=window.visualViewport?window.visualViewport.height:innerHeight; if(r.top<70 || r.bottom>vh-(vh<700?260:200)){ var want=Math.max(80, Math.min((vh-r.height)/2, vh*0.3)); window.scrollBy({top:r.top-want, behavior:"smooth"}); } }   // 捲到離頂端至少 80px，框亮的上緣不會被切掉
+    render();
+  }
+  function key(e){ if(!card) return; if(e.key==="Escape"){ finish(); } else if(e.key==="ArrowRight"){ stopAuto(); if(idx<steps.length-1) go(idx+1); } else if(e.key==="ArrowLeft"){ stopAuto(); go(idx-1); } }
+  function start(autoplay){
+    if(card) return; if(T.onStart) try{ T.onStart(); }catch(_e){}   // 例：換成示範內容
+    steps=liveSteps(); if(!steps.length){ if(T.onEnd) try{ T.onEnd(); }catch(_e){} return; }
+    ov=document.createElement("div"); ov.className="srtour-ov"; ov.addEventListener("click",function(e){ e.stopPropagation(); });
+    hole=document.createElement("div"); hole.className="srtour-hole";
+    card=document.createElement("div"); card.className="srtour-card"; card.addEventListener("click",function(e){ e.stopPropagation(); });   // 導覽卡上的點擊不要觸發頁面「點外面就關選單」 card.setAttribute("role","dialog"); card.setAttribute("aria-modal","true");
+    document.body.appendChild(ov); document.body.appendChild(hole); document.body.appendChild(card);
+    document.addEventListener("keydown",key,true); auto=!!autoplay; idx=0; go(0); raf=requestAnimationFrame(loop);
+  }
+  function finish(){ var cs=steps[idx]; if(card&&cs&&cs.after) try{ cs.after(); }catch(_e){} if(card&&T.onEnd) try{ T.onEnd(); }catch(_e){} markSeen(); clearTimeout(timer); cancelAnimationFrame(raf); document.removeEventListener("keydown",key,true);
+    [ov,hole,card].forEach(function(n){ if(n&&n.parentNode) n.parentNode.removeChild(n); }); ov=hole=card=null; }
+  window.srTourStart=function(){ start(false); };
+  // 切換語言時重畫目前這張卡
+  new MutationObserver(function(){ if(card) render(); }).observe(document.body,{attributes:true,attributeFilter:["class"]});
+
+  // 頁首「?」按鈕（放在齒輪之後、語言鈕之前）
+  (function(){ var lang=document.getElementById("langBtn"); if(!lang) return;
+    var b=document.createElement("button"); b.type="button"; b.className="srtour-btn"; b.textContent="?";
+    function lab(){ var t=en()?"Site tour":"網站導覽"; b.setAttribute("aria-label",t); b.setAttribute("data-tip-zh","網站導覽"); b.setAttribute("data-tip-en","Site tour"); if(!document.body.classList.contains("notips")) b.title=t; }
+    lab(); new MutationObserver(lab).observe(document.body,{attributes:true,attributeFilter:["class"]});
+    // 有示範影片時，按「?」先選：逐步導覽／示範影片
+    var pop=null;
+    function popClose(){ if(pop){ pop.remove(); pop=null; document.removeEventListener("click",popOut,true); document.removeEventListener("keydown",popKey,true); } }
+    function popOut(e){ if(pop && !pop.contains(e.target) && e.target!==b) popClose(); }
+    function popKey(e){ if(e.key==="Escape") popClose(); }
+    function vidOpen(){
+      var bg=document.createElement("div"); bg.className="srtour-vbg"; bg.setAttribute("role","dialog"); bg.setAttribute("aria-modal","true"); bg.setAttribute("aria-label", en()?"Demo video":"示範影片");
+      bg.innerHTML='<div class="srtour-vbox"><button type="button" class="srtour-vx" aria-label="'+(en()?"Close":"關閉")+'">×</button><video controls autoplay playsinline preload="metadata"></video></div>';
+      var v=bg.querySelector("video"); v.src=T.video;
+      function close(){ try{ v.pause(); }catch(_e){} bg.remove(); document.removeEventListener("keydown",k,true); b.focus(); }
+      function k(e){ if(e.key==="Escape"){ e.stopPropagation(); close(); } }
+      bg.addEventListener("click",function(e){ if(e.target===bg) close(); });
+      bg.querySelector(".srtour-vx").onclick=close;
+      document.addEventListener("keydown",k,true); document.body.appendChild(bg); bg.querySelector(".srtour-vx").focus();
+      if(typeof srCount==="function") try{ srCount("tour-video-"+T.key,"示範影片-"+T.key); }catch(_e){}
+    }
+    b.onclick=function(){
+      if(!T.video){ window.srTourStart(); return; }
+      if(pop){ popClose(); return; }
+      pop=document.createElement("div"); pop.className="srtour-pop"; pop.setAttribute("role","menu");
+      pop.innerHTML='<button type="button" role="menuitem" class="srtp-tour">'+(en()?"Step-by-step tour":"逐步導覽")+'</button>'+
+                    '<button type="button" role="menuitem" class="srtp-vid">'+(en()?"Demo video":"示範影片")+(T.videoLen?'<small>'+esc(en()?T.videoLen.en:T.videoLen.zh)+'</small>':'')+'</button>';
+      document.body.appendChild(pop);
+      var r=b.getBoundingClientRect(); pop.style.top=(r.bottom+8)+"px"; pop.style.left=Math.max(12, Math.min(r.right-pop.offsetWidth, innerWidth-pop.offsetWidth-12))+"px";
+      pop.querySelector(".srtp-tour").onclick=function(){ popClose(); window.srTourStart(); };
+      pop.querySelector(".srtp-vid").onclick=function(){ popClose(); vidOpen(); };
+      setTimeout(function(){ document.addEventListener("click",popOut,true); document.addEventListener("keydown",popKey,true); },0);
+      pop.querySelector("button").focus();
+    };
+    lang.insertAdjacentElement("beforebegin", b);   // 順序：⋯ 更多工具 → 齒輪 → ? → 語言
+  })();
+  // 第一次來：自動開始一次（自動播放）；從其他工具帶資料過來時不打擾
+  if(!seen() && !/[?&](import|before)=/.test(location.search)){
+    setTimeout(function(){ if(!seen()) start(true); }, 1200);
+  }
 })();
 </script>
 </body>

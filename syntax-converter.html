@@ -1998,5 +1998,200 @@ window.toggleLang=function(){
   label(); new MutationObserver(label).observe(document.body,{attributes:true,attributeFilter:["class"]});
 })();
 </script>
+<script id="srTourSteps">
+/* 資料庫檢索語法轉換器：導覽步驟 */
+(function(){
+  var Q=function(s){ return document.querySelector(s); };
+  var _sn=null;   // 導覽時若沒有內容，暫時載入範例，結束後還原
+  window.SR_TOUR={ key:"sc_v1", video:"media/syntax-converter-demo.mp4", videoLen:{zh:"約 50 秒",en:"about 50 s"},
+    onStart:function(){ var ta=document.getElementById("in"), b=Q("#loadSlot .exload"); if(!ta||!b||ta.value.trim()) return; _sn={src:(document.getElementById("src")||{}).value}; b.click(); },
+    onEnd:function(){ if(!_sn) return; var ta=document.getElementById("in"), s=document.getElementById("src"); if(s&&_sn.src&&s.value!==_sn.src){ s.value=_sn.src; s.dispatchEvent(new Event("change",{bubbles:true})); } if(ta){ ta.value=""; ta.dispatchEvent(new Event("input",{bubbles:true})); } _sn=null; }, steps:[
+    { el:null,
+      zh:{t:"歡迎使用資料庫檢索語法轉換器", d:"<b>貼上一個資料庫的檢索策略，一秒生成其他資料庫／平台的語法</b>，任一資料庫都可以當起點。可以按「自動播放」，或用 ← → 切換、Esc 離開。"},
+      en:{t:"Welcome to the Syntax Converter", d:"<b>Paste a strategy from one database and get the syntax for the others in a second</b> — any database can be the starting point. Press Auto-play, or use ← → and Esc."} },
+    { el:"#src",
+      zh:{t:"① 起始資料庫", d:"你貼上的檢索式是用哪個資料庫寫的（Embase.com、Ovid、PubMed、Cochrane、EBSCOhost、WoS、Scopus…）。"},
+      en:{t:"① Starting database", d:"Which database your strategy is written for (Embase.com, Ovid, PubMed, Cochrane, EBSCOhost, WoS, Scopus…)."} },
+    { el:"#dbchecks",
+      zh:{t:"② 輸出資料庫", d:"勾選要產生語法的資料庫，可以一次勾很多個。"},
+      en:{t:"② Output databases", d:"Tick the databases to generate; tick as many as you need."} },
+    { el:"#in",
+      zh:{t:"③ 貼上檢索式", d:"可以多行，用 <b>#1、#2</b> 引用行號，例如 <code>#5 (#1 OR #2) AND (#3 OR #4)</code>。兩個字以上的詞請自行決定片語、鄰近字或 AND，以統一各資料庫的策略。"},
+      en:{t:"③ Paste your strategy", d:"Multiple lines are fine; refer to lines with <b>#1, #2</b>, e.g. <code>#5 (#1 OR #2) AND (#3 OR #4)</code>. Decide phrase, proximity or AND for multi-word terms yourself so every database gets the same logic."} },
+    { el:"#loadSlot",
+      zh:{t:"第一次用？載入範例", d:"按一下就會填入一段 Embase.com 範例策略，馬上看到轉換結果。"},
+      en:{t:"New here? Load the example", d:"Fills in an Embase.com example strategy so you can see the conversion right away."} },
+    { el:"#outs",
+      zh:{t:"各資料庫的語法", d:"每個輸出資料庫各一份，可以直接複製。欄位標籤、截字、鄰近字、控制詞彙都已換成該資料庫的寫法。"},
+      en:{t:"Syntax for each database", d:"One block per output database, ready to copy. Field tags, truncation, proximity and controlled-vocabulary syntax are converted for each database."} },
+    { el:".coloropts",
+      zh:{t:"顯示選項", d:"<b>語法顏色標記</b>：欄位、運算子上色；<b>成對括弧顏色</b>：同一對括弧同色，方便檢查；<b>整併為單一長式</b>：把 #1、#2… 展開合成一串。"},
+      en:{t:"Display options", d:"<b>Syntax colors</b> for fields and operators; <b>bracket pairs</b> share a color for easy checking; <b>one combined query</b> expands #1, #2… into a single string."} },
+    { el:".wordbtn",
+      zh:{t:"下載 Word", d:"把所有資料庫的語法一次存成 Word 檔，方便放進搜尋紀錄或附錄。"},
+      en:{t:"Download Word", d:"Save every database’s syntax in one Word file for your search record or appendix."} },
+    { el:function(){ var d=Q("details"); return d&&d.querySelector("summary"); },
+      zh:{t:"必須注意", d:"控制詞彙<b>不會自動對應</b>到其他資料庫的詞表，只是改成該資料庫的語法格式；請依各資料庫的控制詞彙工具查核並替換。"},
+      en:{t:"Important", d:"Controlled vocabulary is <b>not mapped</b> to other thesauri — only its syntax is converted. Check and replace headings with each database’s own tools."} },
+    { el:".srtour-btn",
+      zh:{t:"隨時重看導覽、看示範影片", d:"之後想再看一次，按頁首這個 <span style=\"display:inline-flex;align-items:center;justify-content:center;width:1.55em;height:1.55em;border:1.5px solid currentColor;border-radius:50%;font-weight:800;font-size:.85em;line-height:1;vertical-align:.08em;margin:0 .15em\">?</span> 可以重看導覽，或觀看示範影片。祝檢索順利！"},
+      en:{t:"Replay or watch the video", d:"Press this <span style=\"display:inline-flex;align-items:center;justify-content:center;width:1.55em;height:1.55em;border:1.5px solid currentColor;border-radius:50%;font-weight:800;font-size:.85em;line-height:1;vertical-align:.08em;margin:0 .15em\">?</span> in the header to replay the tour or watch the demo video. Happy searching!"} }
+  ]};
+})();
+</script>
+<script id="srTourScript">
+/* 網站導覽（逐步框亮＋說明卡）：第一次開啟自動播放一次，之後由頁首「?」按鈕重看。
+   各頁只要提供 window.SR_TOUR = { key:"…", steps:[{el:function(){…}|"selector"|null, zh:{t,d}, en:{t,d}}] } 即可共用。 */
+(function(){
+  var T=window.SR_TOUR; if(!T||!T.steps||!T.steps.length) return;
+  var KEY="sr_tour_done_"+T.key, AUTO_MS=6500;
+  function en(){ return document.body.classList.contains("en"); }
+  function L(o){ return en()?o.en:o.zh; }
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  function seen(){ try{ return localStorage.getItem(KEY)==="1"; }catch(e){ return true; } }
+  function markSeen(){ try{ localStorage.setItem(KEY,"1"); }catch(e){} }
+
+  var css=document.createElement("style"); css.id="srTourStyle";
+  css.textContent=
+    ".srtour-ov{position:fixed;inset:0;z-index:20000;background:transparent}"+
+    ".srtour-hole{position:fixed;z-index:20001;border-radius:10px;box-shadow:0 0 0 3px #E3B36B,0 0 0 9999px rgba(24,34,29,.58);pointer-events:none;transition:all .28s ease}"+
+    ".srtour-hole.none{box-shadow:0 0 0 9999px rgba(24,34,29,.58);width:0!important;height:0!important;left:50%!important;top:40%!important}"+
+    ".srtour-card{position:fixed;z-index:20002;width:360px;max-width:calc(100vw - 24px);background:#fff;border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.28);padding:16px 18px 14px;font-size:14px;line-height:1.65;color:#23302A;font-family:inherit}"+
+    ".srtour-card h4{margin:0 0 4px;font-size:16px;color:#1F4538}"+
+    ".srtour-card .srt-d{margin:0}"+
+    ".srtour-card .srt-ft{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap}"+
+    ".srtour-card .srt-n{font-size:12px;color:#6C726B;margin-right:auto}"+
+    ".srtour-card button{font-family:inherit;font-size:13px;font-weight:650;border-radius:999px;padding:6px 13px;cursor:pointer;border:1px solid #D5DCE0;background:#fff;color:#23302A}"+
+    ".srtour-card button:hover{border-color:#2A5A49;color:#1F4538}"+
+    ".srtour-card button.pri{background:#2A5A49;border-color:#2A5A49;color:#fff}"+
+    ".srtour-card button.pri:hover{background:#1F4538;color:#fff}"+
+    ".srtour-card button.on{background:#FFF6E6;border-color:#E3B36B;color:#8A5A12}"+
+    ".srtour-card .srt-x{position:absolute;right:8px;top:6px;border:0;background:none;font-size:18px;line-height:1;padding:4px 6px;color:#8C8577}"+
+    ".srtour-card .srt-bar{height:3px;background:#EEF2EF;border-radius:3px;margin-top:10px;overflow:hidden}"+
+    ".srtour-card .srt-bar i{display:block;height:100%;width:0;background:#E3B36B}"+
+    ".srtour-btn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;padding:0;margin:0;border:1px solid var(--sh-line,#C9D2CD);border-radius:50%;background:transparent;color:var(--sh-ink,#2b3a35);cursor:pointer;flex:none;font-weight:800;font-size:15px;font-family:inherit}"+
+    ".srtour-btn:hover{border-color:var(--sh-green,#2A5A49);color:var(--sh-green-d,#1F4538)}"+
+    ".srtour-pop{position:fixed;z-index:20005;background:#fff;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.2);padding:6px;display:flex;flex-direction:column;min-width:180px;font-family:inherit}"+
+    ".srtour-pop button{border:0;background:none;text-align:left;padding:9px 12px;border-radius:8px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:#23302A;white-space:nowrap}"+
+    ".srtour-pop button:hover,.srtour-pop button:focus-visible{background:#F1F4F2;color:#1F4538;outline:none}"+
+    ".srtour-pop small{font-weight:400;color:#6C726B;margin-left:6px}"+
+    ".srtour-vbg{position:fixed;inset:0;z-index:20010;background:rgba(24,34,29,.78);display:flex;align-items:center;justify-content:center;padding:56px 16px 16px}"+
+    ".srtour-vbox{position:relative;width:min(1120px,100%)}"+
+    ".srtour-vbox video{width:100%;max-height:calc(100vh - 80px);display:block;border-radius:10px;background:#000}"+
+    ".srtour-vx{position:absolute;right:0;top:-44px;background:none;border:0;color:#fff;font-size:30px;line-height:1;padding:4px 8px;cursor:pointer}"+
+    "@media (prefers-reduced-motion:reduce){.srtour-hole{transition:none}}";
+  document.head.appendChild(css);
+
+  var ov=null, hole=null, card=null, idx=0, steps=[], auto=false, timer=null, barT=null, raf=0;
+  function _vis(e){ return e && !(e.offsetParent===null && getComputedStyle(e).position!=="fixed"); }
+  function targetOf(s){ var e=null; try{ e=(typeof s.el==="function")?s.el():(s.el?document.querySelector(s.el):null); }catch(_e){ e=null; }
+    if(Array.isArray(e)){ e=e.filter(_vis); return e.length?(e.length===1?e[0]:e):null; }   // 可框亮多個元素（取聯集），例：工具按鈕＋選單
+    return _vis(e)?e:null; }
+  function rectOf(e){ if(!Array.isArray(e)) return e.getBoundingClientRect();
+    var L=1e9,T=1e9,R=-1e9,B=-1e9; e.forEach(function(x){ var r=x.getBoundingClientRect(); L=Math.min(L,r.left); T=Math.min(T,r.top); R=Math.max(R,r.right); B=Math.max(B,r.bottom); });
+    return {left:L,top:T,right:R,bottom:B,width:R-L,height:B-T}; }
+  function liveSteps(){ return T.steps.filter(function(s){ return !s.el || s.before || targetOf(s); }); }
+  function place(){
+    if(!card) return; var s=steps[idx], e=s&&targetOf(s);
+    var vv=window.visualViewport, VW=vv?vv.width:innerWidth, VH=vv?vv.height:innerHeight, OX=vv?vv.offsetLeft:0, OY=vv?vv.offsetTop:0, narrow=VW<=640;
+    if(narrow){ card.style.width=(VW-24)+"px"; } else card.style.width="";
+    if(!e){ hole.className="srtour-hole none"; card.style.left=(OX+Math.max(12,(VW-card.offsetWidth)/2))+"px"; card.style.top=(OY+Math.max(12,(VH-card.offsetHeight)/2))+"px"; return; }
+    var r=rectOf(e), pad=6;
+    hole.className="srtour-hole"; hole.style.left=(r.left-pad)+"px"; hole.style.top=(r.top-pad)+"px"; hole.style.width=(r.width+pad*2)+"px"; hole.style.height=(r.height+pad*2)+"px";
+    var cw=card.offsetWidth, ch=card.offsetHeight, gap=14, top, left;
+    if(narrow){ left=OX+12; top=OY+VH-ch-12; }   // 窄螢幕：說明卡固定在可見範圍底部
+    else{
+      if(r.bottom+gap+ch<=OY+VH-8) top=r.bottom+gap; else if(r.top-gap-ch>=OY+8) top=r.top-gap-ch; else top=Math.max(OY+8,OY+VH-ch-12);
+      left=Math.min(Math.max(OX+12, r.left+r.width/2-cw/2), OX+VW-cw-12);
+    }
+    card.style.left=left+"px"; card.style.top=top+"px";
+  }
+  function loop(){ place(); raf=requestAnimationFrame(loop); }
+  function stopAuto(){ auto=false; clearTimeout(timer); if(card){ var b=card.querySelector(".srt-auto"); if(b){ b.classList.remove("on"); b.textContent=en()?"▶ Auto-play":"▶ 自動播放"; } var bar=card.querySelector(".srt-bar i"); if(bar){ bar.style.transition="none"; bar.style.width="0"; } } }
+  function armAuto(){ clearTimeout(timer); if(!auto) return; var bar=card.querySelector(".srt-bar i"); if(bar){ bar.style.transition="none"; bar.style.width="0"; void bar.offsetWidth; bar.style.transition="width "+AUTO_MS+"ms linear"; bar.style.width="100%"; }
+    timer=setTimeout(function(){ if(idx<steps.length-1) go(idx+1); else finish(); }, AUTO_MS); }
+  function render(){
+    var s=steps[idx], o=L(s), last=idx===steps.length-1;
+    card.innerHTML='<button type="button" class="srt-x" aria-label="'+(en()?"Close tour":"關閉導覽")+'">×</button>'+
+      '<h4>'+esc(o.t)+'</h4><p class="srt-d">'+o.d+'</p>'+
+      '<div class="srt-ft"><span class="srt-n">'+(idx+1)+' / '+steps.length+'</span>'+
+      (idx>0?'<button type="button" class="srt-prev">'+(en()?"Back":"上一步")+'</button>':'')+
+      '<button type="button" class="srt-auto'+(auto?' on':'')+'">'+(auto?(en()?"❚❚ Pause":"❚❚ 暫停"):(en()?"▶ Auto-play":"▶ 自動播放"))+'</button>'+
+      '<button type="button" class="pri srt-next">'+(last?(en()?"Done":"完成"):(en()?"Next":"下一步"))+'</button></div>'+
+      '<div class="srt-bar"><i></i></div>';
+    card.querySelector(".srt-x").onclick=finish;
+    var pv=card.querySelector(".srt-prev"); if(pv) pv.onclick=function(){ stopAuto(); go(idx-1); };
+    card.querySelector(".srt-next").onclick=function(){ stopAuto(); if(last) finish(); else go(idx+1); };
+    card.querySelector(".srt-auto").onclick=function(){ if(auto){ stopAuto(); } else { auto=true; render(); armAuto(); } };
+    card.setAttribute("aria-label", o.t);
+    place(); armAuto();
+    var nb=card.querySelector(".srt-next"); if(nb && !auto) nb.focus({preventScroll:true});
+  }
+  function go(i){
+    var ps=steps[idx]; if(ps&&ps.after&&card) try{ ps.after(); }catch(_e){}   // 離開上一步：收起它打開的選單
+    idx=Math.max(0,Math.min(steps.length-1,i)); var s=steps[idx];
+    if(s.before) try{ s.before(); }catch(_e){}   // 進入這一步：例如先打開選單，再框亮
+    var e=targetOf(s);
+    if(e){ var r=rectOf(e), vh=window.visualViewport?window.visualViewport.height:innerHeight; if(r.top<70 || r.bottom>vh-(vh<700?260:200)){ var want=Math.max(80, Math.min((vh-r.height)/2, vh*0.3)); window.scrollBy({top:r.top-want, behavior:"smooth"}); } }   // 捲到離頂端至少 80px，框亮的上緣不會被切掉
+    render();
+  }
+  function key(e){ if(!card) return; if(e.key==="Escape"){ finish(); } else if(e.key==="ArrowRight"){ stopAuto(); if(idx<steps.length-1) go(idx+1); } else if(e.key==="ArrowLeft"){ stopAuto(); go(idx-1); } }
+  function start(autoplay){
+    if(card) return; if(T.onStart) try{ T.onStart(); }catch(_e){}   // 例：換成示範內容
+    steps=liveSteps(); if(!steps.length){ if(T.onEnd) try{ T.onEnd(); }catch(_e){} return; }
+    ov=document.createElement("div"); ov.className="srtour-ov"; ov.addEventListener("click",function(e){ e.stopPropagation(); });
+    hole=document.createElement("div"); hole.className="srtour-hole";
+    card=document.createElement("div"); card.className="srtour-card"; card.addEventListener("click",function(e){ e.stopPropagation(); });   // 導覽卡上的點擊不要觸發頁面「點外面就關選單」 card.setAttribute("role","dialog"); card.setAttribute("aria-modal","true");
+    document.body.appendChild(ov); document.body.appendChild(hole); document.body.appendChild(card);
+    document.addEventListener("keydown",key,true); auto=!!autoplay; idx=0; go(0); raf=requestAnimationFrame(loop);
+  }
+  function finish(){ var cs=steps[idx]; if(card&&cs&&cs.after) try{ cs.after(); }catch(_e){} if(card&&T.onEnd) try{ T.onEnd(); }catch(_e){} markSeen(); clearTimeout(timer); cancelAnimationFrame(raf); document.removeEventListener("keydown",key,true);
+    [ov,hole,card].forEach(function(n){ if(n&&n.parentNode) n.parentNode.removeChild(n); }); ov=hole=card=null; }
+  window.srTourStart=function(){ start(false); };
+  // 切換語言時重畫目前這張卡
+  new MutationObserver(function(){ if(card) render(); }).observe(document.body,{attributes:true,attributeFilter:["class"]});
+
+  // 頁首「?」按鈕（放在齒輪之後、語言鈕之前）
+  (function(){ var lang=document.getElementById("langBtn"); if(!lang) return;
+    var b=document.createElement("button"); b.type="button"; b.className="srtour-btn"; b.textContent="?";
+    function lab(){ var t=en()?"Site tour":"網站導覽"; b.setAttribute("aria-label",t); b.setAttribute("data-tip-zh","網站導覽"); b.setAttribute("data-tip-en","Site tour"); if(!document.body.classList.contains("notips")) b.title=t; }
+    lab(); new MutationObserver(lab).observe(document.body,{attributes:true,attributeFilter:["class"]});
+    // 有示範影片時，按「?」先選：逐步導覽／示範影片
+    var pop=null;
+    function popClose(){ if(pop){ pop.remove(); pop=null; document.removeEventListener("click",popOut,true); document.removeEventListener("keydown",popKey,true); } }
+    function popOut(e){ if(pop && !pop.contains(e.target) && e.target!==b) popClose(); }
+    function popKey(e){ if(e.key==="Escape") popClose(); }
+    function vidOpen(){
+      var bg=document.createElement("div"); bg.className="srtour-vbg"; bg.setAttribute("role","dialog"); bg.setAttribute("aria-modal","true"); bg.setAttribute("aria-label", en()?"Demo video":"示範影片");
+      bg.innerHTML='<div class="srtour-vbox"><button type="button" class="srtour-vx" aria-label="'+(en()?"Close":"關閉")+'">×</button><video controls autoplay playsinline preload="metadata"></video></div>';
+      var v=bg.querySelector("video"); v.src=T.video;
+      function close(){ try{ v.pause(); }catch(_e){} bg.remove(); document.removeEventListener("keydown",k,true); b.focus(); }
+      function k(e){ if(e.key==="Escape"){ e.stopPropagation(); close(); } }
+      bg.addEventListener("click",function(e){ if(e.target===bg) close(); });
+      bg.querySelector(".srtour-vx").onclick=close;
+      document.addEventListener("keydown",k,true); document.body.appendChild(bg); bg.querySelector(".srtour-vx").focus();
+      if(typeof srCount==="function") try{ srCount("tour-video-"+T.key,"示範影片-"+T.key); }catch(_e){}
+    }
+    b.onclick=function(){
+      if(!T.video){ window.srTourStart(); return; }
+      if(pop){ popClose(); return; }
+      pop=document.createElement("div"); pop.className="srtour-pop"; pop.setAttribute("role","menu");
+      pop.innerHTML='<button type="button" role="menuitem" class="srtp-tour">'+(en()?"Step-by-step tour":"逐步導覽")+'</button>'+
+                    '<button type="button" role="menuitem" class="srtp-vid">'+(en()?"Demo video":"示範影片")+(T.videoLen?'<small>'+esc(en()?T.videoLen.en:T.videoLen.zh)+'</small>':'')+'</button>';
+      document.body.appendChild(pop);
+      var r=b.getBoundingClientRect(); pop.style.top=(r.bottom+8)+"px"; pop.style.left=Math.max(12, Math.min(r.right-pop.offsetWidth, innerWidth-pop.offsetWidth-12))+"px";
+      pop.querySelector(".srtp-tour").onclick=function(){ popClose(); window.srTourStart(); };
+      pop.querySelector(".srtp-vid").onclick=function(){ popClose(); vidOpen(); };
+      setTimeout(function(){ document.addEventListener("click",popOut,true); document.addEventListener("keydown",popKey,true); },0);
+      pop.querySelector("button").focus();
+    };
+    lang.insertAdjacentElement("beforebegin", b);   // 順序：⋯ 更多工具 → 齒輪 → ? → 語言
+  })();
+  // 第一次來：自動開始一次（自動播放）；從其他工具帶資料過來時不打擾
+  if(!seen() && !/[?&](import|before)=/.test(location.search)){
+    setTimeout(function(){ if(!seen()) start(true); }, 1200);
+  }
+})();
+</script>
 </body>
 </html>
