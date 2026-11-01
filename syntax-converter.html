@@ -2022,8 +2022,8 @@ window.toggleLang=function(){
       zh:{t:"第一次用？載入範例", d:"按一下就會填入一段 Embase.com 範例策略，馬上看到轉換結果。"},
       en:{t:"New here? Load the example", d:"Fills in an Embase.com example strategy so you can see the conversion right away."} },
     { el:"#outs",
-      zh:{t:"各資料庫的語法", d:"每個輸出資料庫各一份，可以直接複製。欄位標籤、截字、鄰近字、控制詞彙都已換成該資料庫的寫法。"},
-      en:{t:"Syntax for each database", d:"One block per output database, ready to copy. Field tags, truncation, proximity and controlled-vocabulary syntax are converted for each database."} },
+      zh:{t:"各資料庫的語法", d:"每個輸出資料庫各一份，可以直接複製。欄位標籤、截字、鄰近字都已換成該資料庫的寫法。"},
+      en:{t:"Syntax for each database", d:"One block per output database, ready to copy. Field tags, truncation and proximity are converted for each database."} },
     { el:".coloropts",
       zh:{t:"顯示選項", d:"<b>語法顏色標記</b>：欄位、運算子上色；<b>成對括弧顏色</b>：同一對括弧同色，方便檢查；<b>整併為單一長式</b>：把 #1、#2… 展開合成一串。"},
       en:{t:"Display options", d:"<b>Syntax colors</b> for fields and operators; <b>bracket pairs</b> share a color for easy checking; <b>one combined query</b> expands #1, #2… into a single string."} },
@@ -2044,6 +2044,11 @@ window.toggleLang=function(){
    各頁只要提供 window.SR_TOUR = { key:"…", steps:[{el:function(){…}|"selector"|null, zh:{t,d}, en:{t,d}}] } 即可共用。 */
 (function(){
   var T=window.SR_TOUR; if(!T||!T.steps||!T.steps.length) return;
+  // 上線時間（台灣時間）：時間到之前不顯示「?」也不自動播放；網址加 ?tour=1 可預覽（同一瀏覽器會記住，?tour=0 取消）
+  var LAUNCH=Date.parse("2026-11-07T00:00:00+08:00");
+  (function(){ var m=location.search.match(/[?&]tour=([01])(?:&|$)/); if(m){ try{ if(m[1]==="1") localStorage.setItem("sr_tour_preview","1"); else localStorage.removeItem("sr_tour_preview"); }catch(e){} } })();
+  var _pv=false; try{ _pv=localStorage.getItem("sr_tour_preview")==="1"; }catch(e){}
+  if(Date.now()<LAUNCH && !_pv) return;
   var KEY="sr_tour_done_"+T.key, AUTO_MS=6500;
   function en(){ return document.body.classList.contains("en"); }
   function L(o){ return en()?o.en:o.zh; }

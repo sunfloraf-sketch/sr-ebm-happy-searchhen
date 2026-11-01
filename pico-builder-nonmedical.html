@@ -4384,6 +4384,11 @@ if (typeof module !== "undefined" && module.exports) {
    各頁只要提供 window.SR_TOUR = { key:"…", steps:[{el:function(){…}|"selector"|null, zh:{t,d}, en:{t,d}}] } 即可共用。 */
 (function(){
   var T=window.SR_TOUR; if(!T||!T.steps||!T.steps.length) return;
+  // 上線時間（台灣時間）：時間到之前不顯示「?」也不自動播放；網址加 ?tour=1 可預覽（同一瀏覽器會記住，?tour=0 取消）
+  var LAUNCH=Date.parse("2026-11-07T00:00:00+08:00");
+  (function(){ var m=location.search.match(/[?&]tour=([01])(?:&|$)/); if(m){ try{ if(m[1]==="1") localStorage.setItem("sr_tour_preview","1"); else localStorage.removeItem("sr_tour_preview"); }catch(e){} } })();
+  var _pv=false; try{ _pv=localStorage.getItem("sr_tour_preview")==="1"; }catch(e){}
+  if(Date.now()<LAUNCH && !_pv) return;
   var KEY="sr_tour_done_"+T.key, AUTO_MS=6500;
   function en(){ return document.body.classList.contains("en"); }
   function L(o){ return en()?o.en:o.zh; }

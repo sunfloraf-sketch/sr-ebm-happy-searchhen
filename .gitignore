@@ -29,3 +29,12 @@ _試作/
 
 # COSMIN 等待測試中的版本：不公開、不進版控
 _待測試/
+
+# Claude 產出的內部檔案（含 CHANGELOG、測試檔、舊版 HTML）：不公開 / not published
+Claude outputs/
+
+# Word／Office 開檔時的暫存檔 / Office lock files
+~$*
+
+# 本機一次性小工具（不發佈）/ local one-off scripts
+*_local.bat

@@ -1492,8 +1492,11 @@ window.toggleLang=function(){
       zh:{t:"檢索式結果", d:"<b>換行整理版</b>可以<b>送到 PICO</b> 的英文同義詞；<b>單行版</b>可以<b>送到轉換器</b>，換成其他資料庫的語法。"},
       en:{t:"Results", d:"The <b>line-by-line</b> version can be <b>sent to PICO</b>; the <b>single-line</b> version can be <b>sent to the converter</b> for other databases."} },
     { el:".expanel",
-      zh:{t:"範例與闖關遊戲", d:"點範例會載入並自動分堆；想先練習怎麼分堆，可以玩<b>闖關遊戲</b>。"},
-      en:{t:"Examples and practice game", d:"Click an example to load and auto-split it; try the <b>practice game</b> to learn how to split terms."} },
+      zh:{t:"範例", d:"點一下就載入並自動分堆，看看不同主題怎麼分成二堆、三堆或四堆。"},
+      en:{t:"Examples", d:"Click one to load and auto-split it, and see how different topics split into two, three or four stacks."} },
+    { el:".gamelink",
+      zh:{t:"練習：闖關遊戲", d:"還不熟怎麼分堆？先玩<b>闖關遊戲</b>：共 5 關（手部衛生、妊娠糖尿病、加護病房、COPD、中央靜脈導管），把詞拆成單字、拖到對的堆，「不需要」的字（贅字、重複、已被涵蓋）放一邊；過關後還能看看哪些文章找得到，並比較片語與鄰近字的實際檢索。"},
+      en:{t:"Practice game", d:"New to splitting? Try the <b>practice game</b>: 5 levels (hand hygiene, gestational diabetes, ICU, COPD, central venous catheter). Break terms into words, drag them into the right stacks and set aside what isn’t needed (filler, duplicates, already covered); then see which articles each search finds and compare phrase vs proximity searching."} },
     { el:".tippanel",
       zh:{t:"系統分堆規則", d:"工具只看字面與字的位置，不懂詞義；這裡列出自動分堆的規則，請依主題自己檢查調整。"},
       en:{t:"How auto-split works", d:"The tool only looks at words and positions, not meaning; these are its rules — always check the stacks for your topic."} },
@@ -1508,6 +1511,11 @@ window.toggleLang=function(){
    各頁只要提供 window.SR_TOUR = { key:"…", steps:[{el:function(){…}|"selector"|null, zh:{t,d}, en:{t,d}}] } 即可共用。 */
 (function(){
   var T=window.SR_TOUR; if(!T||!T.steps||!T.steps.length) return;
+  // 上線時間（台灣時間）：時間到之前不顯示「?」也不自動播放；網址加 ?tour=1 可預覽（同一瀏覽器會記住，?tour=0 取消）
+  var LAUNCH=Date.parse("2026-11-07T00:00:00+08:00");
+  (function(){ var m=location.search.match(/[?&]tour=([01])(?:&|$)/); if(m){ try{ if(m[1]==="1") localStorage.setItem("sr_tour_preview","1"); else localStorage.removeItem("sr_tour_preview"); }catch(e){} } })();
+  var _pv=false; try{ _pv=localStorage.getItem("sr_tour_preview")==="1"; }catch(e){}
+  if(Date.now()<LAUNCH && !_pv) return;
   var KEY="sr_tour_done_"+T.key, AUTO_MS=6500;
   function en(){ return document.body.classList.contains("en"); }
   function L(o){ return en()?o.en:o.zh; }
