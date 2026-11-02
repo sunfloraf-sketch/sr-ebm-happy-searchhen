@@ -599,6 +599,51 @@
   .pmmenu button:hover,.pmmenu button:focus-visible{background:#F1F4F2}
   .pmmenu button[aria-selected="true"]{font-weight:700;color:#2A5A49;background:#EEF3EF}
 </style>
+<script id="srStoreScript">
+/* 公用電腦保護：輸入內容預設只暫存到「關閉分頁」為止（sessionStorage）；
+   在齒輪勾「在這台電腦記住我的輸入」才長期保存在這台電腦（localStorage）。NCBI API key 一律不存。
+   這段要放在 <head> 最前面，讓各工具讀取暫存之前就生效。 */
+(function(){
+  var DATA=["sr_pico_draft","sr_pico_snapshot","sr_pico_nm_draft","sr_pico_nm_snapshot","sr_pubmed_mesh_v4","sr_loo_draft"], FLAG="sr_remember_input";
+  var LS,SS; try{ LS=window.localStorage; SS=window.sessionStorage; }catch(e){ return; }
+  if(!LS||!SS||!window.Storage) return;
+  var P=Storage.prototype, g=P.getItem, s=P.setItem, r=P.removeItem, block=false;
+  function isData(k){ return DATA.indexOf(String(k))>=0; }
+  function remember(){ try{ return g.call(LS,FLAG)==="1"; }catch(e){ return true; } }
+  // 改版當下：這台電腦已經有舊暫存 → 照舊保留並視為「記住」；沒有 → 預設不記住
+  try{ if(g.call(LS,FLAG)===null){ var had=DATA.some(function(k){ return g.call(LS,k)!==null; }); s.call(LS,FLAG,had?"1":"0"); } }catch(e){}
+  P.getItem=function(k){ if(this===LS && isData(k) && !remember()) return g.call(SS,k); return g.apply(this,arguments); };
+  P.setItem=function(k,v){ if(isData(k)){ if(block) return; if(this===LS && !remember()) return s.call(SS,k,v); } return s.apply(this,arguments); };
+  P.removeItem=function(k){ if(this===LS && isData(k)){ try{ r.call(SS,k); }catch(e){} } return r.apply(this,arguments); };
+  window.srStore={
+    remember:remember,
+    setRemember:function(on){ try{ s.call(LS,FLAG,on?"1":"0"); DATA.forEach(function(k){ var from=on?SS:LS, to=on?LS:SS, v=g.call(from,k); if(v!==null){ s.call(to,k,v); if(!on) r.call(from,k); } }); }catch(e){} },
+    clearAll:function(){ block=true; try{ DATA.concat(["sr_pico_inbox"]).forEach(function(k){ r.call(LS,k); r.call(SS,k); }); }catch(e){} }
+  };
+  // 齒輪（偏好設定）裡加上選項
+  document.addEventListener("DOMContentLoaded", function(){
+    var pop=document.getElementById("srPrefPop"); if(!pop) return;
+    var css=document.createElement("style");
+    css.textContent=".srpmem{margin-top:10px}"+
+      ".srpnote{white-space:normal;max-width:250px;font-size:12px;color:#6C726B;margin:2px 0 6px 21px;line-height:1.45}"+
+      ".srpclear{border:0;background:none;padding:0;font:inherit;font-size:12.5px;color:#c0392b;cursor:pointer;text-decoration:underline;text-underline-offset:2px}";
+    document.head.appendChild(css);
+    var box=document.createElement("div");
+    box.innerHTML='<div class="srprow srpmem"><label><input type="checkbox" id="srMemCb"><span data-zh>在這台電腦記住我的輸入</span><span data-en>Remember my input on this computer</span></label></div>'+
+      '<div class="srpnote"><span data-zh>不勾：關閉分頁就清除，適合公用電腦。勾選：下次開啟還在，適合個人電腦。API key 一律不保存。</span><span data-en>Unticked: cleared when you close the tab — best on shared computers. Ticked: still here next time — for your own computer. API keys are never saved.</span></div>'+
+      '<div class="srprow"><button type="button" id="srMemClear" class="srpclear"><span data-zh>清除這台電腦的暫存</span><span data-en>Clear data saved on this computer</span></button></div>';
+    while(box.firstChild) pop.appendChild(box.firstChild);
+    var cb=document.getElementById("srMemCb"), clr=document.getElementById("srMemClear");
+    cb.checked=remember();
+    cb.addEventListener("change", function(){ window.srStore.setRemember(cb.checked); });
+    clr.addEventListener("click", function(){
+      var en=document.body.classList.contains("en");
+      if(!window.confirm(en?"Clear everything this site saved on this computer (tables, rows, inputs) and reload the page?":"要清除本網站在這台電腦暫存的內容（概念表、各列、輸入），並重新整理頁面嗎？")) return;
+      window.srStore.clearAll(); location.reload();
+    });
+  });
+})();
+</script>
 </head>
 <body>
 <header class="sh">
@@ -2268,7 +2313,7 @@ if (typeof module !== "undefined" && module.exports) {
   // 例：pregnancy diabetes → Pregnancy in Diabetics（整串比對找不到，分詞才找得到）
   function _eutils(ep, params){
     // NCBI E-utilities 政策：請求需附 tool 與 email（開發者聯絡用，見 ncbi.nlm.nih.gov/home/about/policies）；email 分段組合，降低被爬蟲擷取
-    var p=new URLSearchParams(params); p.set("tool","sr_search_toolkit"); p.set("email",["happysearchhen","gmail.com"].join("@"));
+    var p=new URLSearchParams(params); p.set("tool","sr-ebm-happy-searchhen"); p.set("email",["happysearchhen","gmail.com"].join("@"));
     var ctl=new AbortController(), timer=setTimeout(function(){ctl.abort();},20000);
     return fetch("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"+ep,{
       method:"POST", headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},
@@ -2568,7 +2613,7 @@ if (typeof module !== "undefined" && module.exports) {
   var REV_N=50, REV_TOP=10, _revCache={};
   var REV_CHECK={"humans":1,"animals":1,"male":1,"female":1,"pregnancy":1,"adolescent":1,"adult":1,"aged":1,"aged, 80 and over":1,"child":1,"child, preschool":1,"infant":1,"infant, newborn":1,"middle aged":1,"young adult":1,"mice":1,"rats":1,"dogs":1,"cats":1,"rabbits":1,"swine":1,"cattle":1};   // 檢查標籤不具主題辨識力
   function _eutilsText(ep, params){
-    var p=new URLSearchParams(params); p.set("tool","sr_search_toolkit"); p.set("email",["happysearchhen","gmail.com"].join("@"));
+    var p=new URLSearchParams(params); p.set("tool","sr-ebm-happy-searchhen"); p.set("email",["happysearchhen","gmail.com"].join("@"));
     var ctl=new AbortController(), timer=setTimeout(function(){ctl.abort();},30000);
     return fetch("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"+ep,{
       method:"POST", headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"}, body:p.toString(), signal:ctl.signal
@@ -3360,6 +3405,9 @@ function befPluralOf(w){
   function seedEmpty(){ picoBody.innerHTML=""; ["P","I","C","O"].forEach(function(l){ addRow(l,"","","","","", GDM_EX[l]); }); }
 
   // ===== 狀態保存：sessionStorage(每分頁草稿，多分頁不互蓋) + localStorage(離開快照) =====
+
+  // 醫學／非醫學版分開暫存（2026-11-02）：舊版兩頁共用 sr_pico_draft／sr_pico_snapshot；把看起來是非醫學版的舊暫存（列裡沒有 mesh 欄）搬到非醫學專用的鍵
+  (function(){ try{ [["sr_pico_draft","sr_pico_nm_draft",sessionStorage],["sr_pico_snapshot","sr_pico_nm_snapshot",localStorage]].forEach(function(x){ var v=x[2].getItem(x[0]); if(!v) return; var st=null; try{ st=JSON.parse(v); }catch(e){} if(st&&st.rows&&st.rows.length&&!st.rows.some(function(r){ return r&&("mesh" in r); })){ if(x[2].getItem(x[1])===null) x[2].setItem(x[1], v); x[2].removeItem(x[0]); } }); }catch(e){} })();
   var DRAFT_KEY="sr_pico_draft", SNAP_KEY="sr_pico_snapshot";
   function serializeState(){
     var rows=[]; Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr){ if(tr._get) rows.push(tr._get()); });
@@ -4732,7 +4780,7 @@ function befPluralOf(w){
   }
 
   async function fetchPubmedCount(query, email){
-    var params=new URLSearchParams({db:"pubmed",term:query,rettype:"count",retmode:"json",tool:"sr_search_toolkit"});
+    var params=new URLSearchParams({db:"pubmed",term:query,rettype:"count",retmode:"json",tool:"sr-ebm-happy-searchhen"});
     params.set("email", email || ["happysearchhen","gmail.com"].join("@"));   // NCBI E-utilities 政策：附開發者聯絡 email（分段組合，降低被爬蟲擷取）
     var ctl=new AbortController(), timer=setTimeout(function(){ctl.abort();},30000);
     try{
