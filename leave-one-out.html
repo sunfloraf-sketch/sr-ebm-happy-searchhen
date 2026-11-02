@@ -183,6 +183,7 @@
   .keybox input{padding-right:34px}
   .keyshow{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:28px;height:28px;padding:0;border:0;background:none;display:inline-flex;align-items:center;justify-content:center;color:var(--mut,#6C726B);cursor:pointer;border-radius:6px}
   .keyshow:hover,.keyshow[aria-pressed="true"]{color:var(--sh-green-d,#1F4538)}
+  .keynote{font-size:12px;color:var(--mut);margin-top:6px;line-height:1.6}
   .keylink{color:var(--sh-green-d,#1F4538);text-decoration:underline;text-underline-offset:2px;white-space:nowrap}
   .modenote.warnred{color:#c0392b}
   .modenote{font-size:12.5px;color:var(--mut);margin-top:8px}
@@ -344,6 +345,7 @@
         <a class="keylink" href="https://account.ncbi.nlm.nih.gov/settings/" target="_blank" rel="noopener" data-tip-zh="登入 NCBI 帳號 → 帳號設定（Account Settings）→ API Key Management → Create an API Key。免費；key 只用來計算查詢次數，本網站不會儲存。" data-tip-en="Sign in to NCBI → Account Settings → API Key Management → Create an API Key. Free; the key only counts your requests and this site never stores it." title="登入 NCBI 帳號 → 帳號設定 → API Key Management → Create an API Key"><span data-zh>申請 API key ↗</span><span data-en>Get an API key ↗</span></a>
       </div>
     </div>
+    <div class="keynote" id="keyNote"><span data-zh>NCBI API key：課堂、工作坊等多人共用同一網路時，查詢容易被 NCBI 限速而失敗，建議每人輸入自己的 key（免費）；不會保存，重新整理需重新輸入。</span><span data-en>NCBI API key: in classrooms or workshops where many people share one network, NCBI may throttle requests — each person entering their own (free) key helps. Not saved; re-enter after reloading.</span></div>
     <div class="modenote" id="modeNote"></div>
   </div>
 

@@ -132,6 +132,8 @@
   .sidelist .covered{color:var(--mut)}
   .sidelist label input,.pillpanel .etlist label input{flex:0 0 auto;align-self:center}
   .sideempty{font-size:12.5px;color:var(--mut)}
+  #keySlot{margin:0 0 14px}
+  .keyjump{font-size:12.5px;color:var(--sh-green-d);text-decoration:underline;text-underline-offset:2px;margin-left:-4px}
   .side .sideintro{margin:0 0 4px}
   .side .sidelab{margin:14px 0 4px;font-size:15px;color:var(--sh-green-d)}
 
@@ -380,7 +382,7 @@
     <div class="rows" id="rows"></div>
     <div class="bottombar">
       <div id="addSlot"></div>
-      <label class="opt"><input type="checkbox" id="liveCb"> <span data-zh>即時顯示 PubMed 筆數</span><span data-en>Live PubMed counts</span></label>
+      <label class="opt"><input type="checkbox" id="liveCb"> <span data-zh>即時顯示 PubMed 筆數</span><span data-en>Live PubMed counts</span></label><a href="#keySlot" class="keyjump" onclick="if(window.srKey){ window.srKey.open(document.querySelector('#keySlot .srkey')); } return false;">API key</a>
       <button class="btn sm line clrbtn" id="clearBtn" type="button" title="清空 / Clear" aria-label="清空 / Clear"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
     </div>
     <div class="totalbar">
@@ -408,7 +410,7 @@
 </div>
 
 <!-- 右側：MeSH 樹狀結構／Entry Terms 清單 -->
-<aside class="side" id="side"></aside>
+<aside class="side"><div id="keySlot"></div><div id="side"></div></aside>
 </main>
 
 <footer class="shfoot"><div class="shfoot-in">
@@ -581,7 +583,7 @@ function rows(j){ return (j&&j.results&&j.results.bindings)||[]; }
 // NCBI E-utilities 政策：請求需附 tool 與 email（開發者聯絡用，見 ncbi.nlm.nih.gov/home/about/policies）；email 分段組合，降低被爬蟲擷取
 var NCBI_EMAIL=["happysearchhen","gmail.com"].join("@");
 function eutils(ep, params){
-  var p=new URLSearchParams(params); p.set("tool","sr-ebm-happy-searchhen"); p.set("email",NCBI_EMAIL);
+  var p=new URLSearchParams(params); p.set("tool","sr-ebm-happy-searchhen"); p.set("email",NCBI_EMAIL); var _k=window.srKey&&window.srKey.get(); if(_k) p.set("api_key",_k);
   return withTimeout(fetch("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"+ep,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body:p.toString()})
     .then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); }));
 }
@@ -793,7 +795,7 @@ function pumpCount(){
   countBusy=true;
   eutils("esearch.fcgi",{db:"pubmed",term:job.q,retmode:"json",retmax:"0"}).then(function(j){
     var c=j&&j.esearchresult&&j.esearchresult.count; c=(c!=null)?+c:null; if(c!=null) countCache[job.q]=c; return c;
-  },function(){ return null; }).then(function(c){ job.res(c); setTimeout(function(){ countBusy=false; pumpCount(); },350); });
+  },function(){ return null; }).then(function(c){ job.res(c); setTimeout(function(){ countBusy=false; pumpCount(); },(window.srKey&&window.srKey.get())?150:350); });
 }
 function fmtN(c){ return c==null?"—":Number(c).toLocaleString(); }
 var LIVE_KEY="sr_pubmed_mesh_live", live=true;
@@ -857,7 +859,7 @@ function suggest(term){
 var REV_N=50, REV_TOP=10;
 var CHECK_TAGS={"humans":1,"animals":1,"male":1,"female":1,"pregnancy":1,"adolescent":1,"adult":1,"aged":1,"aged, 80 and over":1,"child":1,"child, preschool":1,"infant":1,"infant, newborn":1,"middle aged":1,"young adult":1,"mice":1,"rats":1,"dogs":1,"cats":1,"rabbits":1,"swine":1,"cattle":1};   // 檢查標籤（Check Tags）不具主題辨識力
 function eutilsText(ep, params){
-  var p=new URLSearchParams(params); p.set("tool","sr-ebm-happy-searchhen"); p.set("email",NCBI_EMAIL);
+  var p=new URLSearchParams(params); p.set("tool","sr-ebm-happy-searchhen"); p.set("email",NCBI_EMAIL); var _k=window.srKey&&window.srKey.get(); if(_k) p.set("api_key",_k);
   return withTimeout(fetch("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"+ep,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body:p.toString()})
     .then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.text(); }), 30000);
 }
@@ -1743,6 +1745,53 @@ renderAll();
   label(); new MutationObserver(label).observe(document.body,{attributes:true,attributeFilter:["class"]});
 })();
 </script>
+<script id="srKeyScript">
+/* NCBI API key（選填）：每頁各自輸入、只放在記憶體，不保存（重新整理或換頁需重新輸入）。
+   srKey.get() 取得目前的 key；srKey.make() 產生一個收合式輸入區塊（同一頁多個區塊共用同一個值）。 */
+(function(){
+  var KEY="", boxes=[];
+  var EYE='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+  var EYEOFF='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.6 10.6 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.1M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a9.8 9.8 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
+  var css=document.createElement("style");
+  css.textContent=
+    ".srkey{font-size:12.5px;color:var(--mut,#6C726B)}"+
+    ".srkey>summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:5px;color:var(--sh-green-d,#1F4538);font-weight:600}"+
+    ".srkey>summary::-webkit-details-marker{display:none}"+
+    ".srkey>summary::before{content:'▸';font-size:12px;transition:transform .15s}"+
+    ".srkey[open]>summary::before{transform:rotate(90deg)}"+
+    ".srkey .srkey-on{font-weight:400;color:#2A7A55}"+
+    ".srkey-body{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:6px}"+
+    ".srkey .keybox{position:relative;display:inline-flex;align-items:center;max-width:100%}"+
+    ".srkey .keybox input{width:240px;max-width:100%;font-family:'SF Mono',Consolas,monospace;font-size:12.5px;padding:6px 34px 6px 9px;border:1px solid var(--line,#D5DCE0);border-radius:6px;background:#fff;color:var(--ink,#23302A)}"+
+    ".srkey .keyshow{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:28px;height:28px;padding:0;border:0;background:none;display:inline-flex;align-items:center;justify-content:center;color:var(--mut,#6C726B);cursor:pointer;border-radius:6px}"+
+    ".srkey .keyshow:hover,.srkey .keyshow[aria-pressed=true]{color:var(--sh-green-d,#1F4538)}"+
+    ".srkey .keylink{color:var(--sh-green-d,#1F4538);text-decoration:underline;text-underline-offset:2px;white-space:nowrap}"+
+    ".srkey-note{flex-basis:100%;line-height:1.6}";
+  document.head.appendChild(css);
+  function sync(){ boxes.forEach(function(d){ var i=d.querySelector("input"); if(i && i.value!==KEY) i.value=KEY; var on=d.querySelector(".srkey-on"); if(on) on.style.display=KEY?"":"none"; }); }
+  window.srKey={
+    get:function(){ return KEY.trim(); },
+    make:function(){
+      var d=document.createElement("details"); d.className="srkey";
+      d.innerHTML='<summary><span data-zh>NCBI API key（選填）</span><span data-en>NCBI API key (optional)</span><span class="srkey-on" style="display:none"><span data-zh>　已輸入</span><span data-en>　entered</span></span></summary>'+
+        '<div class="srkey-body"><span class="keybox"><input type="password" autocomplete="off" spellcheck="false" placeholder="—" data-lpignore="true" data-1p-ignore aria-label="NCBI API key">'+
+        '<button type="button" class="keyshow" aria-pressed="false" aria-label="顯示 API key / Show API key" title="顯示 / Show">'+EYE+'</button></span>'+
+        '<a class="keylink" href="https://account.ncbi.nlm.nih.gov/settings/" target="_blank" rel="noopener" data-tip-zh="登入 NCBI 帳號 → 帳號設定（Account Settings）→ API Key Management → Create an API Key。免費。" data-tip-en="Sign in to NCBI → Account Settings → API Key Management → Create an API Key. Free.">'+
+          '<span data-zh>申請 API key ↗</span><span data-en>Get an API key ↗</span></a>'+
+        '<div class="srkey-note"><span data-zh>課堂、工作坊等多人共用同一網路時，查詢容易被 NCBI 限速而失敗，建議每人輸入自己的 key（免費）。<br>不會保存，重新整理或換頁需重新輸入。</span>'+
+          '<span data-en>In classrooms or workshops where many people share one network, NCBI may throttle requests — each person entering their own (free) key helps.<br>Not saved; re-enter after reloading or changing pages.</span></div></div>';
+      var inp=d.querySelector("input"), eye=d.querySelector(".keyshow");
+      inp.value=KEY;
+      inp.addEventListener("input", function(){ KEY=inp.value; sync(); });
+      eye.addEventListener("click", function(){ var show=inp.type==="password"; inp.type=show?"text":"password"; eye.setAttribute("aria-pressed", show?"true":"false"); eye.innerHTML=show?EYEOFF:EYE; eye.setAttribute("aria-label", show?"隱藏 API key / Hide API key":"顯示 API key / Show API key"); eye.title=show?"隱藏 / Hide":"顯示 / Show"; });
+      boxes=boxes.filter(function(b){ return document.body.contains(b); }); boxes.push(d); setTimeout(sync,0);
+      return d;
+    },
+    open:function(d){ if(!d) d=boxes.filter(function(b){ return document.body.contains(b); })[0]; if(!d) return; d.open=true; d.scrollIntoView({behavior:"smooth",block:"center"}); var i=d.querySelector("input"); if(i) setTimeout(function(){ i.focus({preventScroll:true}); },350); }
+  };
+})();
+</script>
+<script>document.addEventListener("DOMContentLoaded",function(){ var k=document.getElementById("keySlot"); if(k&&window.srKey) k.appendChild(window.srKey.make()); });</script>
 <script id="srTourSteps">
 /* PubMed Light：導覽步驟 */
 (function(){
