@@ -4498,7 +4498,7 @@ if (typeof module !== "undefined" && module.exports) {
 /* PICO 檢索策略產生器（非醫學）：導覽步驟 */
 (function(){
   var Q=function(s){ return document.querySelector(s); };
-  window.SR_TOUR={ key:"nm_v1", video:"media/pico-nonmedical-demo.mp4", videoLen:{zh:"約 50 秒",en:"about 50 s"}, steps:[
+  window.SR_TOUR={ key:"nm_v1", video:"media/pico-nonmedical-demo.mp4", videoLen:{zh:"約 1 分 10 秒",en:"about 1:10"}, steps:[
     { el:null,
       zh:{t:"歡迎使用 PICO 檢索策略產生器（非醫學）", d:"給綜合學科、社會科學、教育、商管、工程等主題用：<b>填好概念表 → 選設定 → 產生 WoS、Scopus、EBSCOhost、Compendex、IEEE、PQDT 等資料庫的檢索策略</b>。可以按「自動播放」，或用 ← → 切換、Esc 離開。"},
       en:{t:"Welcome to the PICO Builder (non-medical)", d:"For multidisciplinary, social science, education, business and engineering topics: <b>fill in the concept table → choose settings → generate strategies for WoS, Scopus, EBSCOhost, Compendex, IEEE, PQDT and more</b>. Press Auto-play, or use ← → and Esc."} },
@@ -4532,9 +4532,11 @@ if (typeof module !== "undefined" && module.exports) {
     { el:function(){ return Q("#picoBody .rowlvl"); },
       zh:{t:"每列欄位完整度", d:"每個概念可以個別調整檢索欄位的寬窄（LV0 最廣～LV3 最精準）。"},
       en:{t:"Field level per row", d:"Each concept can use its own field level (LV0 broadest – LV3 most precise)."} },
-    { el:function(){ var c=document.getElementById("customCombo"); return c&&c.closest("details")&&c.closest("details").querySelector("summary"); },
-      zh:{t:"自訂組合（選填）", d:"不想全部 AND？用 <b>L1、L2</b> 組合概念、<b>R1、R2</b> 引用自訂的組合行，例如 <code>(L1 OR L2) AND L3</code>。"},
-      en:{t:"Custom combination (optional)", d:"Not everything AND? Combine concepts with <b>L1, L2</b> and refer to your own lines with <b>R1, R2</b>, e.g. <code>(L1 OR L2) AND L3</code>."} },
+    { el:function(){ return document.getElementById("ccBox"); },
+      before:function(){ var b=document.getElementById("ccBox"); if(b&&!b.open){ b.open=true; b._srTourOpened=true; } },   // 導覽時暫時打開，離開這一步再收回
+      after:function(){ var b=document.getElementById("ccBox"); if(b&&b._srTourOpened){ b.open=false; b._srTourOpened=false; } },
+      zh:{t:"自訂組合（選填）", d:"不想全部 AND？點<b>概念表左側的 L1、L2</b>、<b>輸入框左邊的 R1、R2</b>（引用自訂的組合行）就能插入，再搭配左側 <b>AND／OR／NOT、( )</b> 按鈕，例如 <code>(L1 OR L2) AND L3</code>。打開時概念表會自動縮小列高，方便對照。"},
+      en:{t:"Custom combination (optional)", d:"Not everything AND? Click <b>L1, L2</b> on the left of the concept table or <b>R1, R2</b> beside the box (your own combination lines) to insert them, then use the <b>AND / OR / NOT / ( )</b> buttons, e.g. <code>(L1 OR L2) AND L3</code>. While it is open, table rows shrink so you can compare."} },
     { el:"#fillHelp > summary",
       zh:{t:"填寫說明", d:"鄰近字、AND、不含狹義詞等特殊標記的寫法都在這裡。"},
       en:{t:"How to fill in", d:"How to write proximity, AND, “no narrower terms” and other marks."} },

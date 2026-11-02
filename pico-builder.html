@@ -6218,7 +6218,7 @@ function befPluralOf(w){
 </script>
 <script id="srTourSteps">
 /* PICO 檢索策略產生器：導覽步驟 */
-window.SR_TOUR={ key:"pico_v1", video:"media/pico-demo.mp4", videoLen:{zh:"約 1 分 40 秒",en:"about 1:40"}, steps:[
+window.SR_TOUR={ key:"pico_v1", video:"media/pico-demo.mp4", videoLen:{zh:"約 2 分 10 秒",en:"about 2:10"}, steps:[
   { el:null,
     zh:{t:"歡迎使用 PICO 檢索策略產生器", d:"三步驟：<b>填好概念表 → 選設定 → 產生各資料庫檢索策略</b>。導覽約 1 分鐘，可以按「自動播放」，或用鍵盤 ← → 切換、Esc 離開。"},
     en:{t:"Welcome to the PICO Strategy Builder", d:"Three steps: <b>fill in the concept table → choose settings → generate strategies for each database</b>. The tour takes about a minute — press Auto-play, or use ← → and Esc."} },
@@ -6249,8 +6249,8 @@ window.SR_TOUR={ key:"pico_v1", video:"media/pico-demo.mp4", videoLen:{zh:"約 1
     zh:{t:"「工具」選單", d:"<b>→ 複製到整理後</b>：把每列整理前帶到整理後（自動去重）。勾<b>切截</b>會改成字根加 *（gestational diabetes → gestation* diabet*），勾<b>去冗</b>會略過已被較短詞涵蓋的詞。勾<b>找 MeSH</b>、<b>鄰近字</b>，每列整理前下方就會出現按鈕：比對 MeSH 候選詞、送到鄰近字分堆組合器。"},
     en:{t:"The Tools menu", d:"<b>→ Copy to After</b> brings each row’s Before list into After (de-duplicated). Tick <b>Truncate</b> to use word stems with * (gestational diabetes → gestation* diabet*), and <b>De-redundify</b> to skip terms covered by a shorter one. Tick <b>Find MeSH</b> / <b>Proximity</b> to show buttons under each Before cell: match MeSH candidates, or send the list to the proximity builder."} },
   { el:function(){ return document.querySelector('th.cvhead[data-vocab="mesh"]')||document.querySelector("th.cvhead"); },
-    zh:{t:"控制詞彙欄：MeSH 盾牌查核", d:"填 Emtree／MeSH／CINAHL 標目，每行一個。按 MeSH 旁的<b>盾牌</b>線上查核：<b>✓</b> 正式標目、<b>！</b> 是同義詞或有建議（點開可看正式標目、同義詞、廣義與狹義詞）、<b>✗</b> 查無。不要狹義詞時在詞後加註「不含狹義」或 noexp。"},
-    en:{t:"Controlled vocabulary: MeSH shield", d:"Enter Emtree / MeSH / CINAHL headings, one per line. Press the <b>shield</b> next to MeSH to check online: <b>✓</b> official heading, <b>!</b> an entry term or a suggestion (click to see the heading, synonyms, broader and narrower terms), <b>✗</b> not found. Add “noexp” after a heading to exclude narrower terms."} },
+    zh:{t:"控制詞彙欄：MeSH 盾牌查核", d:"填 Emtree／MeSH／CINAHL 標目，每行一個。按 MeSH 旁的<b>盾牌</b>線上查核：<b>✓</b> 正式標目、<b>！</b> 是同義詞或有建議（點開可看正式標目、同義詞、廣義與狹義詞）、<b>✗</b> 查無。不要狹義詞時在詞後加註「不含狹義」或 noexp。盾牌右下角的<b>鑰匙</b>可輸入 NCBI API key（選填），查核更快、較不易被限速。"},
+    en:{t:"Controlled vocabulary: MeSH shield", d:"Enter Emtree / MeSH / CINAHL headings, one per line. Press the <b>shield</b> next to MeSH to check online: <b>✓</b> official heading, <b>!</b> an entry term or a suggestion (click to see the heading, synonyms, broader and narrower terms), <b>✗</b> not found. Add “noexp” after a heading to exclude narrower terms. The <b>key</b> at its bottom-right takes an optional NCBI API key for faster, less throttled checks."} },
   { el:'th.cvhead[data-vocab="emtree"]',
     zh:{t:"Emtree／CINAHL 查核", d:"點欄位標題（Emtree、CINAHL，MeSH 也可以），會展開這一欄每個詞的<b>官方詞表連結</b>，逐一點開核對，或按「全部開啟」。CINAHL 連結預設用成大的機構代碼，其他機構請在下方「CINAHL 機構碼」貼上網址或代碼；產生的策略也可勾選「控制詞彙查核連結」。"},
     en:{t:"Checking Emtree / CINAHL", d:"Click a column title (Emtree, CINAHL — MeSH too) to list an <b>official-thesaurus link</b> for every term in that column; open them one by one or press “Open all”. CINAHL links use NCKU’s institution code by default — other institutions can paste their URL or code in “CINAHL inst.” below. Tick “Vocab verify links” to add links to the generated strategies too."} },
@@ -6260,9 +6260,11 @@ window.SR_TOUR={ key:"pico_v1", video:"media/pico-demo.mp4", videoLen:{zh:"約 1
   { el:function(){ return document.querySelector("#picoBody .rowlvl"); },
     zh:{t:"每列欄位完整度", d:"每個概念可以個別調整檢索欄位的寬窄（LV0 最廣～LV3 最精準）。"},
     en:{t:"Field level per row", d:"Each concept can use its own field level (LV0 broadest – LV3 most precise)."} },
-  { el:function(){ var c=document.getElementById("customCombo"); return c&&c.closest("details")&&c.closest("details").querySelector("summary"); },
-    zh:{t:"自訂組合（選填）", d:"不想全部 AND？用 <b>L1、L2</b> 組合概念、<b>R1、R2</b> 引用自訂的組合行，例如 <code>(L1 OR L2) AND L3</code>。"},
-    en:{t:"Custom combination (optional)", d:"Not everything AND? Combine concepts with <b>L1, L2</b> and refer to your own lines with <b>R1, R2</b>, e.g. <code>(L1 OR L2) AND L3</code>."} },
+  { el:function(){ return document.getElementById("ccBox"); },
+    before:function(){ var b=document.getElementById("ccBox"); if(b&&!b.open){ b.open=true; b._srTourOpened=true; } },   // 導覽時暫時打開，離開這一步再收回
+    after:function(){ var b=document.getElementById("ccBox"); if(b&&b._srTourOpened){ b.open=false; b._srTourOpened=false; } },
+    zh:{t:"自訂組合（選填）", d:"不想全部 AND？點<b>概念表左側的 L1、L2</b>、<b>輸入框左邊的 R1、R2</b>（引用自訂的組合行）就能插入，再搭配左側 <b>AND／OR／NOT、( )</b> 按鈕，例如 <code>(L1 OR L2) AND L3</code>。打開時概念表會自動縮小列高，方便對照。"},
+    en:{t:"Custom combination (optional)", d:"Not everything AND? Click <b>L1, L2</b> on the left of the concept table or <b>R1, R2</b> beside the box (your own combination lines) to insert them, then use the <b>AND / OR / NOT / ( )</b> buttons, e.g. <code>(L1 OR L2) AND L3</code>. While it is open, table rows shrink so you can compare."} },
   { el:"#fillHelp > summary",
     zh:{t:"填寫說明", d:"鄰近字、AND、不含狹義詞等特殊標記的寫法都在這裡。"},
     en:{t:"How to fill in", d:"How to write proximity, AND, “no narrower terms” and other marks."} },
