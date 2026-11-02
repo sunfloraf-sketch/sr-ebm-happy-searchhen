@@ -70,6 +70,13 @@
   .tipsd[open]>summary::before{transform:rotate(90deg)}
   .tipsd[open]>summary{margin-bottom:8px}
   .panel .sub{font-size:12.5px;color:var(--mut);margin-bottom:12px}
+  .subd{font-size:12.5px;color:var(--mut);margin:-2px 0 12px}
+  .subd>summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:5px;color:var(--sh-green-d);font-weight:600}
+  .subd>summary::-webkit-details-marker{display:none}
+  .subd>summary::before{content:'▸';font-size:12px;transition:transform .15s}
+  .subd[open]>summary::before{transform:rotate(90deg)}
+  .subd ul{margin:6px 0 0;padding-left:1.3em;line-height:1.7}
+  .subd li b{color:var(--ink,#23302A);font-weight:600}
   select,input[type=text]{font-family:inherit;font-size:14px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--ink);background:#fff}
   select{cursor:pointer}
   select.sm{font-size:12.5px;padding:3px 6px;border-radius:6px;max-width:220px}
@@ -296,7 +303,22 @@
   <!-- ① PICO + Study Design：每列各自輸入檢索詞 -->
   <div class="panel">
     <h2><span data-zh>① PICO ＋ 研究設計</span><span data-en>① PICO + Study design</span></h2>
-    <div class="sub"><span data-zh>在任一列輸入英文檢索詞並從候選清單選擇 MeSH 標目，會同時加入控制辭彙與其同義詞（Entry Terms）；點標目標籤可在右側檢視上下位結構，點 ▾ 可切換欄位。拖曳左側 ⠿ 可調整列的順序。同一列內以 OR 連結，右上角有勾選的列（加入檢索策略）之間以 AND 組合。PICO 只是引導框架：列的代號（如 P1）與名稱可直接點選修改，也可新增或刪除概念列。</span><span data-en>Type an English term in any row and pick a MeSH heading — the heading and its synonyms (Entry Terms) are added together; click a heading tag to see its hierarchy on the right, or ▾ to change its field. Drag ⠿ to reorder rows. Terms within a row are ORed; rows ticked at the top right (added to the strategy) are ANDed. PICO is only a guide: click a row's code (e.g. P1) or name to rename it, and add or delete rows as needed.</span></div>
+    <details class="subd"><summary><span data-zh>使用說明</span><span data-en>How to use</span></summary>
+      <ul data-zh>
+        <li><b>控制詞彙帶出同義詞：</b>在任一列輸入英文檢索詞，並從候選清單選擇 MeSH 標目，會同時加入控制辭彙（粉橘色標籤）及其同義詞（Entry Terms。淺綠色標籤）</li>
+        <li>點粉橘色標籤可在右側檢視 MeSH 上下位結構</li>
+        <li><b>調整列順序：</b>拖曳左側 ⠿（行動載具不可）</li>
+        <li><b>布林邏輯組合：</b>同一列內以 OR 組合，不同列以 AND 組合（右上角勾選列表示加入組合）</li>
+        <li><b>PICO 只是引導框架：</b>列的代號（如 P）與名稱可直接點選修改</li>
+      </ul>
+      <ul data-en>
+        <li><b>Controlled vocabulary brings its synonyms:</b> type an English term in any row and pick a MeSH heading from the suggestions — the heading (peach tag) and its synonyms (Entry Terms, light-green tags) are added together</li>
+        <li>Click a peach tag to see its MeSH hierarchy on the right</li>
+        <li><b>Reorder rows:</b> drag ⠿ on the left (not on mobile devices)</li>
+        <li><b>Boolean logic:</b> terms within a row are combined with OR, rows with AND (rows ticked at the top right are included)</li>
+        <li><b>PICO is only a guide:</b> click a row’s code (e.g. P) or name to rename it</li>
+      </ul>
+    </details>
     <div class="rows" id="rows"></div>
     <div class="bottombar">
       <div id="addSlot"></div>
