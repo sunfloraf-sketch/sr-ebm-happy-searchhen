@@ -179,7 +179,10 @@
   #status b{color:var(--sh-green-d)}
   .keyrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--mut)}
   .keyrow input{width:260px;font-family:"SF Mono",Consolas,monospace;font-size:12.5px;padding:6px 9px}
-  .keyshow{border:0;background:none;padding:2px 2px;font:inherit;font-size:12.5px;color:var(--sh-green-d,#1F4538);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+  .keybox{position:relative;display:inline-flex;align-items:center}
+  .keybox input{padding-right:34px}
+  .keyshow{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:28px;height:28px;padding:0;border:0;background:none;display:inline-flex;align-items:center;justify-content:center;color:var(--mut,#6C726B);cursor:pointer;border-radius:6px}
+  .keyshow:hover,.keyshow[aria-pressed="true"]{color:var(--sh-green-d,#1F4538)}
   .keylink{color:var(--sh-green-d,#1F4538);text-decoration:underline;text-underline-offset:2px;white-space:nowrap}
   .modenote.warnred{color:#c0392b}
   .modenote{font-size:12.5px;color:var(--mut);margin-top:8px}
@@ -337,8 +340,7 @@
       </div>
       <div id="keyWrap" class="keyrow">
         <label for="apikey"><span data-zh>NCBI API key（選填，加快取得速度）</span><span data-en>NCBI API key (optional, faster)</span></label>
-        <input type="password" id="apikey" autocomplete="off" spellcheck="false" placeholder="—" data-lpignore="true" data-1p-ignore>
-        <button type="button" id="keyShow" class="keyshow" aria-pressed="false" aria-controls="apikey"><span data-zh>顯示</span><span data-en>Show</span></button>
+        <span class="keybox"><input type="password" id="apikey" autocomplete="off" spellcheck="false" placeholder="—" data-lpignore="true" data-1p-ignore><button type="button" id="keyShow" class="keyshow" aria-pressed="false" aria-controls="apikey" aria-label="顯示 API key / Show API key" title="顯示 / Show"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></span>
         <a class="keylink" href="https://account.ncbi.nlm.nih.gov/settings/" target="_blank" rel="noopener" data-tip-zh="登入 NCBI 帳號 → 帳號設定（Account Settings）→ API Key Management → Create an API Key。免費；key 只用來計算查詢次數，本網站不會儲存。" data-tip-en="Sign in to NCBI → Account Settings → API Key Management → Create an API Key. Free; the key only counts your requests and this site never stores it." title="登入 NCBI 帳號 → 帳號設定 → API Key Management → Create an API Key"><span data-zh>申請 API key ↗</span><span data-en>Get an API key ↗</span></a>
       </div>
     </div>
@@ -721,8 +723,8 @@ function syncMode(){
   document.getElementById("runBtn").textContent=pm?T("產生並取得筆數 →","Build & fetch counts →"):T("產生檢索式 →","Build search strings →");
   document.getElementById("modeNote").classList.toggle("warnred",!pm);
   document.getElementById("modeNote").textContent=pm
-    ? T("PubMed：用 E-utilities（esearch）逐一取得筆數，每次請求間隔約 0.35 秒（有 API key 約 0.12 秒）。點表格中的筆數會複製該版檢索式，筆數也可手動修改。",
-        "PubMed: counts are fetched one by one via E-utilities (esearch), about 0.35 s apart (0.12 s with an API key). Clicking a count copies that search string; counts can also be edited by hand.")
+    ? T("PubMed：用 E-utilities（esearch）逐一取得筆數，每次請求間隔約 0.4 秒（有 API key 約 0.15 秒）。點表格中的筆數會複製該版檢索式，筆數也可手動修改。",
+        "PubMed: counts are fetched one by one via E-utilities (esearch), about 0.4 s apart (0.15 s with an API key). Clicking a count copies that search string; counts can also be edited by hand.")
     : T("⚠ 此資料庫無法自動取得筆數：點表格中的筆數格會複製該版檢索式，貼到資料庫執行後，把筆數填回同一格，獨有貢獻會即時計算。",
         "⚠ Counts can’t be fetched for this database: clicking a count cell copies that search string; run it in the database and type the count into the same cell — the unique column updates as you type.");
   renderConceptLabels();
@@ -1365,8 +1367,9 @@ fillDb(); loadDraft(); syncMode(); lastDb=curDb();
 <script id="keyShowScript">
 /* NCBI API key：預設以 ••• 遮住（投影時不會露出），需要時按「顯示」 */
 (function(){ var b=document.getElementById("keyShow"), k=document.getElementById("apikey"); if(!b||!k) return;
+  var EYE='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>', EYEOFF='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.6 10.6 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.1M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a9.8 9.8 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
   b.addEventListener("click", function(){ var show=k.type==="password"; k.type=show?"text":"password"; b.setAttribute("aria-pressed", show?"true":"false");
-    b.innerHTML=show?'<span data-zh>隱藏</span><span data-en>Hide</span>':'<span data-zh>顯示</span><span data-en>Show</span>'; });
+    b.innerHTML=show?EYEOFF:EYE; b.setAttribute("aria-label", show?"隱藏 API key / Hide API key":"顯示 API key / Show API key"); b.title=show?"隱藏 / Hide":"顯示 / Show"; });
 })();
 </script>
 <script id="srTourSteps">
