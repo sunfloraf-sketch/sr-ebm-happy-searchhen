@@ -297,7 +297,7 @@
     document.head.appendChild(css);
     var box=document.createElement("div");
     box.innerHTML='<div class="srprow srpmem"><label><input type="checkbox" id="srMemCb"><span data-zh>在這台電腦記住我的輸入</span><span data-en>Remember my input on this computer</span></label></div>'+
-      '<div class="srpnote"><span data-zh>不勾：關閉分頁就清除，適合公用電腦。勾選：下次開啟還在，適合個人電腦。API key 一律不保存。</span><span data-en>Unticked: cleared when you close the tab — best on shared computers. Ticked: still here next time — for your own computer. API keys are never saved.</span></div>'+
+      '<div class="srpnote"><span data-zh>不勾：關閉分頁就清除，適合公用電腦。勾選：下次開啟還在，適合個人電腦。<br>API key 一律不保存，需要使用請每次重新輸入。</span><span data-en>Unticked: cleared when you close the tab — best on shared computers. Ticked: still here next time — for your own computer.<br>API keys are never saved; enter yours each time you need it.</span></div>'+
       '<div class="srprow"><button type="button" id="srMemClear" class="srpclear"><span data-zh>清除這台電腦的暫存</span><span data-en>Clear data saved on this computer</span></button></div>';
     while(box.firstChild) pop.appendChild(box.firstChild);
     var cb=document.getElementById("srMemCb"), clr=document.getElementById("srMemClear");
