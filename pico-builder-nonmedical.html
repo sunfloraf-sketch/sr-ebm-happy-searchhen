@@ -120,11 +120,14 @@
   .ccwrap{display:flex;border:1px solid var(--line);border-radius:8px;background:#fff;overflow:hidden}
   .ccwrap:focus-within{border-color:#AAB7BC;box-shadow:0 0 0 3px rgba(127,153,149,.14)}
   .ccgut{flex:0 0 40px;overflow:hidden;background:#F4F6F5;border-right:1px solid var(--line);position:relative}
-  .ccgutin{padding:9px 8px 9px 0;font-family:'SF Mono',Consolas,monospace;font-size:12px;line-height:22.1px;color:#0f766e;font-weight:700;text-align:right;white-space:pre}
+  .ccgutin{position:absolute;top:0;left:0;right:0;padding:9px 8px 9px 0;font-family:'SF Mono',Consolas,monospace;font-size:13px;line-height:30px;color:#0f766e;font-weight:700;text-align:right;white-space:pre}
   .ccchips{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:8px;font-size:12px;color:var(--mut)}
   .ccrow{display:inline-flex;flex-wrap:wrap;gap:4px}
   .ccchip{min-width:34px;height:28px;padding:0 6px;border:1px solid #A9C9C3;border-radius:6px;background:#F3FAF8;color:#0f766e;font-family:'SF Mono',Consolas,monospace;font-size:12px;font-weight:700;cursor:pointer}
   .ccchip:hover{background:#E1F2EE}
+  table.pico.cc-on td.lab .ccode{display:inline-block;min-width:28px;padding:1px 5px;border:1px solid #A9C9C3;border-radius:6px;background:#F3FAF8;color:#0f766e;cursor:pointer}
+  table.pico.cc-on td.lab .ccode:hover{background:#E1F2EE}
+  table.pico.cc-on td textarea,table.pico.cc-on td.free textarea{min-height:0}
   .ccchip.ccl{border-color:#D3C39A;background:#FBF6EA;color:#8A5A12}
   .ccchip.ccl:hover{background:#F5ECD6}
   .ccchip:focus-visible{outline:2px solid #0f766e;outline-offset:2px}
@@ -654,7 +657,31 @@
       <tbody id="picoBody"></tbody>
     </table>
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-top:8px">
-      <details class="ccbox" id="fillHelp" style="margin:0;flex:1 1 auto;min-width:0">
+      <details class="ccbox" id="ccBox" style="margin:0;flex:1 1 auto;min-width:0">
+      <summary style="cursor:pointer;font-weight:700;font-size:13px;color:#0f766e"><span data-zh>自訂組合策略（選填）</span><span data-en>Custom combination (optional)</span></summary>
+      <div style="margin-top:8px;padding-left:1.4em">
+        <div class="sub" style="font-size:12px;color:var(--mut);margin-bottom:6px">
+          <span data-zh>預設跨行間為 <b>AND</b> 組合。可輸入自訂組合（大小寫皆可）：<br>　<b>L1、L2…</b>：代表每個主題概念列<span style="color:#B8C0C4;margin:0 .6em">|</span><b>R1、R2…</b>：引用自訂的組合行</span>
+          <span data-en>Rows are combined with <b>AND</b> by default. You can enter a custom combination (any letter case):<br>　<b>L1, L2…</b>: each concept row<span style="color:#B8C0C4;margin:0 .6em">|</span><b>R1, R2…</b>: your combination lines</span><span class="infotip" style="margin-left:4px"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip" style="width:190px"><span data-zh>例如：</span><span data-en>e.g.</span><br>　<code style="background:none;border:none;padding:0;color:#fff">L1 AND L2 AND L3</code><br>　<code style="background:none;border:none;padding:0;color:#fff">L1 AND L4</code><br>　<code style="background:none;border:none;padding:0;color:#fff">R1 OR R2</code></span></span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:8px"><div class="ccchips" role="group" aria-label="插入運算子 / Insert operator" style="flex:0 0 auto;flex-direction:column;align-items:stretch;gap:6px;margin-top:0"><button type="button" class="ccchip ccop" data-ins="AND">AND</button><button type="button" class="ccchip ccop" data-ins="OR">OR</button><button type="button" class="ccchip ccop" data-ins="NOT">NOT</button></div><div class="ccwrap" style="flex:0 1 50%;min-width:360px;max-width:100%"><div class="ccgut" aria-hidden="true"><div class="ccgutin"></div></div><textarea id="customCombo" spellcheck="false" rows="4" wrap="off" style="width:100%;font-family:'SF Mono',Consolas,monospace;font-size:15px;line-height:30px;border:none;border-radius:0 8px 8px 0;padding:9px 11px;resize:vertical;box-sizing:border-box;overflow-x:auto" placeholder="L1 AND L2 AND L3&#10;L1 AND L4&#10;R1 OR R2" aria-label="自訂組合策略 / Custom combination"></textarea></div></div>
+      </div>
+    </details>
+      <button type="button" class="rbtn clear hastip" id="clearBtn" data-tip="清空整張表（範例內容直接清；自填資料會先確認） / Clear table" aria-label="清空整張表">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7 H20"/><path d="M9.5 7 V5.2 Q9.5 4.3 10.4 4.3 H13.6 Q14.5 4.3 14.5 5.2 V7"/><path d="M6.2 7 L7 19.2 Q7.1 20.6 8.5 20.6 H15.5 Q16.9 20.6 17 19.2 L17.8 7"/><path d="M10 10.5 V17 M14 10.5 V17"/></svg>
+      </button>
+      <button type="button" class="rbtn hastip" id="tallRows" data-tip="收合：各格縮回固定高度，內容可捲動（再按一次展開） / Collapse cells to a fixed height (click again to expand)" aria-label="收合各格 / Collapse cells">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 9 12 4 17 9"/><polyline points="7 15 12 20 17 15"/></svg>
+      </button>
+      <button type="button" class="rbtn prox hastip" id="toProxBtn" data-tip="用鄰近字組合器加概念（會開啟鄰近字組合器） / Add a concept via the Proximity Builder" aria-label="用鄰近字組合器加概念">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><text x="2.6" y="13" font-size="9" font-family="sans-serif" font-weight="700" fill="currentColor" stroke="none">W</text><text x="14.6" y="13" font-size="9" font-family="sans-serif" font-weight="700" fill="currentColor" stroke="none">W</text><path d="M5.5 17.4 Q12 21.3 18.5 17.4"/></svg>
+      </button>
+      <button type="button" class="rbtn hastip tipR" id="addRow" data-tip="新增一列概念 / Add concept" aria-label="新增一列概念">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+    </div>
+    <div id="cvVerifyPanel" style="display:none"></div>
+    <details class="ccbox" id="fillHelp" style="margin:14px 0 0">
       <summary style="cursor:pointer;font-weight:700;font-size:13px;color:#0f766e"><span data-zh>填寫說明</span><span data-en>How to fill in</span></summary>
       <div class="hint" style="margin:8px 0 0;line-height:1.75">
         <div data-zh>
@@ -681,30 +708,6 @@ AND
 City blocks)</pre>
           <div style="margin-top:6px">• <b>Undo in-cell text edits:</b> to revert what you just typed in a cell, press <code>Ctrl+Z</code>.</div>
         </div>
-      </div>
-    </details>
-      <button type="button" class="rbtn clear hastip" id="clearBtn" data-tip="清空整張表（範例內容直接清；自填資料會先確認） / Clear table" aria-label="清空整張表">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7 H20"/><path d="M9.5 7 V5.2 Q9.5 4.3 10.4 4.3 H13.6 Q14.5 4.3 14.5 5.2 V7"/><path d="M6.2 7 L7 19.2 Q7.1 20.6 8.5 20.6 H15.5 Q16.9 20.6 17 19.2 L17.8 7"/><path d="M10 10.5 V17 M14 10.5 V17"/></svg>
-      </button>
-      <button type="button" class="rbtn hastip" id="tallRows" data-tip="收合：各格縮回固定高度，內容可捲動（再按一次展開） / Collapse cells to a fixed height (click again to expand)" aria-label="收合各格 / Collapse cells">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 9 12 4 17 9"/><polyline points="7 15 12 20 17 15"/></svg>
-      </button>
-      <button type="button" class="rbtn prox hastip" id="toProxBtn" data-tip="用鄰近字組合器加概念（會開啟鄰近字組合器） / Add a concept via the Proximity Builder" aria-label="用鄰近字組合器加概念">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><text x="2.6" y="13" font-size="9" font-family="sans-serif" font-weight="700" fill="currentColor" stroke="none">W</text><text x="14.6" y="13" font-size="9" font-family="sans-serif" font-weight="700" fill="currentColor" stroke="none">W</text><path d="M5.5 17.4 Q12 21.3 18.5 17.4"/></svg>
-      </button>
-      <button type="button" class="rbtn hastip tipR" id="addRow" data-tip="新增一列概念 / Add concept" aria-label="新增一列概念">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      </button>
-    </div>
-    <div id="cvVerifyPanel" style="display:none"></div>
-    <details class="ccbox" style="margin:14px 0 0">
-      <summary style="cursor:pointer;font-weight:700;font-size:13px;color:#0f766e"><span data-zh>自訂組合策略（選填）</span><span data-en>Custom combination (optional)</span></summary>
-      <div style="margin-top:8px;padding-left:1.4em">
-        <div class="sub" style="font-size:12px;color:var(--mut);margin-bottom:6px">
-          <span data-zh>預設跨行（列）間為 <b>AND</b> 關係<br>可輸入自訂組合：<br>　<b>L1、L2…</b>：代表每個主題概念列<br>　<b>R1、R2…</b>：引用自訂的組合行<br>例如：（大小寫皆可）<br>　<code>L1 AND L2 AND L3</code><br>　<code>L1 AND L4</code><br>　<code>R1 OR R2</code></span>
-          <span data-en>Rows are <b>AND</b>-ed by default<br>You can enter a custom combination:<br>　<b>L1, L2…</b>: each concept row<br>　<b>R1, R2…</b>: reference one of your combination lines<br>e.g. (any letter case):<br>　<code>L1 AND L2 AND L3</code><br>　<code>L1 AND L4</code><br>　<code>R1 OR R2</code></span>
-        </div>
-        <div class="ccwrap"><div class="ccgut" aria-hidden="true"><div class="ccgutin"></div></div><textarea id="customCombo" spellcheck="false" rows="4" wrap="off" style="width:100%;font-family:'SF Mono',Consolas,monospace;font-size:13px;line-height:1.7;border:none;border-radius:0 8px 8px 0;padding:9px 11px;resize:vertical;box-sizing:border-box;overflow-x:auto" placeholder="L1 AND L2 AND L3&#10;L1 AND L4&#10;R1 OR R2" aria-label="自訂組合策略 / Custom combination"></textarea></div><div class="ccchips" role="group" aria-label="插入 L／R / Insert L / R"><span class="ccclbl"><span data-zh>點選插入：</span><span data-en>Click to insert:</span></span><span class="ccrow"><span class="ccrow"><button type="button" class="ccchip" data-ins="L1">L1</button><button type="button" class="ccchip" data-ins="L2">L2</button><button type="button" class="ccchip" data-ins="L3">L3</button><button type="button" class="ccchip" data-ins="L4">L4</button><button type="button" class="ccchip" data-ins="L5">L5</button><button type="button" class="ccchip" data-ins="L6">L6</button><button type="button" class="ccchip" data-ins="L7">L7</button><button type="button" class="ccchip" data-ins="L8">L8</button><button type="button" class="ccchip" data-ins="L9">L9</button><button type="button" class="ccchip" data-ins="L10">L10</button></span><span class="ccrow"><button type="button" class="ccchip ccop" data-ins="AND">AND</button><button type="button" class="ccchip ccop" data-ins="OR">OR</button></span><span class="ccrow"><button type="button" class="ccchip ccl" data-ins="R1">R1</button><button type="button" class="ccchip ccl" data-ins="R2">R2</button><button type="button" class="ccchip ccl" data-ins="R3">R3</button><button type="button" class="ccchip ccl" data-ins="R4">R4</button><button type="button" class="ccchip ccl" data-ins="R5">R5</button><button type="button" class="ccchip ccl" data-ins="R6">R6</button><button type="button" class="ccchip ccl" data-ins="R7">R7</button><button type="button" class="ccchip ccl" data-ins="R8">R8</button><button type="button" class="ccchip ccl" data-ins="R9">R9</button><button type="button" class="ccchip ccl" data-ins="R10">R10</button></span></div>
       </div>
     </details>
   </div>
@@ -2308,6 +2311,47 @@ if (typeof module !== "undefined" && module.exports) {
     if(btn){ btn.classList.toggle("on", !!window._srCompact); btn.setAttribute("data-tip", window._srCompact?_TIP_EXPAND:_TIP_COLLAPSE); btn.setAttribute("aria-label", window._srCompact?"展開各格 / Expand cells":"收合各格 / Collapse cells"); }
   };
 
+  // 打開「自訂組合策略」時：各格收合成約 3 行高（方便對照 L／R 代號），表格左側的 L1、L2… 可點按插入；關閉時還原。途中自己按過收合鈕就照使用者的設定
+  (function(){ var box=document.getElementById("ccBox"), tb=$("#tallRows"), tbl=document.querySelector("table.pico"), body=document.getElementById("picoBody"), ta=document.getElementById("customCombo"); if(!box||!tb) return; var auto=false, prog=false;
+    tb.addEventListener("click", function(){ if(!prog) auto=false; });
+    box.addEventListener("toggle", function(){
+      window._srCcMini=box.open; if(tbl) tbl.classList.toggle("cc-on", box.open);
+      if(box.open){ if(!window._srCompact){ prog=true; tb.click(); prog=false; auto=true; } }
+      else if(auto){ if(window._srCompact){ prog=true; tb.click(); prog=false; } auto=false; }
+      if(typeof window._srFitAll==="function") window._srFitAll(true);
+    });
+    if(!body||!ta) return;
+    body.addEventListener("mouseover", function(e){ var c=box.open&&e.target.closest&&e.target.closest(".ccode"); if(c) c.title=isEn()?"Click to insert into the custom combination":"點一下插入自訂組合策略"; else if(!box.open&&e.target.closest&&e.target.closest(".ccode")) e.target.closest(".ccode").removeAttribute("title"); });
+    function ccIns(tok){
+      var v=ta.value, s=ta.selectionStart==null?v.length:ta.selectionStart, en=ta.selectionEnd==null?v.length:ta.selectionEnd;
+      if(!ta._ccTouched){ s=en=v.length; }
+      var before=v.slice(0,s), after=v.slice(en);
+      var pre=(before && !/[\s(]$/.test(before)) ? " " : "", post=after ? (/^[\s)]/.test(after) ? "" : " ") : " ";
+      var ins=pre+tok+post; ta.value=before+ins+after; var pos=(before+ins).length;
+      ta.focus({preventScroll:true}); ta.setSelectionRange(pos,pos); ta._ccTouched=true;
+      ta.dispatchEvent(new Event("input",{bubbles:true}));
+    }
+    body.addEventListener("click", function(e){
+      if(!box.open) return; var c=e.target.closest&&e.target.closest(".ccode"); if(!c) return;
+      var tok=(c.textContent||"").trim(); if(!/^L\d+$/.test(tok)) return; ccIns(tok);
+    });
+    // 輸入框高度隨內容自動調整（最少 4 行、最多 12 行，超過就捲動），行號欄跟著輸入框高度
+    var ccLast=null, fitCC=function(){ var cs=getComputedStyle(ta), lh=parseFloat(cs.lineHeight)||30, pad=(parseFloat(cs.paddingTop)||0)+(parseFloat(cs.paddingBottom)||0), bd=(parseFloat(cs.borderTopWidth)||0)+(parseFloat(cs.borderBottomWidth)||0);
+      if(!ta.offsetParent) return; var key=ta.value+"|"+ta.clientWidth; if(key===ccLast) return; ccLast=key;
+      ta.style.height="auto"; var h=Math.min(Math.max(ta.scrollHeight+bd, lh*4+pad+bd), lh*12+pad+bd); ta.style.height=Math.ceil(h)+"px"; ta.dispatchEvent(new Event("scroll")); };
+    ta.addEventListener("input", function(){ ccLast=null; fitCC(); });
+    box.addEventListener("toggle", function(){ ccLast=null; setTimeout(fitCC,0); });
+    setInterval(fitCC, 700);   // 草稿還原、開啟專案等程式設定內容時也跟上
+    // 自訂組合左側的行號 R1、R2… 也可點按插入（依點擊高度判斷是第幾行）
+    var gut=box.querySelector(".ccgut"), gin=box.querySelector(".ccgutin");
+    if(gut&&gin){ gut.style.cursor="pointer";
+      var lineAt=function(y){ var lh=parseFloat(getComputedStyle(gin).lineHeight)||22.1, pt=parseFloat(getComputedStyle(gin).paddingTop)||0, n=(gin.textContent||"").split("\n").length, k=Math.floor((y-gin.getBoundingClientRect().top-pt)/lh)+1; return (k>=1&&k<=n)?k:0; };
+      gut.addEventListener("mousedown", function(e){ e.preventDefault(); });   // 保留自訂組合框的游標位置
+      gut.addEventListener("mousemove", function(e){ var k=lineAt(e.clientY); gut.title=k?(isEn()?"Click to insert R"+k:"點一下插入 R"+k):""; });
+      gut.addEventListener("click", function(e){ var k=lineAt(e.clientY); if(k) ccIns("R"+k); });
+    }
+  })();
+
   // ===== 貼上 AI 表格：解析剪貼簿的 HTML 表格（或 Tab 分隔文字），依標題自動對欄填入 =====
   var pasteZone=$("#pasteZone"), pasteMsg=$("#pasteMsg");
   function cellClean(s){ return String(s||"").replace(/ /g," ").replace(/[\u2028\u2029\u0085\u000B\u000C]/g,"\n").replace(/[⁠⁡⁢⁣⁤​‌﻿]/g,"\n").replace(/<br\s*\/?>/gi,"\n").replace(/<\/?(p|div|li|tr|ul|ol|h[1-6]|blockquote)\b[^>]*>/gi,"\n").replace(/<\/?[a-z][^>]*>/gi,"").replace(/[↗↪⧉➚🔗⇱]/g,"").split(/\r?\n/).map(function(x){return x.replace(/[ \t]+/g," ").trim();}).filter(function(x){return x!=="";}).join("\n").trim(); }
@@ -2840,7 +2884,7 @@ if (typeof module !== "undefined" && module.exports) {
   })();
   // 順序：填寫說明在上、貼上整理好的表格在下；且一次只展開一個（手風琴）
   (function(){ var fill=document.getElementById("fillHelp"), paste=document.getElementById("pasteBox");
-    if(fill && paste && fill.parentNode===paste.parentNode){ paste.parentNode.insertBefore(fill, paste); }
+    /* 填寫說明固定在自訂組合策略下方，不再搬到「貼上表格」上方（2026-11-02） */
     var group=[fill,paste].filter(Boolean);
     group.forEach(function(d){ d.addEventListener("toggle", function(){ if(d.open){ group.forEach(function(o){ if(o!==d && o.open) o.open=false; }); } }); });
   })();
@@ -4251,7 +4295,7 @@ if (typeof module !== "undefined" && module.exports) {
   function fitRow(tr){
     var tas=Array.prototype.filter.call(tr.querySelectorAll("textarea"), function(t){ return t.offsetParent!==null && !t.classList.contains("cvpaste-ta"); });
     if(!tas.length) return;
-    if(window._srCompact){ tas.forEach(function(t){ t.style.height=MIN+"px"; }); return; }   // 收合模式：固定高度、內容捲動
+    if(window._srCompact){ var _ch=window._srCcMini?82:MIN; tas.forEach(function(t){ t.style.height=_ch+"px"; }); return; }   // 收合模式：固定高度、內容捲動
     tas.forEach(function(t){ t.style.height="auto"; t.style.height=MIN+"px"; });          // 先縮回最小高度，才量得到真正的內容高度
     var h=MIN; tas.forEach(function(t){ if(t.scrollHeight>h) h=t.scrollHeight; });
     h+=2;                                                                                  // 邊框
@@ -4487,12 +4531,12 @@ if (typeof module !== "undefined" && module.exports) {
     { el:function(){ return Q("#picoBody .rowlvl"); },
       zh:{t:"每列欄位完整度", d:"每個概念可以個別調整檢索欄位的寬窄（LV0 最廣～LV3 最精準）。"},
       en:{t:"Field level per row", d:"Each concept can use its own field level (LV0 broadest – LV3 most precise)."} },
-    { el:"#fillHelp > summary",
-      zh:{t:"填寫說明", d:"鄰近字、AND、不含狹義詞等特殊標記的寫法都在這裡。"},
-      en:{t:"How to fill in", d:"How to write proximity, AND, “no narrower terms” and other marks."} },
     { el:function(){ var c=document.getElementById("customCombo"); return c&&c.closest("details")&&c.closest("details").querySelector("summary"); },
       zh:{t:"自訂組合（選填）", d:"不想全部 AND？用 <b>L1、L2</b> 組合概念、<b>R1、R2</b> 引用自訂的組合行，例如 <code>(L1 OR L2) AND L3</code>。"},
       en:{t:"Custom combination (optional)", d:"Not everything AND? Combine concepts with <b>L1, L2</b> and refer to your own lines with <b>R1, R2</b>, e.g. <code>(L1 OR L2) AND L3</code>."} },
+    { el:"#fillHelp > summary",
+      zh:{t:"填寫說明", d:"鄰近字、AND、不含狹義詞等特殊標記的寫法都在這裡。"},
+      en:{t:"How to fill in", d:"How to write proximity, AND, “no narrower terms” and other marks."} },
     { el:"#level",
       zh:{t:"③ 欄位完整度", d:"<b>LV0</b> 所有欄位（最廣）、<b>LV1</b> 完整（SR 適用）、<b>LV2</b> 平衡、<b>LV3</b> 精準。"},
       en:{t:"③ Field level", d:"<b>LV0</b> all fields (broadest), <b>LV1</b> comprehensive (for SRs), <b>LV2</b> balanced, <b>LV3</b> precise."} },
