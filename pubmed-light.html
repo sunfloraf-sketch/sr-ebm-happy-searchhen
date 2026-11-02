@@ -133,6 +133,7 @@
   .sidelist label input,.pillpanel .etlist label input{flex:0 0 auto;align-self:center}
   .sideempty{font-size:12.5px;color:var(--mut)}
   #keySlot{margin:0 0 14px}
+  #keySlot .srkey>summary{font-size:15px;font-weight:700}   /* 與下方「MeSH 樹狀結構」標題同大小 */
   .keyjump{font-size:12.5px;color:var(--sh-green-d);text-decoration:underline;text-underline-offset:2px;margin-left:-4px}
   .side .sideintro{margin:0 0 4px}
   .side .sidelab{margin:14px 0 4px;font-size:15px;color:var(--sh-green-d)}
@@ -1757,8 +1758,8 @@ renderAll();
     ".srkey{font-size:12.5px;color:var(--mut,#6C726B)}"+
     ".srkey>summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:5px;color:var(--sh-green-d,#1F4538);font-weight:600}"+
     ".srkey>summary::-webkit-details-marker{display:none}"+
-    ".srkey>summary::before{content:'▸';font-size:12px;transition:transform .15s}"+
-    ".srkey[open]>summary::before{transform:rotate(90deg)}"+
+    ".srkey>summary::after{content:'▾';font-size:12px;line-height:1;transition:transform .15s}"+
+    ".srkey[open]>summary::after{transform:rotate(180deg)}"+
     ".srkey .srkey-on{font-weight:400;color:#2A7A55}"+
     ".srkey-body{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:6px}"+
     ".srkey .keybox{position:relative;display:inline-flex;align-items:center;max-width:100%}"+

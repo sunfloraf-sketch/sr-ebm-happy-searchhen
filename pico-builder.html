@@ -6076,8 +6076,8 @@ function befPluralOf(w){
     ".srkey{font-size:12.5px;color:var(--mut,#6C726B)}"+
     ".srkey>summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:5px;color:var(--sh-green-d,#1F4538);font-weight:600}"+
     ".srkey>summary::-webkit-details-marker{display:none}"+
-    ".srkey>summary::before{content:'▸';font-size:12px;transition:transform .15s}"+
-    ".srkey[open]>summary::before{transform:rotate(90deg)}"+
+    ".srkey>summary::after{content:'▾';font-size:12px;line-height:1;transition:transform .15s}"+
+    ".srkey[open]>summary::after{transform:rotate(180deg)}"+
     ".srkey .srkey-on{font-weight:400;color:#2A7A55}"+
     ".srkey-body{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:6px}"+
     ".srkey .keybox{position:relative;display:inline-flex;align-items:center;max-width:100%}"+
