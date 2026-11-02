@@ -644,6 +644,40 @@
   });
 })();
 </script>
+<script id="srNcbiScript">
+/* NCBI E-utilities 共用限速與重試（每個頁面一條佇列）：
+   - 所有 eutils.ncbi.nlm.nih.gov 的請求都經過 srNcbi.fetch()，依序送出；
+     兩次請求開始時間至少間隔 400 ms（有使用者自己的 API key 時 150 ms）。
+   - 429／500／502／503 與網路錯誤（NCBI 限速時常回不帶 CORS 標頭的 429，瀏覽器只看到 Failed to fetch）
+     會自動重試最多 3 次：等待 1、2、4 秒＋0～1 秒隨機值（jitter），避免教室多台電腦同步重試。
+   - API key 只從請求內容判斷有無，不記錄、不輸出。 */
+(function(){
+  var HOST="https://eutils.ncbi.nlm.nih.gov/", RETRY=[429,500,502,503], MAXR=3;
+  var last=0, chain=Promise.resolve();
+  function hasKey(url, init){ var b=init&&init.body; b=(b==null)?"":String(b); return /(?:^|[?&])api_key=[^&]/.test(b) || /[?&]api_key=[^&]/.test(String(url)); }
+  function aborted(sig){ var e; try{ e=new DOMException("Aborted","AbortError"); }catch(_e){ e=new Error("Aborted"); e.name="AbortError"; } return e; }
+  function wait(ms, sig){ return new Promise(function(res, rej){ if(sig&&sig.aborted) return rej(aborted()); var t=setTimeout(function(){ if(sig) sig.removeEventListener("abort",onA); res(); }, Math.max(0,ms)); function onA(){ clearTimeout(t); rej(aborted()); } if(sig) sig.addEventListener("abort",onA,{once:true}); }); }
+  // 排隊取得送出時間：確保與上一筆的開始時間至少相隔 gap 毫秒
+  function slot(gap, sig){ var p=chain.then(function(){ var now=Date.now(), d=last+gap+2-now; /* +2 ms 計時器取整誤差的安全邊際 */ return wait(d>0?d:0, sig).then(function(){ last=Date.now(); }); }); chain=p.catch(function(){}); return p; }
+  function backoff(attempt, res){ var ra=res&&res.headers&&parseFloat(res.headers.get("Retry-After")); var base=(ra&&ra>0&&ra<=10)?ra*1000:1000*Math.pow(2,attempt); return base+Math.floor(Math.random()*1000); }
+  function ncbiFetch(url, init){
+    if(String(url).indexOf(HOST)!==0) return fetch(url, init);
+    var sig=init&&init.signal, gap=hasKey(url, init)?150:400;
+    function go(attempt){
+      return slot(gap, sig).then(function(){ return fetch(url, init); }).then(function(res){
+        if(RETRY.indexOf(res.status)>=0 && attempt<MAXR) return wait(backoff(attempt,res), sig).then(function(){ return go(attempt+1); });
+        return res;
+      }, function(err){
+        if(err && err.name==="AbortError") throw err;
+        if(attempt<MAXR) return wait(backoff(attempt,null), sig).then(function(){ return go(attempt+1); });
+        throw err;
+      });
+    }
+    return go(0);
+  }
+  window.srNcbi={ fetch: ncbiFetch };
+})();
+</script>
 </head>
 <body>
 <header class="sh">
@@ -2315,7 +2349,7 @@ if (typeof module !== "undefined" && module.exports) {
     // NCBI E-utilities 政策：請求需附 tool 與 email（開發者聯絡用，見 ncbi.nlm.nih.gov/home/about/policies）；email 分段組合，降低被爬蟲擷取
     var p=new URLSearchParams(params); p.set("tool","sr-ebm-happy-searchhen"); p.set("email",["happysearchhen","gmail.com"].join("@")); var _k=window.srKey&&window.srKey.get(); if(_k) p.set("api_key",_k);
     var ctl=new AbortController(), timer=setTimeout(function(){ctl.abort();},20000);
-    return fetch("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"+ep,{
+    return (window.srNcbi?window.srNcbi.fetch:fetch)("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"+ep,{
       method:"POST", headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},
       body:p.toString(), signal:ctl.signal
     }).then(function(r){ clearTimeout(timer); if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); },
@@ -2615,7 +2649,7 @@ if (typeof module !== "undefined" && module.exports) {
   function _eutilsText(ep, params){
     var p=new URLSearchParams(params); p.set("tool","sr-ebm-happy-searchhen"); p.set("email",["happysearchhen","gmail.com"].join("@")); var _k=window.srKey&&window.srKey.get(); if(_k) p.set("api_key",_k);
     var ctl=new AbortController(), timer=setTimeout(function(){ctl.abort();},30000);
-    return fetch("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"+ep,{
+    return (window.srNcbi?window.srNcbi.fetch:fetch)("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"+ep,{
       method:"POST", headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"}, body:p.toString(), signal:ctl.signal
     }).then(function(r){ clearTimeout(timer); if(!r.ok) throw new Error("HTTP "+r.status); return r.text(); },
             function(e){ clearTimeout(timer); throw e; });
@@ -4785,7 +4819,7 @@ function befPluralOf(w){
     var _k=window.srKey&&window.srKey.get(); if(_k) params.set("api_key",_k);
     var ctl=new AbortController(), timer=setTimeout(function(){ctl.abort();},30000);
     try{
-      var res=await fetch("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi",{
+      var res=await (window.srNcbi?window.srNcbi.fetch:fetch)("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi",{
         method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},
         body:params.toString(),signal:ctl.signal
       });
@@ -4815,7 +4849,7 @@ function befPluralOf(w){
     if(!checked.length){ outs.innerHTML='<div class="panel" style="color:var(--warn)">'+(isEn()?"Please tick at least one output database.":"請至少勾選一個輸出資料庫。")+'</div>'; return; }
     var _stratWarn=document.createElement("div"); _stratWarn.style.cssText="color:#c0392b;font-size:13px;line-height:1.6;margin:2px 0 10px"; _stratWarn.textContent=_noteStrat(); outs.appendChild(_stratWarn);   // 檢索策略表上方提醒（三點）
     if(picoWarn){
-      var msgs=[];
+      var msgs=[]; var _hl=function(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); };   // 概念代號可能來自專案檔／Word，放進 innerHTML 前先跳脫
       var _cells=function(r){ return [r.ft,r.zh,r.emtree,r.mesh,r.cinahl]; };
       var _unpairedQuote=function(cell){ if(!cell) return false; return String(cell).split(/\r?\n/).some(function(ln){ var n=(ln.replace(/[\u201c\u201d\u201e\u201f\u2033]/g,'"').match(/"/g)||[]).length; return (n%2)===1; }); };
       // 清掉上一輪的格子標記，再重新標（整理前欄不參與產出，不列入檢查）
@@ -4827,16 +4861,16 @@ function befPluralOf(w){
         tas.forEach(function(ta){ if(ta && bad(ta.value)) ta.classList.add("cellerr"); });
       }
       if(_befUsed.length) msgs.push(isEn()
-        ? ("Concept "+_befUsed.join(", ")+": “After” is empty, so the strategy was built from the “Before” terms. If needed, tidy them first (Tools ▾ → Copy to After, with truncation / de-duplication) or fill in “After”, then generate again.")
-        : (_befUsed.join("、")+" 概念的「整理後」無資料，已使用「整理前」產生檢索策略；如有需要，請先整理（可用「工具 ▾ → 複製到整理後」並勾選切截／去冗），或直接填寫「整理後」，再重新產生。"));
-      var ub=[]; rows.forEach(function(r, ri){ if(_cells(r).some(function(c){return c && inputUnbalanced(c);})){ ub.push(r.label); _markCells(ri, function(v){ return v && inputUnbalanced(v); }); } });
+        ? ("Concept "+_befUsed.map(_hl).join(", ")+": “After” is empty, so the strategy was built from the “Before” terms. If needed, tidy them first (Tools ▾ → Copy to After, with truncation / de-duplication) or fill in “After”, then generate again.")
+        : (_befUsed.map(_hl).join("、")+" 概念的「整理後」無資料，已使用「整理前」產生檢索策略；如有需要，請先整理（可用「工具 ▾ → 複製到整理後」並勾選切截／去冗），或直接填寫「整理後」，再重新產生。"));
+      var ub=[]; rows.forEach(function(r, ri){ if(_cells(r).some(function(c){return c && inputUnbalanced(c);})){ ub.push(_hl(r.label)); _markCells(ri, function(v){ return v && inputUnbalanced(v); }); } });
       if(ub.length) msgs.push(isEn()?("Unbalanced parentheses: "+ub.join(", ")+" — the number of ( and ) doesn't match."):("圓括弧無法成對："+ub.join("、")+" 概念，請檢查（左、右括號數量不一致）"));
       var _unpairedLines=function(cell){ var _out=[]; if(!cell) return _out; String(cell).split(/\r?\n/).forEach(function(ln){ var _n=(ln.replace(/[“”„‟″]/g,'"').match(/"/g)||[]).length; if((_n%2)===1) _out.push(ln.replace(/[()]/g,"").trim()); }); return _out; };
       var _hesc=function(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); };
-      var uq=[]; rows.forEach(function(r, ri){ var _bad=[]; _cells(r).forEach(function(c){ _unpairedLines(c).forEach(function(b){ _bad.push(b); }); }); if(_bad.length) _markCells(ri, function(v){ return _unpairedLines(v).length>0; }); if(_bad.length) uq.push(r.label+_bad.map(function(x){return "〈"+_hesc(x)+"〉";}).join("")); });
+      var uq=[]; rows.forEach(function(r, ri){ var _bad=[]; _cells(r).forEach(function(c){ _unpairedLines(c).forEach(function(b){ _bad.push(b); }); }); if(_bad.length) _markCells(ri, function(v){ return _unpairedLines(v).length>0; }); if(_bad.length) uq.push(_hl(r.label)+_bad.map(function(x){return "〈"+_hesc(x)+"〉";}).join("")); });
       if(uq.length) msgs.push(isEn()?("Unpaired double quote: "+uq.join("; ")):("雙引號未成對："+uq.join("、")+"，請檢查"));
       var _cm=_commaScan("gen"); if(_cm.length) msgs.push(_commaText(_cm));
-      var lt=[]; rows.forEach(function(r){ if(r.ft && /(^|[\s("'])\*/.test(r.ft)) lt.push(r.label); });
+      var lt=[]; rows.forEach(function(r){ if(r.ft && /(^|[\s("'])\*/.test(r.ft)) lt.push(_hl(r.label)); });
       if(lt.length) msgs.push(isEn()?("Leading truncation (word-initial *) in: "+lt.join(", ")+" — only Cochrane / Scopus / Web of Science support it; the leading * is removed for other databases."):("字頭切截（詞首 *）出現在："+lt.join("、")+" 概念 —— 僅 Cochrane / Scopus / Web of Science 支援，其餘資料庫的詞首 * 已自動移除。"));
       if(msgs.length){
         var _html="\u26A0 "+msgs.join("<br>\u26A0 ");

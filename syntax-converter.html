@@ -1488,7 +1488,7 @@ if (typeof module !== "undefined" && module.exports) {
     if(!input){ window.__lastResult=null; return; }
     let res;
     try{ res=convert(input, src, DBS); }
-    catch(e){ outs.innerHTML='<div class="panel">Error: '+e.message+'</div>'; return; }
+    catch(e){ outs.textContent=''; var _ed=document.createElement('div'); _ed.className='panel'; _ed.textContent='Error: '+String(e&&e.message||e); outs.appendChild(_ed); return; }
     // 補充概念（PubMed [nm]）類型不明：向 NLM 查詢類型，查完以同一輸入重新轉換（只送出詞本身）
     try{
       var _scrU=scrUnknownTerms(res.ast, []).filter(function(x,i,a){return a.indexOf(x)===i;});
@@ -1547,7 +1547,7 @@ if (typeof module !== "undefined" && module.exports) {
       var remHtml=[];
       if(!isSource){
         var _rl=new RegExp("^"+String(DB_LABEL[d]||"").replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\s*[：:]?\\s*");
-        (_resOf(tg).warn||[]).forEach(function(w){ remHtml.push(String(w).replace(_rl,"")); });
+        (_resOf(tg).warn||[]).forEach(function(w){ remHtml.push(String(w).replace(_rl,"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")); });   // 引擎警示為純文字（可能含錯誤訊息），先跳脫
       }
       if((d==="airiti" || d==="ndltd") && !isSource){
         remHtml.push(en
