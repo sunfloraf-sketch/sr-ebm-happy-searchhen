@@ -125,6 +125,7 @@
   .ccrow{display:inline-flex;flex-wrap:wrap;gap:4px}
   .ccchip{min-width:34px;height:28px;padding:0 6px;border:1px solid #A9C9C3;border-radius:6px;background:#F3FAF8;color:#0f766e;font-family:'SF Mono',Consolas,monospace;font-size:12px;font-weight:700;cursor:pointer}
   .ccchip:hover{background:#E1F2EE}
+  table.pico td.lab .ccode{display:none}
   table.pico.cc-on td.lab .ccode{display:inline-block;min-width:28px;padding:1px 5px;border:1px solid #A9C9C3;border-radius:6px;background:#F3FAF8;color:#0f766e;cursor:pointer}
   table.pico.cc-on td.lab .ccode:hover{background:#E1F2EE}
   table.pico.cc-on td textarea,table.pico.cc-on td.free textarea{min-height:0}
@@ -6238,8 +6239,8 @@ window.SR_TOUR={ key:"pico_v1", video:"media/pico-demo.mp4", videoLen:{zh:"約 2
     zh:{t:"專案檔", d:"把整張表與設定存成專案檔，下次開啟就能接著編輯。瀏覽器也會自動暫存。"},
     en:{t:"Project file", d:"Save the table and settings as a project file and reopen it later. Your work is also auto-saved in the browser."} },
   { el:"table.pico",
-    zh:{t:"② 概念表", d:"每一列是一個概念（<b>L1、L2…</b>）。同一格<b>每行一個詞＝OR</b>，列與列之間預設＝<b>AND</b>。左側可改概念代號（P、I、C、O）。"},
-    en:{t:"② Concept table", d:"Each row is one concept (<b>L1, L2…</b>). In a cell, <b>one term per line = OR</b>; rows are combined with <b>AND</b> by default. Edit the concept label (P, I, C, O) on the left."} },
+    zh:{t:"② 概念表", d:"每一列是一個概念。同一格<b>每行一個詞＝OR</b>，列與列之間預設＝<b>AND</b>。左側可改概念代號（P、I、C、O）。"},
+    en:{t:"② Concept table", d:"Each row is one concept. In a cell, <b>one term per line = OR</b>; rows are combined with <b>AND</b> by default. Edit the concept label (P, I, C, O) on the left."} },
   { el:"th.bef",
     zh:{t:"英文同義詞：整理前 → 整理後", d:"<b>整理前</b>放收集到的原始詞；「工具」可一鍵切截、去冗並複製到<b>整理後</b>。直接貼上其他資料庫的檢索式（Ovid、Embase、PubMed…）也會自動清掉語法、拆成一行一個。"},
     en:{t:"English synonyms: Before → After", d:"Put raw terms in <b>Before</b>; “Tools” truncates, removes redundant terms and copies them to <b>After</b>. Pasting a search string from another database (Ovid, Embase, PubMed…) is cleaned and split one term per line automatically."} },

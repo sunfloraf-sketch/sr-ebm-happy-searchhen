@@ -125,6 +125,7 @@
   .ccrow{display:inline-flex;flex-wrap:wrap;gap:4px}
   .ccchip{min-width:34px;height:28px;padding:0 6px;border:1px solid #A9C9C3;border-radius:6px;background:#F3FAF8;color:#0f766e;font-family:'SF Mono',Consolas,monospace;font-size:12px;font-weight:700;cursor:pointer}
   .ccchip:hover{background:#E1F2EE}
+  table.pico td.lab .ccode{display:none}
   table.pico.cc-on td.lab .ccode{display:inline-block;min-width:28px;padding:1px 5px;border:1px solid #A9C9C3;border-radius:6px;background:#F3FAF8;color:#0f766e;cursor:pointer}
   table.pico.cc-on td.lab .ccode:hover{background:#E1F2EE}
   table.pico.cc-on td textarea,table.pico.cc-on td.free textarea{min-height:0}
@@ -4521,8 +4522,8 @@ if (typeof module !== "undefined" && module.exports) {
       zh:{t:"專案檔", d:"把整張表與設定存成專案檔，下次開啟就能接著編輯。瀏覽器也會自動暫存。"},
       en:{t:"Project file", d:"Save the table and settings as a project file and reopen it later. Work is also auto-saved in the browser."} },
     { el:"table.pico",
-      zh:{t:"② 概念表", d:"每一列是一個概念（<b>L1、L2…</b>）。同一格<b>每行一個詞＝OR</b>，列與列之間預設＝<b>AND</b>。左側可改概念代號（P、I、C、O）。"},
-      en:{t:"② Concept table", d:"Each row is one concept (<b>L1, L2…</b>). In a cell, <b>one term per line = OR</b>; rows are ANDed by default. Edit the concept label (P, I, C, O) on the left."} },
+      zh:{t:"② 概念表", d:"每一列是一個概念。同一格<b>每行一個詞＝OR</b>，列與列之間預設＝<b>AND</b>。左側可改概念代號（P、I、C、O）。"},
+      en:{t:"② Concept table", d:"Each row is one concept. In a cell, <b>one term per line = OR</b>; rows are ANDed by default. Edit the concept label (P, I, C, O) on the left."} },
     { el:"th.free",
       zh:{t:"英文同義詞（自由詞彙）", d:"每行一個詞，可以用截字 *、片語、鄰近字（例：<code>鄰3字</code>）與括號分組；寫法參考下方「填寫說明」。"},
       en:{t:"English synonyms (free text)", d:"One term per line; use truncation *, phrases, proximity (e.g. <code>NEAR/3</code>) and parentheses. See “How to fill in” below."} },
