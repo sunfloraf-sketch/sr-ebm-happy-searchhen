@@ -1990,7 +1990,7 @@ if (typeof module !== "undefined" && module.exports) {
     phs = phs || {}; cv = cv || {}; var pcv = phs.cv || {};
     var tr=document.createElement("tr");
     var labTd=document.createElement("td"); labTd.className="lab";
-    var labIn=document.createElement("input"); labIn.value=label||""; labIn.maxLength=4; labIn.placeholder="✎"; labIn.title="概念代號（如 P、I、C、O）/ Concept label (e.g. P, I, C, O)"; labTd.appendChild(labIn);
+    var labIn=document.createElement("input"); labIn.value=label||""; labIn.maxLength=4; labIn.placeholder="✎"; labIn.title="概念代號（如 P、I、C、O） / Concept label (e.g. P, I, C, O)"; labTd.appendChild(labIn);
     var ccode=document.createElement("div"); ccode.className="ccode"; ccode.style.cssText="font-size:11px;color:#3f6f3f;font-weight:700;margin-top:3px"; labTd.appendChild(ccode);
     // 每列完整度選單（廣／較精／精＝L1／L2／L3）；預設沿用上方全域值
     var lvlSel=document.createElement("select"); lvlSel.className="rowlvl";
