@@ -1949,7 +1949,7 @@ if (typeof module !== "undefined" && module.exports) {
       var flag=document.createElement("span"); flag.className="cvvblockflag"; flag.style.cssText="font-size:11.5px;color:#b45309"; arow.appendChild(flag);
       all.onclick=function(){
         srCount('pico-cv-openall','PICO-查核全部開啟');
-        var blocked=0; allUrls.forEach(function(u){ var w=window.open(u,"_blank","noopener"); if(!w) blocked++; });
+        var blocked=0; allUrls.forEach(function(u){ var w=window.open(u,"_blank"); if(!w) blocked++; else { try{ w.opener=null; }catch(_e){} } });   /* 不用 "noopener" 參數：帶它時 window.open 一律回傳 null，會誤判成被擋；改為開啟後立刻切斷 opener */
         flag.textContent = blocked>0 ? (en?(" blocked "+blocked+"/"+allUrls.length):(" 被擋 "+blocked+"/"+allUrls.length+" 個")) : "";
       };
       panel.appendChild(arow);

@@ -2078,8 +2078,8 @@ if (typeof module !== "undefined" && module.exports) {
   // ---- PICO 列 ----
   // GDM 範例資料（供「載入 GDM 範例」與空白表格的灰字預覽共用）
   var GDM_EX = {
-    P:{ before:"GDM\ngestational diabetes\ngestational T2DM\ngestational NIDDM\ndiabetes in pregnancy\npregnancy-induced diabetes\npregnancy associated diabetes\ndiabetes mellitus gravidarum", zh:"((妊娠\n孕期\n懷孕)\nAND\n糖尿病)", ft:"GDM\n((gestation*\npregnan*\ngravid*)\nNEAR/4\n(diabet*\nT2DM\nNIDDM))", mesh:"Gestational Diabetes\nPregnancy in Diabetics\nGDM", emtree:"maternal diabetes", cinahl:"Pregnancy in Diabetes" },
-    I:{ before:"physical activity\nphysical activities\nexercise\nkinesiotherapy\nsport\nsports\ntraining\nfitness\nwalking", zh:"身體活動\n體能活動\n運動\n訓練\n走路", ft:"physical activit*\nexercise*\nkinesio*\nsport*\ntraining\nfitness\nwalk*", mesh:"Exercise\nExercise Therapy", emtree:"exercise\nkinesiotherapy\nphysical activity", cinahl:"Exercise\nTherapeutic Exercise" }
+    P:{ before:"GDM\ngestational diabetes\ngestational T2DM\ngestational NIDDM\ndiabetes in pregnancy\npregnancy-induced diabetes\npregnancy associated diabetes\ndiabetes mellitus gravidarum", zh:"((妊娠\n孕期\n懷孕)\nAND\n糖尿病)", ft:"GDM\n((gestation*\npregnan*\ngravid*)\nNEAR/4\n(diabet*\nT2DM\nNIDDM))", mesh:"Gestational Diabetes\nPregnancy in Diabetics\nGDM", emtree:"maternal diabetes", cinahl:"Pregnancy in Diabetics" },
+    I:{ before:"physical activity\nphysical activities\nexercise\nkinesiotherapy\nsport\nsports\ntraining\nfitness\nwalking", zh:"身體活動\n體能活動\n運動\n訓練\n走路", ft:"physical activit*\nexercise*\nkinesio*\nsport*\ntraining\nfitness\nwalk*", mesh:"Exercise\nExercise Therapy", emtree:"exercise\nexercise therapy\nphysical activity", cinahl:"Exercise\nTherapeutic Exercise" }
   };
   function mkCell(cls, ph){ var td=document.createElement("td"); if(cls)td.className=cls; var ta=document.createElement("textarea"); ta.spellcheck=false; if(cls&&/\bcv\b/.test(cls)) ta.wrap="off"; if(ph)ta.placeholder=ph; td.appendChild(ta); return {td:td, ta:ta}; }
   // 可重複使用的 ⓘ 浮動說明（滑過浮出；點擊固定顯示，再點別處收起）。未來其他區塊的詳細說明比照此法。
@@ -2126,7 +2126,7 @@ if (typeof module !== "undefined" && module.exports) {
       var flag=document.createElement("span"); flag.className="cvvblockflag"; flag.style.cssText="font-size:11.5px;color:#b45309"; arow.appendChild(flag);
       all.onclick=function(){
         srCount('pico-cv-openall','PICO-查核全部開啟');
-        var blocked=0; allUrls.forEach(function(u){ var w=window.open(u,"_blank","noopener"); if(!w) blocked++; });
+        var blocked=0; allUrls.forEach(function(u){ var w=window.open(u,"_blank"); if(!w) blocked++; else { try{ w.opener=null; }catch(_e){} } });   /* 不用 "noopener" 參數：帶它時 window.open 一律回傳 null，會誤判成被擋；改為開啟後立刻切斷 opener */
         flag.textContent = blocked>0 ? (en?(" blocked "+blocked+"/"+allUrls.length):(" 被擋 "+blocked+"/"+allUrls.length+" 個")) : "";
       };
       panel.appendChild(arow);
