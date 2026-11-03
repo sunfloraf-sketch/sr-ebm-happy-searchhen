@@ -797,7 +797,7 @@ th.cvhead[data-vocab="mesh"]{position:relative}
       </div>
     </div>
     <details class="ccbox" id="pasteBox" style="margin:0 0 12px">
-      <summary style="cursor:pointer;font-weight:700;font-size:13px;color:#0f766e"><span data-zh>貼上整理好的表格（➜ 可參考 AI 提示詞範例）</span><span data-en>Paste a prepared table (➜ AI prompt example available)</span></summary>
+      <summary style="cursor:pointer;font-weight:700;font-size:13px;color:#0f766e"><span data-zh>貼上表格（➜ 可參考 AI 提示詞範例）</span><span data-en>Paste a table (➜ AI prompt example available)</span></summary>
       <div style="margin-top:8px">
         <div class="sub" style="font-size:12px;color:var(--mut);margin-bottom:6px">
           <span data-zh><div>‧ <a href="https://chatgpt.com/share/6ad984b7-e750-83ec-b7fb-359952fa53f5" target="_blank" rel="noopener">開啟 ChatGPT 提示詞與對話範例 ↗</a> 或 <button type="button" class="pcopy" data-pcopy>直接複製提示詞</button>（優先使用 ChatGPT 或 Claude，登入帳號效果較佳）</div><div>‧ 從 ChatGPT 等複製整個表格後，於下方框按 <b>Ctrl+V</b> 貼上，工具會依欄位標題自動對應，並填入下方 PICO 表（亦可從 Word／Excel 複製後貼上）</div><div>‧ 表格請含一列標題（概念／中文／English／Emtree／MeSH／CINAHL。不需要的欄位可不提供；順序不拘）</div><div style="color:var(--mut);padding-left:1.2em">（不同複製方式填入效果可能有差異；含合併／巢狀儲存格的複雜表格，貼上後請檢查並自行調整）</div></span>
@@ -4334,7 +4334,7 @@ function befPluralOf(w){
     ex.addEventListener("click", function(e){ e.preventDefault(); e.stopPropagation(); });
     ex.addEventListener("keydown", function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); e.stopPropagation(); ex.click(); } });
   })();
-  // 順序：填寫說明在上、貼上整理好的表格在下；且一次只展開一個（手風琴）
+  // 順序：填寫說明在上、貼上表格在下；且一次只展開一個（手風琴）
   (function(){ var fill=document.getElementById("fillHelp"), paste=document.getElementById("pasteBox");
     /* 填寫說明固定在自訂組合策略下方，不再搬到「貼上表格」上方（2026-11-02） */
     var group=[fill,paste].filter(Boolean);
@@ -6230,8 +6230,8 @@ window.SR_TOUR={ key:"pico_v1", video:"media/pico-demo.mp4", videoLen:{zh:"約 2
     zh:{t:"第一次用？先載入範例", d:"按一下就會填入一個完整的範例，邊看邊學怎麼填。"},
     en:{t:"New here? Load the example", d:"One click fills in a complete example so you can see how the table works."} },
   { el:"#pasteBox > summary",
-    zh:{t:"貼上整理好的表格", d:"用 AI 或 Excel／Word 整理好的詞彙表，可以整張貼上，自動對應到各欄；這裡也有 AI 提示詞範例。"},
-    en:{t:"Paste a prepared table", d:"Paste a whole term table from AI, Excel or Word and the columns are matched automatically. AI prompt examples are here too."} },
+    zh:{t:"貼上表格", d:"用 AI 或 Excel／Word 整理好的詞彙表，可以整張貼上，自動對應到各欄；這裡也有 AI 提示詞範例。"},
+    en:{t:"Paste a table", d:"Paste a whole term table from AI, Excel or Word and the columns are matched automatically. AI prompt examples are here too."} },
   { el:"#ddWord",
     zh:{t:"Word 搜尋紀錄表", d:"下載紀錄表樣板；填好後<b>上傳</b>就會自動帶入概念表，產生策略後還能<b>回填</b>到同一份 Word。"},
     en:{t:"Word record form", d:"Download the record-form template; <b>upload</b> a filled-in form to populate the table, and after generating you can <b>fill the strategy back</b> into the same Word file."} },
