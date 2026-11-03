@@ -4180,13 +4180,15 @@ function befPluralOf(w){
       return out.replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/[ \t]+\n/g,"\n").replace(/\n{2,}/g,"\n").replace(/\n+$/,"").replace(/^\n+/,"").trim();
     };
     // 解析文件中「所有」表格（前後可含其他表格／段落）；回傳表格陣列，每個表格為列陣列
+    // 儲存格的水平合併數（gridSpan）：只看該格自己的 tcPr
+    var _tcSpan=function(tcXml){ var m=tcXml.match(/^<w:tc[\s>][\s\S]*?<w:tcPr>([\s\S]*?)<\/w:tcPr>/); if(!m) return 1; var g=m[1].match(/<w:gridSpan w:val="(\d+)"/); return g?Math.max(1,parseInt(g[1],10)):1; };
     var _allTables=function(xml,keepGray){
       var tables=[], tblRe=/<w:tbl[\s>][\s\S]*?<\/w:tbl>/g, tm;
       while((tm=tblRe.exec(xml))){
         var rows=[], trRe=/<w:tr[\s>][\s\S]*?<\/w:tr>/g, tr;
         while((tr=trRe.exec(tm[0]))){
           var cells=[], tcRe=/<w:tc[\s>][\s\S]*?<\/w:tc>/g, tc;
-          while((tc=tcRe.exec(tr[0]))) cells.push(_cellText(tc[0],keepGray));
+          while((tc=tcRe.exec(tr[0]))){ cells.push(_cellText(tc[0],keepGray)); for(var _g=_tcSpan(tc[0]); _g>1; _g--) cells.push(""); }   // 合併欄補空格，維持欄位對齊
           rows.push(cells);
         }
         tables.push(rows);
@@ -4238,7 +4240,7 @@ function befPluralOf(w){
         var rows=[], trRe=/<w:tr[\s>][\s\S]*?<\/w:tr>/g, tr;
         while((tr=trRe.exec(tm[0]))){
           var cells=[], tcRe=/<w:tc[\s>][\s\S]*?<\/w:tc>/g, tc;
-          while((tc=tcRe.exec(tr[0]))) cells.push(tc[0]);
+          while((tc=tcRe.exec(tr[0]))){ cells.push(tc[0]); for(var _g=_tcSpan(tc[0]); _g>1; _g--) cells.push(""); }
           rows.push(cells);
         }
         return rows;
@@ -4263,6 +4265,13 @@ function befPluralOf(w){
         var maxCols=0; rowsRaw.forEach(function(r){ if(r.length>maxCols)maxCols=r.length; });
         var hi=-1, hdr=null;
         for(var k=0;k<rowsRaw.length;k++){ if(rowsRaw[k].some(function(c){return /mesh/i.test(c);}) && rowsRaw[k].some(function(c){return /cinahl/i.test(c);})){ hdr=rowsRaw[k]; hi=k; break; } }
+        if(hdr && rowsRaw[hi+1]){
+          var _sub=rowsRaw[hi+1];
+          if(!String(_sub[0]||"").trim() && _sub.some(function(c){ return /^\s*(before|after|整理前|整理後|處理前|處理後)/i.test(String(c||"")); })){
+            var _w=Math.max(hdr.length,_sub.length), _h2=[]; for(var _j=0;_j<_w;_j++) _h2.push(((hdr[_j]||"")+" "+(_sub[_j]||"")).trim());
+            hdr=_h2; hi=hi+1;   // 例：「自由詞彙 English Synonyms」＋下一列「Before／After」→ Before、After 各自成欄
+          }
+        }
         var ci;
         if(hdr){
           var findIdx=function(re, exclude){ for(var j=0;j<hdr.length;j++){ var hs=hdr[j]||""; if(exclude&&exclude.test(hs)) continue; if(re.test(hs)) return j; } return -1; };
