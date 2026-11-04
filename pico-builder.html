@@ -2542,6 +2542,8 @@ if (typeof module !== "undefined" && module.exports) {
     sync();
     return m;
   }
+  // MeSH Entry Terms：倒裝寫法轉自然語序（Exercise, Aerobic → Aerobic Exercise），轉正後重複的只列一次（同 PubMed Light 規則）
+  function _etNatural(list){ var seen={}, out=[]; (list||[]).forEach(function(e){ var x=String(e||"").trim(), p=x.split(/\s*,\s*/); if(p.length===2 && p[0] && p[1]) x=p[1]+" "+p[0]; var k=x.toLowerCase().replace(/\s+/g," "); if(x && !seen[k]){ seen[k]=1; out.push(x); } }); return out; }
   function _mkChks(items, labelOf){ var box=document.createElement("div"); box.className="mcchks"; var cbs=items.map(function(it){ var l=document.createElement("label"); l.className="mcchk"; var c=document.createElement("input"); c.type="checkbox"; c.value=labelOf(it); l.appendChild(c); l.appendChild(document.createTextNode(" "+labelOf(it))); box.appendChild(l); return c; }); return {box:box, cbs:cbs}; }
 
   // ===== 補充概念（Supplementary Concept）：類型、同義詞、對應標目 =====
@@ -2625,7 +2627,7 @@ if (typeof module !== "undefined" && module.exports) {
     var es=document.createElement("div"); es.className="mcsec"; var esl=document.createElement("div"); esl.className="mclbl mchd"; var eslT=document.createElement("span"); eslT.className="mchdT"; eslT.textContent=isEn()?"Synonyms":"同義詞"; esl.appendChild(eslT); es.appendChild(esl);
     var eb=document.createElement("div"); eb.textContent=isEn()?"loading…":"載入中…"; es.appendChild(eb); card.appendChild(es);
     _scrEntryTerms(cId, r.label).then(function(ets){
-      var seen={}, list=[r.label].concat(ets).filter(function(x){ var k=String(x).toLowerCase(); if(seen[k]) return false; seen[k]=1; return true; });
+      var list=_etNatural([r.label].concat(ets));
       eb.innerHTML=""; if(!list.length){ eb.textContent=isEn()?"(none)":"（無）"; return; }
       var cl=_mkChks(list, function(x){return x;}); eb.appendChild(cl.box);
       var add=document.createElement("button"); add.className="mcbtn"; add.textContent=(isEn()?"→ Add to ":"→ 加入")+_ftColName(); _mcMaster(esl, eslT, cl.cbs);
@@ -2803,7 +2805,7 @@ if (typeof module !== "undefined" && module.exports) {
     var eb=document.createElement("div"); eb.textContent=isEn()?"loading…":"載入中…"; es.appendChild(eb); meshCard.appendChild(es);
     _meshEntryTerms(dId).then(function(ets){
       eb.innerHTML=""; if(!ets.length){ eb.textContent=isEn()?"(none)":"（無）"; return; }
-      var cl=_mkChks(ets, function(x){return x;}); eb.appendChild(cl.box);
+      ets=_etNatural(ets); var cl=_mkChks(ets, function(x){return x;}); eb.appendChild(cl.box);
       var add=document.createElement("button"); add.className="mcbtn"; add.textContent=(isEn()?"→ Add to ":"→ 加入")+_ftColName(); _mcMaster(esl, eslT, cl.cbs);
       var msg=document.createElement("span"); msg.className="mcmsg";
       add.onclick=function(){ var s=cl.cbs.filter(function(c){return c.checked;}).map(function(c){return c.value;}); var n=s.length?_appendFt(ftTa,s):0; msg.textContent=n?(isEn()?("+"+n):("已加 "+n)):""; };
@@ -3256,8 +3258,9 @@ function befPluralOf(w){
               var h=document.createElement("div"); h.className="ehd"; h.textContent=r.c.label; etBox.appendChild(h);
               if(r.ets===null){ var e=document.createElement("div"); e.className="cmsg"; e.textContent=en2?"failed to load":"載入失敗"; etBox.appendChild(e); return; }
               if(!r.ets.length){ var n=document.createElement("div"); n.className="cmsg"; n.textContent=en2?"(no entry terms)":"（無 Entry Term）"; etBox.appendChild(n); return; }
-              r.ets.forEach(function(t){
-                var v=befUninvert(t), dup=have.indexOf(befNorm(v))>=0;
+              var _seenE={}; r.ets.forEach(function(t){
+                var v=befUninvert(t), _ke=befNorm(v); if(_seenE[_ke]) return; _seenE[_ke]=1;   // 轉正後重複（Exercise, Aerobic＝Aerobic Exercise）只列一次
+                var dup=have.indexOf(_ke)>=0;
                 var lb=document.createElement("label"); lb.className="erow"+(dup?" dup":"");
                 var cb=document.createElement("input"); cb.type="checkbox"; cb.checked=!dup; cb.disabled=dup;
                 var sp=document.createElement("span"); sp.textContent=v+(dup?(en2?"  (already in)":"（已有）"):"");
@@ -4077,12 +4080,18 @@ function befPluralOf(w){
       _gwb=document.createElement("div"); _gwb.id="pasteGlueWarn"; _gwb.setAttribute("role","status");
       _gwb.style.cssText="display:flex;gap:10px;align-items:flex-start;margin:0 0 12px;padding:10px 14px;border:1px solid #E5C48A;background:#FFF7E8;color:#7A4A06;border-radius:10px;font-size:13.5px;line-height:1.65";
       var _gt=document.createElement("div"); _gt.style.flex="1 1 auto";
-      _gt.textContent=en?("⚠ Some cells look like several terms run together (the copied table lost its line breaks): "+_glued.join("; ")+". Terms ending in * and lower/upper-case joins were split automatically; please split the rest by hand (cells marked in orange), or ask the AI to separate the terms in each cell with “; ” and copy again.")
-                        :("⚠ 部分儲存格的詞彙似乎黏在一起（複製來源遺失了換行）："+_glued.join("；")+"。已自動拆開切截（*）結尾與大小寫交界的詞，其餘請手動分行（已以橘框標示）；或請您改要求 AI 每格以「; 」分隔詞彙後重新複製。");
+      _gt.textContent=en?("⚠ Some cells look like several terms run together (the copied table lost its line breaks): "+_glued.join("; ")+". Terms ending in * and lower/upper-case joins were split automatically; please split the rest by hand (cells marked in orange), or ask the AI to separate the terms in each cell with “; ” and copy again. If everything is actually fine, click “Looks fine” to remove the orange marks.")
+                        :("⚠ 部分儲存格的詞彙似乎黏在一起（複製來源遺失了換行）："+_glued.join("；")+"。已自動拆開切截（*）結尾與大小寫交界的詞，其餘請手動分行（已以橘框標示）；或請您改要求 AI 每格以「; 」分隔詞彙後重新複製。確認沒問題的話，按「確認無誤」即可取消橘框。");
       var _gx=document.createElement("button"); _gx.type="button"; _gx.textContent="✕"; _gx.setAttribute("aria-label", en?"Dismiss":"關閉提醒");
       _gx.style.cssText="flex:0 0 auto;border:none;background:transparent;color:#7A4A06;font-size:15px;cursor:pointer;min-width:32px;min-height:32px;border-radius:6px";
-      _gx.onclick=function(){ _gwb.remove(); };
-      _gwb.appendChild(_gt); _gwb.appendChild(_gx);
+      // 使用者確認無誤（或關閉提醒）：一併取消所有橘框標示
+      var _clrGlue=function(){ Array.prototype.forEach.call(picoBody.querySelectorAll("textarea.cellglue"), function(t){ t.classList.remove("cellglue"); }); _gwb.remove(); };
+      _gx.onclick=_clrGlue;
+      var _gok=document.createElement("button"); _gok.type="button"; _gok.textContent=en?"Looks fine":"確認無誤";
+      _gok.title=en?"Remove the orange marks and close this notice":"取消橘框標示並關閉提醒";
+      _gok.style.cssText="flex:0 0 auto;align-self:center;border:1px solid #D9B26F;background:#fff;color:#7A4A06;font:inherit;font-size:13px;font-weight:600;padding:3px 12px;border-radius:6px;cursor:pointer;white-space:nowrap";
+      _gok.onclick=_clrGlue;
+      _gwb.appendChild(_gt); _gwb.appendChild(_gok); _gwb.appendChild(_gx);
       _pbx.parentNode.insertBefore(_gwb, _pbx.nextSibling);
       var _trsG=Array.prototype.slice.call(picoBody.querySelectorAll("tr"));
       _gluedRows.forEach(function(g){ var tr=_trsG[g.ri]; if(!tr) return; g.keys.forEach(function(k){
