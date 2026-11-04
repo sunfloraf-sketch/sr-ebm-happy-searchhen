@@ -944,7 +944,7 @@ Optical Imaging)</pre>
       <label title="以顏色標出成對圓括弧"><input type="checkbox" id="cbBracket"><span data-zh>成對括弧顏色</span><span data-en>Bracket pairs</span></label>
       <label title="把最後一行的 #行號組合展開，串成一條可直接貼入單一檢索框的長檢索式"><input type="checkbox" id="cbFlat"><span data-zh>合併為一串檢索語法</span><span data-en>One combined query</span></label>
       <span class="phmode" style="display:inline-flex;align-items:center;gap:6px"><span title="英文同義詞欄中兩字以上的詞（如 gestational diabetes）要怎麼組成檢索語法；滑到各選項上可看說明。 / How terms of two or more words (e.g. gestational diabetes) in the English synonyms are written into the search; hover each option for details." style="cursor:help"><span data-zh>片語處理</span><span data-en>Phrase handling</span></span><span class="pmdd"><select id="phraseMode" hidden aria-hidden="true" tabindex="-1"><option value="phrase" data-zh="片語（預設）" data-en="Phrase (default)">片語（預設）</option><option value="near" data-zh="鄰近字" data-en="Proximity">鄰近字</option><option value="raw" data-zh="依輸入（謹慎使用）" data-en="As typed (use with caution)">依輸入（謹慎使用）</option></select><button type="button" class="pmbtn" id="phraseModeBtn" aria-haspopup="listbox" aria-expanded="false"><span class="pmlbl">片語（預設）</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button><span class="pmmenu" id="phraseModeMenu" role="listbox" hidden><button type="button" role="option" data-v="phrase" data-tip-zh="加上引號，當成完整片語檢索，例：&quot;gestational diabetes&quot;。" data-tip-en="Quoted and searched as an exact phrase, e.g. &quot;gestational diabetes&quot;.">片語（預設）</button><button type="button" role="option" data-v="near" data-tip-zh="字與字之間以鄰近運算連接，可在右側設定相隔幾個字以內，例：gestational NEAR/2 diabetes（運算子依各資料庫規範）。" data-tip-en="Words are joined with a proximity operator — set the distance on the right, e.g. gestational NEAR/2 diabetes (operator follows each database).">鄰近字</button><button type="button" role="option" data-v="raw" data-tip-zh="全然依您輸入的片語與標記，並由各資料庫依預設運算處理。須謹慎使用。較適合PubMed運作自動比對控制詞彙機制，其餘資料庫避免使用。" data-tip-en="Uses your phrases and markup exactly as typed, and each database processes them by its own default rules. Use with caution — best suited to PubMed’s automatic controlled-vocabulary mapping; avoid it for other databases.">依輸入（謹慎使用）</button></span></span><span id="nearWrap" style="display:none;align-items:center;gap:3px;color:var(--mut)"><span data-zh>鄰</span><span data-en>within&nbsp;</span><input type="number" id="nearN" min="0" max="20" value="2" title="鄰近距離：幾個單字內（預設 2） / Proximity distance in words (default 2)" style="width:34px;height:28px;font-size:12px;padding:0 5px;text-align:center;border:1px solid var(--line);border-radius:6px"><span data-zh>單字</span><span data-en>&nbsp;words</span></span></span>
-      <label title="產出的控制詞彙(MeSH/Emtree/CINAHL)加上可點的詞表查核連結；Word 下載也內嵌超連結。連結只供核對，複製的檢索式仍為純文字。"><input type="checkbox" id="cbLinks" checked><span data-zh>控制詞彙查核連結</span><span data-en>Vocab verify links</span></label>      <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--mut)" title="你機構的 EBSCO 專屬代碼（research.ebsco.com/c/XXXX/ 中的 XXXX，如 shmie4）；填了 CINAHL 控制詞彙才會有查核連結。只存在你的瀏覽器本機。"><span data-zh>CINAHL 機構碼</span><span data-en>CINAHL inst.</span><input type="text" id="cinahlInst" placeholder="其他機構：貼上網址或代碼" style="width:210px;font-size:12px;padding:6px 8px;border:1px solid var(--line);border-radius:6px"><span data-zh title="內建使用成大機構碼（shmie4），欄位留空即可。其他機構：貼上貴機構 CINAHL 進階檢索頁的網址（例如 research.ebsco.com/c/XXXX/…），系統會自動擷取機構碼；若擷取不到，請手動填入機構碼。只存在你的瀏覽器本機。" style="cursor:help;color:var(--brand2);font-weight:700">ⓘ</span><span data-en title="Uses NCKU’s code (shmie4) by default — leave blank. Other institutions: paste your CINAHL advanced-search URL (e.g. research.ebsco.com/c/XXXX/…) and the tool extracts the code; if it can’t, enter the code manually. Stored only in your browser." style="cursor:help;color:var(--brand2);font-weight:700">ⓘ</span></span>
+      <label title="產出的控制詞彙(MeSH/Emtree/CINAHL)加上可點的詞表查核連結；Word 下載也內嵌超連結。連結只供核對，複製的檢索式仍為純文字。"><input type="checkbox" id="cbLinks" checked><span data-zh>控制詞彙查核連結</span><span data-en>Vocab verify links</span></label>      <span style="display:none;align-items:center;gap:5px;font-size:12px;color:var(--mut)" data-note="已移到 CINAHL 查核小視窗" title="你機構的 EBSCO 專屬代碼（research.ebsco.com/c/XXXX/ 中的 XXXX，如 shmie4）；填了 CINAHL 控制詞彙才會有查核連結。只存在你的瀏覽器本機。"><span data-zh>CINAHL 機構碼</span><span data-en>CINAHL inst.</span><input type="text" id="cinahlInst" placeholder="其他機構：貼上網址或代碼" style="width:210px;font-size:12px;padding:6px 8px;border:1px solid var(--line);border-radius:6px"><span data-zh title="內建使用成大機構碼（shmie4），欄位留空即可。其他機構：貼上貴機構 CINAHL 進階檢索頁的網址（例如 research.ebsco.com/c/XXXX/…），系統會自動擷取機構碼；若擷取不到，請手動填入機構碼。只存在你的瀏覽器本機。" style="cursor:help;color:var(--brand2);font-weight:700">ⓘ</span><span data-en title="Uses NCKU’s code (shmie4) by default — leave blank. Other institutions: paste your CINAHL advanced-search URL (e.g. research.ebsco.com/c/XXXX/…) and the tool extracts the code; if it can’t, enter the code manually. Stored only in your browser." style="cursor:help;color:var(--brand2);font-weight:700">ⓘ</span></span>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-left:auto">
       <button class="btn primary" id="genBtn"><span data-zh>▶ 生成檢索策略</span><span data-en>▶ Generate strategies</span></button>
@@ -2074,7 +2074,7 @@ if (typeof module !== "undefined" && module.exports) {
   function refreshLvlNote(){ lvlnote.textContent = LVL_NOTE[isEn()?"en":"zh"][levelSel.value]; }
   function setLevelLabels(){ var m=LEVEL_LABELS[isEn()?"en":"zh"]; Array.prototype.forEach.call(levelSel.options, function(o){ o.textContent=m[o.value]||o.value; }); }
   var PASTE_CV = {};   // AgeLine／ERIC 等「貼上即用」控制詞彙：PASTE_CV[targetId][概念列索引] = 使用者貼上的檢索式（原樣帶入）
-  function autoRegen(){ if(outs && outs.children.length) $("#genBtn").click(); }   // 已生成策略時，異動即自動更新
+  function autoRegen(){ if(outs && outs.children.length){ window._srAutoRegen=true; try{ $("#genBtn").click(); } finally { window._srAutoRegen=false; } } }   // 編輯中自動更新：不捲動畫面   // 已生成策略時，異動即自動更新
   var _arT; function autoRegenDebounced(){ clearTimeout(_arT); _arT=setTimeout(autoRegen, 500); }
   levelSel.onchange = function(){ refreshLvlNote(); Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr){ if(tr._setLevel) tr._setLevel(levelSel.value); }); if(typeof saveDraftDebounced==="function") saveDraftDebounced(); autoRegen(); };   // 全域：套用到全部列（並作為新增列預設）
 
@@ -2118,7 +2118,20 @@ if (typeof module !== "undefined" && module.exports) {
       panel.appendChild(row);
     });
     if(!any){ var e0=document.createElement("div"); e0.className="cvvhint"; e0.textContent=en?("(no "+CV_VLABEL[vocab]+" term entered)"):("（尚未輸入 "+CV_VLABEL[vocab]+" 詞彙）"); panel.appendChild(e0); }
-    if(vocab==="cinahl" && !(((cinahlInst&&cinahlInst.value)||"").trim())){ var h=document.createElement("div"); h.className="cvvhint"; h.textContent=en?"CINAHL links use NCKU’s institution code by default; other institutions can paste their URL or code in “CINAHL inst.” below.":"CINAHL 連結預設使用成大機構碼；其他機構可於下方「CINAHL 機構碼」貼上機構網址或代碼。"; panel.appendChild(h); }
+    if(vocab==="cinahl"){   // 機構網址輸入（原本在表格下方「CINAHL 機構碼」）
+      var h=document.createElement("div"); h.className="cvvhint"; h.style.whiteSpace="pre-line";
+      h.textContent=en?"CINAHL links use NCKU’s own address by default.\nOther institutions: enter your institution’s CINAHL database URL.":"CINAHL 連結預設使用成大專屬網址\n成大以外機構：請輸入貴機構專屬CINAHL資料庫網址";
+      panel.appendChild(h);
+      var ci=document.createElement("input"); ci.type="text"; ci.className="cvvinst"; ci.value=(cinahlInst&&cinahlInst.value)||"";
+      ci.placeholder=en?"e.g. https://research.ebsco.com/c/XXXX/…":"例：https://research.ebsco.com/c/XXXX/…";
+      ci.setAttribute("aria-label", en?"Your institution’s CINAHL URL":"貴機構 CINAHL 資料庫網址");
+      ci.style.cssText="display:block;width:100%;max-width:360px;box-sizing:border-box;margin-top:6px;font-size:12px;padding:6px 8px;border:1px solid var(--line);border-radius:6px";
+      ci.addEventListener("click", function(e){ e.stopPropagation(); });
+      ci.addEventListener("input", function(){ if(!cinahlInst) return; cinahlInst.value=ci.value; cinahlInst.dispatchEvent(new Event("input",{bubbles:true})); });   // 存入瀏覽器（同原欄位）
+      ci.addEventListener("change", function(){ if(!cinahlInst) return; cinahlInst.value=ci.value; cinahlInst.dispatchEvent(new Event("change",{bubbles:true})); buildColumnVerify("cinahl"); var _th=document.querySelector('th.cvhead[data-vocab="cinahl"]'); if(_th){ positionCvPanel(_th); _cvOpenVocab="cinahl"; _th.classList.add("on"); } });   // 離開或按 Enter：重算連結（已產生策略則自動更新）
+      ci.addEventListener("keydown", function(e){ if(e.key==="Enter"){ e.preventDefault(); ci.blur(); } });
+      panel.appendChild(ci);
+    }
     if(allUrls.length>1){
       var all=document.createElement("button"); all.type="button"; all.className="cvvall";
       all.textContent=en?("Open all ("+allUrls.length+")"):("全部開啟 ("+allUrls.length+")");
@@ -2209,8 +2222,8 @@ if (typeof module !== "undefined" && module.exports) {
     var mv=document.createElement("div"); mv.style.cssText="display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center";   // 上／下／✕ 垂直排列
     var up=document.createElement("button"); up.className="rmrow"; up.textContent="↑"; up.title=isEn()?"Move up":"上移（與上一列對調）";
     var dn=document.createElement("button"); dn.className="rmrow"; dn.textContent="↓"; dn.title=isEn()?"Move down":"下移（與下一列對調）";
-    up.onclick=function(){ var prev=tr.previousElementSibling; if(prev){ picoBody.insertBefore(tr, prev); updateCodes(); if(typeof saveDraftDebounced==="function") saveDraftDebounced(); autoRegen(); } };
-    dn.onclick=function(){ var next=tr.nextElementSibling; if(next){ picoBody.insertBefore(next, tr); updateCodes(); if(typeof saveDraftDebounced==="function") saveDraftDebounced(); autoRegen(); } };
+    up.onclick=function(){ var prev=tr.previousElementSibling; if(prev){ var _y=window.scrollY; picoBody.insertBefore(tr, prev); window.scrollTo(window.scrollX,_y); requestAnimationFrame(function(){ window.scrollTo(window.scrollX,_y); }); updateCodes(); if(typeof saveDraftDebounced==="function") saveDraftDebounced(); autoRegen(); } };
+    dn.onclick=function(){ var next=tr.nextElementSibling; if(next){ var _y=window.scrollY; picoBody.insertBefore(next, tr); window.scrollTo(window.scrollX,_y); requestAnimationFrame(function(){ window.scrollTo(window.scrollX,_y); }); updateCodes(); if(typeof saveDraftDebounced==="function") saveDraftDebounced(); autoRegen(); } };
     var rm=document.createElement("button"); rm.className="rmrow"; rm.textContent="✕"; rm.title=isEn()?"Delete row":"刪除此列"; rm.style.marginTop="6px";   // ✕ 與箭頭多留間隔
     // 桌機拖曳握把：只有抓住 ⠿ 才啟動拖曳，避免與儲存格選字衝突
     var grip=document.createElement("span"); grip.className="rowgrip"; grip.textContent="⠿"; grip.title=isEn()?"Drag to reorder (desktop)":"拖曳排序（桌機）";
@@ -2221,7 +2234,7 @@ if (typeof module !== "undefined" && module.exports) {
     tr.addEventListener("dragend", function(){ _dragTr=null; tr.classList.remove("dragging"); tr.removeAttribute("draggable"); _clearDrop(); });
     tr.addEventListener("dragover", function(e){ if(!_dragTr||_dragTr===tr) return; e.preventDefault(); try{e.dataTransfer.dropEffect="move";}catch(_){} var r=tr.getBoundingClientRect(); var after=(e.clientY-r.top)>r.height/2; _clearDrop(); tr.classList.add(after?"drop-after":"drop-before"); });
     tr.addEventListener("dragleave", function(){ tr.classList.remove("drop-before","drop-after"); });
-    tr.addEventListener("drop", function(e){ if(!_dragTr||_dragTr===tr) return; e.preventDefault(); var r=tr.getBoundingClientRect(); var after=(e.clientY-r.top)>r.height/2; picoBody.insertBefore(_dragTr, after?tr.nextElementSibling:tr); _clearDrop(); updateCodes(); if(typeof saveDraftDebounced==="function") saveDraftDebounced(); autoRegen(); });
+    tr.addEventListener("drop", function(e){ if(!_dragTr||_dragTr===tr) return; e.preventDefault(); var r=tr.getBoundingClientRect(); var after=(e.clientY-r.top)>r.height/2; var _y=window.scrollY; picoBody.insertBefore(_dragTr, after?tr.nextElementSibling:tr); window.scrollTo(window.scrollX,_y); requestAnimationFrame(function(){ window.scrollTo(window.scrollX,_y); }); _clearDrop(); updateCodes(); if(typeof saveDraftDebounced==="function") saveDraftDebounced(); autoRegen(); });
     tr.appendChild(labTd); tr.appendChild(c0.td); tr.appendChild(cb.td); tr.appendChild(c1.td); tr.appendChild(c3.td); tr.appendChild(c2.td); tr.appendChild(c4.td); tr.appendChild(rmTd);
     tr._get=function(){ return { label:labIn.value.trim()||"?", zh:c0.ta.value.trim(), ft:c1.ta.value.trim(), mesh:c2.ta.value.trim(), emtree:c3.ta.value.trim(), cinahl:c4.ta.value.trim(), level:lvlSel.value, before:cbTa.value.trim() }; };
     tr._beGet=function(){ return cbTa.value.trim(); };
@@ -2774,7 +2787,7 @@ if (typeof module !== "undefined" && module.exports) {
     mdel.title=isEn()?"Remove this heading":"移除此標目";
     mdel.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7 H20"/><path d="M9.5 7 V5.2 Q9.5 4.3 10.4 4.3 H13.6 Q14.5 4.3 14.5 5.2 V7"/><path d="M6.2 7 L7 19.2 Q7.1 20.6 8.5 20.6 H15.5 Q16.9 20.6 17 19.2 L17.8 7"/><path d="M10 10.5 V17 M14 10.5 V17"/></svg>';
     mdel.onclick=function(){ _removeMeshTerm(tr, rawTerm); _closeMeshCard(); };
-    if(r.state!=="ok") brow.appendChild(mdel);   // 已驗證通過的標目不提供移除，避免誤刪
+    brow.appendChild(mdel);   // 已驗證（✓）的標目也可移除：正式標目不一定適用這個主題
     if(r.state==="ok"||r.state==="entry"){
       var inc=document.createElement("label"); inc.style.cssText="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#25292D;cursor:pointer;white-space:nowrap;margin-left:auto";
       var incCb=document.createElement("input"); incCb.type="checkbox"; incCb.style.accentColor="#0f766e"; incCb.checked=!CV_NOEXP_RE.test(rawTerm);
@@ -3697,7 +3710,7 @@ function befPluralOf(w){
           } else if(ta.classList.contains("cellparen")){ ta.classList.remove("cellparen"); ta.removeAttribute("title"); }
         });
       });
-      if(bad.length){ box.innerHTML="\u26A0 "+(isEn()?"Unbalanced parentheses: ":"圓括弧無法成對：")+bad.map(function(x){ return x.replace(/&/g,"&amp;").replace(/</g,"&lt;"); }).join(isEn()?"; ":"、")+(isEn()?" — the numbers of ( and ) don’t match; please check the red cells.":"——左、右括號數量不一致，請檢查紅框儲存格。"); box.style.display="block"; }
+      if(bad.length){ box.innerHTML="\u26A0 "+(isEn()?"Unbalanced parentheses — please check the red cells!":"圓括弧無法成對，請檢查紅框！"); box.style.display="block"; }
       else { box.style.display="none"; box.innerHTML=""; }
     }
     picoBody.addEventListener("focusout", function(e){ if(e.target && e.target.tagName==="TEXTAREA") scan(); });
@@ -3840,12 +3853,12 @@ function befPluralOf(w){
     return en ? ("English synonyms contain a comma: "+list+" — the comma may separate two terms (split them onto two lines) or mark an inverted term (e.g. Catheterization, Central Venous → put it back in order). Please check (orange cells).")
               : ("英文同義詞含逗號："+list+"——逗號可能是隔開兩個詞（請拆成兩行），也可能是倒裝寫法（如 Catheterization, Central Venous，請轉正）；請自行確認（橘框）。"); }
   // 逗號／貼上整理類提醒：放在表格上方（#commaWarn），可按 ✕ 關閉（同時取消橘框）
-  function _commaHide(){ var cw=document.getElementById("commaWarn"); if(cw){ cw.style.display="none"; cw.innerHTML=""; } }
-  function _commaShow(html){ if(!html) return; var cw=document.getElementById("commaWarn")||picoWarn; if(!cw) return;
-    cw.innerHTML="\u26A0 "+html; cw.style.display="block";
+  function _commaHide(kind){ var cw=document.getElementById("commaWarn"); if(cw && (!kind || cw.dataset.kind===kind)){ cw.style.display="none"; cw.innerHTML=""; cw.dataset.kind=""; } }
+  function _commaShow(html, kind){ if(!html) return; var cw=document.getElementById("commaWarn")||picoWarn; if(!cw) return;
+    cw.innerHTML="\u26A0 "+html; cw.style.display="block"; cw.dataset.kind=kind||"";
     if(cw.id==="commaWarn"){ var x=document.createElement("button"); x.type="button"; x.className="cwclose"; x.textContent="✕"; x.setAttribute("aria-label", isEn()?"Dismiss":"關閉提醒");
       x.onclick=function(){ Array.prototype.forEach.call(picoBody.querySelectorAll("textarea.cellcomma"), function(t){ t.classList.remove("cellcomma"); }); _commaHide(); }; cw.appendChild(x); }
-    cw.classList.remove("flash"); void cw.offsetWidth; cw.classList.add("flash"); try{ cw.scrollIntoView({behavior:"smooth", block:"nearest"}); }catch(e){} }
+    cw.classList.remove("flash"); void cw.offsetWidth; cw.classList.add("flash"); }
   // 貼上逐行檢索式（Ovid、Embase、PubMed、WoS、Scopus、EBSCO、Cochrane 等）到英文同義詞欄：去行號、欄位碼、組合行；
   //   Ovid $ → *、adjN → 鄰(N−1)；NEAR/n、W/n、Nn 等原樣保留（依來源資料庫換算）；小寫 or/and/not → 大寫；
   //   整行被外層括號包住時去括號並依最外層 OR 拆成一行一個（內部分組括號保留）；控制詞彙行不自動歸欄，另外回傳原文
@@ -4076,7 +4089,7 @@ function befPluralOf(w){
     if(_anyBef && window._srShowBefore) window._srShowBefore();
     if(!picoBody.querySelector("tr")) seedEmpty();
     saveDraft(); offerRestore();
-    (function(){ var _cm=_commaScan("all"); if(_cm.length) _commaShow(_commaText(_cm)); else _commaHide(); })();
+    (function(){ var _cm=_commaScan("all"); if(_cm.length) _commaShow(_commaText(_cm),"comma"); else _commaHide(); })();
     var miss=[]; ["ft","mesh","emtree","cinahl"].forEach(function(k){ if(col[k]<0) miss.push(k); });
     var missZh={ft:"英文同義詞",mesh:"MeSH",emtree:"Emtree",cinahl:"CINAHL"};
     pasteMsg.style.color="#166534";
@@ -4347,7 +4360,7 @@ function befPluralOf(w){
         recordDocx={ buf:buf, name:(f.name||"SR檢索紀錄表.docx") };   // 保留原檔，供回填下載
         if(typeof updateRecordBtn==="function") updateRecordBtn();
         if(picoWarn) picoWarn.style.display="none";
-        var _cm=_commaScan("all"); if(_cm.length) _commaShow(_commaText(_cm)); else _commaHide();
+        var _cm=_commaScan("all"); if(_cm.length) _commaShow(_commaText(_cm),"comma"); else _commaHide();
       }catch(e){ srAlert((isEn()?"Read failed: ":"讀取失敗：")+e.message); }
       ev.target.value="";
     };
@@ -4976,12 +4989,12 @@ function befPluralOf(w){
         ? ("Concept "+_befUsed.map(_hl).join(", ")+": “After” is empty, so the strategy was built from the “Before” terms. If needed, tidy them first (Tools ▾ → Copy to After, with truncation / de-duplication) or fill in “After”, then generate again.")
         : (_befUsed.map(_hl).join("、")+" 概念的「整理後」無資料，已使用「整理前」產生檢索策略；如有需要，請先整理（可用「工具 ▾ → 複製到整理後」並勾選切截／去冗），或直接填寫「整理後」，再重新產生。"));
       var ub=[]; rows.forEach(function(r, ri){ if(_cells(r).some(function(c){return c && inputUnbalanced(c);})){ ub.push(_hl(r.label)); _markCells(ri, function(v){ return v && inputUnbalanced(v); }); } });
-      if(ub.length) msgs.push(isEn()?("Unbalanced parentheses: "+ub.join(", ")+" — the number of ( and ) doesn't match."):("圓括弧無法成對："+ub.join("、")+" 概念，請檢查（左、右括號數量不一致）"));
+      if(ub.length) msgs.push(isEn()?"Unbalanced parentheses — please check the red cells!":"圓括弧無法成對，請檢查紅框！");
       var _unpairedLines=function(cell){ var _out=[]; if(!cell) return _out; String(cell).split(/\r?\n/).forEach(function(ln){ var _n=(ln.replace(/[“”„‟″]/g,'"').match(/"/g)||[]).length; if((_n%2)===1) _out.push(ln.replace(/[()]/g,"").trim()); }); return _out; };
       var _hesc=function(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); };
       var uq=[]; rows.forEach(function(r, ri){ var _bad=[]; _cells(r).forEach(function(c){ _unpairedLines(c).forEach(function(b){ _bad.push(b); }); }); if(_bad.length) _markCells(ri, function(v){ return _unpairedLines(v).length>0; }); if(_bad.length) uq.push(_hl(r.label)+_bad.map(function(x){return "〈"+_hesc(x)+"〉";}).join("")); });
       if(uq.length) msgs.push(isEn()?("Unpaired double quote: "+uq.join("; ")):("雙引號未成對："+uq.join("、")+"，請檢查"));
-      var _cm=_commaScan("gen"); if(_cm.length) msgs.push(_commaText(_cm));
+      var _cm=_commaScan("gen"); if(_cm.length){ if(!window._srAutoRegen) _commaShow(_commaText(_cm),"comma"); } else _commaHide("comma");   // 逗號只在表格上方提醒；改好後自動收起
       var lt=[]; rows.forEach(function(r){ if(r.ft && /(^|[\s("'])\*/.test(r.ft)) lt.push(_hl(r.label)); });
       if(lt.length) msgs.push(isEn()?("Leading truncation (word-initial *) in: "+lt.join(", ")+" — only Cochrane / Scopus / Web of Science support it; the leading * is removed for other databases."):("字頭切截（詞首 *）出現在："+lt.join("、")+" 概念 —— 僅 Cochrane / Scopus / Web of Science 支援，其餘資料庫的詞首 * 已自動移除。"));
       if(msgs.length){
@@ -4990,7 +5003,7 @@ function befPluralOf(w){
         picoWarn.innerHTML=_html; picoWarn.style.display="block";
         if(_isNew){                      // 只有「新出現／內容變了」才閃一下並捲進視野，打字途中不會一直跳
           picoWarn.classList.remove("flash"); void picoWarn.offsetWidth; picoWarn.classList.add("flash");
-          try{ picoWarn.scrollIntoView({behavior:"smooth", block:"nearest"}); }catch(e){}
+          if(!window._srAutoRegen){ try{ picoWarn.scrollIntoView({behavior:"smooth", block:"nearest"}); }catch(e){} }   // 只有按「生成檢索策略」才捲過去；編輯中的自動更新不捲，避免打字時畫面跳到表格下方
         }
       } else {
         picoWarn.style.display="none"; picoWarn.classList.remove("flash");
@@ -5064,6 +5077,7 @@ function befPluralOf(w){
       if(tg.engine!=="pubmed" && DB_OPEN_URLS[tid]){
         var openBtn=document.createElement("button"); openBtn.className="copy copyicon"; openBtn.innerHTML=OPENSVG;
         var _openTitle=(isEn()?"Copy final strategy & open ":"複製最終策略並開啟 ")+tg.label+" ↗";
+        if(tid==="cinahl_ebsco") _openTitle=(isEn()?"• Other institutions: please open the database yourself.\n• NCKU: ":"．成大以外機構：請自行開啟資料庫畫面。\n．成大：")+_openTitle;
         if(tid==="cinahl_ebsco") _openTitle+=(isEn()?"\nOpens the database-selection tab. EBSCO remembers your last database choice (stored per account/session, not in the URL), so select only CINAHL once and it will persist.":"\n開啟資料庫選擇分頁。EBSCO 會記住你上次選的資料庫（存在帳號／登入 session，不在網址裡），只要手動勾選一次「僅 CINAHL」，之後就會沿用。");
         if(/ncku\.edu\.tw/i.test(DB_OPEN_URLS[tid]||"")) _openTitle+=(isEn()?"\nNon-NCKU users: please open the database yourself.":"\n非成大使用者，請自行開啟資料庫");
         openBtn.title=_openTitle;
