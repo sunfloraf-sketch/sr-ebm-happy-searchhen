@@ -2256,7 +2256,7 @@ if (typeof module !== "undefined" && module.exports) {
     if(!picoBody) return;
     var tbl=picoBody.closest("table"); if(!tbl) return;
     var box=document.createElement("div"); box.className="inwarn"; box.id="parenWarn"; box.style.display="none"; box.setAttribute("role","status");
-    tbl.insertAdjacentElement("afterend", box);
+    tbl.insertAdjacentElement("beforebegin", box);   /* 括號提醒放在表格上方 */
     function colName(ta){ var td=ta.closest("td"); if(!td) return ""; var th=tbl.querySelectorAll("thead tr:first-child th")[td.cellIndex];
       var t=th?(th.innerText||th.textContent||""):""; t=t.split("\n")[0].replace(/\s+/g," ").replace(/\s*(整理前|整理後|Before|After|工具|Tools)[\s\S]*$/,"").trim();
       if(ta.classList.contains("beftxt")) t+=isEn()?" (Before)":"（整理前）";

@@ -299,6 +299,8 @@
           background:#FDF2F0;border:1px solid #E7BDB6;border-left:5px solid #C0392B;border-radius:8px;
           padding:10px 13px 10px 14px;box-shadow:0 1px 4px rgba(192,57,43,.10)}
   .inwarn.flash{animation:srwarnflash .85s ease-out 2}
+  #commaWarn{position:relative;padding-right:40px}
+  #commaWarn .cwclose{position:absolute;right:6px;top:6px;width:28px;height:28px;border:none;background:transparent;color:#8E1B14;font-size:14px;cursor:pointer;border-radius:6px}
   @keyframes srwarnflash{0%,100%{box-shadow:0 1px 4px rgba(192,57,43,.10)}50%{box-shadow:0 0 0 5px rgba(192,57,43,.20)}}
   /* 有問題的那一格直接標出來 */
   table.pico td textarea.cellcomma{border-color:#D98E2E !important;background:#FFF7E8 !important;box-shadow:0 0 0 2px rgba(217,142,46,.18) !important}
@@ -834,9 +836,10 @@ th.cvhead[data-vocab="mesh"]{position:relative}
         <span data-zh>⚠ 提醒您！請自行評估同義詞與控制詞彙的適用性，務必利用工具查核控制詞彙。</span>
         <span data-en>⚠ Reminder: assess the suitability of synonyms and controlled vocabulary yourself, and be sure to verify the controlled terms with the tools.</span>
       </span>
-      <a id="exBtn" class="exlink" role="button" tabindex="0" title="把示範資料直接填入下方 PICO 表（會覆蓋目前內容）" style="margin-left:auto;white-space:nowrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="16.5" y2="16.5"/><polyline points="16.5 9 16.5 16.5 9 16.5"/></svg><span data-zh>載入範例</span><span data-en>Load example</span></a>
+      <a id="exBtn" class="exlink" role="button" tabindex="0" title="填入示範資料，整理後欄留白，可練習用「工具」整理（會覆蓋目前內容）" style="margin-left:auto;white-space:nowrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="16.5" y2="16.5"/><polyline points="16.5 9 16.5 16.5 9 16.5"/></svg><span data-zh>載入範例1</span><span data-en>Load example 1</span></a><a id="exBtnFull" class="exlink" role="button" tabindex="0" title="填入示範資料，連整理後欄（切截、鄰近字寫法）一起填好（會覆蓋目前內容）" style="margin-left:14px;white-space:nowrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="16.5" y2="16.5"/><polyline points="16.5 9 16.5 16.5 9 16.5"/></svg><span data-zh>載入範例2（含整理後）</span><span data-en>Load example 2 (with After)</span></a>
     </div>
     <div id="meshVerifyPanel" style="display:none"></div>
+    <div class="inwarn" id="commaWarn" style="display:none" role="status"></div>
     <table class="pico">
       <thead>
         <tr>
@@ -3675,7 +3678,7 @@ function befPluralOf(w){
     if(!picoBody) return;
     var tbl=picoBody.closest("table"); if(!tbl) return;
     var box=document.createElement("div"); box.className="inwarn"; box.id="parenWarn"; box.style.display="none"; box.setAttribute("role","status");
-    tbl.insertAdjacentElement("afterend", box);
+    tbl.insertAdjacentElement("beforebegin", box);   /* 括號提醒放在表格上方（與逗號提醒同處） */
     function colName(ta){ var td=ta.closest("td"); if(!td) return ""; var th=tbl.querySelectorAll("thead tr:first-child th")[td.cellIndex];
       var t=th?(th.innerText||th.textContent||""):""; t=t.split("\n")[0].replace(/\s+/g," ").replace(/\s*(整理前|整理後|Before|After|工具|Tools)[\s\S]*$/,"").trim();
       if(ta.classList.contains("beftxt")) t+=isEn()?" (Before)":"（整理前）";
@@ -3836,7 +3839,13 @@ function befPluralOf(w){
     var list=items.map(function(it){ return (it.label?h(it.label):"")+"〈"+h(it.line)+"〉"; }).join(en?"; ":"、");
     return en ? ("English synonyms contain a comma: "+list+" — the comma may separate two terms (split them onto two lines) or mark an inverted term (e.g. Catheterization, Central Venous → put it back in order). Please check (orange cells).")
               : ("英文同義詞含逗號："+list+"——逗號可能是隔開兩個詞（請拆成兩行），也可能是倒裝寫法（如 Catheterization, Central Venous，請轉正）；請自行確認（橘框）。"); }
-  function _commaShow(html){ if(!picoWarn || !html) return; picoWarn.innerHTML="\u26A0 "+html; picoWarn.style.display="block"; picoWarn.classList.remove("flash"); void picoWarn.offsetWidth; picoWarn.classList.add("flash"); }
+  // 逗號／貼上整理類提醒：放在表格上方（#commaWarn），可按 ✕ 關閉（同時取消橘框）
+  function _commaHide(){ var cw=document.getElementById("commaWarn"); if(cw){ cw.style.display="none"; cw.innerHTML=""; } }
+  function _commaShow(html){ if(!html) return; var cw=document.getElementById("commaWarn")||picoWarn; if(!cw) return;
+    cw.innerHTML="\u26A0 "+html; cw.style.display="block";
+    if(cw.id==="commaWarn"){ var x=document.createElement("button"); x.type="button"; x.className="cwclose"; x.textContent="✕"; x.setAttribute("aria-label", isEn()?"Dismiss":"關閉提醒");
+      x.onclick=function(){ Array.prototype.forEach.call(picoBody.querySelectorAll("textarea.cellcomma"), function(t){ t.classList.remove("cellcomma"); }); _commaHide(); }; cw.appendChild(x); }
+    cw.classList.remove("flash"); void cw.offsetWidth; cw.classList.add("flash"); try{ cw.scrollIntoView({behavior:"smooth", block:"nearest"}); }catch(e){} }
   // 貼上逐行檢索式（Ovid、Embase、PubMed、WoS、Scopus、EBSCO、Cochrane 等）到英文同義詞欄：去行號、欄位碼、組合行；
   //   Ovid $ → *、adjN → 鄰(N−1)；NEAR/n、W/n、Nn 等原樣保留（依來源資料庫換算）；小寫 or/and/not → 大寫；
   //   整行被外層括號包住時去括號並依最外層 OR 拆成一行一個（內部分組括號保留）；控制詞彙行不自動歸欄，另外回傳原文
@@ -4067,7 +4076,7 @@ function befPluralOf(w){
     if(_anyBef && window._srShowBefore) window._srShowBefore();
     if(!picoBody.querySelector("tr")) seedEmpty();
     saveDraft(); offerRestore();
-    (function(){ var _cm=_commaScan("all"); if(_cm.length) _commaShow(_commaText(_cm)); })();
+    (function(){ var _cm=_commaScan("all"); if(_cm.length) _commaShow(_commaText(_cm)); else _commaHide(); })();
     var miss=[]; ["ft","mesh","emtree","cinahl"].forEach(function(k){ if(col[k]<0) miss.push(k); });
     var missZh={ft:"英文同義詞",mesh:"MeSH",emtree:"Emtree",cinahl:"CINAHL"};
     pasteMsg.style.color="#166534";
@@ -4338,28 +4347,32 @@ function befPluralOf(w){
         recordDocx={ buf:buf, name:(f.name||"SR檢索紀錄表.docx") };   // 保留原檔，供回填下載
         if(typeof updateRecordBtn==="function") updateRecordBtn();
         if(picoWarn) picoWarn.style.display="none";
-        var _cm=_commaScan("all"); if(_cm.length) _commaShow(_commaText(_cm));
+        var _cm=_commaScan("all"); if(_cm.length) _commaShow(_commaText(_cm)); else _commaHide();
       }catch(e){ srAlert((isEn()?"Read failed: ":"讀取失敗：")+e.message); }
       ev.target.value="";
     };
   }
 
-  $("#exBtn").onclick=function(){
+  // 載入範例：full＝含整理後；否則整理後留白（練習用「工具」整理）
+  function _loadExample(full){
     var hasContent = Array.prototype.some.call(picoBody.querySelectorAll("tr"), function(tr){ var r=tr._get&&tr._get(); return r && (r.zh||r.ft||r.mesh||r.emtree||r.cinahl); });
     if(hasContent && !srConfirm(isEn()?"Loading the example will replace the current table. Continue?":"載入範例會覆蓋目前表格內容，確認載入嗎？")) return;
-    srCount('pico-example','PICO-載入範例');
+    srCount(full?'pico-example-full':'pico-example', full?'PICO-載入範例(含整理後)':'PICO-載入範例');
     srcSel.value="embase_com"; levelSel.value="L1"; refreshLvlNote();
     picoBody.innerHTML="";
-    addRow("P",GDM_EX.P.zh,GDM_EX.P.ft,GDM_EX.P.mesh,GDM_EX.P.emtree,GDM_EX.P.cinahl, undefined, undefined, GDM_EX.P.before);
-    addRow("I",GDM_EX.I.zh,GDM_EX.I.ft,GDM_EX.I.mesh,GDM_EX.I.emtree,GDM_EX.I.cinahl, undefined, undefined, GDM_EX.I.before);
+    addRow("P",GDM_EX.P.zh,full?GDM_EX.P.ft:"",GDM_EX.P.mesh,GDM_EX.P.emtree,GDM_EX.P.cinahl, undefined, undefined, GDM_EX.P.before);
+    addRow("I",GDM_EX.I.zh,full?GDM_EX.I.ft:"",GDM_EX.I.mesh,GDM_EX.I.emtree,GDM_EX.I.cinahl, undefined, undefined, GDM_EX.I.before);
     addRow("C","",""); addRow("O","","");
+    if(!full && window._srShowBefore) window._srShowBefore();   // 只填整理前：確保整理前欄有顯示
     _exampleActive=true;   // 標記為「剛載入的範例」：清空時可直接清、不需確認
-  };
+  }
+  $("#exBtn").onclick=function(){ _loadExample(false); };
+  if($("#exBtnFull")) $("#exBtnFull").onclick=function(){ _loadExample(true); };
   // 載入範例為超連結（嵌在「填寫說明」標題右側）：點擊只載入、不展開說明；補鍵盤觸發
-  (function(){ var ex=$("#exBtn"); if(!ex) return;
+  ["#exBtn","#exBtnFull"].forEach(function(sel){ var ex=$(sel); if(!ex) return;
     ex.addEventListener("click", function(e){ e.preventDefault(); e.stopPropagation(); });
     ex.addEventListener("keydown", function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); e.stopPropagation(); ex.click(); } });
-  })();
+  });
   // 順序：填寫說明在上、貼上表格在下；且一次只展開一個（手風琴）
   (function(){ var fill=document.getElementById("fillHelp"), paste=document.getElementById("pasteBox");
     /* 填寫說明固定在自訂組合策略下方，不再搬到「貼上表格」上方（2026-11-02） */
@@ -6252,9 +6265,9 @@ window.SR_TOUR={ key:"pico_v1", video:"media/pico-demo.mp4", videoLen:{zh:"約 2
   { el:function(){ var s=document.getElementById("src"); return s&&s.closest(".panel"); },
     zh:{t:"① 起始與輸出資料庫", d:"<b>起始資料庫</b>：你的詞彙與標記依哪個資料庫寫（例如鄰近字的距離怎麼算）。<b>輸出資料庫</b>：勾選要產生語法的資料庫，可展開更多資料庫、日期限定與研究設計篩選。"},
     en:{t:"① Starting and output databases", d:"<b>Starting database</b>: the database your terms and marks are written for (e.g. how proximity distance is counted). <b>Output databases</b>: tick the ones to generate; expand for more databases, date limits and study-design filters."} },
-  { el:"#exBtn",
-    zh:{t:"第一次用？先載入範例", d:"按一下就會填入一個完整的範例，邊看邊學怎麼填。"},
-    en:{t:"New here? Load the example", d:"One click fills in a complete example so you can see how the table works."} },
+  { el:function(){ return [document.getElementById("exBtn"), document.getElementById("exBtnFull")].filter(Boolean); },
+    zh:{t:"第一次用？先載入範例", d:"<b>載入範例1</b>：只填好整理前，可以練習用「工具」整理到整理後。<b>載入範例2（含整理後）</b>：連整理後一起填好，直接看產生的檢索策略。"},
+    en:{t:"New here? Load the example", d:"<b>Load example 1</b> fills in the Before list only, so you can practise tidying it into After with Tools. <b>Load example 2 (with After)</b> fills in After too, so you can go straight to the generated strategies."} },
   { el:"#pasteBox > summary",
     zh:{t:"貼上表格", d:"用 AI 或 Excel／Word 整理好的詞彙表，可以整張貼上，自動對應到各欄；這裡也有 AI 提示詞範例。"},
     en:{t:"Paste a table", d:"Paste a whole term table from AI, Excel or Word and the columns are matched automatically. AI prompt examples are here too."} },
