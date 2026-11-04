@@ -4080,8 +4080,9 @@ function befPluralOf(w){
       _gwb=document.createElement("div"); _gwb.id="pasteGlueWarn"; _gwb.setAttribute("role","status");
       _gwb.style.cssText="display:flex;gap:10px;align-items:flex-start;margin:0 0 12px;padding:10px 14px;border:1px solid #E5C48A;background:#FFF7E8;color:#7A4A06;border-radius:10px;font-size:13.5px;line-height:1.65";
       var _gt=document.createElement("div"); _gt.style.flex="1 1 auto";
-      _gt.textContent=en?("⚠ Some cells look like several terms run together (the copied table lost its line breaks): "+_glued.join("; ")+". Terms ending in * and lower/upper-case joins were split automatically; please split the rest by hand (cells marked in orange), or ask the AI to separate the terms in each cell with “; ” and copy again. If everything is actually fine, click “Looks fine” to remove the orange marks.")
-                        :("⚠ 部分儲存格的詞彙似乎黏在一起（複製來源遺失了換行）："+_glued.join("；")+"。已自動拆開切截（*）結尾與大小寫交界的詞，其餘請手動分行（已以橘框標示）；或請您改要求 AI 每格以「; 」分隔詞彙後重新複製。確認沒問題的話，按「確認無誤」即可取消橘框。");
+      _gt.style.whiteSpace="pre-line";   /* 簡化版提醒：不列出哪一格（橘框已標示） */
+      _gt.textContent=en?"⚠ Please check the orange cells:\n• Some cells may contain several terms run together (the source was not split into lines). If it came from AI, ask the AI to separate the terms in each cell with “; ” and copy again, or edit them by hand.\n• If the terms are fine, click “Looks fine”."
+                        :"⚠ 橘框請確認：\n．部分儲存格的詞彙可能連成一串（複製來源未適當換行）。如為AI來源提供，可改要求 AI 每格以「; 」分隔詞彙後重新複製。或自行人工編輯調整。\n．若確認詞彙無問題，請按「確認無誤」。";
       var _gx=document.createElement("button"); _gx.type="button"; _gx.textContent="✕"; _gx.setAttribute("aria-label", en?"Dismiss":"關閉提醒");
       _gx.style.cssText="flex:0 0 auto;border:none;background:transparent;color:#7A4A06;font-size:15px;cursor:pointer;min-width:32px;min-height:32px;border-radius:6px";
       // 使用者確認無誤（或關閉提醒）：一併取消所有橘框標示
