@@ -47,6 +47,17 @@
   .autobar textarea{flex:1;min-width:280px;min-height:120px;line-height:1.6;font-family:"SF Mono",Consolas,monospace;font-size:13px}
   .gobtn{background:linear-gradient(180deg,#F1F4F6,#D7DEE3);color:#25292D;border:1px solid #BFC8CF;border-radius:8px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 2px 5px rgba(0,0,0,.08)}
   .gobtn:hover{background:linear-gradient(180deg,#F7F9FA,#CDD6DC)}
+  /* 自動分堆：與 PICO「生成檢索策略」同款（金黃漸層＋綠框＋滑過光澤） */
+  #splitBtn{background:linear-gradient(180deg,#FFF6C9 0%,#F6D86B 42%,#D8A93A 100%);color:#3A2B12;border:1px solid #7c9a7c;border-radius:10px;box-shadow:inset 0 1px 0 rgba(255,255,255,.82),0 4px 10px rgba(184,135,35,.22),0 0 0 1px rgba(255,244,200,.22);text-shadow:0 1px 0 rgba(255,255,255,.35);letter-spacing:.2px;position:relative;overflow:hidden;transition:background .15s,box-shadow .15s,transform .05s}
+  #splitBtn:hover{background:linear-gradient(180deg,#FFF9DC 0%,#F9E189 40%,#E2B84A 100%);border-color:#7c9a7c;color:#33250F;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 6px 14px rgba(184,135,35,.28),0 0 14px rgba(244,210,88,.18);transform:translateY(-1px)}
+  #splitBtn:active{transform:translateY(1px);box-shadow:inset 0 2px 4px rgba(120,80,10,.12),0 2px 6px rgba(184,135,35,.20)}
+  #splitBtn::before{content:"";position:absolute;inset:1px;border-radius:9px;background:linear-gradient(120deg,rgba(255,255,255,0) 20%,rgba(255,255,255,.42) 42%,rgba(255,255,255,0) 60%);transform:translateX(-135%);transition:transform .7s ease;pointer-events:none}
+  #splitBtn:hover::before{transform:translateX(135%)}
+  /* 清空：只有垃圾桶圖示，不做按鈕外框 */
+  .autobar .autoside{align-self:stretch}
+  #clearBtn{margin-top:auto;align-self:flex-start;margin-left:-6px;display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;padding:0;border:none;background:transparent;color:#A3ADA8;cursor:pointer;border-radius:6px;box-shadow:none}   /* 低調：貼在輸入框右側最下方 */
+  #clearBtn:hover,#clearBtn:focus-visible{color:#c0392b}
+  #clearBtn svg{width:17px;height:17px}
   .review{margin-top:12px;font-size:12.5px;color:var(--mut)}
   .review table{border-collapse:collapse;width:100%;margin-top:6px}
   .review td{border:1px solid var(--line);padding:5px 9px;vertical-align:top}
@@ -150,6 +161,14 @@
   .exnote b{display:block;color:var(--sh-green-d);font-size:13px;margin-bottom:2px}
   .tippanel ul{margin:6px 0 0;padding-left:18px;font-size:12.5px;color:#4b5650;line-height:1.65}
   .tippanel li{margin:0 0 6px}
+  /* 系統分堆規則：預設縮起，點標題展開 */
+  .tippanel>details>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;user-select:none}
+  .tippanel>details>summary::-webkit-details-marker{display:none}
+  .tippanel>details>summary::before{content:"";flex:0 0 auto;width:7px;height:7px;border-right:2px solid #7d8a93;border-bottom:2px solid #7d8a93;transform:rotate(-45deg);transition:transform .15s}
+  .tippanel>details[open]>summary::before{transform:rotate(45deg)}
+  .tippanel>details>summary h2{margin:0}
+  .tippanel>details>summary:hover h2{color:#0f766e}
+  .tippanel>details[open]>summary{margin-bottom:4px}
   .tippanel li b{color:var(--sh-ink)}
   body.en .tippanel ul.blk[data-en]{display:block}
   .bP{background:#E3EFE8;color:#1F4538}
@@ -160,7 +179,8 @@
   .g1hd{display:none;font-size:13px;color:var(--mut);margin:10px 0 0;align-items:center;gap:8px}
   .g1hd b{color:var(--sh-green-d);font-size:13.5px}
   #step2.grouped .g1hd{display:flex}
-  .g2hd .copy{margin-left:auto}
+  .g1hd .gx{margin-left:auto;width:28px;height:28px;border:none;background:transparent;color:var(--mut);font-size:15px;line-height:1;cursor:pointer;border-radius:6px}
+  .g1hd .gx:hover,.g1hd .gx:focus-visible{color:#c0392b;background:rgba(192,57,43,.08)}
   .gor{text-align:center;font-weight:800;color:var(--ok);font-size:13px;margin:14px 0 0;letter-spacing:1px}
   .review td.ghd{background:#F4F6F3;font-weight:700;color:var(--sh-green-d)}
   .cmpgl{font-size:11.5px;font-weight:700;color:var(--sh-green-d);margin-top:2px}
@@ -266,10 +286,10 @@
     <div class="sub" data-zh>每行一個詞（逗號不會拆成兩個詞）。自動合併字根、保留縮寫；品牌名、括號註記、逗號倒裝與頭尾修飾字會自動整理，未納入的字列在下方可加回。同時比較可用的堆數（依最長片語的字數，最多四堆；結構混合時另給分組），先套用最吻合的一種。</div>
     <div class="sub" data-en>One term per line (commas never split a term). Roots are merged and abbreviations kept; brand names, bracketed notes, inverted terms and edge qualifiers are cleaned automatically, and anything left out is listed below to add back. Compares the usable stack counts (up to the longest phrase, max 4; plus a grouped option for mixed structures) and applies the best fit.</div>
     <div class="autobar">
-      <textarea id="before" spellcheck="false" placeholder="GDM&#10;gestational diabetes mellitus&#10;gestational diabetes&#10;gestational DM&#10;diabetes in pregnancy&#10;pregnancy-induced diabetes&#10;pregnancy associated diabetes&#10;diabetes mellitus gravidarum"></textarea>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <button class="gobtn" onclick="autoSplit()"><span data-zh>自動分堆 →</span><span data-en>Auto-split →</span></button>
-        <button class="gobtn" style="background:linear-gradient(180deg,#FBFCFC,#E8EDF0);color:#25292D;border:1px solid #CCD4DA;font-weight:600" onclick="clearProx()"><span data-zh>清空</span><span data-en>Clear</span></button>
+      <textarea id="before" spellcheck="false"></textarea>
+      <div class="autoside" style="display:flex;flex-direction:column;gap:8px">
+        <button class="gobtn" id="splitBtn" onclick="autoSplit()"><span data-zh>自動分堆 →</span><span data-en>Auto-split →</span></button>
+        <button type="button" id="clearBtn" onclick="clearProx()" title="清空 / Clear" aria-label="清空 / Clear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4.5A1.5 1.5 0 0 1 9.5 3h5A1.5 1.5 0 0 1 16 4.5V6"/><path d="M5.5 6l1 13.5A1.5 1.5 0 0 0 8 21h8a1.5 1.5 0 0 0 1.5-1.5L18.5 6"/><path d="M10 10.5v6M14 10.5v6"/></svg></button>
       </div>
     </div>
     <div id="splitHint"></div>
@@ -287,11 +307,11 @@
   <div class="panel" id="step2">
     <h2><span data-zh>② 詞堆（可手動編輯）</span><span data-en>② Stacks (editable)</span><span class="h2note"><span data-zh>每行一詞 = OR</span><span data-en>one per line = OR</span></span></h2>
     <div id="stackTip"></div>
-    <div class="g1hd"><b><span data-zh>第一組</span><span data-en>Group 1</span></b><span id="g1n"></span></div>
+    <div class="g1hd"><b><span data-zh>第一組</span><span data-en>Group 1</span></b><span id="g1n"></span><button type="button" class="gx" onclick="removeGroup(1)" title="移除第一組 / Remove group 1" aria-label="移除第一組 / Remove group 1">✕</button></div>
     <div class="stackset" id="stackset"></div>
     <div id="g2wrap" style="display:none">
       <div class="gor">OR</div>
-      <div class="g1hd g2hd"><b><span data-zh>第二組</span><span data-en>Group 2</span></b><span id="g2n"></span><button class="copy" onclick="removeGroup2()"><span data-zh>移除第二組</span><span data-en>Remove group 2</span></button></div>
+      <div class="g1hd g2hd"><b><span data-zh>第二組</span><span data-en>Group 2</span></b><span id="g2n"></span><button type="button" class="gx" onclick="removeGroup(2)" title="移除第二組 / Remove group 2" aria-label="移除第二組 / Remove group 2">✕</button></div>
       <div class="stackset" id="stackset2"></div>
     </div>
     <div class="solowrap">
@@ -307,7 +327,7 @@
   <aside class="pxside">
     <div class="panel expanel">
       <h2 style="display:flex;align-items:baseline;justify-content:space-between;gap:10px"><span><span data-zh>範例</span><span data-en>Examples</span></span><a class="gamelink" href="proximity-game.html"><span data-zh>練習：闖關遊戲 →</span><span data-en>Practice game →</span></a></h2>
-      <div class="sub"><span data-zh>點一下即載入並自動分堆</span><span data-en>Click to load and auto-split</span></div>
+      <div class="sub"><span data-zh>點一下即載入，試試看「自動分堆」</span><span data-en>Click to load, then try “Auto-split”</span></div>
       <button class="excard" onclick="loadEx(2)"><span class="exn"><span data-zh>二堆</span><span data-en>2 stacks</span></span><span class="ext"><b><span data-zh>妊娠糖尿病</span><span data-en>Gestational diabetes</span> GDM</b><i><span data-zh>時期 × 疾病；縮寫 GDM 單獨保留</span><span data-en>Period × disease; abbreviation GDM kept separate</span></i></span></button>
       <button class="excard" onclick="loadEx(3)"><span class="exn"><span data-zh>二堆＋三堆</span><span data-en>2 + 3</span></span><span class="ext"><b><span data-zh>中央靜脈導管</span><span data-en>Central venous catheter</span> CVC</b><i><span data-zh>37 個詞混了品牌名、括號註記、逗號倒裝與修飾字；縮寫片語與 central line 做二堆，其餘做三堆</span><span data-en>37 terms mixing brand names, bracketed notes, inverted terms and qualifiers; abbreviation phrases + central line as 2 stacks, the rest as 3</span></i></span></button>
       <button class="excard" onclick="loadEx(3,'icu')"><span class="exn"><span data-zh>二堆＋三堆</span><span data-en>2 + 3</span></span><span class="ext"><b><span data-zh>加護病房</span><span data-en>Intensive care unit</span> ICU</b><i><span data-zh>結構混合的分組示範：critical care／intensive care 做二堆，respiratory／coronary care unit 做三堆，再 OR 合併</span><span data-en>Mixed structures: critical care / intensive care as 2 stacks, respiratory / coronary care unit as 3 stacks, then OR-ed</span></i></span></button>
@@ -316,8 +336,8 @@
         <span data-zh>工具只看字面與字的位置，不懂詞義，請逐堆檢查、手動搬字。例如中央靜脈導管範例中，access 被放到堆2（與 venous 同堆），但 central venous access device 的 access 其實和 catheter、device 同一類，應自己移到堆3。</span>
         <span data-en>The tool only sees spelling and word position, not meaning — check each stack and move words yourself. In the CVC example, access lands in stack 2 (with venous), but in “central venous access device” it belongs with catheter / device, so move it to stack 3.</span></div>
     </div>
-    <div class="panel tippanel">
-      <h2><span data-zh>系統分堆規則</span><span data-en>How the auto-split works</span></h2>
+    <div class="panel tippanel"><details id="ruleAcc">
+      <summary><h2><span data-zh>系統分堆規則</span><span data-en>How the auto-split works</span></h2></summary>
       <ul class="blk" data-zh>
         <li><b>重複出現才算核心字：</b>在 2 行以上出現的字才進詞堆。</li>
         <li><b>括號註記忽略：</b>Careflow (central venous catheter) 只取 Careflow。</li>
@@ -340,7 +360,7 @@
         <li><b>Mixed structures → groups:</b> with both 2-word (critical care) and 3-word (respiratory care unit) terms, an extra “2 + 3 stacks (grouped)” option appears: each group is stacked separately, then OR-ed.</li>
         <li><b>Short words: no truncation, plural added:</b> if truncation would leave fewer than 5 letters (vein, line, cath) the word is kept whole, so nothing like cath* is produced; words of 4 letters or fewer get a plural added.</li>
       </ul>
-    </div>
+    </details></div>
   </aside>
 </main>
 <footer class="shfoot"><div class="shfoot-in">
@@ -407,8 +427,8 @@ var EX_BY_N={
 };
 window.loadExample=function(){ beforeTa.value=EX_BY_N[nSel.value]||EX_BY_N["2"]; autoSplit(); };
 var EX_MORE={icu:{n:3,text:"ICU\nICUs\ncritical care\ncritically ill\ncritical illness\ncritically ill patient\nintensive care\nintensive therapy unit\nintensive treatment unit\nrespiratory care unit\nrespiratory care units\ncoronary care unit\nspecial care unit\nintensive care department"}};
-window.loadEx=function(n,key){ var ex=key&&EX_MORE[key]; if(ex) n=ex.n; srCount('prox-example-'+(key||n),'鄰近字-範例'+(key||n+'堆')); nSel.value=String(n); renderStacks(); if(soloIn) soloIn.placeholder=""; beforeTa.value=ex?ex.text:EX_BY_N[String(n)]; autoSplit();
-  if(window.innerWidth<1000){ var s1=document.getElementById("step1"); if(s1) s1.scrollIntoView({behavior:"smooth",block:"start"}); } };
+window.loadEx=function(n,key){ var ex=key&&EX_MORE[key]; if(ex) n=ex.n; srCount('prox-example-'+(key||n),'鄰近字-範例'+(key||n+'堆')); nSel.value=String(n); resetResults(); renderStacks(); if(soloIn) soloIn.placeholder=""; beforeTa.value=ex?ex.text:EX_BY_N[String(n)]; resultsStale=false;   /* 只載入 Before 清單，不自動分堆；讓使用者自己按「自動分堆」 */
+  var s1=document.getElementById("step1"); if(s1) s1.scrollIntoView({behavior:"smooth",block:"start"}); };
 window.clearProx=function(){
   if(soloIn){ soloIn.value=""; soloIn.placeholder=""; }   // 連同 placeholder 一起清（避免殘留灰字 GDM）
   stackEls.forEach(function(t){ t.value=""; });            // 清空各詞堆內容
@@ -513,7 +533,6 @@ function renderStacks(){
     stackEls.push(ta);
   }
   refreshStackTargets(); if(typeof updateGroupLabels==="function") updateGroupLabels();
-  if(typeof EX_BY_N!=="undefined" && beforeTa) beforeTa.placeholder=(EX_BY_N[nSel.value]||EX_BY_N["2"]);
   build();
 }
 
@@ -1093,6 +1112,19 @@ function updateGroupLabels(){
   if(b) b.textContent=stackEls2.length?(en?(" ("+stackEls2.length+" stacks)"):("（"+NUMZH[stackEls2.length]+"堆）")):"";
 }
 window.removeGroup2=function(){ renderStacks2(0); };
+/* 移除第一組或第二組（✕）：先確認，提醒無法復原；移除第一組時，第二組遞補為第一組 */
+window.removeGroup=function(k){
+  if(!stackEls2.length) return;
+  var en=isEn();
+  var msg=en?("Remove group "+k+"? Its stacks will be deleted. This cannot be undone."):("確定移除第"+(k===1?"一":"二")+"組？該組的詞堆會一併刪除，無法復原。");
+  if(!window.confirm(msg)) return;
+  if(k===1){
+    var v2=stackEls2.map(function(t){ return t.value; });
+    nSel.value=String(Math.min(4,Math.max(2,v2.length))); renderStacks();
+    stackEls.forEach(function(t,i){ t.value=v2[i]||""; });
+  }
+  renderStacks2(0);
+};
 
 /* ---------- 精簡建議：整堆都是泛用詞（disease、disorder、patient…）時，建議移除 ----------
    例：chronic × obstructive × (pulmonary…) × (disease / disorder) — 前 3 堆已具代表性，
@@ -1173,6 +1205,7 @@ function resetResults(){
   stackEls.forEach(function(t){ t.value=""; });
   removedWords=[];
   ["review","removedBox","splitHint","stackTip"].forEach(function(id){ var e=document.getElementById(id); if(e) e.innerHTML=""; });
+  if(typeof accSync==="function"){ accSync("accReview", false, ""); accSync("accCmp", false, ""); }   // 一併收起「分群檢視／堆數比較」
   lastCmp=null; appliedKey=null;
   renderStacks2(0);
   if(outs) outs.innerHTML="";
@@ -1261,7 +1294,7 @@ distSel.addEventListener("change",function(){build();renderCompare();});
 orderSel.addEventListener("change",build);
 nSel.addEventListener("change",renderStacks);
 soloIn.addEventListener("input",build);
-seed();
+renderStacks();   /* 預設空白，不載入任何範例（需要時按下方「範例」） */
 updatePicoBar();
 /* 網址帶入：?n=2&before=…（例如從縮寫片語提醒開新分頁） */
 (function(){ try{ var q=new URLSearchParams(location.search); var sv=q.get("src");
@@ -1488,16 +1521,16 @@ window.toggleLang=function(){
     { el:"#solo",
       zh:{t:"單獨保留", d:"縮寫或不適合拆開的詞放這裡（例：GDM），會用 OR 併入結果。"},
       en:{t:"Kept as is", d:"Abbreviations or terms that shouldn’t be split (e.g. GDM) go here and are ORed into the result."} },
-    { el:"#outs",
+    { el:"#outs", before:function(){ /* 預設空白：導覽到這一步若還沒有結果，先放入二堆範例示範 */ if(outs && !outs.children.length && !stackEls.some(function(t){ return t.value.trim(); }) && beforeTa && !beforeTa.value.trim()){ beforeTa.value=EX_BY_N["2"]; autoSplit(); } },
       zh:{t:"檢索式結果", d:"<b>換行整理版</b>可以<b>送到 PICO</b> 的英文同義詞；<b>單行版</b>可以<b>送到轉換器</b>，換成其他資料庫的語法。"},
       en:{t:"Results", d:"The <b>line-by-line</b> version can be <b>sent to PICO</b>; the <b>single-line</b> version can be <b>sent to the converter</b> for other databases."} },
     { el:".expanel",
-      zh:{t:"範例", d:"點一下就載入並自動分堆，看看不同主題怎麼分成二堆、三堆或四堆。"},
-      en:{t:"Examples", d:"Click one to load and auto-split it, and see how different topics split into two, three or four stacks."} },
+      zh:{t:"範例", d:"點一下就把 Before 清單載入上方，再按<b>自動分堆</b>，看看不同主題怎麼分成二堆、三堆或四堆。"},
+      en:{t:"Examples", d:"Click one to load its Before list above, then press <b>Auto-split</b> to see how different topics split into two, three or four stacks."} },
     { el:".gamelink",
       zh:{t:"練習：闖關遊戲", d:"還不熟怎麼分堆？先玩<b>闖關遊戲</b>：共 5 關（手部衛生、妊娠糖尿病、加護病房、COPD、中央靜脈導管），把詞拆成單字、拖到對的堆，「不需要」的字（贅字、重複、已被涵蓋）放一邊；過關後還能看看哪些文章找得到，並比較片語與鄰近字的實際檢索。"},
       en:{t:"Practice game", d:"New to splitting? Try the <b>practice game</b>: 5 levels (hand hygiene, gestational diabetes, ICU, COPD, central venous catheter). Break terms into words, drag them into the right stacks and set aside what isn’t needed (filler, duplicates, already covered); then see which articles each search finds and compare phrase vs proximity searching."} },
-    { el:".tippanel",
+    { el:".tippanel", before:function(){ var d=document.getElementById("ruleAcc"); if(d) d.open=true; },
       zh:{t:"系統分堆規則", d:"工具只看字面與字的位置，不懂詞義；這裡列出自動分堆的規則，請依主題自己檢查調整。"},
       en:{t:"How auto-split works", d:"The tool only looks at words and positions, not meaning; these are its rules — always check the stacks for your topic."} },
     { el:".srtour-btn",
