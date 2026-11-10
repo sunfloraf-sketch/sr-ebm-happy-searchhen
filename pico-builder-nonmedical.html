@@ -2391,7 +2391,7 @@ if (typeof module !== "undefined" && module.exports) {
     function sizeCols(force){
       var table=document.querySelector("table.pico"); if(!table) return;
       var head=table.querySelector("thead tr"); if(!head) return;
-      var total=Math.round(table.getBoundingClientRect().width); if(!total) return;
+      var box=table.parentElement, bcs=box?getComputedStyle(box):null, total=box?Math.floor(box.clientWidth-parseFloat(bcs.paddingLeft||0)-parseFloat(bcs.paddingRight||0)):0; if(!total) return;   /* 用外框寬度，不用表格本身寬度：避免設寬→表格變寬→再設寬的循環 */
       var ths=Array.prototype.slice.call(head.children), vis=[];
       ths.forEach(function(th,i){ if(i===0||i===ths.length-1) return; var w=weight(th); if(!w) return; if(getComputedStyle(th).display==="none") return; vis.push({th:th,w:w}); });
       var sig=total+"|"+vis.map(function(x){ return x.th.className; }).join(",");
@@ -2403,10 +2403,10 @@ if (typeof module !== "undefined" && module.exports) {
     window._srSizeCols=sizeCols;
     var _t; function later(){ clearTimeout(_t); _t=setTimeout(function(){ sizeCols(); }, 30); }
     window.addEventListener("resize", later);
-    try{
-      new MutationObserver(later).observe(document.body, {attributes:true, attributeFilter:["class"]});
-      var thead=document.querySelector("table.pico thead"); if(thead) new MutationObserver(later).observe(thead, {attributes:true, attributeFilter:["style"], childList:true, subtree:true});
-    }catch(e){}
+    /* 只在「欄位顯示／隱藏、輸出資料庫、自訂庫名」改變時重算（不監看表頭 style，避免自我觸發） */
+    try{ new MutationObserver(later).observe(document.body, {attributes:true, attributeFilter:["class"]}); }catch(e){}
+    document.addEventListener("change", function(e){ var t=e.target; if(t && t.closest && (t.closest("#dbchecks")||t.closest("#colPop"))) later(); });
+    document.addEventListener("input", function(e){ if(e.target && e.target.id==="customDbName") later(); });
     sizeCols(true);
   })();
 
