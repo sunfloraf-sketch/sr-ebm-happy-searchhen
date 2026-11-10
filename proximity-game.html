@@ -468,10 +468,10 @@ var LEVELS=[
      {t:"Gestagen therapy in diabetic women",hit:false,why:{zh:"gestagen 不是 gestation*（字根不同）；若切成 gest* 就會誤找到它。",en:"gestagen doesn’t match gestation* (different stem) — a short gest* would have pulled it in."}},
      {t:"GDM screening in primary care",hit:true,why:{zh:"GDM 單獨保留，以 OR 併入，直接找到。",en:"GDM is OR-ed in on its own, so it matches directly."}}]}
  },
- { id:"icu", n:1, stacks:3, stackNames:[{zh:"加護／重症",en:"Intensive / critical"},{zh:"照護／治療",en:"Care / therapy"},{zh:"病房",en:"Unit"}],
+ { id:"icu", n:1, stacks:3, stackNames:[{zh:"加護／重症",en:"Intensive / critical"},{zh:"照護／治療",en:"Care / therapy"},{zh:"病房／部門",en:"Unit / department"}],
    name:{zh:"加護病房",en:"Intensive care unit"},
-   mission:{zh:"三個字的詞就做三堆：「加護／重症」×「照護／治療」×「病房」。小心太短的切截。",en:"Three-word terms make three stacks: intensive/critical × care/therapy × unit. Careful with short truncations."},
-   before:["intensive care unit","intensive care units","critical care unit","intensive therapy unit","ICU","ICUs"],
+   mission:{zh:"三個字的詞就做三堆：「加護／重症」×「照護／治療」×「病房／部門」。小心太短的切截。",en:"Three-word terms make three stacks: intensive/critical × care/therapy × unit/department. Careful with short truncations."},
+   before:["intensive care unit","intensive care units","critical care unit","intensive therapy unit","intensive care departments","ICU","ICUs"],
    tiles:[
     {w:"intensive",bin:"s1",forms:["intensive","intensiv*"],ok:[0,1],why:{zh:"intensive 或 intensiv* 都可以。",en:"intensive or intensiv* both work."}},
     {w:"critical",bin:"s1",forms:["critical","critic*"],ok:[0],why:{zh:"critic* 會找到 critic、criticism，不要切。",en:"critic* finds critic and criticism — don’t truncate."}},
@@ -479,6 +479,7 @@ var LEVELS=[
     {w:"therapy",bin:"s2",forms:["therapy","therap*"],ok:[1],why:{zh:"therap* 涵蓋 therapy、therapies、therapeutic。",en:"therap* covers therapy, therapies, therapeutic."}},
     {w:"unit",okWith:{f:[0],w:["units"]},bin:"s3",forms:["unit","unit*","unit OR units"],ok:[2],why:{zh:"unit* 會找到 united、unity；短字改補複數 unit OR units。",en:"unit* finds united and unity; use unit OR units for short words."}},
     {w:"units",alt:"unit",bin:"drop",forms:["units"],ok:[0],why:{zh:"unit 寫成 unit OR units 時就不用再列；或 unit、units 兩張都放同一堆。",en:"Not needed once unit is written as unit OR units — or put both in the same stack."}},
+    {w:"departments",bin:"s3",forms:["departments","department*","department OR departments"],ok:[1,2],why:{zh:"department 是長字，可切截 department*（涵蓋 department、departments、departmental）；寫 department OR departments 也可以。",en:"department is a long word, so department* is fine (covers department, departments, departmental); department OR departments also works."}},
     {w:"ICU",okWith:{f:[0],w:["ICUs"]},bin:"keep",forms:["ICU","ICU OR ICUs"],ok:[1],why:{zh:"縮寫單獨保留，並補上複數 ICUs。",en:"Keep the abbreviation separate and add the plural ICUs."}},
     {w:"ICUs",alt:"ICU",bin:"drop",forms:["ICUs"],ok:[0],why:{zh:"ICU 寫成 ICU OR ICUs 時就不用再列；或 ICU、ICUs 兩張都放「單獨保留」。",en:"Not needed once ICU is written as ICU OR ICUs — or put both in “Keep separate”."}}
    ],
@@ -600,7 +601,13 @@ function tokenize(ph){ var parts=ph.split(/(\s+|-|,\s*)/), out=[];
   parts.forEach(function(x){ if(!x) return; if(/^\s+$/.test(x)) out.push({sp:true}); else if(x==="-"||/^,/.test(x)) out.push({sep:x.trim()||x}); else out.push({w:x}); });
   return out; }
 function levelWords(lv){ var order=[], freq={}; lv.before.forEach(function(ph){ var seen={}; tokenize(ph).forEach(function(t){ if(!t.w) return; if(!(t.w in freq)){ freq[t.w]=0; order.push(t.w); } if(!seen[t.w]){ seen[t.w]=1; freq[t.w]++; } }); }); return {order:order,freq:freq}; }
+/* 拖曳殘影清除：手機上拖曳途中被捲動／切換關卡打斷時，複製出來的字卡（.ghost）可能沒被移除而一直浮在畫面上 */
+function clearGhosts(){ document.querySelectorAll(".ghost").forEach(function(g){ g.remove(); }); document.querySelectorAll("#scrLevel .tile.dragging").forEach(function(t){ t.classList.remove("dragging"); }); if(typeof hiliteBin==="function") hiliteBin(null); }
+["pointerup","pointercancel"].forEach(function(ev){ document.addEventListener(ev, function(){ setTimeout(function(){ if(!document.querySelector("#scrLevel .tile.dragging")) document.querySelectorAll(".ghost").forEach(function(g){ g.remove(); }); }, 0); }, true); });
+document.addEventListener("visibilitychange", function(){ if(document.hidden) clearGhosts(); });
+window.addEventListener("blur", clearGhosts);
 function startLevel(i, skipIntro){
+  clearGhosts();
   var lv=LEVELS[i], lw=levelWords(lv), idx={};
   lv.tiles.forEach(function(t,k){ idx[t.w]=k; });
   var order=lw.order.map(function(w){ return idx[w]; }).filter(function(k){ return k!=null; });
@@ -661,7 +668,7 @@ function runSplit(){
   function land2(k){ var el=tiles[k]; if(el){ el.classList.remove("pending"); } }
 }
 $("splitBtn").onclick=runSplit;
-function backToMap(){ closePop(); $("scrLevel").hidden=true; $("scrMap").hidden=false; S=null; renderMap(); window.scrollTo(0,0); }
+function backToMap(){ clearGhosts(); closePop(); $("scrLevel").hidden=true; $("scrMap").hidden=false; S=null; renderMap(); window.scrollTo(0,0); }
 $("backMap").onclick=backToMap;
 $("resetLv").onclick=function(){ if(S) startLevel(S.i, true); };
 
@@ -737,6 +744,7 @@ function bindTile(el,k){
   }
   el.addEventListener("pointerup",function(e){ end(e,false); });
   el.addEventListener("pointercancel",function(e){ end(e,true); });
+  el.addEventListener("lostpointercapture",function(e){ end(e,true); });   // 字卡在拖曳中被重畫或系統接手觸控時，也要收掉殘影
   el.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); toggleSel(k); } });
 }
 function binAt(x,y){ var e=document.elementFromPoint(x,y); return e&&e.closest? e.closest("#scrLevel .bin") : null; }
