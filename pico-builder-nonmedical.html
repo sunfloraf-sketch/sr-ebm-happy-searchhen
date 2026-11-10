@@ -503,6 +503,11 @@
   window.srNcbi={ fetch: ncbiFetch };
 })();
 </script>
+<style>
+  .pcopy{display:inline;margin:0;padding:1px 9px;border:1px solid #9BB9B3;border-radius:999px;background:#EDF7F5;color:#0f766e;font:inherit;font-size:12px;font-weight:600;cursor:pointer;vertical-align:baseline}
+  .pcopy:hover{background:#DCEFEA}
+  .pcopy.done{background:#0f766e;color:#fff;border-color:#0f766e}
+</style>
 </head>
 <body>
 <header class="sh">
@@ -611,8 +616,8 @@
       <summary style="cursor:pointer;font-weight:700;font-size:13px;color:#0f766e"><span data-zh>貼上表格（➜ 參考 AI 提示詞範例）</span><span data-en>Paste a table (➜ see AI prompt example)</span></summary>
       <div style="margin-top:8px">
         <div class="sub" style="font-size:12px;color:var(--mut);margin-bottom:6px">
-          <span data-zh><div>‧ <a href="https://chatgpt.com/share/6ab1b85c-35cc-83ee-9424-29e95ff41d2d" target="_blank" rel="noopener">開啟 ChatGPT 提示詞範例 ↗</a>（優先使用 ChatGPT 或 Claude，登入帳號效果較佳）</div><div>‧ 從 ChatGPT 等複製整個表格後，於下方框按 <b>Ctrl+V</b> 貼上，工具會依欄位標題自動對應，並填入下方 PICO 表（亦可從 Word／Excel 複製後貼上）</div><div>‧ 表格請含一列標題（概念／中文／英文／ASC／BSC／ERIC／Compendex／IEEE／PQDT 等控制詞彙欄。不需要的欄位可不提供；順序不拘）</div><div style="color:var(--mut);padding-left:1.2em">（控制詞彙欄可直接填詞，或含欄位語法如 DE "…" OR …；貼上後對應到的資料庫欄會自動顯示。不同複製方式填入效果可能有差異；含合併／巢狀儲存格的複雜表格，貼上後請檢查並自行調整）</div></span>
-          <span data-en><div>‧ <a href="https://chatgpt.com/share/6ab1b85c-35cc-83ee-9424-29e95ff41d2d" target="_blank" rel="noopener">Open ChatGPT prompt example ↗</a> (ChatGPT or Claude works best; signing in helps)</div><div>‧ Copy the whole table from ChatGPT etc., click the box below and press <b>Ctrl+V</b>; columns are auto-mapped by header and fill the PICO table below (Word / Excel also work)</div><div>‧ Include a header row (Concept / Chinese / English / ASC / BSC / ERIC / Compendex / IEEE / PQDT controlled-vocab columns; omit columns you don't need; any order)</div><div style="color:var(--mut);padding-left:1.2em">(Controlled-vocab cells may be plain terms or include field syntax like DE "…" OR …; databases that get data are revealed automatically. Results may vary with different copy methods; for complex tables with merged/nested cells, check the filled result and adjust as needed.)</div></span>
+          <span data-zh><div>‧ <a href="https://chatgpt.com/share/6ab1b85c-35cc-83ee-9424-29e95ff41d2d" target="_blank" rel="noopener">開啟 ChatGPT 提示詞範例 ↗</a> 或 直接複製提示詞：<button type="button" class="pcopy" data-pcopy="pico">PICO 架構</button> <button type="button" class="pcopy" data-pcopy="nopico">非 PICO 架構</button>（優先使用 ChatGPT 或 Claude，登入帳號效果較佳）</div><div>‧ 從 ChatGPT 等複製整個表格後，於下方框按 <b>Ctrl+V</b> 貼上，工具會依欄位標題自動對應，並填入下方 PICO 表（亦可從 Word／Excel 複製後貼上）</div><div>‧ 表格請含一列標題（概念／中文／英文／ASC／BSC／ERIC／Compendex／IEEE／PQDT 等控制詞彙欄。不需要的欄位可不提供；順序不拘）</div><div style="color:var(--mut);padding-left:1.2em">（控制詞彙欄可直接填詞，或含欄位語法如 DE "…" OR …；貼上後對應到的資料庫欄會自動顯示。不同複製方式填入效果可能有差異；含合併／巢狀儲存格的複雜表格，貼上後請檢查並自行調整）</div></span>
+          <span data-en><div>‧ <a href="https://chatgpt.com/share/6ab1b85c-35cc-83ee-9424-29e95ff41d2d" target="_blank" rel="noopener">Open ChatGPT prompt example ↗</a> or copy a prompt: <button type="button" class="pcopy" data-pcopy="pico">PICO framework</button> <button type="button" class="pcopy" data-pcopy="nopico">non-PICO</button> (ChatGPT or Claude works best; signing in helps)</div><div>‧ Copy the whole table from ChatGPT etc., click the box below and press <b>Ctrl+V</b>; columns are auto-mapped by header and fill the PICO table below (Word / Excel also work)</div><div>‧ Include a header row (Concept / Chinese / English / ASC / BSC / ERIC / Compendex / IEEE / PQDT controlled-vocab columns; omit columns you don't need; any order)</div><div style="color:var(--mut);padding-left:1.2em">(Controlled-vocab cells may be plain terms or include field syntax like DE "…" OR …; databases that get data are revealed automatically. Results may vary with different copy methods; for complex tables with merged/nested cells, check the filled result and adjust as needed.)</div></span>
         </div>
         <textarea id="pasteZone" spellcheck="false" rows="4" style="width:100%" placeholder="在此按 Ctrl+V 貼上表格"></textarea>
         <div id="pasteMsg" style="font-size:12.5px;margin-top:6px"></div>
@@ -4314,6 +4319,34 @@ if (typeof module !== "undefined" && module.exports) {
   window._srFitAll=function(force){ if(force) sig=new WeakMap(); fitAll(); };
   setInterval(fitAll, 400);          // 載入範例、貼上、複製到整理後等程式填值時也會自動跟上
   fitAll();
+})();
+</script>
+<script>
+/* 貼上表格說明：「直接複製提示詞」PICO 架構／非 PICO 架構（依目前介面語言複製中文或英文版；題目：微機電軸承與軸封的潤滑與磨潤） */
+(function(){
+  var P={"pico_zh": "任務\n請整理下列研究題目進行書目資料庫檢索時可使用的檢索詞。\n\n研究題目\n微機電（MEMS）軸承與軸封的潤滑與磨潤：不同潤滑方式能否降低摩擦與磨耗、延長元件壽命？\n\n輸出格式\n請以「一張大表格」呈現 PICO（或其他變形，如 PCC），欄位包含：\nPICO｜概念｜中文同義詞｜英文同義詞｜Ei Compendex｜IEEE\n要求：\n\n* 同一儲存格內每個詞彙必須各佔一行，請使用 `<br>` 強制換行\n* 工程題目可以這樣對應：P＝研究的元件或系統（如微機電軸承、軸封），I＝潤滑方式，C＝比較對象（沒有可留空），O＝摩擦、磨耗等磨潤表現\n* 若同一 PICO 有不同子概念，可分列呈現，但不要將子概念切得太細。\n\n\n控制詞彙查證\n\n* Ei Compendex 請用 Ei Thesaurus 的控制詞彙（Controlled terms）；IEEE 請用 IEEE Thesaurus 的詞彙，不可僅依模型記憶推測：\nhttps://www.ieee.org/publications/services/thesaurus-thank-you\n* 盡量從可靠來源蒐集，但不須加註查證結果，我另有驗證方式", "nopico_zh": "任務\n請整理下列研究題目進行書目資料庫檢索時可使用的檢索詞。\n\n研究題目\n微機電（MEMS）軸承與軸封的潤滑與磨潤\n\n輸出格式\n請不要套用 PICO，改把題目拆成 2～4 個主要概念，以「一張大表格」呈現，欄位包含：\n概念｜中文同義詞｜英文同義詞｜Ei Compendex｜IEEE\n要求：\n\n* 每個概念一列，「概念」欄填 4 個字以內的簡短代號（例如：微機電、軸承軸封、潤滑、磨潤）\n* 同一儲存格內每個詞彙必須各佔一行，請使用 `<br>` 強制換行\n* 不要將概念切得太細；同一概念的上下位詞、縮寫、拼寫變化放在同一列。\n\n\n控制詞彙查證\n\n* Ei Compendex 請用 Ei Thesaurus 的控制詞彙（Controlled terms）；IEEE 請用 IEEE Thesaurus 的詞彙，不可僅依模型記憶推測：\nhttps://www.ieee.org/publications/services/thesaurus-thank-you\n* 盡量從可靠來源蒐集，但不須加註查證結果，我另有驗證方式", "pico_en": "Task\nPlease identify and organize search terms that can be used for bibliographic database searching for the research question below.\n\nResearch Question\nLubrication and tribology of MEMS bearings and seals: can different lubrication approaches reduce friction and wear and extend device lifetime?\n\nOutput Format\nPlease present the PICO (or other frameworks, such as PCC) in one comprehensive table, with the following columns:\nPICO | Concept | Chinese Synonyms | English Synonyms | Ei Compendex | IEEE\nRequirements:\n\n* Each term within the same table cell must appear on a separate line. Use `<br>` to force line breaks.\n* For an engineering question, map it like this: P = the device or system studied (e.g. MEMS bearings, seals), I = the lubrication approach, C = the comparison (leave blank if none), O = tribological performance such as friction and wear.\n* If a PICO element contains different sub-concepts, they may be presented in separate rows, but do not divide the concepts too narrowly.\n\n\nControlled Vocabulary Verification\n\n* For Ei Compendex, use controlled terms from the Ei Thesaurus; for IEEE, use terms from the IEEE Thesaurus. Do not rely on model memory alone:\nhttps://www.ieee.org/publications/services/thesaurus-thank-you\n* Obtain terms from reliable sources whenever possible. There is no need to annotate the verification results, as I will verify them separately.", "nopico_en": "Task\nPlease identify and organize search terms that can be used for bibliographic database searching for the research topic below.\n\nResearch Topic\nLubrication and tribology of MEMS bearings and seals\n\nOutput Format\nDo not use PICO. Instead, break the topic into 2–4 main concepts and present them in one comprehensive table, with the following columns:\nConcept | Chinese Synonyms | English Synonyms | Ei Compendex | IEEE\nRequirements:\n\n* One concept per row; the Concept column is a short label of up to 4 characters (e.g. MEMS, BRG, LUB, TRIB).\n* Each term within the same table cell must appear on a separate line. Use `<br>` to force line breaks.\n* Do not divide the concepts too narrowly; keep broader/narrower terms, abbreviations and spelling variants of a concept in the same row.\n\n\nControlled Vocabulary Verification\n\n* For Ei Compendex, use controlled terms from the Ei Thesaurus; for IEEE, use terms from the IEEE Thesaurus. Do not rely on model memory alone:\nhttps://www.ieee.org/publications/services/thesaurus-thank-you\n* Obtain terms from reliable sources whenever possible. There is no need to annotate the verification results, as I will verify them separately."};
+  function copyText(t, ok, fail){
+    if(navigator.clipboard && window.isSecureContext){ navigator.clipboard.writeText(t).then(ok, function(){ legacy(); }); return; }
+    legacy();
+    function legacy(){
+      var ta=document.createElement("textarea"); ta.value=t; ta.setAttribute("readonly",""); ta.style.cssText="position:fixed;top:-1000px;opacity:0";
+      document.body.appendChild(ta); ta.select();
+      var good=false; try{ good=document.execCommand("copy"); }catch(e){}
+      document.body.removeChild(ta); (good?ok:fail)();
+    }
+  }
+  document.addEventListener("click", function(e){
+    var b=e.target.closest && e.target.closest("[data-pcopy]"); if(!b) return;
+    e.preventDefault(); e.stopPropagation();
+    var en=document.body.classList.contains("en"), k=(b.getAttribute("data-pcopy")==="nopico"?"nopico":"pico")+(en?"_en":"_zh");
+    var old=b.textContent;
+    copyText(P[k], function(){
+      b.textContent=en?"✓ Copied":"✓ 已複製"; b.classList.add("done");
+      clearTimeout(b._t); b._t=setTimeout(function(){ b.textContent=old; b.classList.remove("done"); },1800);
+    }, function(){
+      b.textContent=en?"Copy failed — select manually":"複製失敗，請手動選取"; clearTimeout(b._t); b._t=setTimeout(function(){ b.textContent=old; },2400);
+    });
+  });
 })();
 </script>
 <script id="srPrefScript">
