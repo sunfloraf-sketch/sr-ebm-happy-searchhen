@@ -673,8 +673,8 @@
       <summary style="cursor:pointer;font-weight:700;font-size:13px;color:#0f766e"><span data-zh>貼上表格（➜ 參考 AI 提示詞範例）</span><span data-en>Paste a table (➜ see AI prompt example)</span></summary>
       <div style="margin-top:8px">
         <div class="sub" style="font-size:12px;color:var(--mut);margin-bottom:6px">
-          <span data-zh><div>‧ <a href="https://chatgpt.com/share/6ab1b85c-35cc-83ee-9424-29e95ff41d2d" target="_blank" rel="noopener">開啟 ChatGPT 提示詞範例 ↗</a> 或 直接複製提示詞：<button type="button" class="pcopy" data-pcopy="pico">PICO 架構</button> <button type="button" class="pcopy" data-pcopy="nopico">非 PICO 架構</button>（優先使用 ChatGPT 或 Claude，登入帳號效果較佳）</div><div>‧ 從 ChatGPT 等複製整個表格後，於下方框按 <b>Ctrl+V</b> 貼上，工具會依欄位標題自動對應，並填入下方 PICO 表（亦可從 Word／Excel 複製後貼上）</div><div>‧ 表格請含一列標題（概念／中文／英文／ASC／BSC／ERIC／Compendex／IEEE／PQDT 等控制詞彙欄。不需要的欄位可不提供；順序不拘）</div><div style="color:var(--mut);padding-left:1.2em">（控制詞彙欄可直接填詞，或含欄位語法如 DE "…" OR …；貼上後對應到的資料庫欄會自動顯示。不同複製方式填入效果可能有差異；含合併／巢狀儲存格的複雜表格，貼上後請檢查並自行調整）</div></span>
-          <span data-en><div>‧ <a href="https://chatgpt.com/share/6ab1b85c-35cc-83ee-9424-29e95ff41d2d" target="_blank" rel="noopener">Open ChatGPT prompt example ↗</a> or copy a prompt: <button type="button" class="pcopy" data-pcopy="pico">PICO framework</button> <button type="button" class="pcopy" data-pcopy="nopico">non-PICO</button> (ChatGPT or Claude works best; signing in helps)</div><div>‧ Copy the whole table from ChatGPT etc., click the box below and press <b>Ctrl+V</b>; columns are auto-mapped by header and fill the PICO table below (Word / Excel also work)</div><div>‧ Include a header row (Concept / Chinese / English / ASC / BSC / ERIC / Compendex / IEEE / PQDT controlled-vocab columns; omit columns you don't need; any order)</div><div style="color:var(--mut);padding-left:1.2em">(Controlled-vocab cells may be plain terms or include field syntax like DE "…" OR …; databases that get data are revealed automatically. Results may vary with different copy methods; for complex tables with merged/nested cells, check the filled result and adjust as needed.)</div></span>
+          <span data-zh><div>‧ 開啟 ChatGPT 提示詞範例：<a href="https://chatgpt.com/share/6ab1b85c-35cc-83ee-9424-29e95ff41d2d" target="_blank" rel="noopener">範例1 ↗</a>、<a href="https://chatgpt.com/share/6af2af0a-0528-83e8-bcf8-784dafe011c2" target="_blank" rel="noopener">範例2_微機電 ↗</a> 或 直接複製提示詞：<button type="button" class="pcopy" data-pcopy="pico">PICO 架構</button> <button type="button" class="pcopy" data-pcopy="nopico">非 PICO 架構</button>（優先使用 ChatGPT 或 Claude，登入帳號效果較佳）</div><div>‧ 從 ChatGPT 等複製整個表格後，於下方框按 <b>Ctrl+V</b> 貼上，工具會依欄位標題自動對應，並填入下方 PICO 表（亦可從 Word／Excel 複製後貼上）</div><div>‧ 表格請含一列標題（概念／中文／英文／ASC／BSC／ERIC／Compendex／IEEE／PQDT 等控制詞彙欄。不需要的欄位可不提供；順序不拘）</div><div style="color:var(--mut);padding-left:1.2em">（控制詞彙欄可直接填詞，或含欄位語法如 DE "…" OR …；貼上後對應到的資料庫欄會自動顯示。不同複製方式填入效果可能有差異；含合併／巢狀儲存格的複雜表格，貼上後請檢查並自行調整）</div></span>
+          <span data-en><div>‧ Open a ChatGPT prompt example: <a href="https://chatgpt.com/share/6ab1b85c-35cc-83ee-9424-29e95ff41d2d" target="_blank" rel="noopener">example 1 ↗</a>, <a href="https://chatgpt.com/share/6af2af0a-0528-83e8-bcf8-784dafe011c2" target="_blank" rel="noopener">example 2 (MEMS) ↗</a> or copy a prompt: <button type="button" class="pcopy" data-pcopy="pico">PICO framework</button> <button type="button" class="pcopy" data-pcopy="nopico">non-PICO</button> (ChatGPT or Claude works best; signing in helps)</div><div>‧ Copy the whole table from ChatGPT etc., click the box below and press <b>Ctrl+V</b>; columns are auto-mapped by header and fill the PICO table below (Word / Excel also work)</div><div>‧ Include a header row (Concept / Chinese / English / ASC / BSC / ERIC / Compendex / IEEE / PQDT controlled-vocab columns; omit columns you don't need; any order)</div><div style="color:var(--mut);padding-left:1.2em">(Controlled-vocab cells may be plain terms or include field syntax like DE "…" OR …; databases that get data are revealed automatically. Results may vary with different copy methods; for complex tables with merged/nested cells, check the filled result and adjust as needed.)</div></span>
         </div>
         <textarea id="pasteZone" spellcheck="false" rows="4" style="width:100%" placeholder="在此按 Ctrl+V 貼上表格"></textarea>
         <div id="pasteMsg" style="font-size:12.5px;margin-top:6px"></div>
@@ -700,7 +700,7 @@
         <span data-zh>⚠ 提醒您！請自行評估同義詞與控制詞彙的適用性，尤其確實查核控制詞彙，工具僅提供詞表超連結，並未進行查驗。（超連結亦僅適用於成大）</span>
         <span data-en>⚠ Reminder: please assess the suitability of the synonyms and controlled vocabulary yourself, and be sure to verify the controlled terms — the tool only links to the thesauri and does not verify them. (Links apply to NCKU only.)</span>
       </span>
-      <a id="exBtn" class="exlink" role="button" tabindex="0" title="把示範資料直接填入下方 PICO 表（會覆蓋目前內容）" style="margin-left:auto;white-space:nowrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="16.5" y2="16.5"/><polyline points="16.5 9 16.5 16.5 9 16.5"/></svg><span data-zh>載入範例</span><span data-en>Load example</span></a>
+      <a id="exBtn" class="exlink" role="button" tabindex="0" title="範例 1：學齡童身體活動與體重（會覆蓋目前內容） / Example 1: school children, physical activity and body weight (replaces the current table)" style="margin-left:auto;white-space:nowrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="16.5" y2="16.5"/><polyline points="16.5 9 16.5 16.5 9 16.5"/></svg><span data-zh>載入範例1</span><span data-en>Load example 1</span></a><a id="exBtn2" class="exlink" role="button" tabindex="0" title="範例 2：微機電（MEMS）軸承與軸封的潤滑與磨潤，非 PICO 架構（會覆蓋目前內容） / Example 2: lubrication and tribology of MEMS bearings and seals, non-PICO (replaces the current table)" style="margin-left:14px;white-space:nowrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="16.5" y2="16.5"/><polyline points="16.5 9 16.5 16.5 9 16.5"/></svg><span data-zh>載入範例2_微機電</span><span data-en>Load example 2 (MEMS)</span></a>
     </div>
     <table class="pico">
       <thead>
@@ -2383,6 +2383,33 @@ if (typeof module !== "undefined" && module.exports) {
     };
   })();
 
+  // 欄寬（比照醫學版）：表格 table-layout:fixed，首欄（概念）與末欄（欄位選單）固定像素，其餘「目前看得到的欄」依權重分完剩餘寬度；
+  // 欄位顯示／隱藏、輸出資料庫變動（控制詞彙欄增減）、視窗縮放時自動重算
+  (function(){
+    var FIRST_PX=44, LAST_PX=34, last="";
+    function weight(th){ var c=th.classList; return c.contains("ref")?13 : c.contains("bef")?17 : c.contains("free")?19 : c.contains("cvcol")?17 : 0; }
+    function sizeCols(force){
+      var table=document.querySelector("table.pico"); if(!table) return;
+      var head=table.querySelector("thead tr"); if(!head) return;
+      var total=Math.round(table.getBoundingClientRect().width); if(!total) return;
+      var ths=Array.prototype.slice.call(head.children), vis=[];
+      ths.forEach(function(th,i){ if(i===0||i===ths.length-1) return; var w=weight(th); if(!w) return; if(getComputedStyle(th).display==="none") return; vis.push({th:th,w:w}); });
+      var sig=total+"|"+vis.map(function(x){ return x.th.className; }).join(",");
+      if(!force && sig===last) return; last=sig;
+      var avail=Math.max(0, total-FIRST_PX-LAST_PX), sum=vis.reduce(function(a,x){ return a+x.w; },0)||1, used=0;
+      vis.forEach(function(x,i){ var px=(i===vis.length-1)?(avail-used):Math.floor(avail*x.w/sum); used+=px; x.th.style.width=px+"px"; });
+      head.firstElementChild.style.width=FIRST_PX+"px"; head.lastElementChild.style.width=LAST_PX+"px";
+    }
+    window._srSizeCols=sizeCols;
+    var _t; function later(){ clearTimeout(_t); _t=setTimeout(function(){ sizeCols(); }, 30); }
+    window.addEventListener("resize", later);
+    try{
+      new MutationObserver(later).observe(document.body, {attributes:true, attributeFilter:["class"]});
+      var thead=document.querySelector("table.pico thead"); if(thead) new MutationObserver(later).observe(thead, {attributes:true, attributeFilter:["style"], childList:true, subtree:true});
+    }catch(e){}
+    sizeCols(true);
+  })();
+
   function seedEmpty(){ picoBody.innerHTML=""; ["P","I","C","O"].forEach(function(l){ addRow(l,"","",{}, GDM_EX[l]); }); }
 
   // ===== 狀態保存：sessionStorage(每分頁草稿，多分頁不互蓋) + localStorage(離開快照) =====
@@ -3176,14 +3203,36 @@ if (typeof module !== "undefined" && module.exports) {
     srCount('pico-example','PICO-載入範例');
     srcSel.value="wos"; levelSel.value="L1"; refreshLvlNote();
     picoBody.innerHTML="";
-    addRow("P",GDM_EX.P.zh,GDM_EX.P.ft,GDM_EX.P.cv,undefined,undefined,GDM_EX.P.before);
-    addRow("I",GDM_EX.I.zh,GDM_EX.I.ft,GDM_EX.I.cv,undefined,undefined,GDM_EX.I.before);
+    addRow("P",GDM_EX.P.zh,"",GDM_EX.P.cv,undefined,undefined,GDM_EX.P.before);
+    addRow("I",GDM_EX.I.zh,"",GDM_EX.I.cv,undefined,undefined,GDM_EX.I.before);
     addRow("C","","",{});
-    addRow("O",GDM_EX.O.zh,GDM_EX.O.ft,GDM_EX.O.cv,undefined,undefined,GDM_EX.O.before);
+    addRow("O",GDM_EX.O.zh,"",GDM_EX.O.cv,undefined,undefined,GDM_EX.O.before);
+    if(window._srShowBefore) window._srShowBefore();   // 範例的英文同義詞放在整理前（整理後留白，可練習用「工具」整理）
     // 範例含控制詞彙的資料庫（ASC／ERIC／Compendex）自動顯示，方便看到填入內容
     try{ ["asc","eric","compendex"].forEach(function(id){ var cb=document.querySelector('#dbchecks input[value="'+id+'"]'); if(cb&&!cb.checked){ cb.checked=true; cb.dispatchEvent(new Event("change",{bubbles:true})); } }); if(typeof updateCvColumns==="function") updateCvColumns(); }catch(_e){}
     _exampleActive=true;   // 標記為「剛載入的範例」：清空時可直接清、不需確認
   };
+  // 範例 2：微機電（MEMS）軸承與軸封的潤滑與磨潤（非 PICO 架構，四個概念；英文同義詞放在整理前）
+  var MEMS_EX=[{"label": "微機電", "zh": "微機電系統\n微電子機械系統\n微機械系統\n微型機電系統\n微型機械\n奈米機電系統", "ft": "MEMS\nmicroelectromechanical system*\nmicro-electro-mechanical system*\nmicro-electromechanical system*\nmicromechanical system*\nmicroelectromechanical device*\nmicromachine*\nmicromachining\nNEMS\nnanoelectromechanical system*", "cv": {"compendex": "Microelectromechanical systems\nMicromachining\nMicrofabrication", "ieee": "Microelectromechanical systems\nMicroelectromechanical devices\nMicromechanical devices\nMicromachining\nNanoelectromechanical systems"}}, {"label": "軸承軸封", "zh": "軸承\n微型軸承\n微軸承\n滾珠軸承\n滾動軸承\n滑動軸承\n軸封\n機械軸封\n機械密封\n動態密封\n旋轉軸封\n密封件", "ft": "bearing*\nmicrobearing*\nmicro-bearing*\nmicro ball bearing*\nball bearing*\nrolling bearing*\njournal bearing*\nplain bearing*\nsliding bearing*\nshaft seal*\nmechanical seal*\nrotary seal*\nrotating shaft seal*\ndynamic seal*\nsealing device*", "cv": {"compendex": "Bearings\nBall bearings\nJournal bearings\nSeals\nShafts", "ieee": "Mechanical bearings\nBall bearings\nRolling bearings\nSeals\nShafts"}}, {"label": "潤滑", "zh": "潤滑\n微尺度潤滑\n微潤滑\n潤滑劑\n潤滑油\n固體潤滑\n乾式潤滑\n流體潤滑\n液體潤滑\n邊界潤滑\n混合潤滑\n薄膜潤滑\n潤滑膜", "ft": "lubricat*\nlubricant*\nmicrolubricat*\nmicro-lubricat*\nsolid lubricat*\ndry lubricat*\nfluid lubricat*\nliquid lubricat*\nhydrodynamic lubricat*\nboundary lubricat*\nmixed lubricat*\nthin film lubricat*\nlubricating film*\nlubricating oil*", "cv": {"compendex": "Lubrication\nLubricants\nLubricating oils\nSolid lubricants\nHydrodynamic lubrication", "ieee": "Lubrication\nLubricants\nOils\nViscosity\nHydrodynamics"}}, {"label": "磨潤", "zh": "磨潤學\n摩擦學\n摩擦\n微摩擦\n微尺度磨潤\n磨耗\n磨損\n材料磨耗\n磨耗阻抗\n磨損阻抗\n黏著磨耗\n磨粒磨耗\n表面粗糙度\n接觸力學\n表面黏著", "ft": "tribolog*\nmicrotribolog*\nmicro-tribolog*\nnanotribolog*\nfriction\nmicrofriction\nmicro-friction\nwear\nmaterial wear\nwear resistance\nadhesive wear\nabrasive wear\nsurface wear\nsurface roughness\ncontact mechanic*\nadhesion\nstiction", "cv": {"compendex": "Tribology\nFriction\nWear of materials\nWear resistance\nSurface roughness\nAdhesion\nContact mechanics", "ieee": "Tribology\nFriction\nWear\nSurface roughness\nAdhesion\nContact mechanics"}}];
+  (function(){ var ex=$("#exBtn2"); if(!ex) return;
+    ex.onclick=function(e){
+      if(e){ e.preventDefault(); e.stopPropagation(); }
+      var hasContent = Array.prototype.some.call(picoBody.querySelectorAll("tr"), function(tr){ var r=tr._get&&tr._get(); return _rf(r); });
+      if(hasContent && !srConfirm(isEn()?"Loading the example will replace the current table. Continue?":"載入範例會覆蓋目前表格內容，確認載入嗎？")) return;
+      srCount('pico-example2','PICO-載入範例2_微機電');
+      if(TARGET_BY_ID.compendex) srcSel.value="compendex"; levelSel.value="L1"; refreshLvlNote();
+      picoBody.innerHTML="";
+      MEMS_EX.forEach(function(r){ addRow(r.label, r.zh, "", {compendex:r.cv.compendex, ieee:r.cv.ieee}, undefined, undefined, r.ft); });
+      if(window._srShowBefore) window._srShowBefore();   // 英文同義詞放在整理前
+      // 輸出資料庫：勾 Ei Compendex、IEEE Xplore（範例的控制詞彙欄）；取消與主題無關的 ASC／BSC／ERIC／PQDT
+      try{ ["compendex","ieee"].forEach(function(id){ var cb=document.querySelector('#dbchecks input[value="'+id+'"]'); if(cb&&!cb.checked){ cb.checked=true; cb.dispatchEvent(new Event("change",{bubbles:true})); } });
+        ["asc","bsc","eric","pqdt"].forEach(function(id){ var cb=document.querySelector('#dbchecks input[value="'+id+'"]'); if(cb&&cb.checked){ cb.checked=false; cb.dispatchEvent(new Event("change",{bubbles:true})); } });
+        if(typeof updateCvColumns==="function") updateCvColumns(); }catch(_e){}
+      if(typeof saveDraftDebounced==="function") saveDraftDebounced();
+      _exampleActive=true;
+    };
+    ex.addEventListener("keydown", function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); e.stopPropagation(); ex.click(); } });
+  })();
   // 載入範例為超連結（嵌在「填寫說明」標題右側）：點擊只載入、不展開說明；補鍵盤觸發
   (function(){ var ex=$("#exBtn"); if(!ex) return;
     ex.addEventListener("click", function(e){ e.preventDefault(); e.stopPropagation(); });
@@ -4864,9 +4913,9 @@ if (typeof module !== "undefined" && module.exports) {
     { el:function(){ var s=document.getElementById("src"); return s&&s.closest(".panel"); },
       zh:{t:"① 起始與輸出資料庫", d:"<b>起始資料庫</b>：你的詞彙與標記依哪個資料庫寫。<b>輸出資料庫</b>：勾選要產生語法的資料庫；EBSCOhost 可自行輸入資料庫名稱，也可加日期限定。"},
       en:{t:"① Starting and output databases", d:"<b>Starting database</b>: the database your terms and marks are written for. <b>Output databases</b>: tick the ones to generate; for EBSCOhost you can type database names, and add date limits."} },
-    { el:"#exBtn",
-      zh:{t:"第一次用？先載入範例", d:"按一下就會填入一個完整的範例，邊看邊學怎麼填。"},
-      en:{t:"New here? Load the example", d:"One click fills in a complete example so you can see how the table works."} },
+    { el:function(){ return [document.getElementById("exBtn"), document.getElementById("exBtn2")]; },
+      zh:{t:"第一次用？先載入範例", d:"<b>範例 1</b> 是學齡童身體活動（PICO 架構）；<b>範例 2_微機電</b> 是微機電軸承與軸封的潤滑與磨潤（非 PICO，四個概念）。按一下就會填入完整範例，邊看邊學怎麼填。"},
+      en:{t:"New here? Load an example", d:"<b>Example 1</b>: school children and physical activity (PICO). <b>Example 2 (MEMS)</b>: lubrication and tribology of MEMS bearings and seals (non-PICO, four concepts). One click fills in a complete example."} },
     { el:"#pasteBox > summary",
       zh:{t:"貼上表格", d:"用 AI 或 Excel／Word 整理好的詞彙表，可以整張貼上，自動對應到各欄；這裡也有 AI 提示詞範例。"},
       en:{t:"Paste a table", d:"Paste a whole term table from AI, Excel or Word and the columns are matched automatically. AI prompt examples are here too."} },
