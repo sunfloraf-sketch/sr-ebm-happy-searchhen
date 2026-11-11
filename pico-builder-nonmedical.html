@@ -71,6 +71,13 @@
   /* 概念代號清空時：顯示可輸入的虛線框 */
   table.pico td.lab input:placeholder-shown{border:1px dashed #b9c3c9;border-radius:6px;background:#fff;min-height:32px}
   table.pico td.lab input::placeholder{color:#b9c3c9;font-size:15px;font-weight:400}
+  /* 概念欄顯示層：代號超過欄寬時才用；中文逐字直排、英文橫排可換行；點一下回到輸入框 */
+  table.pico td.lab{position:relative}
+  table.pico td.lab .labshow{display:none}
+  table.pico td.lab.lshow input{position:absolute;left:0;top:0;width:1px;height:1px;opacity:0;pointer-events:none}
+  table.pico td.lab.lshow .labshow{display:flex;flex-direction:column;align-items:center;font-weight:700;color:#2B2B2B;font-size:21px;line-height:1.15;cursor:text}
+  table.pico td.lab .labshow .len{max-width:100%;text-align:center;overflow-wrap:anywhere;word-break:break-all}
+  table.pico td.lab .labshow .len.sm{font-size:15px;line-height:1.2}
   table.pico td.lab input:focus{outline:none;border:1px solid var(--brand2,#617B76);border-radius:6px;background:#fff}
   table.pico td.lab .ccode{text-align:center}
   table.pico td.lab .rowlvl{width:100%;min-width:0;box-sizing:border-box;-webkit-appearance:none;appearance:none;margin-top:4px;font-size:11px;font-weight:700;text-align:center;text-align-last:center;padding:1px 0;border:1px solid #cdd5da;border-radius:5px;background:#EEF1F3;color:#3f6f3f;cursor:pointer}
@@ -218,6 +225,9 @@
   .ieeediag .ieeevar .pmvarroot:hover{background:#FFF4CC}
   .ieeediag .ieeevar .pmvarroot.hl{background:#FFE58F}
   .ieeeocc{cursor:help}
+  .ieeediag .ieeehlall{font:inherit;font-size:11.5px;padding:1px 9px;border:1px solid #E5C76B;border-radius:10px;background:#FFF8DB;color:#7A5B00;cursor:pointer}
+  .ieeediag .ieeehlall.on{background:#FFE58F;font-weight:700}
+  .ieeediag .ieeehlall:disabled{opacity:.45;cursor:default}
   .ieeediag .ieeerst{font-size:15px;line-height:1;text-decoration:none;margin-left:2px}
   mark.ieeehl{background:#FFE58F;color:inherit;padding:0;border-radius:2px}
   .ieeesort{font-weight:400;color:var(--mut);font-size:11.5px;margin:2px 0 10px}
@@ -2220,6 +2230,16 @@ if (typeof module !== "undefined" && module.exports) {
     var tr=document.createElement("tr");
     var labTd=document.createElement("td"); labTd.className="lab";
     var labIn=document.createElement("input"); labIn.value=label||""; labIn.maxLength=4; labIn.placeholder="✎"; labIn.title="概念代號（如 P、I、C、O） / Concept label (e.g. P, I, C, O)"; labTd.appendChild(labIn);
+    var labShow=document.createElement("div"); labShow.className="labshow"; labShow.title=labIn.title; labTd.appendChild(labShow);   /* 顯示層：概念代號超過欄寬時才用（中文直排、英文橫排） */
+    var _labCJK=/[⺀-鿿豈-﫿＀-￯]/;
+    var _labRender=function(){ var v=labIn.value.trim(); labShow.textContent="";
+      (v.match(/[⺀-鿿豈-﫿＀-￯]|[^⺀-鿿豈-﫿＀-￯]+/g)||[]).forEach(function(seg){ seg=seg.trim(); if(!seg) return; var sp=document.createElement("span"); sp.className=_labCJK.test(seg)?"lzh":("len"+(seg.length>2?" sm":"")); sp.textContent=seg; labShow.appendChild(sp); });
+      var _w=0; for(var i=0;i<v.length;i++){ _w+=_labCJK.test(v.charAt(i))?1:(/\s/.test(v.charAt(i))?0.3:0.62); }   /* 估算寬度（字寬）：放不下才改用顯示層 */
+      labTd.classList.toggle("lshow", _w>2.05 && document.activeElement!==labIn); };
+    labIn.addEventListener("input", _labRender); labIn.addEventListener("blur", _labRender);
+    labIn.addEventListener("focus", function(){ labTd.classList.remove("lshow"); });
+    labShow.addEventListener("mousedown", function(e){ e.preventDefault(); labTd.classList.remove("lshow"); labIn.focus(); try{ var n=labIn.value.length; labIn.setSelectionRange(n,n); }catch(_){} });
+    _labRender();
     var ccode=document.createElement("div"); ccode.className="ccode"; ccode.style.cssText="font-size:11px;color:#3f6f3f;font-weight:700;margin-top:3px"; labTd.appendChild(ccode);
     // 每列完整度選單（廣／較精／精＝L1／L2／L3）；預設沿用上方全域值
     var lvlSel=document.createElement("select"); lvlSel.className="rowlvl";
@@ -3296,7 +3316,8 @@ if (typeof module !== "undefined" && module.exports) {
     if(!el) return;
     Array.prototype.slice.call(el.querySelectorAll("mark.ieeehl")).forEach(function(m){ m.parentNode.replaceChild(document.createTextNode(m.textContent), m); });
     el.normalize(); if(!k) return 0;
-    var ts=(IEEE_VARS[k]&&IEEE_VARS[k].length)?IEEE_VARS[k]:[k];
+    var ts=(k==="*all")?Object.keys(IEEE_VARS).reduce(function(a,x){ return a.concat(IEEE_VARS[x]); },[]):((IEEE_VARS[k]&&IEEE_VARS[k].length)?IEEE_VARS[k]:[k]);   /* *all＝所有已修改詞的勾選字形 */
+    if(!ts.length) return 0;
     var re=new RegExp("(^|[^A-Za-z0-9*?\\-])("+ts.map(function(t){ return t.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"); }).sort(function(a,b){ return b.length-a.length; }).join("|")+")(?=$|[^A-Za-z0-9*?\\-])","gi");
     var w=document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null), nodes=[], n, cnt=0;
     while((n=w.nextNode())) nodes.push(n);
@@ -3906,19 +3927,25 @@ if (typeof module !== "undefined" && module.exports) {
         if(IEEE_SORT==="az") _wk.sort(function(x,y){ var a=x.replace(/[^a-z0-9]/g,""), b=y.replace(/[^a-z0-9]/g,""); return a<b?-1:a>b?1:IEEE_SEEN.indexOf(x)-IEEE_SEEN.indexOf(y); });
         else if(IEEE_SORT==="n") _wk.sort(function(x,y){ return (_cd[x].length-_cd[y].length) || (IEEE_SEEN.indexOf(x)-IEEE_SEEN.indexOf(y)); });
         var _occ={}; (_iq.replace(/"[^"]*"\s*:/g," ").match(/[A-Za-z0-9][A-Za-z0-9?*\-]*/g)||[]).forEach(function(t){ if(/[*?]/.test(t)){ var k=t.toLowerCase(); _occ[k]=(_occ[k]||0)+1; } });
-        if(IEEE_HL && _wk.indexOf(IEEE_HL)<0) IEEE_HL="";
+        if(IEEE_HL && IEEE_HL!=="*all" && _wk.indexOf(IEEE_HL)<0) IEEE_HL="";
         var _ieeeRegen=function(){ _ieeeQuiet=true; try{ $("#genBtn").click(); } finally { _ieeeQuiet=false; } };
         if(_wk.length){
           var vp=document.createElement("details"); vp.className="pmvar ieeevar"; vp.open=!IEEE_FOLD; vp.addEventListener("toggle",function(){ IEEE_FOLD=!vp.open; });
           var vh=document.createElement("summary"); vh.className="pmvarhd"; vh.appendChild(document.createTextNode(en_?"Suffix candidates — tick the word forms you need (or that really exist) to replace the truncation *; type in any missing forms by hand. None ticked = keep the * (10 or fewer passes).":"字尾候選 — 勾選需要（或真實存在）的單字拼法取代切截 *；可手動輸入補上漏掉的拼法。都不勾＝保留切截 *（10 個以下可以過關）。")); 
           var so=document.createElement("div"); so.className="ieeesort"; so.appendChild(document.createTextNode(en_?"Sort: ":"排序："));
           [["az",en_?"A–Z":"字母 A–Z"],["def",en_?"Original order":"原始詞序"],["n",en_?"Fewest variants first":"變化數量（少→多）"]].forEach(function(o,i){ if(i) so.appendChild(document.createTextNode(" ｜ ")); var a=document.createElement("span"); a.className="ieeevx"+(IEEE_SORT===o[0]?" on":""); a.textContent=o[1]; a.onclick=function(){ if(IEEE_SORT!==o[0]){ IEEE_SORT=o[0]; _ieeeRegen(); } }; so.appendChild(a); });
+          var _nDone=Object.keys(IEEE_VARS).length;
+          so.appendChild(document.createTextNode("　　"));
+          var hb=document.createElement("button"); hb.type="button"; hb.className="ieeehlall"+(IEEE_HL==="*all"?" on":""); hb.disabled=!_nDone;
+          hb.textContent=en_?"Highlight all modified terms":"已修改詞全部標黃"; hb.title=_nDone?(en_?"Highlight every ticked word form in the search strategy (click again to clear)":"在檢索策略中標黃所有已勾選的字形（再點一下取消）"):(en_?"No terms modified yet":"尚未修改任何詞");
+          hb.onclick=function(){ IEEE_HL=(IEEE_HL==="*all")?"":"*all"; hb.classList.toggle("on", IEEE_HL==="*all"); Array.prototype.forEach.call(vp.querySelectorAll(".pmvarroot"),function(x){ x.classList.toggle("hl", IEEE_HL==="*all" && x.classList.contains("done")); }); _ieeeMark(pre, IEEE_HL); };
+          so.appendChild(hb);
           vp.appendChild(vh); vp.appendChild(so);
           _wk.forEach(function(k){
             var sel=IEEE_VARS[k]||[], rw=document.createElement("div"); rw.className="pmvarrow";
-            var lb=document.createElement("span"); lb.className="pmvarroot"+(dg.shortW.indexOf(_wl[k])>=0?" short":"")+(sel.length?" done":""); lb.textContent=_wl[k]; if((_occ[k]||0)>1){ var oc=document.createElement("span"); oc.className="ieeeocc"; oc.textContent=" ×"+_occ[k]; oc.title=en_?("×"+_occ[k]+" = appears "+_occ[k]+" times in the search strategy"):("×"+_occ[k]+"＝在檢索策略中出現 "+_occ[k]+" 次"); lb.appendChild(oc); } if(IEEE_HL===k) lb.classList.add("hl");
+            var lb=document.createElement("span"); lb.className="pmvarroot"+(dg.shortW.indexOf(_wl[k])>=0?" short":"")+(sel.length?" done":""); lb.textContent=_wl[k]; if((_occ[k]||0)>1){ var oc=document.createElement("span"); oc.className="ieeeocc"; oc.textContent=" ×"+_occ[k]; oc.title=en_?("×"+_occ[k]+" = appears "+_occ[k]+" times in the search strategy"):("×"+_occ[k]+"＝在檢索策略中出現 "+_occ[k]+" 次"); lb.appendChild(oc); } if(IEEE_HL===k || (IEEE_HL==="*all" && sel.length)) lb.classList.add("hl");
             lb.title=en_?"Click to highlight this term in the search strategy (click again to clear)":"點一下在檢索策略中標色（再點一下取消）";
-            lb.onclick=function(){ IEEE_HL=(IEEE_HL===k)?"":k; Array.prototype.forEach.call(vp.querySelectorAll(".pmvarroot.hl"),function(x){ x.classList.remove("hl"); }); if(IEEE_HL) lb.classList.add("hl"); _ieeeMark(pre, IEEE_HL); };
+            lb.onclick=function(){ IEEE_HL=(IEEE_HL===k)?"":k; hb.classList.remove("on"); Array.prototype.forEach.call(vp.querySelectorAll(".pmvarroot.hl"),function(x){ x.classList.remove("hl"); }); if(IEEE_HL) lb.classList.add("hl"); _ieeeMark(pre, IEEE_HL); };
             rw.appendChild(lb);
             var cw=document.createElement("div"); cw.className="ieeechips"; rw.appendChild(cw);   /* 候選字換行時與第一行對齊 */
             var cands=_cd[k];
