@@ -64,6 +64,13 @@
   .howto b{display:block;color:var(--sh-green-d);margin-bottom:2px}
   .maphd{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:4px 0 10px}
   .maphd h2{margin:0;font-size:17px;color:var(--sh-green-d)}
+  /* 領域切換：醫學（原）／非醫學 */
+  .domtab{display:inline-flex;gap:0;border:1.5px solid var(--sh-line);border-radius:999px;overflow:hidden;background:#fff}
+  .domtab button{font:inherit;font-size:13.5px;font-weight:700;padding:5px 14px;border:0;background:transparent;color:var(--sh-mut);cursor:pointer}
+  .domtab button+button{border-left:1.5px solid var(--sh-line)}
+  .domtab button.on{background:var(--sh-green-d);color:#fff}
+  .domtab button:focus-visible{outline:3px solid #E3B36B;outline-offset:-3px}
+  .maphd .mh-l{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
   .total{font-size:14px;color:var(--sh-mut);display:flex;align-items:center;gap:6px}
   .map{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
   .lvcard{position:relative;text-align:left;background:#fff;border:1.5px solid var(--sh-line);border-radius:14px;padding:14px 14px 12px;cursor:pointer;display:flex;flex-direction:column;gap:6px;min-height:150px;transition:transform .12s, box-shadow .12s}
@@ -290,7 +297,8 @@
       </div>
     </div>
     <div class="maphd">
-      <h2><span data-zh>選擇關卡</span><span data-en>Choose a level</span></h2>
+      <div class="mh-l"><h2><span data-zh>選擇關卡</span><span data-en>Choose a level</span></h2>
+      <div class="domtab" id="domTab" role="tablist" aria-label="領域 / Field"><button type="button" role="tab" data-dom="med"><span data-zh>醫學</span><span data-en>Medicine</span></button><button type="button" role="tab" data-dom="nm"><span data-zh>非醫學領域</span><span data-en>Non-medical</span></button></div></div>
       <div class="total" id="totalEggs"></div>
     </div>
     <div class="map" id="map"></div>
@@ -409,14 +417,14 @@ function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&am
 function $(id){ return document.getElementById(id); }
 
 /* ---------- 資料庫鄰近運算子（與鄰近字組合器相同：Embase／Ovid／Cochrane 需 +1） ---------- */
-var DBS=["embase","ovid","cochrane","ebsco","wos","scopus"];
-var DB_LABEL={embase:"Embase.com",ovid:"Ovid (MEDLINE/Embase)",cochrane:"Cochrane Library",ebsco:"EBSCOhost (CINAHL)",wos:"Web of Science",scopus:"Scopus"};
-var PROX={embase:{tpl:"NEAR/%N",off:1},ovid:{tpl:"ADJ%N",off:1},cochrane:{tpl:"NEAR/%N",off:1},ebsco:{tpl:"N%N",off:0},wos:{tpl:"NEAR/%N",off:0},scopus:{tpl:"W/%N",off:0}};
+var DBS_MED=["embase","ovid","cochrane","ebsco","wos","scopus"], DBS_NM=["compendex","ieee","wos","scopus","ebsco"], DBS=DBS_MED;   /* 非醫學：Ei Compendex、IEEE Xplore 等 */
+var DB_LABEL={compendex:"Ei Compendex (Engineering Village)",ieee:"IEEE Xplore",embase:"Embase.com",ovid:"Ovid (MEDLINE/Embase)",cochrane:"Cochrane Library",ebsco:"EBSCOhost (CINAHL)",wos:"Web of Science",scopus:"Scopus"};
+var PROX={embase:{tpl:"NEAR/%N",off:1},ovid:{tpl:"ADJ%N",off:1},cochrane:{tpl:"NEAR/%N",off:1},ebsco:{tpl:"N%N",off:0},wos:{tpl:"NEAR/%N",off:0},scopus:{tpl:"W/%N",off:0},compendex:{tpl:"NEAR/%N",off:0},ieee:{tpl:"NEAR/%N",off:0}};
 function opFor(db,n){ var p=PROX[db]; return p.tpl.replace("%N", String(n+p.off)); }
 
 /* ---------- 關卡 ----------
    tiles: w＝字、bin＝正確位置（s1..s4／keep／drop）、forms＝可選寫法、ok＝可接受的寫法索引、why＝說明 */
-var LEVELS=[
+var LEVELS_MED=[
  { id:"hand", n:2, stacks:2, stackNames:[{zh:"手",en:"Hand"},{zh:"清潔方式",en:"Cleaning"}],
    name:{zh:"手部衛生",en:"Hand hygiene"},
    mission:{zh:"把同義詞拆成「手」×「清潔方式」兩堆。合成一個字的詞放「單獨保留」，重複或已被涵蓋的字丟進「不需要」。放進詞堆的字可以點 ✂ 選寫法——注意短字怎麼處理。",en:"Split the synonyms into two stacks: hand × cleaning. Put words written as one in “Keep separate” and drop repeated or already-covered words. Tap ✂ on a stacked word to choose its form — watch out for short words."},
@@ -468,10 +476,10 @@ var LEVELS=[
      {t:"Gestagen therapy in diabetic women",hit:false,why:{zh:"gestagen 不是 gestation*（字根不同）；若切成 gest* 就會誤找到它。",en:"gestagen doesn’t match gestation* (different stem) — a short gest* would have pulled it in."}},
      {t:"GDM screening in primary care",hit:true,why:{zh:"GDM 單獨保留，以 OR 併入，直接找到。",en:"GDM is OR-ed in on its own, so it matches directly."}}]}
  },
- { id:"icu", n:1, stacks:3, stackNames:[{zh:"加護／重症",en:"Intensive / critical"},{zh:"照護／治療",en:"Care / therapy"},{zh:"病房／部門",en:"Unit / department"}],
+ { id:"icu", n:1, stacks:3, stackNames:[{zh:"加護／重症",en:"Intensive / critical"},{zh:"照護／治療",en:"Care / therapy"},{zh:"病房",en:"Unit"}],
    name:{zh:"加護病房",en:"Intensive care unit"},
-   mission:{zh:"三個字的詞就做三堆：「加護／重症」×「照護／治療」×「病房／部門」。小心太短的切截。",en:"Three-word terms make three stacks: intensive/critical × care/therapy × unit/department. Careful with short truncations."},
-   before:["intensive care unit","intensive care units","critical care unit","intensive therapy unit","intensive care departments","ICU","ICUs"],
+   mission:{zh:"三個字的詞就做三堆：「加護／重症」×「照護／治療」×「病房」。小心太短的切截。",en:"Three-word terms make three stacks: intensive/critical × care/therapy × unit. Careful with short truncations."},
+   before:["intensive care unit","intensive care units","critical care unit","intensive therapy unit","ICU","ICUs"],
    tiles:[
     {w:"intensive",bin:"s1",forms:["intensive","intensiv*"],ok:[0,1],why:{zh:"intensive 或 intensiv* 都可以。",en:"intensive or intensiv* both work."}},
     {w:"critical",bin:"s1",forms:["critical","critic*"],ok:[0],why:{zh:"critic* 會找到 critic、criticism，不要切。",en:"critic* finds critic and criticism — don’t truncate."}},
@@ -479,7 +487,6 @@ var LEVELS=[
     {w:"therapy",bin:"s2",forms:["therapy","therap*"],ok:[1],why:{zh:"therap* 涵蓋 therapy、therapies、therapeutic。",en:"therap* covers therapy, therapies, therapeutic."}},
     {w:"unit",okWith:{f:[0],w:["units"]},bin:"s3",forms:["unit","unit*","unit OR units"],ok:[2],why:{zh:"unit* 會找到 united、unity；短字改補複數 unit OR units。",en:"unit* finds united and unity; use unit OR units for short words."}},
     {w:"units",alt:"unit",bin:"drop",forms:["units"],ok:[0],why:{zh:"unit 寫成 unit OR units 時就不用再列；或 unit、units 兩張都放同一堆。",en:"Not needed once unit is written as unit OR units — or put both in the same stack."}},
-    {w:"departments",bin:"s3",forms:["departments","department*","department OR departments"],ok:[1,2],why:{zh:"department 是長字，可切截 department*（涵蓋 department、departments、departmental）；寫 department OR departments 也可以。",en:"department is a long word, so department* is fine (covers department, departments, departmental); department OR departments also works."}},
     {w:"ICU",okWith:{f:[0],w:["ICUs"]},bin:"keep",forms:["ICU","ICU OR ICUs"],ok:[1],why:{zh:"縮寫單獨保留，並補上複數 ICUs。",en:"Keep the abbreviation separate and add the plural ICUs."}},
     {w:"ICUs",alt:"ICU",bin:"drop",forms:["ICUs"],ok:[0],why:{zh:"ICU 寫成 ICU OR ICUs 時就不用再列；或 ICU、ICUs 兩張都放「單獨保留」。",en:"Not needed once ICU is written as ICU OR ICUs — or put both in “Keep separate”."}}
    ],
@@ -547,6 +554,141 @@ var LEVELS=[
      {t:"Central line-associated bloodstream infection",hit:false,why:{zh:"沒有 venous／vein 那一堆。常見的 central line 會漏掉，可另外把 \"central line*\" 片語以 OR 加入。",en:"No word from the venous/vein stack, so the common central line is missed — add the phrase \"central line*\" with OR."}}]}
  }
 ];
+/* ---------- 非醫學領域關卡（人工智慧、微機電、智慧居家／建築、電動車、無人機） ---------- */
+var LEVELS_NM=[
+ { id:"ai", n:2, stacks:2, stackNames:[{zh:"人工／機器",en:"Artificial / machine"},{zh:"智慧",en:"Intelligence"}],
+   name:{zh:"人工智慧",en:"Artificial intelligence"},
+   mission:{zh:"把同義詞拆成「人工／機器」×「智慧」兩堆。縮寫放「單獨保留」，夾在中間或已被涵蓋的字丟進「不需要」。注意 intelligent machines 的字序跟其他寫法相反。",en:"Split the synonyms into two stacks: artificial/machine × intelligence. Put the abbreviation in “Keep separate” and drop words that sit in between or are already covered. Note that intelligent machines has the words the other way round."},
+   before:["artificial intelligence","machine intelligence","computational intelligence","artificial general intelligence","intelligent machines","AI"],
+   tiles:[
+    {w:"artificial",bin:"s1",forms:["artificial","artificial*","artific*"],ok:[0,1],why:{zh:"artificial 或 artificial*（含 artificially）都可以；artific* 會帶進 artifice。",en:"artificial or artificial* (adds artificially) both work; artific* pulls in artifice."}},
+    {w:"machine",okWith:{f:[0],w:["machines"]},bin:"s1",forms:["machine","machine*","machin*"],ok:[1],why:{zh:"machine* 涵蓋 machines、machinery；machin* 還會帶進 machining（加工），雜訊較多。",en:"machine* covers machines and machinery; machin* also pulls in machining, which adds noise."}},
+    {w:"computational",bin:"s1",forms:["computational","computation*","comput*"],ok:[0,1],why:{zh:"computational 或 computation* 都可以；comput* 會找到所有 computer、computing，範圍太大。",en:"computational or computation* both work; comput* finds every computer and computing — far too broad."}},
+    {w:"intelligence",okWith:{f:[0],w:["intelligent"]},bin:"s2",forms:["intelligence","intellig*","intel*"],ok:[1],why:{zh:"intellig* 同時找到 intelligence、intelligent；intel* 太短，會帶進 Intel 公司。",en:"intellig* finds both intelligence and intelligent; intel* is too short and pulls in the company Intel."}},
+    {w:"intelligent",alt:"intelligence",bin:"drop",forms:["intelligent"],ok:[0],why:{zh:"intellig* 已涵蓋；或 intelligence、intelligent 兩張都放「智慧」堆。",en:"Covered by intellig* — or put both intelligence and intelligent in the intelligence stack."}},
+    {w:"machines",alt:"machine",bin:"drop",forms:["machines"],ok:[0],why:{zh:"machine* 已涵蓋；或 machine、machines 兩張都放同一堆。",en:"Covered by machine* — or put both machine and machines in the same stack."}},
+    {w:"general",bin:"drop",forms:["general"],ok:[0],why:{zh:"artificial general intelligence 的 general 夾在中間，鄰 2 已涵蓋。",en:"In artificial general intelligence, general sits in between — within 2 already covers it."}},
+    {w:"AI",bin:"keep",forms:["AI"],ok:[0],why:{zh:"縮寫無法參與鄰近，單獨以 OR 併入。AI 在其他領域也可能是別的縮寫，結果太雜時可限定欄位或搭配主題詞。",en:"An abbreviation can’t take part in proximity, so it is OR-ed in on its own. AI can stand for other things in other fields — if results get noisy, limit the field or combine with subject terms."}}
+   ],
+   learn:[{zh:"鄰近不限前後順序：intelligent machines 也會被找到。",en:"Proximity is unordered: intelligent machines is found too."},
+          {zh:"夾在中間的字（general）不用列，鄰近距離已涵蓋。",en:"Words in between (general) need not be listed — the distance covers them."},
+          {zh:"intel*、comput* 這類太短或太泛的切截會帶進大量雜訊。",en:"Truncations that are too short or too general (intel*, comput*) add lots of noise."}],
+   bonus:{titles:[
+     {t:"Intelligence of autonomous machines",hit:true,why:{zh:"intelligence 和 machines 中間夾 of、autonomous 2 個字，在鄰 2 之內；鄰近不限順序。",en:"Two words (of, autonomous) sit between intelligence and machines — within 2, and order doesn’t matter."}},
+     {t:"Machine learning for fault diagnosis",hit:false,why:{zh:"沒有「智慧」堆的字。machine learning 是另一個概念，要納入需另外加詞。",en:"No word from the intelligence stack. Machine learning is a separate concept — add it separately if you want it."}},
+     {t:"Artificial neural networks and swarm intelligence",hit:false,why:{zh:"artificial 和 intelligence 中間夾了 4 個字，超過鄰 2。",en:"Four words sit between artificial and intelligence — more than within 2."}},
+     {t:"AI-driven design of antennas",hit:true,why:{zh:"連字號視為空格，AI 單獨保留，直接找到。",en:"The hyphen counts as a space, and AI is kept separate, so it matches directly."}}]}
+ },
+ { id:"mems", n:1, stacks:2, stackNames:[{zh:"微機電／微型",en:"MEMS / micro"},{zh:"感測器",en:"Sensor"}],
+   name:{zh:"微機電感測器",en:"MEMS sensors"},
+   mission:{zh:"把同義詞拆成「微機電／微型」×「感測器」兩堆。詞中的縮寫 MEMS 要放進堆裡；合成一個字的詞放「單獨保留」。",en:"Split the synonyms into two stacks: MEMS/micro × sensor. The abbreviation MEMS sits inside these terms, so it goes into a stack; a term written as one word goes to “Keep separate”."},
+   before:["MEMS sensors","MEMS-based sensor","microelectromechanical sensors","micromachined sensors","micro-sensors","microsensor"],
+   tiles:[
+    {w:"MEMS",bin:"s1",forms:["MEMS"],ok:[0],why:{zh:"MEMS sensors 的 MEMS 是詞的一部分，要放進「微機電」堆才會和 sensor* 鄰近。",en:"In MEMS sensors, MEMS is part of the term — put it in the MEMS stack so it sits near sensor*."}},
+    {w:"microelectromechanical",bin:"s1",forms:["microelectromechanical","microelectromechanic*","microelectro*"],ok:[0,1],why:{zh:"microelectromechanical 或 microelectromechanic* 都可以；microelectro* 會帶進 microelectronics。",en:"microelectromechanical or microelectromechanic* both work; microelectro* pulls in microelectronics."}},
+    {w:"micromachined",bin:"s1",forms:["micromachined","micromachin*","micro*"],ok:[1],why:{zh:"micromachin* 涵蓋 micromachined、micromachining；micro* 會找到所有 micro- 開頭的字。",en:"micromachin* covers micromachined and micromachining; micro* finds every word starting with micro-."}},
+    {w:"micro",bin:"s1",forms:["micro","micro*"],ok:[0],why:{zh:"連字號視為空格：micro-sensors 就是 micro sensors。micro 不切截，micro* 會找到所有 micro- 開頭的字。",en:"A hyphen counts as a space: micro-sensors is micro sensors. Leave micro whole — micro* finds every word starting with micro-."}},
+    {w:"sensor",okWith:{f:[0],w:["sensors"]},bin:"s2",forms:["sensor","sensor*","sens*"],ok:[1],why:{zh:"sensor* 涵蓋 sensors；sens* 太短，會帶進 sensitivity、sensing。",en:"sensor* covers sensors; sens* is too short and pulls in sensitivity and sensing."}},
+    {w:"sensors",alt:"sensor",bin:"drop",forms:["sensors"],ok:[0],why:{zh:"sensor* 已涵蓋；或 sensor、sensors 兩張都放同一堆。",en:"Covered by sensor* — or put both sensor and sensors in the same stack."}},
+    {w:"based",bin:"drop",forms:["based"],ok:[0],why:{zh:"MEMS-based sensor 的 based 夾在中間，鄰 1 已涵蓋。",en:"In MEMS-based sensor, based sits in between — within 1 already covers it."}},
+    {w:"microsensor",bin:"keep",forms:["microsensor","microsensor*"],ok:[1],why:{zh:"合成一個字就拆不開，無法鄰近，單獨保留：microsensor*（含複數）。",en:"A one-word compound can’t be split for proximity — keep it separate: microsensor* (adds the plural)."}}
+   ],
+   learn:[{zh:"詞中的縮寫（MEMS sensors 的 MEMS）放進對應的堆。",en:"An abbreviation inside a term (MEMS in MEMS sensors) goes into its stack."},
+          {zh:"連字號視為空格：micro-sensors 拆成 micro sensors。",en:"A hyphen counts as a space: micro-sensors splits into micro sensors."},
+          {zh:"合成一字（microsensor）無法鄰近，單獨保留。",en:"A one-word compound (microsensor) can’t use proximity — keep it separate."}],
+   bonus:{titles:[
+     {t:"Sensors based on MEMS technology",hit:false,why:{zh:"sensors 和 MEMS 中間夾 based、on 2 個字，超過鄰 1。",en:"Two words (based, on) sit between sensors and MEMS — more than within 1."}},
+     {t:"A micromachining sensor array",hit:true,why:{zh:"micromachin* 也涵蓋 micromachining，且和 sensor 緊鄰。",en:"micromachin* also covers micromachining, which sits right next to sensor."}},
+     {t:"Micro gas sensors for air quality",hit:true,why:{zh:"micro 和 sensors 中間只夾 gas 1 個字。",en:"Only one word (gas) sits between micro and sensors."}},
+     {t:"Microsensors for gas detection",hit:true,why:{zh:"microsensor* 單獨保留，也涵蓋複數 microsensors。",en:"microsensor* is kept separate and also covers the plural microsensors."}}]}
+ },
+ { id:"smarthome", n:1, stacks:2, stackNames:[{zh:"智慧／自動化",en:"Smart / automation"},{zh:"居家／建築",en:"Home / building"}],
+   name:{zh:"智慧居家／建築",en:"Smart homes / buildings"},
+   mission:{zh:"把同義詞拆成「智慧／自動化」×「居家／建築」兩堆。home automation 的字序和 smart home 相反，但 automation 仍屬第一堆。小心短字切截！",en:"Split the synonyms into two stacks: smart/automation × home/building. home automation has the words the other way round from smart home, but automation still belongs to stack 1. Careful with truncating short words!"},
+   before:["smart home","smart homes","smart house","intelligent buildings","smart building","home automation","building automation systems","domotics"],
+   tiles:[
+    {w:"smart",bin:"s1",forms:["smart","smart*"],ok:[0],why:{zh:"smart* 會找到 smartphone、smartwatch，不要切。",en:"smart* finds smartphone and smartwatch — don’t truncate."}},
+    {w:"intelligent",bin:"s1",forms:["intelligent","intellig*"],ok:[0,1],why:{zh:"intelligent 或 intellig*（含 intelligence）都可以。",en:"intelligent or intellig* (adds intelligence) both work."}},
+    {w:"automation",bin:"s1",forms:["automation","automat*","auto*"],ok:[1],why:{zh:"automat* 涵蓋 automation、automated、automatic；auto* 太短，會帶進 automobile、autonomous。",en:"automat* covers automation, automated and automatic; auto* is too short and pulls in automobile and autonomous."}},
+    {w:"home",okWith:{f:[0],w:["homes"]},bin:"s2",forms:["home","home*","home OR homes"],ok:[2],why:{zh:"home* 會找到 homeless、homework；短字改補複數：home OR homes。",en:"home* finds homeless and homework; for short words add the plural: home OR homes."}},
+    {w:"homes",alt:"home",bin:"drop",forms:["homes"],ok:[0],why:{zh:"home 寫成 home OR homes 時就不用再列；或 home、homes 兩張都放同一堆。",en:"Not needed once home is written as home OR homes — or put both in the same stack."}},
+    {w:"house",bin:"s2",forms:["house","house*","house OR houses"],ok:[2],why:{zh:"house* 會帶進 housekeeping、housing；補複數即可。若也要 household，可另外加。",en:"house* pulls in housekeeping and housing; just add the plural. Add household separately if you want it."}},
+    {w:"building",okWith:{f:[0],w:["buildings"]},bin:"s2",forms:["building","building*","build*"],ok:[1],why:{zh:"building* 涵蓋 buildings；build* 會帶進 builder、build-up。",en:"building* covers buildings; build* pulls in builder and build-up."}},
+    {w:"buildings",alt:"building",bin:"drop",forms:["buildings"],ok:[0],why:{zh:"building* 已涵蓋；或 building、buildings 兩張都放同一堆。",en:"Covered by building* — or put both building and buildings in the same stack."}},
+    {w:"systems",bin:"drop",forms:["systems"],ok:[0],why:{zh:"building automation systems 已被「building* 鄰近 automat*」涵蓋，systems 不用列。",en:"building automation systems is already caught by building* near automat*, so systems isn’t needed."}},
+    {w:"domotics",bin:"keep",forms:["domotics","domotic*"],ok:[1],why:{zh:"單一個字的同義詞單獨保留；domotic* 同時找到 domotic、domotics。",en:"A one-word synonym is kept separate; domotic* finds both domotic and domotics."}}
+   ],
+   learn:[{zh:"字序相反（home automation）也屬同一組堆；鄰近不限順序。",en:"Reversed word order (home automation) uses the same stacks — proximity is unordered."},
+          {zh:"smart*、home*、auto* 這類短字切截會帶進大量無關字。",en:"Short truncations like smart*, home* and auto* pull in many unrelated words."},
+          {zh:"單一個字的同義詞（domotics）單獨保留。",en:"A one-word synonym (domotics) is kept separate."}],
+   bonus:{titles:[
+     {t:"Automation of the home environment",hit:false,why:{zh:"automation 和 home 中間夾 of、the 2 個字，超過鄰 1。",en:"Two words (of, the) sit between automation and home — more than within 1."}},
+     {t:"Smart homes for older adults",hit:true,why:{zh:"smart 和 homes 緊鄰。",en:"smart and homes sit side by side."}},
+     {t:"Smartphone home control",hit:false,why:{zh:"smart 沒有切截，所以 smartphone 不算；若寫成 smart* 就會誤找到這篇。",en:"smart isn’t truncated, so smartphone doesn’t count — smart* would have pulled this one in."}},
+     {t:"Intelligent office buildings",hit:true,why:{zh:"intelligent 和 buildings 中間只夾 office 1 個字。",en:"Only one word (office) sits between intelligent and buildings."}}]}
+ },
+ { id:"ev", n:1, stacks:2, stackNames:[{zh:"電動",en:"Electric"},{zh:"車輛",en:"Vehicle"}],
+   name:{zh:"電動車",en:"Electric vehicles"},
+   mission:{zh:"把同義詞拆成「電動」×「車輛」兩堆。車輛那一堆有好幾種說法；在前面修飾的字、夾在中間的字，想想要不要列。",en:"Split the synonyms into two stacks: electric × vehicle. The vehicle stack has several wordings; think about whether words in front or in between need listing."},
+   before:["electric vehicle","electric vehicles","electric cars","electric automobiles","electrically powered vehicles","battery electric vehicles","plug-in electric vehicle","EV","EVs"],
+   tiles:[
+    {w:"electric",okWith:{f:[0],w:["electrically"]},bin:"s1",forms:["electric","electric*","elect*"],ok:[1],why:{zh:"electric* 涵蓋 electrical、electrically；elect* 太短，會帶進 election、electron。",en:"electric* covers electrical and electrically; elect* is too short and pulls in election and electron."}},
+    {w:"electrically",alt:"electric",bin:"drop",forms:["electrically"],ok:[0],why:{zh:"electric* 已涵蓋；或 electric、electrically 兩張都放同一堆。",en:"Covered by electric* — or put both electric and electrically in the same stack."}},
+    {w:"vehicle",okWith:{f:[0],w:["vehicles"]},bin:"s2",forms:["vehicle","vehicle*","vehic*"],ok:[1],why:{zh:"vehicle* 涵蓋 vehicles；vehic* 會多出 vehicular，沒有必要。",en:"vehicle* covers vehicles; vehic* adds vehicular and isn’t needed."}},
+    {w:"vehicles",alt:"vehicle",bin:"drop",forms:["vehicles"],ok:[0],why:{zh:"vehicle* 已涵蓋；或 vehicle、vehicles 兩張都放同一堆。",en:"Covered by vehicle* — or put both vehicle and vehicles in the same stack."}},
+    {w:"cars",bin:"s2",forms:["cars","car*","car OR cars"],ok:[2],why:{zh:"car* 會找到 carbon、care、cardiac，千萬別切；寫成 car OR cars。",en:"car* finds carbon, care and cardiac — never truncate it; write car OR cars."}},
+    {w:"automobiles",bin:"s2",forms:["automobiles","automobile*","auto*"],ok:[1],why:{zh:"automobile* 涵蓋單複數；auto* 太短。",en:"automobile* covers singular and plural; auto* is too short."}},
+    {w:"powered",bin:"drop",forms:["powered"],ok:[0],why:{zh:"electrically powered vehicles 的 powered 夾在中間，鄰 1 已涵蓋。",en:"In electrically powered vehicles, powered sits in between — within 1 already covers it."}},
+    {w:"battery",bin:"drop",forms:["battery"],ok:[0],why:{zh:"battery electric vehicles 已被「electric* 鄰近 vehicle*」涵蓋；在前面修飾的字不用列。",en:"battery electric vehicles is already caught by electric* near vehicle* — a word in front doesn’t need listing."}},
+    {w:"plug",bin:"drop",forms:["plug"],ok:[0],why:{zh:"plug-in electric vehicle 已被涵蓋，plug、in 不用列（連字號視為空格）。",en:"plug-in electric vehicle is already caught, so plug and in aren’t needed (hyphens count as spaces)."}},
+    {w:"in",bin:"drop",forms:["in"],ok:[0],why:{zh:"in 是 plug-in 的一部分，不用列。",en:"in is part of plug-in and isn’t needed."}},
+    {w:"EV",okWith:{f:[0],w:["EVs"]},bin:"keep",forms:["EV","EV OR EVs"],ok:[1],why:{zh:"縮寫單獨保留，並補上複數 EVs。",en:"Keep the abbreviation separate and add the plural EVs."}},
+    {w:"EVs",alt:"EV",bin:"drop",forms:["EVs"],ok:[0],why:{zh:"EV 寫成 EV OR EVs 時就不用再列；或 EV、EVs 兩張都放「單獨保留」。",en:"Not needed once EV is written as EV OR EVs — or put both in “Keep separate”."}}
+   ],
+   learn:[{zh:"同一堆可以有好幾種說法：vehicle*、car OR cars、automobile*。",en:"One stack can hold several wordings: vehicle*, car OR cars, automobile*."},
+          {zh:"car、elect 這類短字根一切截就爆量（carbon、election）。",en:"Truncating short stems like car or elect explodes the results (carbon, election)."},
+          {zh:"在前面修飾的字（battery、plug-in）和夾在中間的字（powered）都不用列。",en:"Words in front (battery, plug-in) and words in between (powered) need not be listed."}],
+   bonus:{titles:[
+     {t:"Vehicles with electric drive",hit:true,why:{zh:"vehicles 和 electric 中間只夾 with 1 個字；鄰近不限順序。",en:"Only one word (with) sits between vehicles and electric, and order doesn’t matter."}},
+     {t:"Electric carbon heaters",hit:false,why:{zh:"carbon 不是 car OR cars；若切成 car* 就會誤找到這篇。",en:"carbon isn’t car OR cars — car* would have pulled this one in."}},
+     {t:"Electric scooters in urban mobility",hit:false,why:{zh:"scooters 不在車輛堆裡；要涵蓋需另外加 scooter*。",en:"scooters isn’t in the vehicle stack — add scooter* separately to cover it."}},
+     {t:"EVs and charging infrastructure",hit:true,why:{zh:"EVs 單獨保留，直接找到。",en:"EVs is kept separate and matches directly."}}]}
+ },
+ { id:"uav", n:1, stacks:3, stackNames:[{zh:"無人",en:"Unmanned"},{zh:"空中／飛行器",en:"Aerial / aircraft"},{zh:"載具／系統",en:"Vehicle / system"}],
+   name:{zh:"無人機",en:"Unmanned aerial vehicles"},
+   mission:{zh:"最終關！「無人」×「空中／飛行器」×「載具／系統」三堆。清單裡有新舊說法（uncrewed）、好幾個縮寫和俗稱，還有一個很危險的短字。",en:"Final level! Three stacks: unmanned × aerial/aircraft × vehicle/system. The list mixes old and new wording (uncrewed), several abbreviations, a common name and one very risky short word."},
+   before:["unmanned aerial vehicles","unmanned aerial vehicle","unmanned aircraft systems","uncrewed aerial vehicle","unmanned air vehicles","pilotless aerial vehicles","drones","UAV","UAVs","UAS"],
+   tiles:[
+    {w:"unmanned",bin:"s1",forms:["unmanned","unman*"],ok:[0],why:{zh:"unmanned 不用切截；unman* 只會多出 unmanageable 這類雜訊。",en:"No need to truncate unmanned; unman* only adds noise such as unmanageable."}},
+    {w:"uncrewed",bin:"s1",forms:["uncrewed","uncrew*"],ok:[0,1],why:{zh:"uncrewed 是較新的中性說法，和 unmanned 同一堆。",en:"uncrewed is the newer, neutral wording — same stack as unmanned."}},
+    {w:"pilotless",bin:"s1",forms:["pilotless"],ok:[0],why:{zh:"pilotless 也是「無人」的意思，放第一堆。",en:"pilotless also means unmanned — stack 1."}},
+    {w:"aerial",bin:"s2",forms:["aerial","aerial*","aer*"],ok:[0,1],why:{zh:"aerial 或 aerial* 都可以；aer* 太短，會帶進 aerobic、aerosol。",en:"aerial or aerial* both work; aer* is too short and pulls in aerobic and aerosol."}},
+    {w:"air",bin:"s2",forms:["air","air*"],ok:[0],why:{zh:"air* 雖然也涵蓋 aircraft、airborne，但會帶進 airport、airway、airline 等大量雜訊；air 不切，aircraft 另外列。",en:"air* would also cover aircraft and airborne, but pulls in airport, airway, airline and more. Leave air whole and list aircraft separately."}},
+    {w:"aircraft",bin:"s2",forms:["aircraft","aircraft*"],ok:[0,1],why:{zh:"unmanned aircraft systems 的 aircraft 放「飛行器」堆。",en:"In unmanned aircraft systems, aircraft goes in the aerial/aircraft stack."}},
+    {w:"vehicle",okWith:{f:[0],w:["vehicles"]},bin:"s3",forms:["vehicle","vehicle*"],ok:[1],why:{zh:"vehicle* 涵蓋 vehicles。",en:"vehicle* covers vehicles."}},
+    {w:"vehicles",alt:"vehicle",bin:"drop",forms:["vehicles"],ok:[0],why:{zh:"vehicle* 已涵蓋；或 vehicle、vehicles 兩張都放同一堆。",en:"Covered by vehicle* — or put both vehicle and vehicles in the same stack."}},
+    {w:"systems",bin:"s3",forms:["systems","system*","system OR systems"],ok:[1,2],why:{zh:"unmanned aircraft systems 的 systems 放第三堆；system* 或 system OR systems 都可以。",en:"In unmanned aircraft systems, systems goes in stack 3; system* or system OR systems both work."}},
+    {w:"drones",bin:"keep",forms:["drones","drone*","drone OR drones"],ok:[1,2],why:{zh:"俗稱 drone 單獨保留，補上單數：drone* 或 drone OR drones。",en:"Keep the common name separate and add the singular: drone* or drone OR drones."}},
+    {w:"UAV",okWith:{f:[0],w:["UAVs"]},bin:"keep",forms:["UAV","UAV OR UAVs"],ok:[1],why:{zh:"縮寫單獨保留，並補上複數 UAVs。",en:"Keep the abbreviation separate and add the plural UAVs."}},
+    {w:"UAVs",alt:"UAV",bin:"drop",forms:["UAVs"],ok:[0],why:{zh:"UAV 寫成 UAV OR UAVs 時就不用再列；或 UAV、UAVs 兩張都放「單獨保留」。",en:"Not needed once UAV is written as UAV OR UAVs — or put both in “Keep separate”."}},
+    {w:"UAS",bin:"keep",forms:["UAS"],ok:[0],why:{zh:"UAS（unmanned aircraft systems）也是常見縮寫，別漏。",en:"Don’t miss UAS (unmanned aircraft systems), another common abbreviation."}}
+   ],
+   learn:[{zh:"三個字的詞做三堆；三堆都要有字才算命中。",en:"A three-word term makes three stacks; all three must match."},
+          {zh:"air* 這類短字切截雖然會涵蓋 aircraft，雜訊卻更多：air 不切，aircraft 另外列。",en:"A short truncation like air* covers aircraft but adds even more noise: leave air whole and list aircraft separately."},
+          {zh:"新舊說法（unmanned／uncrewed／pilotless）、俗稱（drone）、多個縮寫（UAV、UAS）都要列。",en:"List old and new wordings (unmanned / uncrewed / pilotless), common names (drone) and every abbreviation (UAV, UAS)."}],
+   bonus:{titles:[
+     {t:"Unmanned aircraft in precision agriculture",hit:false,why:{zh:"沒有「載具／系統」堆的字；三堆都要有字。常見的 unmanned aircraft 可另以片語 OR 加入。",en:"No word from the vehicle/system stack — all three must match. Add the common phrase unmanned aircraft separately with OR."}},
+     {t:"Drone-based bridge inspection",hit:true,why:{zh:"連字號視為空格，drone 單獨保留，直接找到。",en:"The hyphen counts as a space, and drone is kept separate, so it matches directly."}},
+     {t:"Unmanned surface vehicles for ocean monitoring",hit:false,why:{zh:"surface 不在「空中」堆；這是無人船，不找到正好。",en:"surface isn’t in the aerial stack — these are unmanned boats, so missing them is right."}},
+     {t:"Small unmanned air vehicle design",hit:true,why:{zh:"unmanned、air、vehicle 三個字緊鄰，三堆都找到。",en:"unmanned, air and vehicle sit side by side — all three stacks match."}}]}
+ }
+];
+var DOM="med", LEVELS=LEVELS_MED;
+function applyDom(d){ DOM=(d==="nm")?"nm":"med"; LEVELS=DOM==="nm"?LEVELS_NM:LEVELS_MED; DBS=DOM==="nm"?DBS_NM:DBS_MED; DB_LABEL.ebsco=DOM==="nm"?"EBSCOhost":"EBSCOhost (CINAHL)"; }
+function defDb(){ return DOM==="nm"?"compendex":"embase"; }
+/* 參考答案表：寫法相同的資料庫合併一列 */
+function ansRows(){ return DOM==="nm" ? [{db:"compendex",lab:"Ei Compendex<br>IEEE Xplore<br>Web of Science"},{db:"ebsco"},{db:"scopus"}] : [{db:"embase",lab:"Embase.com<br>Cochrane Library"},{db:"ovid"},{db:"ebsco"},{db:"wos"},{db:"scopus"}]; }
+function cmpRows(){ return DOM==="nm" ? [{db:"compendex"},{db:"wos"},{db:"scopus"},{db:"ebsco"}] : [{db:"embase",lab:"Embase.com<br>Cochrane Library"},{db:"ovid"},{db:"ebsco"},{db:"wos"},{db:"scopus"}]; }
 var BIN_STACKS=["s1","s2","s3","s4"];
 
 /* ---------- 進度（每位瀏覽者本機） ---------- */
@@ -554,6 +696,7 @@ var SKEY="sr_pxgame_v1";
 function loadProg(){ try{ var o=JSON.parse(localStorage.getItem(SKEY)||"{}"); return (o&&typeof o==="object")?o:{}; }catch(e){ return {}; } }
 function saveProg(){ try{ localStorage.setItem(SKEY, JSON.stringify(PROG)); }catch(e){} }
 var PROG=loadProg(); if(!PROG.lv) PROG.lv={};
+applyDom(PROG.dom);
 function lvProg(id){ return PROG.lv[id]||{stars:0,gold:false}; }
 function totalEggs(){ var n=0; LEVELS.forEach(function(lv){ var p=lvProg(lv.id); n+=p.stars+(p.gold?1:0); }); return n; }
 function unlocked(i){ if(PROG.all) return true; if(i===0) return true; return lvProg(LEVELS[i-1].id).stars>0; }
@@ -588,9 +731,11 @@ function renderMap(){
   });
   $("totalEggs").innerHTML=eggSvg("on",16)+' <b>'+totalEggs()+'</b> / '+(LEVELS.length*4);
   $("unlockAll").checked=!!PROG.all;
+  Array.prototype.forEach.call(document.querySelectorAll("#domTab button"),function(b){ var on=b.dataset.dom===DOM; b.classList.toggle("on",on); b.setAttribute("aria-selected",on?"true":"false"); });
 }
 $("unlockAll").onchange=function(){ PROG.all=this.checked; saveProg(); renderMap(); };
-$("resetAll").onclick=function(){ PROG={lv:{},all:PROG.all}; saveProg(); renderMap(); };
+$("resetAll").onclick=function(){ PROG={lv:{},all:PROG.all,dom:DOM}; saveProg(); renderMap(); };
+Array.prototype.forEach.call(document.querySelectorAll("#domTab button"),function(b){ b.onclick=function(){ if(b.dataset.dom===DOM) return; applyDom(b.dataset.dom); PROG.dom=DOM; saveProg(); renderMap(); }; });
 
 /* ---------- 關卡狀態 ---------- */
 var S=null;   // {i, lv, place:{tid:bin}, form:{tid:idx}, penalty, wrongChecks, hints, done, marks:{}}
@@ -601,13 +746,7 @@ function tokenize(ph){ var parts=ph.split(/(\s+|-|,\s*)/), out=[];
   parts.forEach(function(x){ if(!x) return; if(/^\s+$/.test(x)) out.push({sp:true}); else if(x==="-"||/^,/.test(x)) out.push({sep:x.trim()||x}); else out.push({w:x}); });
   return out; }
 function levelWords(lv){ var order=[], freq={}; lv.before.forEach(function(ph){ var seen={}; tokenize(ph).forEach(function(t){ if(!t.w) return; if(!(t.w in freq)){ freq[t.w]=0; order.push(t.w); } if(!seen[t.w]){ seen[t.w]=1; freq[t.w]++; } }); }); return {order:order,freq:freq}; }
-/* 拖曳殘影清除：手機上拖曳途中被捲動／切換關卡打斷時，複製出來的字卡（.ghost）可能沒被移除而一直浮在畫面上 */
-function clearGhosts(){ document.querySelectorAll(".ghost").forEach(function(g){ g.remove(); }); document.querySelectorAll("#scrLevel .tile.dragging").forEach(function(t){ t.classList.remove("dragging"); }); if(typeof hiliteBin==="function") hiliteBin(null); }
-["pointerup","pointercancel"].forEach(function(ev){ document.addEventListener(ev, function(){ setTimeout(function(){ if(!document.querySelector("#scrLevel .tile.dragging")) document.querySelectorAll(".ghost").forEach(function(g){ g.remove(); }); }, 0); }, true); });
-document.addEventListener("visibilitychange", function(){ if(document.hidden) clearGhosts(); });
-window.addEventListener("blur", clearGhosts);
 function startLevel(i, skipIntro){
-  clearGhosts();
   var lv=LEVELS[i], lw=levelWords(lv), idx={};
   lv.tiles.forEach(function(t,k){ idx[t.w]=k; });
   var order=lw.order.map(function(w){ return idx[w]; }).filter(function(k){ return k!=null; });
@@ -645,7 +784,8 @@ function runSplit(){
   var idx={}; S.lv.tiles.forEach(function(t,k){ idx[t.w]=k; });
   var toks=Array.prototype.slice.call(document.querySelectorAll("#lvBefore .tk"));
   function land(k){ var el=tiles[k]; if(!el) return; el.classList.remove("pending"); shown[k]++; var c=el.querySelector(".cnt"); if(c){ c.textContent="×"+shown[k]; c.classList.remove("bump"); void c.offsetWidth; c.classList.add("bump"); } }
-  function finish(){ toks.forEach(function(t){ t.classList.add("gone"); }); S.phase="sort"; renderTiles(); applyPhase(); var pc=$("playCard"); if(pc && pc.scrollIntoView && !REDUCED) pc.scrollIntoView({behavior:"smooth",block:"start"}); }
+  function finish(){ if(!S) return;   /* 拆字動畫途中回到地圖：不再更新 */
+    toks.forEach(function(t){ t.classList.add("gone"); }); S.phase="sort"; renderTiles(); applyPhase(); var pc=$("playCard"); if(pc && pc.scrollIntoView && !REDUCED) pc.scrollIntoView({behavior:"smooth",block:"start"}); }
   if(REDUCED || !Element.prototype.animate){ toks.forEach(function(t){ var k=idx[t.dataset.w]; if(k!=null) land(k); }); finish(); return; }
   var seenPh=[];   // 同一同義詞內重複的字只算一次
   setTimeout(function(){
@@ -668,7 +808,7 @@ function runSplit(){
   function land2(k){ var el=tiles[k]; if(el){ el.classList.remove("pending"); } }
 }
 $("splitBtn").onclick=runSplit;
-function backToMap(){ clearGhosts(); closePop(); $("scrLevel").hidden=true; $("scrMap").hidden=false; S=null; renderMap(); window.scrollTo(0,0); }
+function backToMap(){ closePop(); $("scrLevel").hidden=true; $("scrMap").hidden=false; S=null; renderMap(); window.scrollTo(0,0); }
 $("backMap").onclick=backToMap;
 $("resetLv").onclick=function(){ if(S) startLevel(S.i, true); };
 
@@ -686,7 +826,7 @@ function renderLevelStatic(){
     b.innerHTML='<span class="bl">'+T("堆 "+s,"Stack "+s)+(sn?'<span class="snm">'+esc(T("「"+sn.zh+"」"," · "+sn.en))+'</span>':'')+'<small>'+T("堆內 OR","OR within")+'</small></span>';
     row.appendChild(b);
   }
-  var sel=$("pvDb"), cur=sel.value||"embase"; sel.innerHTML=DBS.map(function(d){ return '<option value="'+d+'">'+esc(DB_LABEL[d])+'</option>'; }).join(""); sel.value=DBS.indexOf(cur)>=0?cur:"embase";
+  var sel=$("pvDb"), cur=sel.value||defDb(); sel.innerHTML=DBS.map(function(d){ return '<option value="'+d+'">'+esc(DB_LABEL[d])+'</option>'; }).join(""); sel.value=DBS.indexOf(cur)>=0?cur:defDb();
   bindBins();
 }
 function binEl(bin){ return $("bin-"+bin); }
@@ -744,7 +884,6 @@ function bindTile(el,k){
   }
   el.addEventListener("pointerup",function(e){ end(e,false); });
   el.addEventListener("pointercancel",function(e){ end(e,true); });
-  el.addEventListener("lostpointercapture",function(e){ end(e,true); });   // 字卡在拖曳中被重畫或系統接手觸控時，也要收掉殘影
   el.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); toggleSel(k); } });
 }
 function binAt(x,y){ var e=document.elementFromPoint(x,y); return e&&e.closest? e.closest("#scrLevel .bin") : null; }
@@ -794,7 +933,7 @@ function playerGroups(){ var st=[], keep=[]; for(var s=1;s<=S.lv.stacks;s++) st.
 function answerGroups(lv){ var st=[], keep=[]; for(var s=1;s<=lv.stacks;s++) st.push([]);
   lv.tiles.forEach(function(t){ var f=t.forms[t.ok[0]]; if(t.bin==="keep") keep.push(f); else if(t.bin.charAt(0)==="s") st[+t.bin.slice(1)-1].push(f); });
   return {stacks:st, keep:keep}; }
-function renderPreview(){ var g=playerGroups(), db=$("pvDb").value||"embase";
+function renderPreview(){ var g=playerGroups(), db=$("pvDb").value||defDb();
   var h=buildExpr(db,g.stacks,g.keep,S.lv.n,true);
   $("pvCode").innerHTML=h||('<span class="em">'+T("把字拖進詞堆，這裡會即時組出檢索式…","Drag words into the stacks to build the search here…")+'</span>');
   if(g.stacks.filter(function(s){return s.length;}).length===1 && g.stacks.length>1) $("pvCode").innerHTML+='<br><span class="em">'+T("（至少要兩堆有字，才會出現鄰近運算子）","(at least two stacks need words for a proximity operator)")+'</span>';
@@ -869,7 +1008,7 @@ function levelClear(){
 function openBonus(){
   var lv=S.lv, bq=lv.bonus, a=answerGroups(lv);
   $("bonusQ").innerHTML=esc(T("用這一關的檢索式（鄰 "+lv.n+" 單字內）在篇名搜尋，下面哪幾篇找得到？","Searching titles with this level’s search (within "+lv.n+" word"+(lv.n>1?"s":"")+"), which articles would be found?"))+"<br>"+esc(T("可複選，全對得金蛋","Tick all that apply — all correct wins a golden egg"));
-  $("bonusCode").textContent=buildExpr("embase",a.stacks,a.keep,lv.n,false);
+  $("bonusCode").textContent=buildExpr(defDb(),a.stacks,a.keep,lv.n,false);
   var o=$("bonusOpts"); o.className="titles"; o.innerHTML="";
   bq.titles.forEach(function(it,i){ var lab=document.createElement("label");
     lab.innerHTML='<input type="checkbox" value="'+i+'"><span class="tt"><i>'+esc(it.t)+'</i><span class="res"></span></span>';
@@ -911,6 +1050,7 @@ function titleWrap(db,expr,html){
   if(db==="embase"||db==="cochrane") return L+e+R+":ti";
   if(db==="ovid") return L+e+R+".ti.";
   if(db==="ebsco") return "TI "+L+e+R;
+  if(db==="compendex") return L+e+R+" WN TI";
   if(db==="wos") return "TI="+L+e+R;
   if(db==="scopus") return "TITLE"+L+e+R;
   return e;
@@ -929,7 +1069,7 @@ function copyText(txt,btn){
 }
 function renderCmp(){
   var lv=S.lv, box=$("cmpBox");
-  var rows=[{db:"embase",lab:"Embase.com<br>Cochrane Library"},{db:"ovid"},{db:"ebsco"},{db:"wos"},{db:"scopus"}];
+  var rows=cmpRows();
   var h='<h4>'+T("實際檢索：片語 vs 鄰近字（都限篇名、同樣切截）","Try it: phrase vs proximity (title only, same truncation)")+'</h4>'+
     '<p>'+T("片語只找得到字緊緊相連、順序一樣的寫法；鄰近字還能找到中間夾字或前後顛倒的寫法。複製「鄰近字 NOT 片語」貼到資料庫，看看鄰近字多找到哪些文章。","A phrase finds only words side by side in that order; proximity also finds them with words in between or reversed. Copy “Proximity NOT phrase” into a database to see what proximity adds.")+'</p>'+
     '<table class="cmpt"><thead><tr><th>'+T("資料庫","Database")+'</th><th>'+T("① 片語檢索","① Phrase")+'</th><th>'+T("② 鄰近字檢索","② Proximity")+'</th><th>'+T("② NOT ①","② NOT ①")+'</th></tr></thead><tbody>';
@@ -958,7 +1098,7 @@ function openDone(){
   $("doneLearn").innerHTML=lv.learn.map(function(x){ return "<li>"+esc(L(x))+"</li>"; }).join("");
   var a=answerGroups(lv), rows="";
   // 寫法相同的資料庫合併一列（Embase.com 與 Cochrane Library 都是 NEAR/n，n＝間隔字數＋1）
-  [{db:"embase",lab:"Embase.com<br>Cochrane Library"},{db:"ovid"},{db:"ebsco"},{db:"wos"},{db:"scopus"}].forEach(function(r){ rows+="<tr><td>"+(r.lab||esc(DB_LABEL[r.db]))+"</td><td><code>"+esc(buildExpr(r.db,a.stacks,a.keep,lv.n,false))+"</code></td></tr>"; });
+  ansRows().forEach(function(r){ rows+="<tr><td>"+(r.lab||esc(DB_LABEL[r.db]))+"</td><td><code>"+esc(buildExpr(r.db,a.stacks,a.keep,lv.n,false))+"</code></td></tr>"; });
   $("cmpBox").classList.remove("show"); $("cmpBox").innerHTML="";
   $("doneAns").innerHTML="<tr><td colspan='2' style='border-top:0;padding-left:0;color:var(--sh-green-d)'>"+T("參考答案（鄰 "+lv.n+" 單字內）","Model answer (within "+lv.n+" word"+(lv.n>1?"s":"")+")")+"</td></tr>"+rows;
   var last=S.i>=LEVELS.length-1; $("doneNextLv").innerHTML= last ? T("完成！看總成績","Finish — see total") : T("下一關 →","Next level →");
