@@ -75,9 +75,9 @@
   table.pico td.lab{position:relative}
   table.pico td.lab .labshow{display:none}
   table.pico td.lab.lshow input{position:absolute;left:0;top:0;width:1px;height:1px;opacity:0;pointer-events:none}
-  table.pico td.lab.lshow .labshow{display:flex;flex-direction:column;align-items:center;font-weight:700;color:#2B2B2B;font-size:21px;line-height:1.15;cursor:text}
+  table.pico td.lab.lshow .labshow{display:flex;flex-direction:column;align-items:center;font-weight:700;color:#2B2B2B;font-size:21px;line-height:1.15;cursor:text;max-height:calc(21px * 1.15 * 5);overflow:hidden}
+  table.pico td.lab .labshow .lrot{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;max-height:calc(21px * 1.15 * 5);overflow:hidden;font-size:19px;line-height:1.2;margin:2px 0}
   table.pico td.lab .labshow .len{max-width:100%;text-align:center;overflow-wrap:anywhere;word-break:break-all}
-  table.pico td.lab .labshow .len.sm{font-size:15px;line-height:1.2}
   table.pico td.lab input:focus{outline:none;border:1px solid var(--brand2,#617B76);border-radius:6px;background:#fff}
   table.pico td.lab .ccode{text-align:center}
   table.pico td.lab .rowlvl{width:100%;min-width:0;box-sizing:border-box;-webkit-appearance:none;appearance:none;margin-top:4px;font-size:11px;font-weight:700;text-align:center;text-align-last:center;padding:1px 0;border:1px solid #cdd5da;border-radius:5px;background:#EEF1F3;color:#3f6f3f;cursor:pointer}
@@ -2229,13 +2229,15 @@ if (typeof module !== "undefined" && module.exports) {
     phs = phs || {}; cv = cv || {}; var pcv = phs.cv || {};
     var tr=document.createElement("tr");
     var labTd=document.createElement("td"); labTd.className="lab";
-    var labIn=document.createElement("input"); labIn.value=label||""; labIn.maxLength=4; labIn.placeholder="✎"; labIn.title="概念代號（如 P、I、C、O） / Concept label (e.g. P, I, C, O)"; labTd.appendChild(labIn);
+    var labIn=document.createElement("input"); labIn.value=label||""; labIn.maxLength=10; labIn.placeholder="✎"; labIn.title="概念代號（如 P、I、C、O） / Concept label (e.g. P, I, C, O)"; labTd.appendChild(labIn);
     var labShow=document.createElement("div"); labShow.className="labshow"; labShow.title=labIn.title; labTd.appendChild(labShow);   /* 顯示層：概念代號超過欄寬時才用（中文直排、英文橫排） */
     var _labCJK=/[⺀-鿿豈-﫿＀-￯]/;
     var _labRender=function(){ var v=labIn.value.trim(); labShow.textContent="";
-      (v.match(/[⺀-鿿豈-﫿＀-￯]|[^⺀-鿿豈-﫿＀-￯]+/g)||[]).forEach(function(seg){ seg=seg.trim(); if(!seg) return; var sp=document.createElement("span"); sp.className=_labCJK.test(seg)?"lzh":("len"+(seg.length>2?" sm":"")); sp.textContent=seg; labShow.appendChild(sp); });
-      var _w=0; for(var i=0;i<v.length;i++){ _w+=_labCJK.test(v.charAt(i))?1:(/\s/.test(v.charAt(i))?0.3:0.62); }   /* 估算寬度（字寬）：放不下才改用顯示層 */
-      labTd.classList.toggle("lshow", _w>2.05 && document.activeElement!==labIn); };
+      var _nc=v.replace(/\s/g,"").length, _nz=(v.match(/[⺀-鿿豈-﫿＀-￯]/g)||[]).length;
+      var _rot=function(t){ var sp=document.createElement("span"); sp.className="lrot"; sp.textContent=t; labShow.appendChild(sp); };   /* 英文：橫式文字轉 90 度，由下往上讀 */
+      if(!_nz){ if(_nc>2) _rot(v); }   /* 全英文超過 2 個字母：轉成直立 */
+      else (v.match(/[⺀-鿿豈-﫿＀-￯]|[^⺀-鿿豈-﫿＀-￯]+/g)||[]).forEach(function(seg){ seg=seg.trim(); if(!seg) return; if(_labCJK.test(seg)){ var sp=document.createElement("span"); sp.className="lzh"; sp.textContent=seg; labShow.appendChild(sp); } else if(seg.length>2) _rot(seg); else { var sq=document.createElement("span"); sq.className="len"; sq.textContent=seg; labShow.appendChild(sq); } });   /* 中文逐字一行 */
+      labShow.title=v; labTd.classList.toggle("lshow", (_nz>=2 || (_nz && _nc>_nz) || (!_nz && _nc>2)) && document.activeElement!==labIn); };   /* 中文第 2 個字起換行；全英文超過 2 個字母轉直立 */
     labIn.addEventListener("input", _labRender); labIn.addEventListener("blur", _labRender);
     labIn.addEventListener("focus", function(){ labTd.classList.remove("lshow"); });
     labShow.addEventListener("mousedown", function(e){ e.preventDefault(); labTd.classList.remove("lshow"); labIn.focus(); try{ var n=labIn.value.length; labIn.setSelectionRange(n,n); }catch(_){} });
