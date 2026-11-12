@@ -132,6 +132,90 @@
   .ccrow{display:inline-flex;flex-wrap:wrap;gap:4px}
   .ccchip{min-width:34px;height:28px;padding:0 6px;border:1px solid #A9C9C3;border-radius:6px;background:#F3FAF8;color:#0f766e;font-family:'SF Mono',Consolas,monospace;font-size:12px;font-weight:700;cursor:pointer}
   .ccchip:hover{background:#E1F2EE}
+  /* 自訂組合：圖形化組合（配色比照文字模式：中性灰框＋青綠重點） */
+  .ccgmode{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+  .ccgseg{display:inline-flex;align-items:center;gap:2px}
+  .ccgseg button{font:inherit;font-size:13px;font-weight:700;padding:2px 2px 3px;margin:0 8px 0 0;border:0;border-bottom:2px solid transparent;background:transparent;color:#8E99A1;cursor:pointer}
+  .ccgseg button:hover{color:#23282D}
+  .ccgseg button.on{color:#23282D;border-bottom-color:#23282D}
+  .ccg{display:none;max-width:980px}
+  .ccbox.ccg-on .ccg{display:block}
+  .ccbox.ccg-on .cc-txt{display:none !important}
+  .ccgpal{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:12px}
+  .ccglab{font-size:12px;font-weight:700;color:var(--mut);margin-right:6px}
+  .ccgnote{font-size:12px;color:var(--brand2)}
+  .ccgc{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 8px;border:1px solid #C9D3D8;border-radius:6px;background:#fff;color:var(--ink);font-size:13px;cursor:grab;user-select:none;box-sizing:border-box}
+  .ccgc b{font-family:'SF Mono',Consolas,monospace;font-size:11.5px;font-weight:700;color:#0f766e}
+  .ccgc:hover{border-color:#8FB3AC}
+  .ccgc.sel{border-color:#0f766e;background:#F3FAF8;box-shadow:0 0 0 1px #0f766e inset}
+  .ccgc.miss{border-color:#e3b5ae;color:#c0392b}
+  .ccgc.miss b{color:#c0392b}
+  .ccgx{border:0;background:transparent;color:#C3CBD0;font-size:14px;line-height:1;padding:0;margin-left:1px;cursor:pointer}
+  .ccgx:hover{color:#c0392b}
+  .ccgboxes{display:flex;flex-wrap:wrap;align-items:stretch;gap:10px}
+  .ccgbox{flex:1 1 0;min-width:230px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:9px 12px 10px}
+  .ccgbox.over{border-color:#0f766e;box-shadow:0 0 0 1px #0f766e inset}
+  .ccgbh{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .ccgname{flex:0 1 auto;min-width:1.2em;max-width:60%;font:inherit;font-size:13.5px;font-weight:700;border:0;border-bottom:1px dashed transparent;padding:1px 0;background:transparent;color:var(--ink)}
+  .ccgname::placeholder{color:#8E99A1;font-weight:700}
+  .ccgname:hover,.ccgname:focus{outline:none;border-bottom-color:#C9D3D8}
+  .ccgop{font-family:'SF Mono',Consolas,monospace;font-size:11px;font-weight:700;color:#5d6970;white-space:nowrap}
+  .ccgbt{flex:1 1 auto;margin-left:-8px;font-size:13px;color:var(--mut);white-space:nowrap}
+  body.en .ccgbt{margin-left:-4px}
+  .ccgdel{border:0;background:transparent;color:#9AA5AB;cursor:pointer;font-size:13px;padding:0 2px}
+  .ccgdel:hover{color:#c0392b}
+  .ccgdrop{display:flex;flex-wrap:wrap;gap:6px;min-height:28px;align-items:center}
+  .ccgand{font-family:'SF Mono',Consolas,monospace;font-size:11.5px;font-weight:700;color:#8E99A1}
+  .ccgph{font-size:12px;color:#B0B9BE}
+  .ccgor{flex:0 0 auto;align-self:center;font-family:'SF Mono',Consolas,monospace;font-weight:700;font-size:12px;color:#0f766e}
+  .ccgadd{display:flex;flex-wrap:wrap;gap:16px;margin-top:8px}
+  .ccgbtn{font:inherit;font-size:12.5px;font-weight:700;padding:2px 0;border:0;background:transparent;color:#0f766e;cursor:pointer}
+  .ccgbtn:hover{text-decoration:underline}
+  .ccgres{margin-top:14px;padding-top:10px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:6px;font-size:13px}
+  .ccgrow{display:flex;gap:12px;align-items:baseline}
+  .ccgrow > .ccglab{flex:0 0 4.8em;margin:0;font-weight:600;color:var(--brand2)}
+  body.en .ccgrow > .ccglab{flex-basis:6.4em}
+  .ccgres code{font-family:'SF Mono',Consolas,monospace;font-size:12.5px;color:var(--ink);background:none;border:0;padding:0}
+  .ccglines{white-space:nowrap;line-height:1.7}
+  .ccglines i{font-style:normal;font-weight:700;color:#0f766e;margin-right:10px}
+  .ccgwarn{font-size:12.5px;color:#c0392b;margin-bottom:8px}
+  .ccgdemo{margin-top:6px}
+  @media (max-width:640px){
+    div:has(> #ccBox.ccg-on[open]){flex-wrap:wrap}
+    #ccBox.ccg-on[open]{flex:1 1 100% !important}
+    #ccBox.ccg-on[open] > div{padding-left:0 !important}
+    .ccgboxes{flex-direction:column}
+    .ccgbox{flex:1 1 auto;min-width:0;width:100%;box-sizing:border-box}
+    .ccgrow{flex-direction:column;gap:2px}
+    .ccgrow > .ccglab{flex:none}
+  }
+  /* 填寫說明視窗（頁首「?」→ 填寫說明） */
+  .srhelp-bg{position:fixed;inset:0;z-index:20006;background:rgba(20,28,32,.38);display:flex;align-items:center;justify-content:center;padding:16px}
+  .srhelp-box{position:relative;background:#fff;border-radius:12px;box-shadow:0 12px 36px rgba(0,0,0,.25);width:min(760px,100%);max-height:84vh;overflow:auto;padding:18px 22px 20px}
+  .srhelp-box h3{margin:0 0 6px;font-size:16px;color:var(--ink)}
+  .srhelp-box .hint{margin:0 !important}
+  .srhelp-x{position:absolute;top:8px;right:10px;border:0;background:transparent;font-size:22px;line-height:1;color:#8E99A1;cursor:pointer}
+  .srhelp-x:hover{color:var(--ink)}
+  /* 生成檢索策略：版面切換（全部列出／頁籤，圖示），紅字提醒在上 */
+  #outs > .out[hidden]{display:none !important}
+  .ovrow{display:flex;justify-content:flex-end;margin:0 0 6px}
+  .ovsw{display:inline-flex;align-items:center;gap:2px;margin-left:auto;flex:0 0 auto}
+  .ovsw button{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;padding:0;border:0;border-radius:6px;background:transparent;color:#A9B3B9;cursor:pointer}
+  .ovsw button:hover{color:#23282D;background:#EEF2F5}
+  .ovsw button.on{color:#23282D}
+  .ovtabs{display:flex;flex-wrap:wrap;align-items:flex-end;gap:0 4px;border-bottom:1px solid var(--line);margin:0 0 12px;padding:0 2px}
+  .ovtabs button[data-i]{font:inherit;font-size:14px;font-weight:700;padding:8px 4px 7px;margin:0 14px -1px 0;border:0;border-bottom:2px solid transparent;background:transparent;color:#8E99A1;cursor:pointer;white-space:nowrap}
+  .ovtabs button[data-i]:hover{color:#23282D}
+  .ovtabs button[data-i].on{color:#23282D;border-bottom-color:#23282D}
+  .ovtabs button small{font-size:11px;font-weight:400;color:#8E99A1;margin-left:5px}
+  .ovtabs .ovsw{align-self:center}
+  #outs.ovtabmode > .out h3 > span:first-child{display:none}
+  #outs.ovtabmode > .out h3{justify-content:flex-end;padding-top:6px;padding-bottom:6px}
+  @media (max-width:640px){
+    .ovtabs{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+    .ovtabs::-webkit-scrollbar{display:none}
+    .ovtabs .ovsw{position:sticky;right:0;background:var(--bg);padding-left:6px}
+  }
   table.pico td.lab .ccode{display:none}
   table.pico.cc-on td.lab .ccode{display:inline-block;min-width:28px;padding:1px 5px;border:1px solid #A9C9C3;border-radius:6px;background:#F3FAF8;color:#0f766e;cursor:pointer}
   table.pico.cc-on td.lab .ccode:hover{background:#E1F2EE}
@@ -189,6 +273,7 @@
   .out pre{margin:0;padding:13px 15px;white-space:pre-wrap;word-break:break-word;font-family:"SF Mono","Cascadia Code",Consolas,monospace;
            font-size:12.5px;color:var(--code);background:var(--codebg);line-height:1.7}
   .out pre .qline{display:flex;gap:12px;align-items:baseline}
+  .qs .qnote{display:block;margin-top:2px;font-family:Calibri,"微軟正黑體","Microsoft JhengHei",-apple-system,"Segoe UI","Noto Sans TC",sans-serif;font-size:12px;line-height:1.5;color:#c0392b;white-space:normal;user-select:none;-webkit-user-select:none}
   .out pre .qn{color:#69737C;user-select:none;-webkit-user-select:none;flex:0 0 auto;min-width:26px;text-align:right}
   .out pre .qn.clk{cursor:pointer;border-radius:4px;transition:background .12s,color .12s}
   .out pre .qn.clk:hover{background:#DCE3E7;color:#1B6FA8;text-decoration:underline}
@@ -251,7 +336,7 @@
   .pmvarroot{font-family:"SF Mono",Consolas,monospace;font-weight:700;color:var(--deco2);min-width:92px}
   .chip{font-size:12px;border:1px solid var(--line);border-radius:14px;padding:2px 10px;cursor:pointer;background:#fff;color:#94a3b8;user-select:none}
   .chip.on{background:var(--accent);border-color:#C6CFD5;color:#25292D;font-weight:600}
-  .pmvaradd{width:84px;font-size:12px;border:1px dashed #C6CFD5;border-radius:12px;padding:2px 8px}
+  .pmvaradd{width:96px;font-size:12px;border:1px dashed #C6CFD5;border-radius:12px;padding:2px 8px}
   .hlopts{display:grid;grid-template-columns:auto auto;gap:10px 20px;align-items:center;font-size:12.5px;color:var(--mut)}
   .hlopts label{display:flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap}
   .hlopts>span{white-space:nowrap}
@@ -774,7 +859,7 @@
       </button>
     </div>
     <div id="cvVerifyPanel" style="display:none"></div>
-    <details class="ccbox" id="fillHelp" style="margin:14px 0 0">
+    <details class="ccbox" id="fillHelp" style="margin:14px 0 0" hidden>
       <summary style="cursor:pointer;font-weight:700;font-size:13px;color:#0f766e"><span data-zh>填寫說明</span><span data-en>How to fill in</span></summary>
       <div class="hint" style="margin:8px 0 0;line-height:1.75">
         <div data-zh>
@@ -3911,6 +3996,16 @@ if (typeof module !== "undefined" && module.exports) {
       }
       var countEls=[];
       var pre=document.createElement("pre"); allRows.forEach(function(x){ var ln=document.createElement("div"); ln.className="qline"; var gn=document.createElement("span"); gn.className="qn"; var _gnLbl=(x.n!=null?_refPrefix(tg.engine)+x.n:""); gn.textContent=_gnLbl; if(x.n!=null){ gn.classList.add("clk"); gn.title=isEn()?"Click to copy this line":"點一下複製此行"; (function(_x,_lbl){ gn.onclick=function(){ try{ navigator.clipboard.writeText(_dispRefs(_x.text, tg.engine)); }catch(e){} gn.classList.add("copied"); gn.textContent="✓"; setTimeout(function(){ gn.textContent=_lbl; gn.classList.remove("copied"); },1000); }; })(x,_gnLbl); } var gs=document.createElement("span"); gs.className="qs"; var _tx=_dispRefs(x.text, tg.engine); if((cbColor&&cbColor.checked)||(cbBracket&&cbBracket.checked)||(cbLinks&&cbLinks.checked)){ gs.innerHTML=hlHighlight(_tx, tg.engine, cbColor&&cbColor.checked, cbBracket&&cbBracket.checked, tg.vocab, cbLinks&&cbLinks.checked).html; } else { gs.textContent=_tx; } ln.appendChild(gn); ln.appendChild(gs); if(tg.engine==="pubmed"){var ct=document.createElement("span");ct.className="pmcount";ct.textContent="—";ln.appendChild(ct);countEls.push(ct);} pre.appendChild(ln); }); card.appendChild(pre);
+      if(tg.engine==="scopus"){   /* Scopus：#行號組合無法直接輸入 → 組合行下方寫說明；點該行行號複製展開後的完整檢索式 */
+        Array.prototype.forEach.call(pre.querySelectorAll(".qline"),function(ln,i){ var x=allRows[i]; if(!x||!/#\d/.test(String(x.text||""))) return;
+          var rf=(String(x.text).match(/#(\d+)/g)||[]).map(function(m){ return +m.slice(1); }), a=Math.min.apply(null,rf), z=Math.max.apply(null,rf), rg="#"+a+(z>a?(isEn()?"–":"～")+"#"+z:"");
+          var gn=ln.querySelector(".qn"), lbl=gn?gn.textContent:"";
+          if(gn){ gn.title=isEn()?"Click to copy the full one-line query (Scopus can’t take line combinations typed in)":"點一下複製完整單一串檢索式（Scopus 無法輸入行號組合）";
+            gn.onclick=function(){ var full; try{ full=expandNumberedQuery(x,allRows); }catch(_e){ full=x.text; } try{ navigator.clipboard.writeText(full); }catch(_e){} gn.classList.add("copied"); gn.textContent="✓"; setTimeout(function(){ gn.textContent=lbl; gn.classList.remove("copied"); },1000); }; }
+          var gs=ln.querySelector(".qs"); if(!gs) return; var nt=document.createElement("span"); nt.className="qnote";
+          nt.textContent=isEn()?("Scopus can’t take this line typed in: on the Documents search page, under Search History, tick the searches for "+rg+" (Scopus numbers them its own way) and click “Combine queries” — or click the line number to copy the full one-line query."):("Scopus 無法直接輸入此行：請在文獻搜尋頁下方「搜尋記錄」（Search History）勾選 "+rg+" 對應的那幾筆（Scopus 編號與此不同），按「組合搜尋式」（Combine queries）；或點左邊行號複製完整單一串檢索式。");
+          gs.appendChild(nt); });
+      }
       if(tg.engine==="ieee"){   // IEEE 相容性檢查面板（檢查展開後的完整檢索式）
         var _iq=""; try{ _iq=expandNumberedQuery(allRows[allRows.length-1], allRows); }catch(_e){ _iq=allRows.map(function(r){return r.text;}).join(" AND "); }
         var dg=ieeeDiagnostics(_iq), en_=isEn();
@@ -3955,7 +4050,7 @@ if (typeof module !== "undefined" && module.exports) {
             cands.forEach(function(cd){ var ch=document.createElement("span"); ch.className="chip"+(sel.indexOf(cd)>=0?" on":""); ch.textContent=cd;
               ch.onclick=function(){ var a=(IEEE_VARS[k]||[]).slice(), i=a.indexOf(cd); if(i>=0) a.splice(i,1); else a.push(cd); a.sort(function(x,y){ return cands.indexOf(x)-cands.indexOf(y); }); setSel(a); };
               cw.appendChild(ch); });
-            var ad=document.createElement("input"); ad.type="text"; ad.className="pmvaradd"; ad.placeholder=en_?"+ add":"+ 加詞";
+            var ad=document.createElement("input"); ad.type="text"; ad.className="pmvaradd"; ad.placeholder=en_?"Add + Enter":"加詞+Enter";
             ad.onkeydown=function(e){ if(e.key==="Enter" && ad.value.trim()){ e.preventDefault(); var wd=ad.value.trim().toLowerCase().replace(/[*?"()]/g,""); var a=(IEEE_VARS[k]||[]).slice(); if(wd && a.indexOf(wd)<0) a.push(wd); setSel(a); } };
             cw.appendChild(ad);
             if(sel.length){ var rs=document.createElement("span"); rs.className="ieeevx ieeerst"; rs.textContent="↺"; rs.title=en_?"Restore *":"復原使用 *"; rs.onclick=function(){ setSel([]); }; cw.appendChild(rs); }
@@ -4066,7 +4161,7 @@ if (typeof module !== "undefined" && module.exports) {
           varPanel.appendChild(hd);
           roots.forEach(function(root){ varState[root]=new Set([root]); var rw=document.createElement("div"); rw.className="pmvarrow"; var lb=document.createElement("span"); lb.className="pmvarroot"; lb.textContent=root+"*"; rw.appendChild(lb);
             suffixCands(root).forEach(function(cand){ var chip=document.createElement("span"); chip.className="chip"+(varState[root].has(cand)?" on":""); chip.textContent=cand; chip.onclick=function(){ if(varState[root].has(cand)){varState[root]["delete"](cand);chip.classList.remove("on");}else{varState[root].add(cand);chip.classList.add("on");} pmRecompute(); }; rw.appendChild(chip); });
-            var add=document.createElement("input"); add.type="text"; add.className="pmvaradd"; add.placeholder=isEn()?"+ add":"+ 加詞"; add.onkeydown=function(e){ if(e.key==="Enter"&&add.value.trim()){ var wd=add.value.trim(); if(!varState[root].has(wd)){ varState[root].add(wd); var chip=document.createElement("span"); chip.className="chip on"; chip.textContent=wd; chip.onclick=function(){varState[root]["delete"](wd);chip.remove();pmRecompute();}; rw.insertBefore(chip,add);} add.value=""; pmRecompute(); e.preventDefault(); } }; rw.appendChild(add);
+            var add=document.createElement("input"); add.type="text"; add.className="pmvaradd"; add.placeholder=isEn()?"Add + Enter":"加詞+Enter"; add.onkeydown=function(e){ if(e.key==="Enter"&&add.value.trim()){ var wd=add.value.trim(); if(!varState[root].has(wd)){ varState[root].add(wd); var chip=document.createElement("span"); chip.className="chip on"; chip.textContent=wd; chip.onclick=function(){varState[root]["delete"](wd);chip.remove();pmRecompute();}; rw.insertBefore(chip,add);} add.value=""; pmRecompute(); e.preventDefault(); } }; rw.appendChild(add);
             varPanel.appendChild(rw);
           });
         };
@@ -4948,6 +5043,205 @@ if (typeof module !== "undefined" && module.exports) {
   syncLang();
 })();
 </script>
+<script id="ccGfxScript">
+/* 自訂組合策略：圖形化組合（子問題框；框內 AND、框與框 OR）。寫入同一個 #customCombo，產生語法沿用既有引擎。 */
+(function(){
+  var box=document.getElementById("ccBox"), ta=document.getElementById("customCombo"), body=document.getElementById("picoBody");
+  if(!box||!ta||!body) return;
+  var en=function(){ return document.body.classList.contains("en")||document.documentElement.getAttribute("lang")==="en"; };
+  var T=function(z,e){ return en()?e:z; };
+  var MKEY="sr_pico_nm_cc_mode";
+  var GX={groups:[{name:"",items:[]}]}, sel=0, dirty=false, unparsable=false, lastWritten=null;
+  /* ---------- 版面 ---------- */
+  var inner=box.querySelector(":scope > div");
+  var bar=document.createElement("div"); bar.className="ccgmode";
+  bar.innerHTML='<span class="ccgseg" role="tablist"><button type="button" role="tab" data-m="text"><span data-zh>文字輸入</span><span data-en>Text</span></button><button type="button" role="tab" data-m="gfx"><span data-zh>圖形化</span><span data-en>Visual</span></button></span>'+
+    '';
+  inner.insertBefore(bar, inner.firstChild);
+  var gfx=document.createElement("div"); gfx.className="ccg"; gfx.id="ccGfx"; inner.appendChild(gfx);
+  Array.prototype.forEach.call(inner.children,function(c){ if(c!==bar&&c!==gfx) c.classList.add("cc-txt"); });
+  function mode(){ var m="text"; try{ m=localStorage.getItem(MKEY)||"text"; }catch(_){} return m==="gfx"?"gfx":"text"; }
+  function setMode(m){ try{ localStorage.setItem(MKEY,m); }catch(_){} applyMode(); }
+  function applyMode(){ var g=mode()==="gfx"; box.classList.toggle("ccg-on",g);
+    Array.prototype.forEach.call(bar.querySelectorAll("button"),function(b){ var on=b.dataset.m===(g?"gfx":"text"); b.classList.toggle("on",on); b.setAttribute("aria-selected",on?"true":"false"); });
+    if(g){ if(ta.value!==lastWritten) parseFromText(); render(); } }
+  bar.addEventListener("click",function(e){ var b=e.target.closest("button[data-m]"); if(b) setMode(b.dataset.m); });
+  /* ---------- 概念 ---------- */
+  function concepts(){ return Array.prototype.map.call(body.querySelectorAll("tr"),function(tr,i){
+      var r=(tr._get&&tr._get())||{}, lab=String(r.label||"").trim(), zh="";
+      String(r.zh||"").split("\n").some(function(l){ var w=l.replace(/[()（）"“”「」\[\]]/g," ").replace(/\b(AND|OR|NOT|NEAR\/?\d*|W\/\d+|ADJ\d*)\b/gi," ").trim().split(/\s+/)[0]||""; if(w){ zh=w; return true; } return false; });   /* 中文第一個詞（略過括號、運算子） */
+      var nm=lab||zh||T("（未命名）","(unnamed)");
+      if(/^[A-Za-z0-9]{1,2}$/.test(lab) && zh && zh!==lab) nm=lab+" "+(zh.length>10?zh.slice(0,10)+"…":zh);   /* 單字母／兩字元代號（P、I1…）加上中文第一行，較直觀 */
+      return {k:i+1, lab:lab, zh:zh, name:nm}; }); }
+  function nameOf(k,cs){ var c=cs[k-1]; return c?c.name:("L"+k); }
+  /* ---------- 文字 ⇄ 圖形 ---------- */
+  function parseFromText(){
+    var lines=String(ta.value||"").split(/\r?\n/).map(function(s){return s.trim();}).filter(Boolean);
+    unparsable=false;
+    if(!lines.length){ GX={groups:[{name:GX.groups[0]?GX.groups[0].name:"",items:[]}]}; return; }
+    var gs=[], i=0, ok=true;
+    while(i<lines.length && /^L\d+(\s+AND\s+L\d+)*$/i.test(lines[i])){ gs.push({name:"",items:lines[i].match(/\d+/g).map(Number)}); i++; }
+    if(gs.length>1){ var want=gs.map(function(_,j){return "R"+(j+1);}).join(" OR ");
+      if(i<lines.length && lines[i].replace(/\s+/g," ").toUpperCase()===want) i++; else ok=false; }
+    if(!gs.length || i<lines.length) ok=false;
+    if(!ok){ unparsable=true; GX={groups:[{name:"",items:[]}]}; return; }
+    var old=GX.groups; gs.forEach(function(g,j){ if(old[j]) g.name=old[j].name; });
+    GX={groups:gs};
+  }
+  function toLines(){
+    var G=GX.groups.filter(function(g){return g.items.length;}), lines=G.map(function(g){ return g.items.map(function(k){return "L"+k;}).join(" AND "); });
+    if(G.length>1) lines.push(G.map(function(_,j){return "R"+(j+1);}).join(" OR "));
+    return lines;
+  }
+  function write(){ var v=toLines().join("\n"); lastWritten=v; unparsable=false;
+    if(ta.value!==v){ ta.value=v; ta.dispatchEvent(new Event("input",{bubbles:true})); } }
+  /* 化簡：把每框都有的概念提出來 */
+  function simplify(G,cs){
+    if(G.length<2) return null;
+    var common=G[0].items.filter(function(k){ return G.every(function(g){ return g.items.indexOf(k)>=0; }); });
+    if(!common.length) return null;
+    var rests=G.map(function(g){ return g.items.filter(function(k){ return common.indexOf(k)<0; }); });
+    var nm=function(k){ return nameOf(k,cs); }, A=common.map(nm).join(" AND ");
+    if(rests.some(function(r){return !r.length;})) return {txt:A, note:T("有一框只含共同概念，它已涵蓋其他框，所以結果等於共同概念。","One box holds only the shared concepts, so it already covers the others — the result equals the shared concepts.")};
+    return {txt:A+" AND ("+rests.map(function(r){ var s=r.map(nm).join(" AND "); return r.length>1?"("+s+")":s; }).join(" OR ")+")"};
+  }
+  /* ---------- 繪製 ---------- */
+  function nameW(v){ var w=0; String(v).split("").forEach(function(ch){ w+=/[\u2E80-\uFFEF]/.test(ch)?1:0.56; }); return Math.max(1.2,Math.ceil(w*10)/10+0.15); }   /* 子問題名稱輸入框寬度隨字數 */
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+  function chip(k,cs,where,gi){ var c=cs[k-1], miss=!c, s='<span class="ccgc'+(miss?' miss':'')+(where==="pal"&&sel===k?' sel':'')+'" draggable="true" data-k="'+k+'" data-w="'+where+'"'+(gi!=null?' data-g="'+gi+'"':'')+' title="'+esc(miss?T("這一列已不存在","This row no longer exists"):(c.zh&&c.lab&&c.zh!==c.lab?c.lab+"｜"+c.zh:c.name))+'">'+
+      '<b>L'+k+'</b>'+esc(miss?T("已不存在","missing"):c.name);
+    if(where!=="pal") s+='<button type="button" class="ccgx" data-rm="'+k+'" aria-label="'+T("移除","Remove")+'">×</button>';
+    return s+'</span>'; }
+  function render(){
+    if(mode()!=="gfx") return;
+    var cs=concepts(), h="";
+    h+='<div class="ccgpal"><span class="ccglab">'+T("概念","Concepts")+'</span>'+(cs.length?cs.map(function(c){return chip(c.k,cs,"pal");}).join(""):'<span class="ccgnote">'+T("表格還沒有概念列","No concept rows yet")+'</span>')+'</div>';
+    if(unparsable) h+='<div class="ccgwarn">'+T("⚠ 目前的文字組合不是「框內 AND、框與框 OR」的形式，無法轉成圖形；在這裡修改會覆蓋它。","⚠ The current text combination isn’t in the “AND within boxes, OR between boxes” form, so it can’t be shown here; editing here will replace it.")+'</div>';
+    h+='<div class="ccgboxes">';
+    GX.groups.forEach(function(g,gi){
+      h+='<div class="ccgbox" data-g="'+gi+'"><div class="ccgbh"><input type="text" class="ccgname" data-g="'+gi+'" maxlength="20" value="'+esc(g.name)+'" placeholder="'+T("子問題","Sub-question ")+(gi+1)+'" style="width:'+nameW(g.name||T("子問題","Sub-question ")+(gi+1))+'em"><span class="ccgbt">'+T("（文章同時提及）：","(papers mention all of):")+'</span>'+
+         (GX.groups.length>1?'<button type="button" class="ccgdel" data-del="'+gi+'" title="'+T("刪除這個框","Delete this box")+'">✕</button>':'')+'</div>'+
+         '<div class="ccgdrop">'+(g.items.length?g.items.map(function(k){return chip(k,cs,"g",gi);}).join('<span class="ccgand">AND</span>'):'<span class="ccgph">'+T("把概念拖進來","Drop concepts here")+'</span>')+'</div>'+'</div>';
+      if(gi<GX.groups.length-1) h+='<div class="ccgor">OR</div>';
+    });
+    h+='</div><div class="ccgadd"><button type="button" class="ccgbtn" data-act="add">'+T("＋ 新增子問題","＋ Add sub-question")+'</button></div>';
+    var G=GX.groups.filter(function(g){return g.items.length;}), lines=toLines();
+    if(lines.length){
+      var nm=function(k){ return nameOf(k,cs); };
+      var res=G.map(function(g){ var s=g.items.map(nm).join(" AND "); return G.length>1&&g.items.length>1?"("+s+")":s; }).join(" OR ");
+      var sp=simplify(G,cs);
+      h+='<div class="ccgres"><div class="ccgrow"><span class="ccglab">'+T("組合結果","Result")+'</span><div><code>'+esc(res)+'</code></div></div>'+
+         (sp?'<div class="ccgrow"><span class="ccglab">'+T("化簡","Simplified")+'</span><div><code>'+esc(sp.txt)+'</code>'+(sp.note?'<div class="ccgnote">'+esc(sp.note)+'</div>':'<div class="ccgnote">'+T("每框都有的概念提出來，結果相同。","Concepts shared by every box are pulled out — same result.")+'</div>')+'</div></div>':'')+
+         '<div class="ccgrow"><span class="ccglab">'+T("寫入","Written as")+'</span><div><code class="ccglines">'+lines.map(function(l,j){return "<i>R"+(j+1)+"</i>"+esc(l);}).join("<br>")+'</code></div></div></div>';
+    }
+    if(cs.length>=3 && !G.length) h+='<div class="ccgdemo"><button type="button" class="ccgbtn" data-act="demo">'+T("看示範：共同概念＋兩個子問題","Show an example: shared concepts + two sub-questions")+'</button></div>';
+    gfx.innerHTML=h;
+  }
+  /* ---------- 操作 ---------- */
+  function changed(){ dirty=true; write(); render(); }
+  function addTo(g,k){ var arr=GX.groups[g].items; if(arr.indexOf(k)<0) arr.push(k); }
+  function rmFrom(g,k){ var arr=GX.groups[g].items, i=arr.indexOf(k); if(i>=0) arr.splice(i,1); }
+  gfx.addEventListener("click",function(e){
+    var t=e.target, b;
+    if((b=t.closest(".ccgx"))){ var c=b.closest(".ccgc"); rmFrom(+c.dataset.g, +c.dataset.k); changed(); return; }
+    if((b=t.closest("[data-del]"))){ GX.groups.splice(+b.dataset.del,1); changed(); return; }
+    if((b=t.closest("[data-act]"))){ var a=b.dataset.act;
+      if(a==="add") GX.groups.push({name:"",items:[]});
+      else if(a==="demo"){ var n=concepts().length, base=[]; for(var i=1;i<=n-2;i++) base.push(i);
+        GX.groups=[{name:"",items:base.concat([n-1])},{name:"",items:base.concat([n])}]; }
+      changed(); return; }
+    if((b=t.closest(".ccgc[data-w=pal]"))){ var k=+b.dataset.k; sel=(sel===k)?0:k; render(); return; }
+    if(t.closest("input")) return;
+    if(sel && (b=t.closest(".ccgbox"))){ addTo(+b.dataset.g, sel); sel=0; changed(); }
+  });
+  gfx.addEventListener("input",function(e){ var i=e.target.closest(".ccgname"); if(i){ GX.groups[+i.dataset.g].name=i.value; i.style.width=nameW(i.value||i.placeholder)+"em"; } });
+  var drag=null;
+  gfx.addEventListener("dragstart",function(e){ var c=e.target.closest&&e.target.closest(".ccgc"); if(!c) return; drag={k:+c.dataset.k, from:c.dataset.w==="pal"?null:+c.dataset.g}; try{ e.dataTransfer.setData("text/plain","L"+drag.k); e.dataTransfer.effectAllowed="copyMove"; }catch(_){} });
+  gfx.addEventListener("dragover",function(e){ var bx=drag&&e.target.closest(".ccgbox"); if(!bx) return; e.preventDefault(); bx.classList.add("over"); });
+  gfx.addEventListener("dragleave",function(e){ var bx=e.target.closest(".ccgbox"); if(bx&&!bx.contains(e.relatedTarget)) bx.classList.remove("over"); });
+  gfx.addEventListener("drop",function(e){ var bx=drag&&e.target.closest(".ccgbox"); if(!bx){ drag=null; return; } e.preventDefault();
+    var g=+bx.dataset.g; if(drag.from!==null && drag.from!==g) rmFrom(drag.from,drag.k); addTo(g,drag.k); drag=null; changed(); });
+  gfx.addEventListener("dragend",function(){ drag=null; Array.prototype.forEach.call(gfx.querySelectorAll(".ccgbox.over"),function(x){x.classList.remove("over");}); });
+  /* 表格或文字變動時同步 */
+  var rT=null, rerender=function(){ clearTimeout(rT); rT=setTimeout(function(){ if(mode()==="gfx" && document.activeElement && !gfx.contains(document.activeElement)){ if(ta.value!==lastWritten) parseFromText(); render(); } },250); };
+  body.addEventListener("input",rerender); new MutationObserver(rerender).observe(body,{childList:true});
+  ta.addEventListener("input",function(){ if(ta.value!==lastWritten && mode()==="gfx") rerender(); });
+  box.addEventListener("toggle",function(){ if(box.open) applyMode(); });
+  new MutationObserver(function(){ if(mode()==="gfx") render(); }).observe(document.body,{attributes:true,attributeFilter:["class"]});
+  applyMode();
+})();
+</script>
+<script id="ccHelpScript">
+/* 填寫說明：放進頁首「?」選單（逐步導覽／示範影片之後），點了開成視窗；內容取自隱藏的 #fillHelp */
+(function(){
+  var src=document.getElementById("fillHelp"); if(!src) return;
+  var en=function(){ return document.body.classList.contains("en")||document.documentElement.getAttribute("lang")==="en"; };
+  function open(){
+    var hint=src.querySelector(".hint"); if(!hint) return;
+    var bg=document.createElement("div"); bg.className="srhelp-bg"; bg.setAttribute("role","dialog"); bg.setAttribute("aria-modal","true");
+    bg.innerHTML='<div class="srhelp-box"><button type="button" class="srhelp-x" aria-label="'+(en()?"Close":"關閉")+'">×</button><h3><span data-zh>填寫說明</span><span data-en>How to fill in</span></h3></div>';
+    var box=bg.querySelector(".srhelp-box"); box.appendChild(hint.cloneNode(true));
+    var ret=document.activeElement;
+    function close(){ bg.remove(); document.removeEventListener("keydown",k,true); if(ret&&ret.focus) try{ ret.focus(); }catch(_){} }
+    function k(e){ if(e.key==="Escape"){ e.stopPropagation(); close(); } }
+    bg.addEventListener("click",function(e){ if(e.target===bg) close(); });
+    bg.querySelector(".srhelp-x").onclick=close;
+    document.addEventListener("keydown",k,true); document.body.appendChild(bg); bg.querySelector(".srhelp-x").focus();
+    if(typeof srCount==="function") try{ srCount("pico-nm-fillhelp","PICO非醫-填寫說明"); }catch(_){}
+  }
+  window.srFillHelpOpen=open;
+  /* 「?」選單出現時加一項（不改共用導覽引擎） */
+  new MutationObserver(function(ms){ ms.forEach(function(m){ Array.prototype.forEach.call(m.addedNodes,function(n){
+    if(!(n.nodeType===1 && n.classList.contains("srtour-pop")) || n.querySelector(".srtp-help")) return;
+    var bt=document.createElement("button"); bt.type="button"; bt.setAttribute("role","menuitem"); bt.className="srtp-help"; bt.textContent=en()?"How to fill in":"填寫說明";
+    bt.onclick=function(){ document.dispatchEvent(new KeyboardEvent("keydown",{key:"Escape",bubbles:true})); open(); };
+    n.appendChild(bt);
+    var r=document.querySelector(".srtour-btn"); if(r){ var rr=r.getBoundingClientRect(); n.style.left=Math.max(12, Math.min(rr.right-n.offsetWidth, innerWidth-n.offsetWidth-12))+"px"; }
+  }); }); }).observe(document.body,{childList:true});
+})();
+</script>
+<script id="outViewScript">
+/* 生成檢索策略：檢視版面切換（全部列出／頁籤，圖示）；不動產生程式，只在 #outs 有結果卡時加頁籤列 */
+(function(){
+  var outs=document.getElementById("outs"); if(!outs) return;
+  var KEY="sr_pico_nm_outview", KTAB="sr_pico_nm_outtab";
+  var en=function(){ return document.body.classList.contains("en")||document.documentElement.getAttribute("lang")==="en"; };
+  function get(k,d){ try{ return localStorage.getItem(k)||d; }catch(_){ return d; } }
+  function set(k,v){ try{ localStorage.setItem(k,v); }catch(_){} }
+  var ICON_LIST='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="4" y="4" width="16" height="6" rx="1.5"/><rect x="4" y="14" width="16" height="6" rx="1.5"/></svg>';
+  var ICON_TABS='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 20V8.5h17V20z"/><path d="M3.5 8.5V5.5Q3.5 4.5 4.5 4.5H9.5Q10.5 4.5 10.5 5.5V8.5"/><path d="M10.5 8.5V6.5h6"/></svg>';
+  var sw=document.createElement("span"); sw.className="ovsw"; sw.setAttribute("role","group");
+  sw.innerHTML='<button type="button" data-v="list">'+ICON_LIST+'</button><button type="button" data-v="tabs">'+ICON_TABS+'</button>';
+  var row=document.createElement("div"); row.className="ovrow";
+  var tabs=document.createElement("div"); tabs.className="ovtabs"; tabs.setAttribute("role","tablist");
+  var busy=false;
+  function cards(){ return Array.prototype.filter.call(outs.children,function(c){ return c.classList.contains("out"); }); }
+  function nameOf(c){ var h=c.querySelector("h3 > span"); var t=h?h.cloneNode(true):null; if(!t) return "?"; Array.prototype.forEach.call(t.querySelectorAll("span"),function(x){ x.remove(); }); return t.textContent.trim(); }
+  function apply(){
+    if(busy) return; busy=true;
+    try{
+      var cs=cards(), mode=get(KEY,"list");
+      Array.prototype.forEach.call(sw.querySelectorAll("button"),function(b){ var on=b.dataset.v===mode; b.classList.toggle("on",on); b.setAttribute("aria-pressed",on?"true":"false");
+        var t=b.dataset.v==="list"?(en()?"Show all":"全部列出"):(en()?"Tabs":"頁籤"); b.title=t; b.setAttribute("aria-label",t); });
+      outs.classList.toggle("ovtabmode", !!cs.length && mode==="tabs");
+      if(!cs.length){ if(row.parentNode) row.remove(); if(tabs.parentNode) tabs.remove(); return; }
+      if(mode!=="tabs"){ if(tabs.parentNode) tabs.remove(); row.appendChild(sw); if(row.parentNode!==outs || row.nextElementSibling!==cs[0]) outs.insertBefore(row, cs[0]); cs.forEach(function(c){ c.hidden=false; }); return; }
+      if(row.parentNode) row.remove();
+      var names=cs.map(nameOf), cur=get(KTAB,""), idx=Math.max(0,names.indexOf(cur));
+      tabs.innerHTML=names.map(function(n,i){ var start=cs[i].querySelector("h3 > span span"); return '<button type="button" role="tab" data-i="'+i+'" class="'+(i===idx?"on":"")+'" aria-selected="'+(i===idx)+'">'+n.replace(/&/g,"&amp;").replace(/</g,"&lt;")+(start?'<small>'+(en()?"start":"起始")+'</small>':'')+'</button>'; }).join("");
+      tabs.appendChild(sw);   /* 頁籤模式：切換圖示放在頁籤列最右邊 */
+      if(tabs.parentNode!==outs || tabs.nextElementSibling!==cs[0]) outs.insertBefore(tabs, cs[0]);
+      cs.forEach(function(c,i){ c.hidden=(i!==idx); });
+    } finally { busy=false; }
+  }
+  sw.addEventListener("click",function(e){ var b=e.target.closest("button[data-v]"); if(!b) return; set(KEY,b.dataset.v); apply(); });
+  tabs.addEventListener("click",function(e){ var b=e.target.closest("button[data-i]"); if(!b) return; var cs=cards(), i=+b.dataset.i; if(cs[i]) set(KTAB,nameOf(cs[i])); apply(); });
+  tabs.addEventListener("keydown",function(e){ if((e.key!=="ArrowRight"&&e.key!=="ArrowLeft")||!e.target.closest("button[data-i]")) return; var bs=tabs.querySelectorAll("button[data-i]"), cur=Array.prototype.findIndex.call(bs,function(x){return x.classList.contains("on");}); var n=(cur+(e.key==="ArrowRight"?1:-1)+bs.length)%bs.length; e.preventDefault(); bs[n].click(); var nb=tabs.querySelectorAll("button[data-i]")[n]; if(nb) nb.focus(); });
+  new MutationObserver(function(){ if(!busy) apply(); }).observe(outs,{childList:true});
+  new MutationObserver(function(){ apply(); }).observe(document.body,{attributes:true,attributeFilter:["class"]});
+  apply();
+})();
+</script>
 <script id="srMoreScript">
 /* 共用：頁首「⋯ 更多工具」選單（放在偏好設定齒輪與語言鈕之前）。新增工具只要在 ITEMS 加一筆。 */
 (function(){
@@ -5079,9 +5373,6 @@ if (typeof module !== "undefined" && module.exports) {
       after:function(){ var b=document.getElementById("ccBox"); if(b&&b._srTourOpened){ b.open=false; b._srTourOpened=false; } },
       zh:{t:"自訂組合（選填）", d:"不想全部 AND？點<b>概念表左側的 L1、L2</b>、<b>輸入框左邊的 R1、R2</b>（引用自訂的組合行）就能插入，再搭配左側 <b>AND／OR／NOT、( )</b> 按鈕，例如 <code>(L1 OR L2) AND L3</code>。打開時概念表會自動縮小列高，方便對照。"},
       en:{t:"Custom combination (optional)", d:"Not everything AND? Click <b>L1, L2</b> on the left of the concept table or <b>R1, R2</b> beside the box (your own combination lines) to insert them, then use the <b>AND / OR / NOT / ( )</b> buttons, e.g. <code>(L1 OR L2) AND L3</code>. While it is open, table rows shrink so you can compare."} },
-    { el:"#fillHelp > summary",
-      zh:{t:"填寫說明", d:"鄰近字、AND、不含狹義詞等特殊標記的寫法都在這裡。"},
-      en:{t:"How to fill in", d:"How to write proximity, AND, “no narrower terms” and other marks."} },
     { el:"#level",
       zh:{t:"③ 欄位完整度", d:"<b>LV0</b> 所有欄位（最廣）、<b>LV1</b> 完整（SR 適用）、<b>LV2</b> 平衡、<b>LV3</b> 精準。"},
       en:{t:"③ Field level", d:"<b>LV0</b> all fields (broadest), <b>LV1</b> comprehensive (for SRs), <b>LV2</b> balanced, <b>LV3</b> precise."} },
@@ -5092,8 +5383,8 @@ if (typeof module !== "undefined" && module.exports) {
       zh:{t:"生成檢索策略", d:"按下去就會產生每個資料庫的語法：可以複製、開啟資料庫、<b>下載 Word</b> 或<b>回填紀錄表</b>。"},
       en:{t:"Generate strategies", d:"Generates the syntax for each database — copy it, open the database, <b>download Word</b> or <b>fill in your record form</b>."} },
     { el:".srtour-btn",
-      zh:{t:"隨時重看導覽、看示範影片", d:"之後想再看一次，按頁首這個 <span style=\"display:inline-flex;align-items:center;justify-content:center;width:1.55em;height:1.55em;border:1.5px solid currentColor;border-radius:50%;font-weight:800;font-size:.85em;line-height:1;vertical-align:.08em;margin:0 .15em\">?</span> 可以重看導覽，或觀看示範影片。祝檢索順利！"},
-      en:{t:"Replay or watch the video", d:"Press this <span style=\"display:inline-flex;align-items:center;justify-content:center;width:1.55em;height:1.55em;border:1.5px solid currentColor;border-radius:50%;font-weight:800;font-size:.85em;line-height:1;vertical-align:.08em;margin:0 .15em\">?</span> in the header to replay the tour or watch the demo video. Happy searching!"} }
+      zh:{t:"隨時重看導覽、看示範影片", d:"之後想再看一次，按頁首這個 <span style=\"display:inline-flex;align-items:center;justify-content:center;width:1.55em;height:1.55em;border:1.5px solid currentColor;border-radius:50%;font-weight:800;font-size:.85em;line-height:1;vertical-align:.08em;margin:0 .15em\">?</span> 可以重看導覽、觀看示範影片，或打開「填寫說明」（鄰近字、AND、不含狹義詞等寫法）。祝檢索順利！"},
+      en:{t:"Replay or watch the video", d:"Press this <span style=\"display:inline-flex;align-items:center;justify-content:center;width:1.55em;height:1.55em;border:1.5px solid currentColor;border-radius:50%;font-weight:800;font-size:.85em;line-height:1;vertical-align:.08em;margin:0 .15em\">?</span> in the header to replay the tour, watch the demo video, or open “How to fill in” (proximity, AND, “no narrower terms” and more). Happy searching!"} }
   ]};
 })();
 </script>
