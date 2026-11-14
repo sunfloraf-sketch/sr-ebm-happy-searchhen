@@ -339,6 +339,23 @@
   .pmvaradd{width:96px;font-size:12px;border:1px dashed #C6CFD5;border-radius:12px;padding:2px 8px}
   .hlopts{display:grid;grid-template-columns:auto auto;gap:10px 20px;align-items:center;font-size:12.5px;color:var(--mut)}
   .hlopts label{display:flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap}
+  .phgrid{display:grid;grid-template-columns:auto auto;gap:10px 8px;align-items:center;justify-content:start}
+  .phgrid .phk{margin:0;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;justify-self:start}
+  .phgrid .phv{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--mut)}
+  .pmbtn.pmlv{height:39px;width:210px;padding:0 11px;font-size:14px;border-radius:8px;background:#4b5563;color:#fff;border-color:#374151;justify-content:space-between;gap:10px}
+  .pmbtn.pmlv:hover{border-color:#1f2937;background:#434c59}
+  .pmbtn.pmlv svg{width:14px;height:14px;opacity:.95;stroke-width:3}
+  .phgrid input[type=checkbox]{appearance:none;-webkit-appearance:none;background:#fff;border:1.5px solid #55504B;border-radius:3px;position:relative;width:15px;height:15px;margin:0;cursor:pointer;flex:0 0 auto}
+  .phgrid input[type=checkbox]:checked::after{content:"";position:absolute;left:3px;top:0px;width:4px;height:8px;border:solid #111;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .phgrid .optpop label{display:flex;align-items:center;cursor:pointer;white-space:nowrap;font-size:12.5px}
+  .optsum{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
+  .pmbtn.pmlv .pmlbl{flex:1 1 auto;text-align:left}
+  .optpop{position:absolute;left:0;top:calc(100% + 4px);z-index:60;min-width:210px;padding:6px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.12)}
+  .optpop[hidden]{display:none}
+  .optpop .optgrp{font-size:11px;font-weight:700;color:#8a948e;padding:5px 8px 3px;letter-spacing:.3px}
+  .optpop .optgrp:not(:first-child){margin-top:4px;border-top:1px solid #EEF1F3;padding-top:8px}
+  .phgrid .optpop label{padding:6px 8px;border-radius:7px;color:#25292D;font-weight:600;gap:8px}
+  .phgrid .optpop label:hover{background:#F2F5F7}
   .hlopts>span{white-space:nowrap}
   .hlopts input{cursor:pointer;width:15px;height:15px}
   .inwarn{color:#c0392b;font-size:12.5px;font-weight:600;margin:0 0 10px}
@@ -521,6 +538,8 @@
   /* PICO 表格各儲存格（中文／整理前／整理後）行距加大 */
   table.pico td textarea{line-height:1.8}
   table.pico td textarea.cellparen{border-color:#C0392B !important;background:#FEF6F5 !important;box-shadow:0 0 0 2px rgba(192,57,43,.13) !important}
+  table.pico th .cvnm{white-space:nowrap}
+  table.pico th .cvsub{display:block;font-size:12.5px;font-weight:500;color:#4E5B66;white-space:nowrap;line-height:20px;margin-top:1px}
 </style>
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -823,12 +842,12 @@
           <th class="ref" style="width:15%"><span data-zh>中文同義詞</span><span data-en>Chinese synonyms</span></th>
           <th class="bef" style="width:17%"><span data-zh>英文同義詞</span><span data-en>English synonyms</span><span class="stagw"><span class="stag"><span data-zh>整理前</span><span data-en>Before</span></span><span class="subhd befsub"><span class="befmw"><button type="button" class="befcolbtn" id="befMenuBtn" aria-haspopup="true" aria-expanded="false"><span class="t"></span><span class="cvcaret car"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span></button><div class="befmenu" id="befMenu" hidden><div class="befsub2"><label class="befmi" data-tip-zh="複製時，依「鄰近字組合器」同一套規則改成字根加 *：單字（complications → complication*；vein 這類短字不切並補複數 veins）、片語逐字切（physical activities → physic* activit*）；縮寫、含數字符號的字不動。" data-tip-en="When copying, terms are truncated with the same rules as the proximity builder: single words (complications → complication*; short words like vein stay whole and get a plural, veins) and phrases word by word (physical activities → physic* activit*). Acronyms and words with digits/symbols are left alone."><input type="checkbox" id="befOptTrunc"><span data-zh>切截</span><span data-en>Truncate</span></label><label class="befmi" data-tip-zh="複製時，略過已被更短詞涵蓋的冗贅詞（例：有 obesity 就不再帶入 childhood obesity）。" data-tip-en="When copying, skip terms already covered by a shorter term (with obesity, skip childhood obesity)."><input type="checkbox" id="befOptRedun"><span data-zh>去冗</span><span data-en>De-redundify</span></label></div><button type="button" class="befmi" id="befCopyAll"><span class="t"></span></button><div class="befsep"></div><label class="befmi befsw"><input type="checkbox" id="befOptProx" role="switch"><span data-zh>鄰近字分堆</span><span data-en>Proximity groups</span></label></div></span></span></span></th>
           <th class="free"><span data-zh>英文同義詞</span><span data-en>English synonyms</span><span class="stagw"><span class="stag"><span data-zh>整理後</span><span data-en>After</span></span></span></th>
-          <th class="cv cvcol cvhead cvcol-asc" data-vocab="asc" style="width:13%;display:none" title="點一下展開各概念詞彙的成大 ASC 查核連結">ASC 控制詞彙 <span class="cvcaret">▾</span></th>
-          <th class="cv cvcol cvhead cvcol-bsc" data-vocab="bsc" style="width:13%;display:none" title="點一下展開各概念詞彙的成大 BSC 查核連結">BSC 控制詞彙 <span class="cvcaret">▾</span></th>
-          <th class="cv cvcol cvhead cvcol-eric" data-vocab="eric" style="width:13%;display:none" title="點一下展開各概念詞彙的成大 ERIC 查核連結">ERIC 控制詞彙 <span class="cvcaret">▾</span></th>
-          <th class="cv cvcol cvhead cvcol-compendex" data-vocab="compendex" style="width:13%;display:none" title="點一下展開各概念詞彙的 Ei Compendex 查核連結">Ei Compendex 控制詞彙 <span class="cvcaret">▾</span></th>
-          <th class="cv cvcol cvcol-ieee" style="width:13%;display:none"><a href="https://www.ieee.org/publications/services/thesaurus-thank-you" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">IEEE 控制詞彙 ↗</a><span class="infotip" style="font-weight:400;margin-left:3px"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip">IEEE Thesaurus 每年更新一次</span></span></th>
-          <th class="cv cvcol cvcol-pqdt" style="width:13%;display:none">PQDT 控制詞彙</th>
+          <th class="cv cvcol cvhead cvcol-asc" data-vocab="asc" style="width:13%;display:none" title="點一下展開各概念詞彙的成大 ASC 查核連結"><span class="cvnm">ASC <span class="cvcaret">▾</span></span><span class="cvsub"><span data-zh>控制詞彙</span><span data-en>Vocabulary</span></span></th>
+          <th class="cv cvcol cvhead cvcol-bsc" data-vocab="bsc" style="width:13%;display:none" title="點一下展開各概念詞彙的成大 BSC 查核連結"><span class="cvnm">BSC <span class="cvcaret">▾</span></span><span class="cvsub"><span data-zh>控制詞彙</span><span data-en>Vocabulary</span></span></th>
+          <th class="cv cvcol cvhead cvcol-eric" data-vocab="eric" style="width:13%;display:none" title="點一下展開各概念詞彙的成大 ERIC 查核連結"><span class="cvnm">ERIC <span class="cvcaret">▾</span></span><span class="cvsub"><span data-zh>控制詞彙</span><span data-en>Vocabulary</span></span></th>
+          <th class="cv cvcol cvhead cvcol-compendex" data-vocab="compendex" style="width:13%;display:none" title="點一下展開各概念詞彙的 Ei Compendex 查核連結"><span class="cvnm">Ei Compendex <span class="cvcaret">▾</span></span><span class="cvsub"><span data-zh>控制詞彙</span><span data-en>Vocabulary</span></span></th>
+          <th class="cv cvcol cvhead cvcol-ieee" data-vocab="ieee" style="width:13%;display:none" title="點一下展開 IEEE 查核連結"><span class="cvnm">IEEE <span class="cvcaret">▾</span></span><span class="cvsub"><span data-zh>控制詞彙</span><span data-en>Vocabulary</span></span></th>
+          <th class="cv cvcol cvhead cvcol-pqdt" data-vocab="pqdt" style="width:13%;display:none" title="點一下展開 PQDT 各概念詞彙"><span class="cvnm">PQDT <span class="cvcaret">▾</span></span><span class="cvsub"><span data-zh>控制詞彙</span><span data-en>Vocabulary</span></span></th>
           <th class="colmenu" style="width:34px"><button type="button" class="colbtn" id="colBtn" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M15 4v16"/></svg></button><div class="colpop" id="colPop"><div class="pophd" data-zh>顯示欄位</div><div class="pophd" data-en>Columns</div><label><input type="checkbox" id="colZh" checked><span data-zh>中文同義詞</span><span data-en>Chinese synonyms</span></label><label><input type="checkbox" id="colBef" checked><span data-zh>英文同義詞（整理前）</span><span data-en>English synonyms (Before)</span></label><label><input type="checkbox" id="colAft" checked><span data-zh>英文同義詞（整理後）</span><span data-en>English synonyms (After)</span></label><div id="colPopCv"></div></div></th>
         </tr>
       </thead>
@@ -892,6 +911,7 @@ City blocks)</pre>
 
   <hr style="border:none;border-top:1px solid var(--line);margin:6px 0 16px">
   <div class="genbar" style="align-items:flex-start">
+    <div class="lvph" style="display:flex;align-items:flex-start;gap:10px 28px;flex-wrap:wrap">
     <div style="display:flex;align-items:flex-start;gap:8px">
       <label class="fld" style="margin:0;white-space:nowrap;padding-top:9px;display:inline-flex;align-items:center;gap:4px"><span><span data-zh>欄位完整度</span><span data-en>Field level</span></span><span class="infotip"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip"><span data-zh>此區選項將套用到全部列；亦可於 PICO 檢索詞代號下方，調整各列的欄位完整度。</span><span data-en>These options apply to all rows; you can also set each row’s field level under its code in the PICO concept table.</span></span></span></label>
       <div>
@@ -904,12 +924,20 @@ City blocks)</pre>
         <div class="lvlnote" id="lvlnote"></div>
       </div>
     </div>
-    <div class="hlopts">
-      <label title="自由詞彙欄位＋外層括弧=綠、控制詞彙=紅、鄰近字=藍"><input type="checkbox" id="cbColor" checked><span data-zh>語法顏色標記</span><span data-en>Syntax colors</span></label>
-      <label title="以顏色標出成對圓括弧"><input type="checkbox" id="cbBracket"><span data-zh>成對括弧顏色</span><span data-en>Bracket pairs</span></label>
-      <label title="把最後一行的 #行號組合展開，串成一條可直接貼入單一檢索框的長檢索式"><input type="checkbox" id="cbFlat"><span data-zh>合併為一串檢索語法</span><span data-en>One combined query</span></label>
-      <label title="在檢索策略裡，把控制詞彙(ASC/BSC/ERIC/Ei Compendex 等)加上可點的詞表查核連結，方便向館員諮詢時快速複查。連結只供核對，複製的檢索式仍為純文字。"><input type="checkbox" id="cbLinks" checked><span data-zh>控制詞彙查核連結</span><span data-en>Vocab verify links</span></label>
-      <span class="phmode" style="display:inline-flex;align-items:center;gap:6px"><span title="英文同義詞欄中兩字以上的詞（如 gestational diabetes）要怎麼組成檢索語法；滑到各選項上可看說明。 / How terms of two or more words (e.g. gestational diabetes) in the English synonyms are written into the search; hover each option for details." style="cursor:help"><span data-zh>片語處理</span><span data-en>Phrase handling</span></span><span class="pmdd"><select id="phraseMode" hidden aria-hidden="true" tabindex="-1"><option value="phrase" data-zh="片語（預設）" data-en="Phrase (default)">片語（預設）</option><option value="near" data-zh="鄰近字" data-en="Proximity">鄰近字</option><option value="raw" data-zh="依輸入（謹慎使用）" data-en="As typed (use with caution)">依輸入（謹慎使用）</option></select><button type="button" class="pmbtn" id="phraseModeBtn" aria-haspopup="listbox" aria-expanded="false"><span class="pmlbl">片語（預設）</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button><span class="pmmenu" id="phraseModeMenu" role="listbox" hidden><button type="button" role="option" data-v="phrase" data-tip-zh="加上引號，當成完整片語檢索，例：&quot;gestational diabetes&quot;。" data-tip-en="Quoted and searched as an exact phrase, e.g. &quot;gestational diabetes&quot;.">片語（預設）</button><button type="button" role="option" data-v="near" data-tip-zh="字與字之間以鄰近運算連接，可在右側設定相隔幾個字以內，例：gestational NEAR/2 diabetes（運算子依各資料庫規範）。" data-tip-en="Words are joined with a proximity operator — set the distance on the right, e.g. gestational NEAR/2 diabetes (operator follows each database).">鄰近字</button><button type="button" role="option" data-v="raw" data-tip-zh="全然依您輸入的片語與標記，並由各資料庫依預設運算處理。須謹慎使用。較適合PubMed運作自動比對控制詞彙機制，其餘資料庫避免使用。" data-tip-en="Uses your phrases and markup exactly as typed, and each database processes them by its own default rules. Use with caution — best suited to PubMed’s automatic controlled-vocabulary mapping; avoid it for other databases.">依輸入（謹慎使用）</button></span></span><span id="nearWrap" style="display:none;align-items:center;gap:3px;color:var(--mut)"><span data-zh>鄰</span><span data-en>within&nbsp;</span><input type="number" id="nearN" min="0" max="20" value="2" title="鄰近距離：幾個單字內（預設 2） / Proximity distance in words (default 2)" style="width:34px;height:28px;font-size:12px;padding:0 5px;text-align:center;border:1px solid var(--line);border-radius:6px"><span data-zh>單字</span><span data-en>&nbsp;words</span></span></span>
+    <div class="phgrid">
+      <label class="fld phk"><span><span data-zh>片語處理</span><span data-en>Phrase handling</span></span><span class="infotip"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip"><span data-zh>英文同義詞欄中兩字以上的詞（如 gestational diabetes）要怎麼組成檢索語法；打開選單、滑到各選項上可看說明。</span><span data-en>How terms of two or more words (e.g. gestational diabetes) in the English synonyms are written into the search; open the menu and hover each option for details.</span></span></span></label>
+      <div class="phv"><span class="pmdd"><select id="phraseMode" hidden aria-hidden="true" tabindex="-1"><option value="phrase" data-zh="片語（預設）" data-en="Phrase (default)">片語（預設）</option><option value="near" data-zh="鄰近字" data-en="Proximity">鄰近字</option><option value="raw" data-zh="依輸入（謹慎使用）" data-en="As typed (use with caution)">依輸入（謹慎使用）</option></select><button type="button" class="pmbtn pmlv" id="phraseModeBtn" aria-haspopup="listbox" aria-expanded="false"><span class="pmlbl">片語（預設）</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button><span class="pmmenu" id="phraseModeMenu" role="listbox" hidden><button type="button" role="option" data-v="phrase" data-tip-zh="加上引號，當成完整片語檢索，例：&quot;gestational diabetes&quot;。" data-tip-en="Quoted and searched as an exact phrase, e.g. &quot;gestational diabetes&quot;.">片語（預設）</button><button type="button" role="option" data-v="near" data-tip-zh="字與字之間以鄰近運算連接，可在右側設定相隔幾個字以內，例：gestational NEAR/2 diabetes（運算子依各資料庫規範）。" data-tip-en="Words are joined with a proximity operator — set the distance on the right, e.g. gestational NEAR/2 diabetes (operator follows each database).">鄰近字</button><button type="button" role="option" data-v="raw" data-tip-zh="全然依您輸入的片語與標記，並由各資料庫依預設運算處理。須謹慎使用。較適合PubMed運作自動比對控制詞彙機制，其餘資料庫避免使用。" data-tip-en="Uses your phrases and markup exactly as typed, and each database processes them by its own default rules. Use with caution — best suited to PubMed’s automatic controlled-vocabulary mapping; avoid it for other databases.">依輸入（謹慎使用）</button></span></span><span id="nearWrap" style="display:none;align-items:center;gap:3px;color:var(--mut)"><span data-zh>鄰</span><span data-en>within&nbsp;</span><input type="number" id="nearN" min="0" max="20" value="2" title="鄰近距離：幾個單字內（預設 2） / Proximity distance in words (default 2)" style="width:34px;height:28px;font-size:12px;padding:0 5px;text-align:center;border:1px solid var(--line);border-radius:6px"><span data-zh>單字</span><span data-en>&nbsp;words</span></span></div>
+      <label class="fld phk"><span><span data-zh>輸出選項</span><span data-en>Output options</span></span></label>
+      <div class="phv"><span class="pmdd optdd"><button type="button" class="pmbtn pmlv" id="optBtn" aria-haspopup="true" aria-expanded="false"><span class="optsum" id="optSum"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="optpop" id="optPop" hidden>
+          <div class="optgrp"><span data-zh>顯示</span><span data-en>Display</span></div>
+          <label title="自由詞彙欄位＋外層括弧=綠、控制詞彙=紅、鄰近字=藍"><input type="checkbox" id="cbColor" checked><span data-zh>語法顏色標記</span><span data-en>Syntax colors</span></label>
+          <label title="以顏色標出成對圓括弧"><input type="checkbox" id="cbBracket"><span data-zh>成對括弧顏色</span><span data-en>Bracket pairs</span></label>
+          <label title="在檢索策略裡，把控制詞彙(ASC/BSC/ERIC/Ei Compendex 等)加上可點的詞表查核連結，方便向館員諮詢時快速複查。連結只供核對，複製的檢索式仍為純文字。"><input type="checkbox" id="cbLinks" checked><span data-zh>控制詞彙查核連結</span><span data-en>Vocab verify links</span></label>
+          <div class="optgrp"><span data-zh>輸出</span><span data-en>Output</span></div>
+          <label title="把最後一行的 #行號組合展開，串成一條可直接貼入單一檢索框的長檢索式"><input type="checkbox" id="cbFlat"><span data-zh>合併為一串檢索語法</span><span data-en>One combined query</span></label>
+        </div></span></div>
+    </div>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-left:auto">
       <button class="btn primary" id="genBtn"><span data-zh>▶ 生成檢索策略</span><span data-en>▶ Generate strategies</span></button>
@@ -1982,16 +2010,17 @@ if (typeof module !== "undefined" && module.exports) {
     var CVWRAP = {
       ebsco:     /\bDE\s*\(([^()]*)\)/gi,
       compendex: /\(([^()]*)\)\s*WN\s+CV/gi,
-      pqdt:      /\bSU\((\s*"[^"]*"\s*)\)/gi
+      pqdt:      /\bSU\((\s*"[^"]*"\s*)\)/gi,
+      ieee:      /"IEEE Terms":("[^"]*"|[^\s()"]+)/gi
     };
     if((semantic || (linksOn && vocab)) && CVWRAP[engine]){
       var W=CVWRAP[engine]; W.lastIndex=0;
       while((m=W.exec(text))){
         if(semantic) mk(m.index, m.index+m[0].length, "cv");   // 整段語法染紅（DE(...)／WN CV／SU(...)）
-        var inner=m[1]||"", innerBase=m.index+m[0].indexOf(inner), qre=/"([^"]*)"/g, mm2;
+        var inner=m[1]||"", innerBase=m.index+m[0].lastIndexOf(inner), qre=/"([^"]*)"|^([^\s"]+)$/g, mm2;
         while((mm2=qre.exec(inner))){
-          if(!mm2[1].length) continue;
-          var whs=innerBase+mm2.index+1, whe=whs+mm2[1].length;
+          var _w=mm2[1]!=null?mm2[1]:mm2[2]; if(!_w||!_w.length){ if(qre.lastIndex===mm2.index) qre.lastIndex++; continue; }
+          var whs=innerBase+mm2.index+(mm2[1]!=null?1:0), whe=whs+_w.length;
           for(var kk=whs;kk<whe;kk++) cls[kk]=null;   // 詞彙本身留白：可加查核連結、不被染紅
           cvHeads.push({s:whs, e:whe});
         }
@@ -2084,7 +2113,7 @@ if (typeof module !== "undefined" && module.exports) {
   // 靜態 HTML 內的 ⓘ（如起始資料庫）也套用「點擊固定」行為
   Array.prototype.forEach.call(document.querySelectorAll(".infotip"), function(s){ s.addEventListener("click", function(e){ e.stopPropagation(); var was=s.classList.contains("show"); Array.prototype.forEach.call(document.querySelectorAll(".infotip.show"),function(x){x.classList.remove("show");}); if(!was) s.classList.add("show"); }); });
   // 控制詞彙查核（表頭觸發、浮動選單）：點表頭 Emtree／MeSH／CINAHL → 浮出整欄各概念的詞彙查核連結
-  var CV_VLABEL = { asc:"ASC", bsc:"BSC", eric:"ERIC", compendex:"Ei Compendex" };
+  var CV_VLABEL = { asc:"ASC", bsc:"BSC", eric:"ERIC", compendex:"Ei Compendex", pqdt:"PQDT", ieee:"IEEE" };
   function buildColumnVerify(vocab){
     var en=isEn(), panel=$("#cvVerifyPanel");
     var lbl=CV_VLABEL[vocab]||vocab;
@@ -2106,6 +2135,8 @@ if (typeof module !== "undefined" && module.exports) {
       panel.appendChild(row);
     });
     if(!any){ var e0=document.createElement("div"); e0.className="cvvhint"; e0.textContent=en?("(no term entered)"):("（尚未輸入詞彙）"); panel.appendChild(e0); }
+    if(vocab==="pqdt"){ var hp=document.createElement("div"); hp.className="cvvhint"; hp.textContent=en?"PQDT has no public thesaurus to link to — check the terms in PQDT Advanced Search → Subject / Index term look-up.":"PQDT 沒有可直接連結的詞表，請在 PQDT 進階檢索的「Subject／Index term」查詢清單（Look up）核對。"; panel.appendChild(hp); }
+    if(vocab==="ieee"){ var hi=document.createElement("div"); hi.className="cvvhint"; hi.textContent=en?"IEEE Thesaurus is a single page (not per term); it is updated once a year.":"IEEE Thesaurus 只有單一頁面（無法逐詞連結），每年更新一次。"; panel.appendChild(hi); }
     if((vocab==="asc"||vocab==="bsc"||vocab==="eric")){
       var ib=document.createElement("div"); ib.className="cvvhint"; ib.style.marginTop="8px"; ib.onclick=function(e){ e.stopPropagation(); }; ib.onmousedown=function(e){ e.stopPropagation(); };
       var lab2=document.createElement("div"); lab2.textContent=en?("Your institution's "+lbl+" URL / code (default: NCKU):"):("貴機構 "+lbl+" 機構網址／碼（預設：成大）："); lab2.style.marginBottom="3px"; ib.appendChild(lab2);
@@ -2116,6 +2147,7 @@ if (typeof module !== "undefined" && module.exports) {
       var hint2=document.createElement("div"); hint2.textContent=en?("Current code: "+_ebCode(vocab)+". Paste research.ebsco.com/c/XXXX/… and the code XXXX is extracted; leave blank to use NCKU default."):("目前機構碼："+_ebCode(vocab)+"。貼上 research.ebsco.com/c/XXXX/… 會自動擷取 XXXX；留空＝用成大預設。"); hint2.style.cssText="margin-top:4px;color:#64748b"; ib.appendChild(hint2);
       panel.appendChild(ib);
     }
+    allUrls=allUrls.filter(function(u,i){ return allUrls.indexOf(u)===i; });   // IEEE 各詞同一頁：去重
     if(allUrls.length>1){
       var all=document.createElement("button"); all.type="button"; all.className="cvvall";
       all.textContent=en?("Open all ("+allUrls.length+")"):("全部開啟 ("+allUrls.length+")");
@@ -2712,7 +2744,7 @@ if (typeof module !== "undefined" && module.exports) {
     var box=document.createElement("div"); box.className="inwarn"; box.id="parenWarn"; box.style.display="none"; box.setAttribute("role","status");
     tbl.insertAdjacentElement("beforebegin", box);   /* 括號提醒放在表格上方 */
     function colName(ta){ var td=ta.closest("td"); if(!td) return ""; var th=tbl.querySelectorAll("thead tr:first-child th")[td.cellIndex];
-      var t=th?(th.innerText||th.textContent||""):""; t=t.split("\n")[0].replace(/\s+/g," ").replace(/\s*(整理前|整理後|Before|After|工具|Tools)[\s\S]*$/,"").trim();
+      var t=th?(th.innerText||th.textContent||""):""; t=t.split("\n")[0].replace(/\s+/g," ").replace(/\s*(整理前|整理後|Before|After|工具|Tools)[\s\S]*$/,"").trim(); if(th && th.querySelector(".cvsub")) t=t.replace(/\s*▾\s*$/,"")+(isEn()?" vocabulary":" 控制詞彙");
       if(ta.classList.contains("beftxt")) t+=isEn()?" (Before)":"（整理前）";
       else if(tbl.querySelector("th.bef") && td.cellIndex===tbl.querySelector("th.bef").cellIndex+1) t+=isEn()?" (After)":"（整理後）";
       return t; }
@@ -3639,7 +3671,7 @@ if (typeof module !== "undefined" && module.exports) {
           } else {
             var _tpl=CV_TPL_NM[eng]||'%T';
             var _orTok=(SYNTAX_MAP.boolean[eng]&&SYNTAX_MAP.boolean[eng].OR)||"OR";
-            _cv=_terms.map(function(t){ return _tpl.replace(/%T/g,t); }).join(" "+_orTok+" ");
+            _cv=_terms.map(function(t){ return _tpl.replace(/%T/g, (eng==="ieee" && /\s/.test(t)) ? ('"'+t.replace(/"/g,"")+'"') : t); }).join(" "+_orTok+" ");   // IEEE 多字詞要加引號
           }
           qlines.push({n:lineNum, text:_cv, label:r.label, kind:"cv"}); refs.push("#"+lineNum); lineNum++;
         }
@@ -5545,6 +5577,27 @@ if (typeof module !== "undefined" && module.exports) {
   if(!seen() && !/[?&](import|before)=/.test(location.search)){
     setTimeout(function(){ if(!seen()) start(true); }, 1200);
   }
+})();
+</script>
+<script id="optMenuScript">
+/* 「輸出選項」下拉（2026-11-13）：語法顏色、括弧顏色、查核連結、合併為一串收在選單裡；按鈕顯示目前開啟的項目 */
+(function(){
+  var btn=document.getElementById("optBtn"), pop=document.getElementById("optPop"), sum=document.getElementById("optSum"); if(!btn||!pop||!sum) return;
+  var ITEMS=[["cbColor","顏色標記","Colors"],["cbBracket","括弧顏色","Brackets"],["cbLinks","查核連結","Verify links"],["cbFlat","合併一串","One query"]];
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+  function render(){
+    var on=ITEMS.filter(function(it){ var c=document.getElementById(it[0]); return c&&c.checked; });
+    var zh=on.length?on.map(function(it){return it[1];}).join("、"):"全部關閉", en=on.length?on.map(function(it){return it[2];}).join(", "):"All off";
+    sum.innerHTML='<span data-zh>'+esc(zh)+'</span><span data-en>'+esc(en)+'</span>'; btn.title=(document.body.classList.contains('en')||document.documentElement.lang==='en')?en:zh;
+  }
+  function open(v){ pop.hidden=!v; btn.setAttribute("aria-expanded", v?"true":"false"); }
+  btn.addEventListener("click", function(e){ e.stopPropagation(); open(pop.hidden); });
+  pop.addEventListener("click", function(e){ e.stopPropagation(); });
+  document.addEventListener("click", function(){ if(!pop.hidden) open(false); });
+  document.addEventListener("keydown", function(e){ if(e.key==="Escape" && !pop.hidden){ open(false); btn.focus(); } });
+  ITEMS.forEach(function(it){ var c=document.getElementById(it[0]); if(c) c.addEventListener("change", render); });
+  var lb=document.getElementById("langBtn"); if(lb) lb.addEventListener("click", function(){ setTimeout(render, 0); });
+  render(); setTimeout(render, 0);   // 偏好設定可能在載入後才套用勾選狀態
 })();
 </script>
 </body>
