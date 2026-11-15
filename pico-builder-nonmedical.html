@@ -5929,10 +5929,49 @@ if (typeof module !== "undefined" && module.exports) {
 })();
 </script>
 <script id="srTourSteps">
-/* PICO 檢索策略產生器（非醫學）：導覽步驟 */
+/* PICO 檢索策略產生器（非醫學）：導覽步驟（11-15 改版：自訂組合圖形化、子問題欄位完整度、估算筆數、結果頁籤；key 換新版讓所有人再自動播一次） */
 (function(){
   var Q=function(s){ return document.querySelector(s); };
-  window.SR_TOUR={ key:"nm_v1", video:"media/pico-nonmedical-demo.mp4", videoLen:{zh:"約 1 分 10 秒",en:"about 1:10"}, steps:[
+  /* 導覽示範：表格是空的就先載入範例（結束時清掉）；需要結果時自動產生；自訂組合暫時打開並切到圖形化，結束後還原 */
+  var D={ demo:false, ccOpened:false, ccMode:null };
+  var MKEY="sr_pico_nm_cc_mode";
+  function tableEmpty(){ return !Array.prototype.some.call(document.querySelectorAll("#picoBody tr"),function(tr){ var r=(tr._get&&tr._get())||{}; return Object.keys(r).some(function(k){ if(k==="label"||k==="level") return false; var v=r[k]; if(v&&typeof v==="object") return Object.keys(v).some(function(x){ return String(v[x]||"").trim(); }); return String(v||"").trim(); }); }); }
+  function ensureData(){ if(tableEmpty()){ var b=Q("#exBtn2"); if(b){ b.click(); D.demo=true; } } }
+  function ensureOut(){ ensureData(); var o=Q("#outs"); if(o && !o.querySelector(".out")){ var g=Q("#genBtn"); if(g){ window._srAutoRegen=true; try{ g.click(); }finally{ window._srAutoRegen=false; } } } }
+  function openCC(gfx){ ensureData(); var b=Q("#ccBox"); if(!b) return; if(!b.open){ b.open=true; D.ccOpened=true; }
+    if(gfx){ var cur=null; try{ cur=localStorage.getItem(MKEY); }catch(_){} if(D.ccMode===null) D.ccMode=cur||"text";
+      var gb=Q('.ccgmode button[data-m="gfx"]'); if(gb && !gb.classList.contains("on")) gb.click();
+      var cc=Q("#customCombo"); if(cc && !cc.value.trim()){ var dm=Q('#ccGfx [data-act="demo"]'); if(dm) dm.click(); else { var ks=Array.prototype.map.call(document.querySelectorAll("#ccGfx .ccgpal .ccgc"),function(c){ return "L"+c.dataset.k; }); if(ks.length){ cc.value=ks.join(" AND "); cc.dispatchEvent(new Event("input",{bubbles:true})); } } D.ccSet=true; } }
+    else { var tb=Q('.ccgmode button[data-m="text"]'); if(tb && !tb.classList.contains("on")){ if(D.ccMode===null){ try{ D.ccMode=localStorage.getItem(MKEY)||"text"; }catch(_){ D.ccMode="text"; } } tb.click(); } } }
+  function closeCC(){ var b=Q("#ccBox");
+    if(D.ccMode!==null){ var mb=Q('.ccgmode button[data-m="'+D.ccMode+'"]'); if(mb) mb.click(); D.ccMode=null; }
+    if(b && D.ccOpened){ b.open=false; D.ccOpened=false; } }
+  function showTab(test){ var bs=document.querySelectorAll(".ovtabs button[data-i]"); for(var i=0;i<bs.length;i++){ if(test(bs[i])){ bs[i].click(); return; } } }
+  function onEnd(){ closeCC(); if(D.ccSet){ D.ccSet=false; if(!D.demo){ var cc=Q("#customCombo"); if(cc){ cc.value=""; cc.dispatchEvent(new Event("input",{bubbles:true})); } } } if(D.demo){ D.demo=false; var c=Q("#clearBtn"); if(c) c.click(); } }
+  var KEYICON='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3 L20 3 M16.5 6.5 l3 3 M14 9 l2 2"/></svg>';
+  var CC_STEPS=[
+    { el:function(){ return Q("#ccBox"); }, before:function(){ openCC(false); },
+      zh:{t:"自訂組合（選填）", d:"不想全部 AND？可以自己寫組合：點<b>概念表左側的 L1、L2</b>、輸入框左邊的 <b>R1、R2</b> 插入，搭配 <b>AND／OR／NOT、( )</b>，例如 <code>(L1 OR L2) AND L3</code>。上方可切換<b>文字輸入／圖形化</b>。"},
+      en:{t:"Custom combination (optional)", d:"Not everything AND? Write your own: click <b>L1, L2</b> beside the concept table or <b>R1, R2</b> beside the box, with <b>AND / OR / NOT / ( )</b>, e.g. <code>(L1 OR L2) AND L3</code>. Switch between <b>Text</b> and <b>Visual</b> at the top."} },
+    { el:function(){ return Q("#ccGfx"); }, before:function(){ openCC(true); },
+      zh:{t:"圖形化：子問題", d:"適合碩士論文這類有好幾個子問題的題目：把上方的概念<b>拖進子問題框</b>（手機：點概念再點框）。<b>框內＝AND（文章同時提及）</b>、<b>框與框＝OR</b>，可按「＋ 新增子問題」。組合會自動寫成 R1、R2…。"},
+      en:{t:"Visual: sub-questions", d:"For topics with several sub-questions (e.g. a thesis): <b>drag concepts into sub-question boxes</b> (on phones, tap a concept then a box). <b>Within a box = AND</b>, <b>between boxes = OR</b>; add boxes with “+ Add sub-question”. Lines R1, R2… are written for you."} },
+    { el:function(){ return Q("#ccGfx .ccgbox .ccglvb")||Q("#ccGfx .ccglvb"); }, before:function(){ openCC(true); },
+      zh:{t:"子問題的欄位完整度", d:"每個概念上的標籤是欄位完整度：<b>最廣、完整、平衡、精準</b>，顏色越深越精準。上排概念的標籤＝預設（和表格同步）；<b>子問題框裡可以另設</b>，例如同一個概念在子問題 1 只查標題，產生時會多一行該完整度的檢索式。"},
+      en:{t:"Field level per sub-question", d:"The label on each concept is its field level: <b>Broadest, Comprehensive, Balanced, Precise</b> — darker means more precise. Labels in the top row are the defaults (synced with the table); <b>inside a box you can set a different level</b> for that sub-question, and an extra line at that level is generated."} },
+    { el:function(){ return Q("#ccGfx .ccgsc"); }, before:function(){ openCC(true); },
+      zh:{t:"估算各子問題筆數", d:"按來源名稱就能估算每個子問題與合計的文章數（尚未產生策略會自動先產生）。按鈕旁的 "+KEYICON+" 可輸入 API key：<b>Scopus 必填</b>；Semantic Scholar、OpenAlex 選填。失敗的紅字可以點一下重查。"},
+      en:{t:"Counts per sub-question", d:"Click a source to estimate each sub-question and the total (strategies are generated first if needed). The "+KEYICON+" next to a source takes an API key: <b>required for Scopus</b>, optional for Semantic Scholar and OpenAlex. Click red “failed” text to retry."} }
+  ];
+  var OUT_STEPS=[
+    { el:function(){ return Q("#outs .ovtabs")||Q("#outs .ovrow")||Q("#outs .out"); }, before:function(){ closeCC(); ensureOut(); showTab(function(b,i){ return true; }); },
+      zh:{t:"結果：每個資料庫一個頁籤", d:"產生後每個資料庫一個頁籤，<b>珊瑚紅底線</b>是目前這一頁；右側圖示可切換成「全部列出」。卡片右上角可<b>複製</b>或<b>開啟資料庫</b>，PubMed、Scopus 卡片還能逐行估算文章數。"},
+      en:{t:"Results: one tab per database", d:"Each database gets a tab; the <b>coral underline</b> marks the current one, and the icons on the right switch to a single list. Use the top-right buttons to <b>copy</b> or <b>open the database</b>; PubMed and Scopus cards can estimate counts line by line."} },
+    { el:function(){ var c=Q("#outs .srfree"); return c&&(c.querySelector(".srfree-tb")||c); }, before:function(){ ensureOut(); showTab(function(b){ return /估算|estimate/i.test(b.textContent); }); },
+      zh:{t:"資料庫估算筆數", d:"最後一個頁籤：<b>表頭就是估算按鈕</b>，按一下取得每個概念與組合的文章數；"+KEYICON+" 輸入 key。Semantic Scholar 只能查標題＋摘要；OpenAlex 依欄位完整度查詢、合計只查標題＋摘要。數字僅供量級參考。"},
+      en:{t:"Count estimates", d:"The last tab: <b>each column header is an estimate button</b> — click to get counts for every concept and combination; "+KEYICON+" takes a key. Semantic Scholar searches title + abstract only; OpenAlex follows field levels, but its total uses title + abstract. Treat the numbers as ballpark figures."} }
+  ];
+  window.SR_TOUR={ key:"nm_v2", video:"media/pico-nonmedical-demo.mp4", videoLen:{zh:"約 1 分 15 秒",en:"about 1:15"}, steps:[
     { el:null,
       zh:{t:"歡迎使用 PICO 檢索策略產生器（非醫學）", d:"給綜合學科、社會科學、教育、商管、工程等主題用：<b>填好概念表 → 選設定 → 產生 WoS、Scopus、EBSCOhost、Compendex、IEEE、PQDT 等資料庫的檢索策略</b>。可以按「自動播放」，或用 ← → 切換、Esc 離開。"},
       en:{t:"Welcome to the PICO Builder (non-medical)", d:"For multidisciplinary, social science, education, business and engineering topics: <b>fill in the concept table → choose settings → generate strategies for WoS, Scopus, EBSCOhost, Compendex, IEEE, PQDT and more</b>. Press Auto-play, or use ← → and Esc."} },
@@ -5942,8 +5981,11 @@ if (typeof module !== "undefined" && module.exports) {
     { el:function(){ var s=document.getElementById("src"); return s&&s.closest(".panel"); },
       zh:{t:"① 起始與輸出資料庫", d:"<b>起始資料庫</b>：你的詞彙與標記依哪個資料庫寫。<b>輸出資料庫</b>：勾選要產生語法的資料庫；EBSCOhost 可自行輸入資料庫名稱，也可加日期限定。"},
       en:{t:"① Starting and output databases", d:"<b>Starting database</b>: the database your terms and marks are written for. <b>Output databases</b>: tick the ones to generate; for EBSCOhost you can type database names, and add date limits."} },
+    { el:function(){ return Q(".ericcell"); },
+      zh:{t:"ERIC 平台", d:"ERIC 可選 <b>EBSCOhost</b>（成大訂購）或免費的 <b>eric.ed.gov</b>；兩者語法不同，選 eric.ed.gov 會輸出單一串檢索式並直接開啟 eric.ed.gov。"},
+      en:{t:"ERIC platform", d:"Choose <b>EBSCOhost</b> (NCKU subscription) or the free <b>eric.ed.gov</b>; their syntax differs, and eric.ed.gov gets a single-line query that opens there directly."} },
     { el:function(){ return [document.getElementById("exBtn"), document.getElementById("exBtn2")]; },
-      zh:{t:"第一次用？先載入範例", d:"<b>範例 1</b> 是學齡童身體活動（PICO 架構）；<b>範例 2_微機電</b> 是微機電軸承與軸封的潤滑與磨潤（非 PICO，四個概念）。按一下就會填入完整範例，邊看邊學怎麼填。"},
+      zh:{t:"第一次用？先載入範例", d:"<b>範例 1</b> 是學齡童身體活動（PICO 架構）；<b>範例 2_微機電</b> 是微機電軸承與軸封的潤滑與磨潤（非 PICO，四個概念）。範例只填<b>整理前</b>，可以練習用「工具」整理。"},
       en:{t:"New here? Load an example", d:"<b>Example 1</b>: school children and physical activity (PICO). <b>Example 2 (MEMS)</b>: lubrication and tribology of MEMS bearings and seals (non-PICO, four concepts). One click fills in a complete example."} },
     { el:"#pasteBox > summary",
       zh:{t:"貼上表格", d:"用 AI 或 Excel／Word 整理好的詞彙表，可以整張貼上，自動對應到各欄；這裡也有 AI 提示詞範例。"},
@@ -5957,22 +5999,29 @@ if (typeof module !== "undefined" && module.exports) {
     { el:"table.pico",
       zh:{t:"② 概念表", d:"每一列是一個概念。同一格<b>每行一個詞＝OR</b>，列與列之間預設＝<b>AND</b>。左側可改概念代號（P、I、C、O）。"},
       en:{t:"② Concept table", d:"Each row is one concept. In a cell, <b>one term per line = OR</b>; rows are ANDed by default. Edit the concept label (P, I, C, O) on the left."} },
+    { el:"th.bef",
+      zh:{t:"英文同義詞：整理前 → 整理後", d:"<b>整理前</b>放收集到的原始詞（範例只填這一欄）；用「工具」整理後放到<b>整理後</b>，產生策略用的是整理後。直接貼上其他資料庫的檢索式也會自動清掉語法、拆成一行一個。"},
+      en:{t:"English synonyms: Before → After", d:"Put raw terms in <b>Before</b> (the examples fill only this column); tidy them with “Tools” into <b>After</b>, which is used to generate the strategies. Search strings pasted from other databases are cleaned and split one term per line."} },
+    { el:function(){ return [document.getElementById("befMenuBtn"), document.getElementById("befMenu")]; },
+      before:function(){ var m=document.getElementById("befMenu"), b=document.getElementById("befMenuBtn"); if(m&&b&&m.hidden) b.click(); },
+      after:function(){ var m=document.getElementById("befMenu"), b=document.getElementById("befMenuBtn"); if(m&&b&&!m.hidden) b.click(); },
+      zh:{t:"「工具」選單", d:"勾<b>切截</b>會改成字根加 *（lubricants → lubricant*），勾<b>去冗</b>會略過已被較短詞涵蓋的詞，再按<b>複製到整理後 →</b>。打開<b>鄰近字分堆</b>，每列整理前下方會出現按鈕，可把詞送到鄰近字分堆組合器。"},
+      en:{t:"The Tools menu", d:"Tick <b>Truncate</b> to use stems with * (lubricants → lubricant*) and <b>De-redundify</b> to skip terms covered by shorter ones, then press <b>Copy to After →</b>. Switch on <b>Proximity groups</b> to show a button under each Before cell that sends the terms to the proximity builder."} },
     { el:"th.free",
       zh:{t:"英文同義詞（自由詞彙）", d:"每行一個詞，可以用截字 *、片語、鄰近字（例：<code>鄰3字</code>）與括號分組；寫法參考下方「填寫說明」。"},
       en:{t:"English synonyms (free text)", d:"One term per line; use truncation *, phrases, proximity (e.g. <code>NEAR/3</code>) and parentheses. See “How to fill in” below."} },
     { el:function(){ return [].slice.call(document.querySelectorAll("th.cvhead")).filter(function(t){ return t.offsetParent; })[0]; },
       zh:{t:"控制詞彙欄", d:"依你勾選的輸出資料庫出現對應的控制詞彙欄（ASC、BSC、ERIC、Compendex…），每行一個。點欄位標題可展開官方詞表連結逐一核對。"},
       en:{t:"Controlled vocabulary", d:"Columns follow your output databases (ASC, BSC, ERIC, Compendex…), one heading per line. Click a column title for links to the official thesaurus."} },
+    { el:"#colBtn",
+      zh:{t:"顯示欄位", d:"用不到的欄位（例如中文同義詞、整理前、某個控制詞彙欄）可以在這裡先隱藏，畫面更清爽；已填的內容不會被刪掉。"},
+      en:{t:"Show / hide columns", d:"Hide columns you don’t need (e.g. Chinese synonyms, Before, a vocabulary column) for a cleaner view; their contents are kept."} },
     { el:function(){ return Q("#picoBody .rowlvl"); },
-      zh:{t:"每列欄位完整度", d:"每個概念可以個別調整檢索欄位的寬窄（LV0 最廣～LV3 最精準）。"},
-      en:{t:"Field level per row", d:"Each concept can use its own field level (LV0 broadest – LV3 most precise)."} },
-    { el:function(){ return document.getElementById("ccBox"); },
-      before:function(){ var b=document.getElementById("ccBox"); if(b&&!b.open){ b.open=true; b._srTourOpened=true; } },   // 導覽時暫時打開，離開這一步再收回
-      after:function(){ var b=document.getElementById("ccBox"); if(b&&b._srTourOpened){ b.open=false; b._srTourOpened=false; } },
-      zh:{t:"自訂組合（選填）", d:"不想全部 AND？點<b>概念表左側的 L1、L2</b>、<b>輸入框左邊的 R1、R2</b>（引用自訂的組合行）就能插入，再搭配左側 <b>AND／OR／NOT、( )</b> 按鈕，例如 <code>(L1 OR L2) AND L3</code>。打開時概念表會自動縮小列高，方便對照。"},
-      en:{t:"Custom combination (optional)", d:"Not everything AND? Click <b>L1, L2</b> on the left of the concept table or <b>R1, R2</b> beside the box (your own combination lines) to insert them, then use the <b>AND / OR / NOT / ( )</b> buttons, e.g. <code>(L1 OR L2) AND L3</code>. While it is open, table rows shrink so you can compare."} },
+      zh:{t:"每列欄位完整度", d:"概念代號下方的標籤是這一列的欄位完整度：<b>最廣、完整、平衡、精準</b>，顏色越深越精準，可以每列個別調整。"},
+      en:{t:"Field level per row", d:"The label under each concept code is that row’s field level — <b>Broadest, Comprehensive, Balanced, Precise</b>; darker means more precise, and each row can differ."} },
+    "__CC__",
     { el:"#level",
-      zh:{t:"③ 欄位完整度", d:"<b>LV0</b> 所有欄位（最廣）、<b>LV1</b> 完整（SR 適用）、<b>LV2</b> 平衡、<b>LV3</b> 精準。"},
+      zh:{t:"③ 欄位完整度", d:"一次設定所有概念：<b>LV0 最廣</b>（所有欄位）、<b>LV1 完整</b>（SR 適用）、<b>LV2 平衡</b>、<b>LV3 精準</b>。"},
       en:{t:"③ Field level", d:"<b>LV0</b> all fields (broadest), <b>LV1</b> comprehensive (for SRs), <b>LV2</b> balanced, <b>LV3</b> precise."} },
     { el:"#phraseModeBtn",
       zh:{t:"片語處理", d:"兩字以上的詞要用<b>片語</b>（預設）、<b>鄰近字</b>，還是<b>依輸入</b>；滑到各選項上有說明。"},
@@ -5980,10 +6029,14 @@ if (typeof module !== "undefined" && module.exports) {
     { el:"#genBtn",
       zh:{t:"生成檢索策略", d:"按下去就會產生每個資料庫的語法：可以複製、開啟資料庫、<b>下載 Word</b> 或<b>回填紀錄表</b>。"},
       en:{t:"Generate strategies", d:"Generates the syntax for each database — copy it, open the database, <b>download Word</b> or <b>fill in your record form</b>."} },
+    "__OUT__",
     { el:".srtour-btn",
       zh:{t:"隨時重看導覽、看示範影片", d:"之後想再看一次，按頁首這個 <span style=\"display:inline-flex;align-items:center;justify-content:center;width:1.55em;height:1.55em;border:1.5px solid currentColor;border-radius:50%;font-weight:800;font-size:.85em;line-height:1;vertical-align:.08em;margin:0 .15em\">?</span> 可以重看導覽、觀看示範影片，或打開「填寫說明」（鄰近字、AND、不含狹義詞等寫法）。祝檢索順利！"},
       en:{t:"Replay or watch the video", d:"Press this <span style=\"display:inline-flex;align-items:center;justify-content:center;width:1.55em;height:1.55em;border:1.5px solid currentColor;border-radius:50%;font-weight:800;font-size:.85em;line-height:1;vertical-align:.08em;margin:0 .15em\">?</span> in the header to replay the tour, watch the demo video, or open “How to fill in” (proximity, AND, “no narrower terms” and more). Happy searching!"} }
   ]};
+  var _s=[]; window.SR_TOUR.steps.forEach(function(x){ if(x==="__CC__") _s=_s.concat(CC_STEPS); else if(x==="__OUT__") _s=_s.concat(OUT_STEPS); else _s.push(x); }); window.SR_TOUR.steps=_s;
+  window.SR_TOUR.onStart=ensureData;   /* 表格空白時先放範例，導覽各步都有內容可看 */
+  window.SR_TOUR.onEnd=onEnd;
 })();
 </script>
 <script id="srTourScript">
