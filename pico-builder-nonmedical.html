@@ -180,6 +180,46 @@
   .ccglines i{font-style:normal;font-weight:700;color:#0f766e;margin-right:10px}
   .ccgwarn{font-size:12.5px;color:#c0392b;margin-bottom:8px}
   .ccgdemo{margin-top:6px}
+  /* 表格概念欄的欄位完整度：同圖形化（淺→深＝越精準） */
+  table.pico td.lab .rowlvl[data-l=L0]{background:#F1F5F4;color:#4F6A62;border-color:#D7E2DE}
+  table.pico td.lab .rowlvl[data-l=L1]{background:#DCEBE6;color:#2D5A4E;border-color:#DCEBE6}
+  table.pico td.lab .rowlvl[data-l=L2]{background:#A9CFC4;color:#1E463B;border-color:#A9CFC4}
+  table.pico td.lab .rowlvl[data-l=L3]{background:#2F6E5F;color:#fff;border-color:#2F6E5F}
+  /* 圖形化：欄位完整度（最廣／完整／平衡／精準，淺→深＝越精準） */
+  .ccgpw{display:inline-flex;align-items:center;gap:3px}
+  .ccglvb{font:inherit;font-size:11.5px;font-weight:700;line-height:1;padding:4px 7px;border:1px solid transparent;border-radius:5px;cursor:pointer;white-space:nowrap}
+  .ccglvb[data-l=L0]{background:#F1F5F4;color:#4F6A62;border-color:#D7E2DE}
+  .ccglvb[data-l=L1]{background:#DCEBE6;color:#2D5A4E}
+  .ccglvb[data-l=L2]{background:#A9CFC4;color:#1E463B}
+  .ccglvb[data-l=L3]{background:#2F6E5F;color:#fff}
+  .ccglvb:hover{filter:brightness(.96)}
+  .ccgc .ccglvb{padding:3px 6px;font-size:11px}
+  .ccgc .ccglvb.ov{box-shadow:0 0 0 1.5px #23282D}
+  .ccg{position:relative}
+  .ccglvpop{position:absolute;z-index:40;min-width:200px;background:#fff;border:1px solid #C9D3D8;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.12);padding:6px}
+  .ccglvpop[hidden]{display:none}
+  .ccglvpop .hd{font-size:12px;color:var(--mut);padding:2px 6px 6px;max-width:260px}
+  .ccglvpop .op{display:flex;align-items:center;gap:8px;width:100%;font:inherit;font-size:12.5px;text-align:left;padding:5px 6px;border:0;background:transparent;border-radius:6px;cursor:pointer;color:var(--ink)}
+  .ccglvpop .op:hover,.ccglvpop .op:focus{background:#F3F6F5;outline:none}
+  .ccglvpop .op .ccglvb{min-width:4.2em;text-align:center;pointer-events:none}
+  .ccglvpop .op .ds{flex:1 1 auto;color:var(--mut)}
+  .ccglvpop .op .ck{color:#0f766e;font-weight:700}
+  .ccgcnts{display:flex;flex-wrap:wrap;gap:2px 14px;margin:-4px 0 8px}
+  .ccgcnt{font-size:12px;color:#2A7A55;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .ccgcnt b{font-weight:600;color:var(--mut)}
+  .ccgcnt.err{color:#c0392b;cursor:pointer;text-decoration:underline dotted}
+  .ccgscnote{flex-basis:100%;font-size:12.5px;color:#c0392b;line-height:1.6}
+  .ccgscnote:empty{display:none}
+  .ccgsc{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin-top:12px}
+  .ccgsc[hidden]{display:none}
+  .ccgsclab{font-size:12.5px;font-weight:700;color:var(--brand2)}
+  .ccgscsrc.on{text-decoration:underline;text-underline-offset:3px}
+  .ccgscsrc:disabled{color:#9AA5AB;cursor:default}
+  .ccgscst{font-size:12px;color:var(--mut)}
+  .ccgscst.err{color:#c0392b}
+  .ccgsctot{flex-basis:100%;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 14px}
+  .ccgsctot:empty{display:none}
+  .ccgscsrc{display:inline-flex;align-items:center;gap:4px}
   @media (max-width:640px){
     div:has(> #ccBox.ccg-on[open]){flex-wrap:wrap}
     #ccBox.ccg-on[open]{flex:1 1 100% !important}
@@ -204,9 +244,9 @@
   .ovsw button:hover{color:#23282D;background:#EEF2F5}
   .ovsw button.on{color:#23282D}
   .ovtabs{display:flex;flex-wrap:wrap;align-items:flex-end;gap:0 4px;border-bottom:1px solid var(--line);margin:0 0 12px;padding:0 2px}
-  .ovtabs button[data-i]{font:inherit;font-size:14px;font-weight:700;padding:8px 4px 7px;margin:0 14px -1px 0;border:0;border-bottom:2px solid transparent;background:transparent;color:#8E99A1;cursor:pointer;white-space:nowrap}
+  .ovtabs button[data-i]{font:inherit;font-size:14px;font-weight:700;padding:8px 4px 7px;margin:0 14px -1px 0;border:0;border-bottom:3px solid transparent;background:transparent;color:#3A4248;cursor:pointer;white-space:nowrap}
   .ovtabs button[data-i]:hover{color:#23282D}
-  .ovtabs button[data-i].on{color:#23282D;border-bottom-color:#23282D}
+  .ovtabs button[data-i].on{color:#23282D;border-bottom-color:#E0644F}
   .ovtabs button small{font-size:11px;font-weight:400;color:#8E99A1;margin-left:5px}
   .ovtabs .ovsw{align-self:center}
   #outs.ovtabmode > .out h3 > span:first-child{display:none}
@@ -949,12 +989,17 @@ City blocks)</pre>
   <div id="outs"></div>
 </main>
 <footer class="shfoot"><div class="shfoot-in">
-  <p><span data-zh>此工具為純網頁程式，未使用 AI。資料預設只在瀏覽器本機執行與暫存；只有按下「PubMed 估算文章數」時，對應檢索式才會傳送至 NCBI E-utilities。產出的檢索策略請人工覆核並於資料庫實測後再使用。</span>
-    <span data-en>A pure web-based tool with no AI. Data stays in your browser by default; only when you click “Estimate PubMed counts” are the relevant queries sent to NCBI E-utilities. Please human-check and test the generated strategy before use.</span></p>
-  <p><span data-zh>工具引用：方靜如，SR x EBM Happy SearchHen 搜尋策略生成雞。<br>Fang CJ, SR x EBM Happy SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/</a><br></span>
-    <span data-en>Cite this tool: Fang CJ, SR x EBM Happy SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/</a></span></p>
-  <div class="frow"><span class="brandline">SR × EBM Happy SearchHen　搜尋策略生成雞</span><span>© 2026 Ching-Ju Fang <a href="https://orcid.org/0000-0002-7892-8840" target="_blank" rel="noopener" title="ORCID iD" style="text-decoration:none;white-space:nowrap;color:inherit" onclick="try{if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:'author-orcid',title:'作者-ORCID',event:true})}catch(e){}"><svg width="13" height="13" viewBox="0 0 256 256" style="vertical-align:-2px;margin-right:3px" aria-hidden="true"><circle cx="128" cy="128" r="128" fill="#A6CE39"/><g fill="#fff"><path d="M86.3 186.2H70.9V79.1h15.4v107.1z"/><path d="M108.9 79.1h41.6c39.6 0 57 28.3 57 53.6 0 27.5-21.5 53.6-56.8 53.6h-41.8V79.1zm15.4 93.3h24.5c34.9 0 42.9-26.5 42.9-39.7 0-21.5-13.7-39.7-43.7-39.7h-23.7v79.4z"/><circle cx="78.6" cy="56.8" r="10.1"/></g></svg>https://orcid.org/0000-0002-7892-8840</a> · All rights reserved · <a href="https://github.com/sunfloraf-sketch/sr-ebm-happy-searchhen/blob/main/LICENSE" target="_blank" rel="noopener"><span data-zh>使用條款</span><span data-en>Terms of use</span></a> · v3.2.7</span></div>
-</div></footer>
+    <p><span data-zh><b>使用警語：</b>各工具輸出結果請人工覆核後再使用。</span><span data-en><b>Note:</b> Please check each tool’s output before use.</span></p>
+    <p><span data-zh><b>工具引用：</b>方靜如，SR × EBM Happy SearchHen 搜尋策略生成雞。doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/</a></span><span data-en><b>Cite this tool:</b> Fang CJ, SR × EBM Happy SearchHen. doi: <a href="https://doi.org/10.5281/zenodo.21960702" target="_blank" rel="noopener">10.5281/zenodo.21960702</a>. <a href="https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/" target="_blank" rel="noopener">https://sunfloraf-sketch.github.io/sr-ebm-happy-searchhen/</a></span></p>
+    <p class="authnote"><span data-zh>作者獨立開發｜作者任職於國立成功大學醫學圖書分館，並使用本工具於相關教學與諮詢服務</span><span data-en>Independently developed by the author, who works at the NCKU Medical Library and uses this tool in teaching and consultations</span></p>
+    <div class="frow">
+      <span><button type="button" class="cpbtn" aria-expanded="false" aria-controls="privInfo"><span data-zh>技術與隱私聲明</span><span data-en>Technology &amp; privacy</span></button> · <button type="button" class="cpbtn" aria-expanded="false" aria-controls="cpInfo"><span data-zh>版權與聯絡</span><span data-en>Copyright &amp; contact</span></button><span id="cpInfo" class="cpinfo" hidden>© 2026 Ching-Ju Fang | <span class="cpmail"></span> | ORCID: <a href="https://orcid.org/0000-0002-7892-8840" target="_blank" rel="noopener" title="ORCID iD" style="text-decoration:none;white-space:nowrap;color:inherit" onclick="try{if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:'author-orcid',title:'作者-ORCID',event:true})}catch(e){}"><svg width="13" height="13" viewBox="0 0 256 256" style="vertical-align:-2px;margin-right:3px" aria-hidden="true"><circle cx="128" cy="128" r="128" fill="#A6CE39"/><g fill="#fff"><path d="M86.3 186.2H70.9V79.1h15.4v107.1z"/><path d="M108.9 79.1h41.6c39.6 0 57 28.3 57 53.6 0 27.5-21.5 53.6-56.8 53.6h-41.8V79.1zm15.4 93.3h24.5c34.9 0 42.9-26.5 42.9-39.7 0-21.5-13.7-39.7-43.7-39.7h-23.7v79.4z"/><circle cx="78.6" cy="56.8" r="10.1"/></g></svg>0000-0002-7892-8840</a></span> · <a href="https://github.com/sunfloraf-sketch/sr-ebm-happy-searchhen/blob/main/LICENSE" target="_blank" rel="noopener"><span data-zh>使用條款</span><span data-en>Terms of use</span></a> · v3.3.0</span>
+    </div>
+    <p id="privInfo" class="privinfo" hidden><span data-zh><b>技術與隱私聲明：</b>此工具包為純網頁程式，未使用到 AI 運作，僅在您的瀏覽器本機執行與暫存，不會傳輸任何研究資料到網路或給開發者。本站僅透過瀏覽頁面與點擊功能獲取使用統計。<br>但您透過 API 向書目資料庫或開源資料庫取得估計文章數或控制詞彙時，資料會傳送到該資料庫。</span><span data-en><b>Technology &amp; privacy:</b> This toolkit is pure web-based software with no AI. It runs and caches data only in your browser and never sends your research data over the internet or to the developer. This site collects usage statistics only from page views and feature clicks.<br>However, when you request estimated record counts or controlled-vocabulary data from a bibliographic or open database through its API, your query is sent to that database.</span></p>
+  </div>
+  <style>/* 頁尾（同首頁） */.shfoot .authnote{margin-top:-6px}.shfoot .cpbtn{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:2px}.shfoot .cpinfo{margin-left:6px}.shfoot .cpinfo[hidden]{display:none}</style>
+  <script>/* 頁尾：「技術與隱私聲明」「版權與聯絡」預設隱藏，點了才出現 */(function(){var bs=document.querySelectorAll("footer .cpbtn");Array.prototype.forEach.call(bs,function(b){var c=document.getElementById(b.getAttribute("aria-controls"));if(!c)return;b.addEventListener("click",function(){var o=c.hidden;c.hidden=!o;b.setAttribute("aria-expanded",o?"true":"false");var m=c.querySelector(".cpmail");if(o&&m&&!m.firstChild){var e=["flora","mail.ncku.edu.tw"].join("@"),a=document.createElement("a");a.href="mailto:"+e;a.textContent=e;m.appendChild(a);}});});})();</script><style>footer .privinfo{margin-top:10px}footer .privinfo[hidden]{display:none}</style>
+</footer>
 
 <script>
 /* ================= EMBEDDED ENGINE ================= */
@@ -2365,7 +2410,7 @@ if (typeof module !== "undefined" && module.exports) {
     ["L0","L1","L2","L3"].forEach(function(v){ var o=document.createElement("option"); o.value=v; o.textContent=LEVEL_CODE[isEn()?"en":"zh"][v]; lvlSel.appendChild(o); });
     lvlSel.value=(lvl && /^L[0123]$/.test(lvl)) ? lvl : ((levelSel&&levelSel.value)||"L1");
     lvlSel.title=LVL_NOTE[isEn()?"en":"zh"][lvlSel.value];
-    lvlSel.onchange=function(){ lvlSel.title=LVL_NOTE[isEn()?"en":"zh"][lvlSel.value]; if(typeof saveDraftDebounced==="function") saveDraftDebounced(); if(typeof autoRegen==="function") autoRegen(); };
+    lvlSel.dataset.l=lvlSel.value; lvlSel.onchange=function(){ lvlSel.dataset.l=lvlSel.value; lvlSel.title=LVL_NOTE[isEn()?"en":"zh"][lvlSel.value]; if(typeof saveDraftDebounced==="function") saveDraftDebounced(); if(typeof autoRegen==="function") autoRegen(); };
     labTd.appendChild(lvlSel);
     var c0=mkCell("ref",phs.zh), c1=mkCell("free",phs.ft);
     var cb=mkCell("bef", phs.before||""), cbTa=cb.ta; cbTa.classList.add("beftxt"); cbTa.value=before||""; if(phs.before) cbTa.setAttribute("data-ph-ex", phs.before);   // 整理前欄（原始詞收集區）
@@ -2394,9 +2439,9 @@ if (typeof module !== "undefined" && module.exports) {
     tr.appendChild(rmTd);
     tr._cvCustom=[];
     tr._get=function(){ var cvo={}; CV_DBS.forEach(function(id){ cvo[id]=cvCells[id].ta.value.trim(); }); (tr._cvCustom||[]).forEach(function(c,i){ cvo['ebc'+i]=c.ta.value.trim(); }); return { label:labIn.value.trim()||"?", zh:c0.ta.value.trim(), ft:c1.ta.value.trim(), before:cbTa.value.trim(), cv:cvo, level:lvlSel.value }; };
-    tr._setLevel=function(v){ if(/^L[0123]$/.test(v)){ lvlSel.value=v; lvlSel.title=LVL_NOTE[isEn()?"en":"zh"][v]; } };
+    tr._setLevel=function(v){ if(/^L[0123]$/.test(v)){ lvlSel.value=v; lvlSel.dataset.l=v; lvlSel.title=LVL_NOTE[isEn()?"en":"zh"][v]; } };
     tr._refreshLvlLabel=function(){ var m=LEVEL_CODE[isEn()?"en":"zh"]; Array.prototype.forEach.call(lvlSel.options,function(o){o.textContent=m[o.value]||o.value;}); lvlSel.title=LVL_NOTE[isEn()?"en":"zh"][lvlSel.value]; };
-    rm.onclick=function(){ tr.remove(); updateCodes(); if(typeof saveDraftDebounced==="function") saveDraftDebounced(); autoRegen(); };
+    rm.onclick=function(){ /* 有資料先確認 */ var _r=(tr._get&&tr._get())||{}, _ne=function(v){ if(v==null) return false; if(typeof v==="object") return Object.keys(v).some(function(x){ return _ne(v[x]); }); return String(v).trim()!==""; }, _has=Object.keys(_r).some(function(x){ return x!=="label"&&x!=="level"&&_ne(_r[x]); }); var _k=Array.prototype.indexOf.call(picoBody.querySelectorAll("tr"),tr)+1, _cc=document.getElementById("customCombo"), _inCC=!!(_cc&&new RegExp("\\bL"+_k+"(@L?V?[0-3])?\\b","i").test(_cc.value)); var _nm=(_r.label?"「"+_r.label+"」":"")+"（L"+_k+"）"; if((_has||_inCC) && !srConfirm(isEn()?("Row "+(_r.label?"“"+_r.label+"” ":"")+"(L"+_k+")"+(_has?" contains terms":"")+(_inCC?(_has?" and is":" is")+" used in the custom combination (it will be removed from it)":"")+". This can’t be undone. Delete it?"):("此列"+_nm+(_has?"有資料":"")+(_inCC?(_has?"，且":"")+"自訂組合有用到（刪除後會從組合中移除）":"")+"。動作無法復原，確認刪除嗎？"))) return; tr.remove(); updateCodes(); if(typeof saveDraftDebounced==="function") saveDraftDebounced(); autoRegen(); };
     picoBody.appendChild(tr);
     updateCodes();
     if(typeof updateCvColumns==="function") updateCvColumns();
@@ -3498,6 +3543,7 @@ if (typeof module !== "undefined" && module.exports) {
     var _joined = _lns[0]||"";
     for(var _i=1;_i<_lns.length;_i++){ _joined += ((_endsOpen(_lns[_i-1])||_startsClose(_lns[_i]))?" ":" OR ") + _lns[_i]; }
     var parsed = parseQuery(_joined, startDB);
+    if(RENDER_OPTS.capture) RENDER_OPTS.capture.push(parsed.ast);   /* 免費資料庫估算：取得剖析結果 */
     var _pmBare = (_pmode==="raw" && db==="pubmed" && (level==="L0"||level==="L1"));   // 依輸入條件：PubMed L0／L1 自由詞彙不加欄位標籤（ATM）；L2／L3 仍加 [ti]
     var node = _pmBare ? parsed.ast : { t:"field", field:level, child:parsed.ast };
     var warnArr=[];
@@ -3688,6 +3734,28 @@ if (typeof module !== "undefined" && module.exports) {
       reminders.push(isEn() ? (tg.label+" has no controlled vocabulary — free-text only")
                             : (tg.label+" 無控制詞彙，僅用自由詞彙"));
     }
+    /* 子問題另設欄位完整度：自訂組合含 L1@LV3 → 該概念另產生該完整度的檢索行（行號接在後面），供 buildCombos 對應 */
+    conceptRefs.vars={};
+    var _ccvEl=document.getElementById("customCombo"), _ccv=_ccMigrate(_ccvEl?_ccvEl.value:"");
+    if(!buildForTarget._noVar && /\bL\d+@L?V?[0-3]\b/i.test(_ccv)){
+      var _vre=/\bL(\d+)@L?V?([0-3])\b/gi, _vm, _vk=[];
+      while((_vm=_vre.exec(_ccv))){ var _vkey=(+_vm[1])+"@L"+_vm[2]; if(_vk.indexOf(_vkey)<0) _vk.push(_vkey); }
+      _vk.forEach(function(key){
+        var k=+key.split("@")[0], lv=key.split("@")[1], r0=rows[k-1]; if(!r0) return;
+        var rlv=(r0.level&&/^L[0123]$/.test(r0.level))?r0.level:level;
+        if(lv===rlv){ conceptRefs.vars[key]=conceptRefs[k-1]; return; }
+        var r1={}; Object.keys(r0).forEach(function(p){ r1[p]=r0[p]; }); r1.level=lv;
+        var _roots=(eng==="pubmed")?(RENDER_OPTS.strippedRoots||[]).slice():null, sb;
+        buildForTarget._noVar=true;
+        try{ sb=buildForTarget([r1], startId, targetId, level); } finally { buildForTarget._noVar=false; }
+        if(_roots){ (RENDER_OPTS.strippedRoots||[]).forEach(function(x){ if(_roots.indexOf(x)<0) _roots.push(x); }); RENDER_OPTS.strippedRoots=_roots; }
+        var off=lineNum-1, sh=function(t){ return String(t).replace(/#(\d+)/g,function(m,d){ return "#"+(+d+off); }); };
+        sb.qlines.forEach(function(q){ qlines.push({n:q.n+off, text:sh(q.text), variant:key}); });
+        sb.reminders.forEach(function(m){ if(reminders.indexOf(m)<0) reminders.push(m); });
+        lineNum+=sb.lastNum;
+        conceptRefs.vars[key]=sb.conceptRefs[0]!=null?sh(sb.conceptRefs[0]):null;
+      });
+    }
     var _andTok = (SYNTAX_MAP.boolean[eng] && SYNTAX_MAP.boolean[eng].AND) || "AND";
     var finalExpr = finalParts.join(" "+_andTok+" ");
     var emitFinal = finalParts.length>1 || (finalParts.length===1 && /\bOR\b|\bAND\b/i.test(finalParts[0]));
@@ -3708,6 +3776,7 @@ if (typeof module !== "undefined" && module.exports) {
     lines.forEach(function(line, idx){
       var num=lastNum+1+idx;
       var txt=line
+        .replace(/\bL(\d+)@L?V?([0-3])\b/gi, function(m,k,l){ var V=conceptRefs.vars||{}, g=V[parseInt(k,10)+"@L"+l]; if(g===undefined) g=conceptRefs[parseInt(k,10)-1]; return (g!=null)?g:m; })   /* 子問題另設欄位完整度 */
         .replace(/\bL(\d+)\b/gi, function(m,k){ var g=conceptRefs[parseInt(k,10)-1]; return (g!=null)?g:m; })
         .replace(/\bR(\d+)\b/gi, function(m,k){ var n=Lmap[parseInt(k,10)]; return (n!=null)?("#"+n):m; })
         .replace(/\b(AND\s+NOT|AND|OR|NOT)\b/gi, function(m){ var k=m.toUpperCase().replace(/\s+/g," "); var B=(eng && SYNTAX_MAP.boolean[eng])||null; if(k==="AND NOT") k="NOT"; return B ? (B[k]||k) : k; });
@@ -3715,6 +3784,86 @@ if (typeof module !== "undefined" && module.exports) {
       out.push({n:num, text:txt});
     });
     return out;
+  }
+  /* 免費資料庫估算（Semantic Scholar／OpenAlex／ERIC）：把各概念的自由詞彙轉成各庫可用的布林式（不送控制詞彙；ERIC 另加 ERIC 敘詞 subject:） */
+  function _freePlain(node, fl){
+    if(!node) return "";
+    var sub=function(k){ var s=_freePlain(k,fl); return s?((k.t==="bool"||k.t==="prox")?"("+s+")":s):""; };
+    switch(node.t){
+      case "field": return _freePlain(node.child, fl);
+      case "lines": return node.items.map(function(it){ return _freePlain(it.ast, fl); }).filter(Boolean).join(fl==="s2"?" | ":" OR ");
+      case "bool": { var ps=node.kids.map(sub).filter(Boolean); if(!ps.length) return ""; if(ps.length===1) return ps[0];
+        if(fl==="s2") return node.op==="OR"?ps.join(" | "):node.op==="NOT"?(ps[0]+" + -"+ps.slice(1).join(" + -")):ps.join(" + ");
+        return ps.join(" "+node.op+" "); }
+      case "prox": { var a=sub(node.a), b=sub(node.b); if(!a||!b) return a||b; return fl==="s2"?(a+" + "+b):(a+" AND "+b); }   /* 鄰近字 → AND（估算偏寬） */
+      case "term": { var v=String(node.value||"").replace(/["“”]/g,"").replace(/[?#$]/g,"*").replace(//g," ").trim(); if(!v) return "";
+        if(fl==="oa") v=v.replace(/\*/g,"");   /* OpenAlex 不支援切截（已做詞幹處理） */
+        if(node.phrase||/\s/.test(v)) return '"'+v.replace(/\*/g,"")+'"';
+        return v; }
+      case "raw": return String(node.value||"").replace(/[\[\]{}"]/g," ").replace(/\s+/g," ").trim();
+      default: return "";   /* MeSH 等控制詞彙略過 */
+    }
+  }
+  function _freeBuild(rows, startDB, level){
+    var cache={}, ccEl=document.getElementById("customCombo"), ccv=ccEl?ccEl.value:"";
+    function concept(k, lv){
+      var r=rows[k-1]; if(!r) return null; lv=lv||((r.level&&/^L[0123]$/.test(r.level))?r.level:level);
+      var key=k+"@"+lv; if(cache[key]!==undefined) return cache[key];
+      var ast=null;
+      if(r.ft){ RENDER_OPTS.capture=[]; try{ scopeFreetext(r.ft, (TARGET_BY_ID[startDB]&&TARGET_BY_ID[startDB].engine)||startDB, "wos", lv, []); ast=RENDER_OPTS.capture[0]||null; }catch(_e){} finally{ RENDER_OPTS.capture=null; } }
+      var q={s2:_freePlain(ast,"s2"), oa:_freePlain(ast,"oa").replace(/,/g," "), eric:_freePlain(ast,"eric")};
+      if(q.eric){ var e=q.eric; q.eric = lv==="L0"? e : lv==="L3" ? "title:("+e+")" : lv==="L2" ? "title:("+e+") OR description:("+e+")" : "title:("+e+") OR description:("+e+") OR subject:("+e+")"; }
+      var ct=(r.cv&&r.cv.eric)?cvTerms(r.cv.eric):[]; if(ct.length){ var sj=ct.map(function(t){ return 'subject:"'+String(t).replace(/"/g,"")+'"'; }).join(" OR "); q.eric=q.eric?(q.eric+" OR "+sj):sj; }
+      if(!q.s2&&!q.oa&&!q.eric) q=null;
+      return (cache[key]=q);
+    }
+    var lines=[];
+    rows.forEach(function(r,i){ var q=concept(i+1); if(q) lines.push({lab:"L"+(i+1)+(r.label?" "+r.label:""), kind:"c", k:i+1, q:q}); });
+    var start=lines.length, FL=["s2","oa","eric"], R={};
+    var cl=_ccMigrate(ccv).split(/\r?\n/).map(function(s){ return s.trim(); }).filter(Boolean);
+    if(!cl.length){ var ks=[]; rows.forEach(function(r,i){ if(concept(i+1)) ks.push("L"+(i+1)); }); if(ks.length>1) cl=[ks.join(" AND ")]; }
+    cl.forEach(function(line, idx){
+      var q={};
+      FL.forEach(function(fl){
+        var t=line.replace(/\bAND\s+NOT\b/gi," NOT ").replace(/\b(AND|OR|NOT)\b/gi,function(m){ return m.toUpperCase(); });
+        if(fl==="s2") t=t.replace(/\bNOT\b/g," + -").replace(/\bAND\b/g," + ").replace(/\bOR\b/g," | ");
+        var bad=false;
+        t=t.replace(/\bL(\d+)(?:@L?V?([0-3]))?\b/gi,function(m,k,l){ var c=concept(+k, l!=null?"L"+l:null); if(!c||!c[fl]){ bad=true; return m; } return "("+c[fl]+")"; })
+           .replace(/\bR(\d+)\b/gi,function(m,k){ var x=R[+k]; if(!x||!x[fl]){ bad=true; return m; } return "("+x[fl]+")"; });
+        q[fl]=bad?null:t.replace(/\s+/g," ").replace(/-\s+\(/g,"-(").trim();
+      });
+      R[idx+1]=q;
+      lines.push({lab:(ccv.trim()?"R"+(idx+1):(isEn()?"Final":"最終")), kind:"r", idx:idx, q:q});
+    });
+    /* OpenAlex：依欄位完整度選欄位（最廣 default.search＝標題＋摘要＋全文、完整／平衡 title_and_abstract.search、精準 title.search）；不同欄位只能用 AND（各一個過濾條件），含 OR／NOT 且欄位不同時改以標題＋摘要查詢（oaMixed） */
+    var OAF=function(lv){ return lv==="L0"?"default.search":lv==="L3"?"title.search":"title_and_abstract.search"; };
+    var oaC=function(k,lv){ var r=rows[k-1]; if(!r) return null; lv=lv||((r.level&&/^L[0123]$/.test(r.level))?r.level:level); var c=concept(k,lv); return (c&&c.oa)?{f:OAF(lv),q:c.oa}:null; };
+    var oaFmt=function(parts){ var by={}, order=[]; parts.forEach(function(p){ if(!by[p.f]){ by[p.f]=[]; order.push(p.f); } if(by[p.f].indexOf(p.q)<0) by[p.f].push(p.q); }); return order.map(function(f){ var qs=by[f]; return f+":"+(qs.length>1?qs.map(function(x){ return "("+x+")"; }).join(" AND "):qs[0]); }).join(","); };
+    var ROA={};
+    lines.forEach(function(L){
+      L.q=Object.assign({},L.q);
+      if(L.kind==="c"){ var p0=oaC(L.k); L.q.oa=p0?oaFmt([p0]):null; return; }
+      var line=_ccMigrate(cl[L.idx]||""), tre=/\b([LR])(\d+)(?:@L?V?([0-3]))?\b/gi, m, parts=[], fields={}, bad=false, pure=/^\s*[LR]\d+(?:@L?V?[0-3])?(?:\s+AND\s+[LR]\d+(?:@L?V?[0-3])?)*\s*$/i.test(line);
+      while((m=tre.exec(line))){
+        if(m[1].toUpperCase()==="L"){ var p2=oaC(+m[2], m[3]!=null?"L"+m[3]:null); if(!p2){ bad=true; continue; } parts.push(p2); fields[p2.f]=1; }
+        else { var x=ROA[+m[2]]; if(!x){ bad=true; continue; } parts=parts.concat(x.parts); Object.keys(x.fields).forEach(function(f){ fields[f]=1; }); if(!x.pure) pure=false; } }
+      ROA[L.idx+1]={parts:parts, fields:fields, pure:pure&&!bad};
+      var q=L.q.oa, fl=Object.keys(fields);
+      if(bad||!q){ L.q.oa=null; return; }
+      if(pure) L.q.oa=oaFmt(parts);
+      else { L.q.oa="title_and_abstract.search:"+q; if(fl.length>1||fl[0]!=="title_and_abstract.search") L.oaMixed=true; }   /* 含 OR／NOT 的組合（合計）一律標題＋摘要 */
+    });
+    /* PubMed／Scopus：沿用上方該庫已產生的檢索式（概念行＝該概念的行號群組；組合行＝對應的組合行），展開成單一串 */
+    var _ER=window._srEngRows||{}, _has={s2:true, oa:true};
+    [["pm","pubmed"],["sc","scopus"]].forEach(function(E){ var id=E[0], Rw=_ER[E[1]]; if(!Rw||Rw.flat) return; _has[id]=true;
+      var exp=function(t){ try{ return expandNumberedQuery({text:t}, Rw.rows); }catch(_e){ return null; } };
+      lines.forEach(function(L){
+        if(L.kind==="c"){ var g=Rw.refs[L.k-1]; L.q[id]=g?exp(g):null; }
+        else { var nn=Rw.start+1+L.idx, row=Rw.rows.filter(function(x){ return x.n===nn; })[0];
+          L.q[id]=row?((id==="sc"&&window.srScopus&&window.srScopus.expand)?window.srScopus.expand(Rw.rows,nn):exp(row.text)):null; } }); });
+    var _ec=document.querySelector('#dbchecks input[value="eric"], #dbchecksMore input[value="eric"]'), D={lines:lines, start:start, combo:ccv, custom:!!ccv.trim(), eric:!!(_ec&&_ec.checked), has:_has}; _has.eric=D.eric;   /* ERIC 只在勾選 ERIC 資料庫時提供 */
+    window._srFreeLast=D; setTimeout(function(){ try{ window.dispatchEvent(new Event("sr-scopus-rows")); }catch(_e){} },0);
+    return D;
   }
 
   function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
@@ -3894,7 +4043,7 @@ if (typeof module !== "undefined" && module.exports) {
     // 整理後空白、整理前有詞 → 以整理前產生（並提醒）；原始列保留給 Word 檢索詞表
     var _befUsed=[], _rowsOrig=rows;
     rows=rows.map(function(r){ if(!r.ft && r.before){ _befUsed.push(r.label); var o={}; for(var k in r) o[k]=r[k]; o.ft=r.before; o._ftFromBefore=true; return o; } return r; });
-    outs.innerHTML=""; lastGen=null; if($("#wordBtn")) $("#wordBtn").disabled=true;
+    window._srEngRows={}; outs.innerHTML=""; lastGen=null; if($("#wordBtn")) $("#wordBtn").disabled=true;
     if(!rows.some(_rf)){ outs.innerHTML='<div class="panel" style="color:var(--warn)">'+(isEn()?"Please fill at least one concept.":"請至少填入一個概念的詞彙。")+'</div>'; return; }
     var checked = Array.prototype.filter.call(dbchecks.querySelectorAll("input[type=checkbox]"), function(c){return c.checked;}).map(function(c){return c.value;});
     if(!checked.length){ outs.innerHTML='<div class="panel" style="color:var(--warn)">'+(isEn()?"Please tick at least one output database.":"請至少勾選一個輸出資料庫。")+'</div>'; return; }
@@ -3956,6 +4105,12 @@ if (typeof module !== "undefined" && module.exports) {
       allRows = _appendFilter(allRows, FILTER_SEL, tid);   // 研究設計篩選（可複選）
       allRows = appendPubDate(allRows, tg.engine, PUBDATE, ((SYNTAX_MAP.boolean[tg.engine]&&SYNTAX_MAP.boolean[tg.engine].AND)||"AND"), b.reminders, tgLabel(tg));   // 出版日期限定
       allRows = appendEntryDate(allRows, tg.engine, tid, ENTRYDATE, ((SYNTAX_MAP.boolean[tg.engine]&&SYNTAX_MAP.boolean[tg.engine].AND)||"AND"), b.reminders, tgLabel(tg));   // 加入資料庫日期限定（更新檢索）
+      if(tg.engine==="pubmed"||tg.engine==="scopus"){ (window._srEngRows=window._srEngRows||{})[tg.engine]={rows:allRows.map(function(x){ return {n:x.n, text:x.text}; }), refs:(b.conceptRefs||[]).slice(), start:b.lastNum, flat:!!(((cbFlat&&cbFlat.checked)||forceFlat)&&baseRows.length)}; }   /* 估算筆數卡：沿用此庫的檢索式 */
+      if(tid==="eric" && window.SR_ERIC_FREE){   /* ERIC 選 eric.ed.gov（免費）：改用 title:／description:／subject: 單一串（同估算卡 ERIC 欄） */
+        try{ var _fe=_freeBuild(rows, startDB, level), _fl=_fe.lines[_fe.lines.length-1]; allRows=[{n:null, text:(_fl&&_fl.q.eric)||""}]; }catch(_e){}
+        if(nm && nm.firstChild && nm.firstChild.nodeType===3) nm.firstChild.nodeValue="ERIC (eric.ed.gov)";
+        b.reminders.push(isEn()?"ERIC (eric.ed.gov): converted to one line with title:/description:/subject: (by field level); proximity becomes AND; set publication date and other limits on the eric.ed.gov results page.":"ERIC（eric.ed.gov）：已轉成單一串（依欄位完整度用 title:／description:／subject:），鄰近字改為 AND；出版日期等限制請在 eric.ed.gov 結果頁設定。");
+      }
       var vfMiss=_designMiss(FILTER_SEL, tid);   // 尚未整理此資料庫語法的設計 → 標示「請自行確認 Filters」
       exportData.push({tid:tid, label:tgLabel(tg), engine:tg.engine, vocab:tg.vocab, isStart:(tid===startDB), rows:allRows, verify:vfMiss});
       var copyText = allRows.map(function(x){return _dispRefs(x.text, tg.engine);}).join("\n");
@@ -3986,8 +4141,8 @@ if (typeof module !== "undefined" && module.exports) {
       }
       if(tg.engine!=="pubmed" && DB_OPEN_URLS[tid]){
         var openBtn=document.createElement("button"); openBtn.className="copy copyicon"; openBtn.innerHTML=OPENSVG;
-        var _openTitle=(isEn()?"Copy final strategy & open ":"複製最終策略並開啟 ")+tg.label+" ↗";
-        if(/ncku\.edu\.tw/i.test(DB_OPEN_URLS[tid]||"")) _openTitle+=(isEn()?"\nNon-NCKU users: please open the database yourself.":"\n非成大使用者，請自行開啟資料庫");
+        var _openTitle=(isEn()?"Copy final strategy & open ":"複製最終策略並開啟 ")+((tid==="eric"&&window.SR_ERIC_FREE)?"ERIC (eric.ed.gov)":tg.label)+" ↗";
+        if(/ncku\.edu\.tw/i.test(DB_OPEN_URLS[tid]||"") && !(tid==="eric"&&window.SR_ERIC_FREE)) _openTitle+=(isEn()?"\nNon-NCKU users: please open the database yourself.":"\n非成大使用者，請自行開啟資料庫");
         openBtn.title=_openTitle;
         openBtn.onclick=function(){
           try{
@@ -3996,7 +4151,7 @@ if (typeof module !== "undefined" && module.exports) {
             var full=expandNumberedQuery(finalRow,allRows), url=DB_OPEN_URLS[tid];   // 展開行號 → 連成一條完整檢索式
             var ok=false; try{ ok=_copySync(full); }catch(_e){}                       // 先同步複製（開分頁前，避免失焦導致複製失敗）
             try{ if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(full).then(function(){},function(){}); }catch(_e){}   // 再試 API（不阻塞）
-            var link=document.createElement("a");link.href=url;link.target="_blank";link.rel="noopener noreferrer";document.body.appendChild(link);link.click();link.remove();
+            var link=document.createElement("a");link.href=(tid==="eric"&&window.SR_ERIC_FREE)?("https://eric.ed.gov/?q="+encodeURIComponent(full)):url;link.target="_blank";link.rel="noopener noreferrer";document.body.appendChild(link);link.click();link.remove();
             srCount('pico-db-open-'+tid,'PICO-開啟資料庫-'+tid);
             openBtn.innerHTML="✓"; openBtn.classList.add("done");
             openBtn.title=ok?(isEn()?"Copied the full one-line query — paste into the search box":"已複製完整檢索式（單一串），請貼入搜尋框"):(isEn()?"Opened, but automatic copy failed — copy the strategy manually":"已開啟，但自動複製失敗，請自行複製檢索式");
@@ -4028,15 +4183,46 @@ if (typeof module !== "undefined" && module.exports) {
       }
       var countEls=[];
       var pre=document.createElement("pre"); allRows.forEach(function(x){ var ln=document.createElement("div"); ln.className="qline"; var gn=document.createElement("span"); gn.className="qn"; var _gnLbl=(x.n!=null?_refPrefix(tg.engine)+x.n:""); gn.textContent=_gnLbl; if(x.n!=null){ gn.classList.add("clk"); gn.title=isEn()?"Click to copy this line":"點一下複製此行"; (function(_x,_lbl){ gn.onclick=function(){ try{ navigator.clipboard.writeText(_dispRefs(_x.text, tg.engine)); }catch(e){} gn.classList.add("copied"); gn.textContent="✓"; setTimeout(function(){ gn.textContent=_lbl; gn.classList.remove("copied"); },1000); }; })(x,_gnLbl); } var gs=document.createElement("span"); gs.className="qs"; var _tx=_dispRefs(x.text, tg.engine); if((cbColor&&cbColor.checked)||(cbBracket&&cbBracket.checked)||(cbLinks&&cbLinks.checked)){ gs.innerHTML=hlHighlight(_tx, tg.engine, cbColor&&cbColor.checked, cbBracket&&cbBracket.checked, tg.vocab, cbLinks&&cbLinks.checked).html; } else { gs.textContent=_tx; } ln.appendChild(gn); ln.appendChild(gs); if(tg.engine==="pubmed"){var ct=document.createElement("span");ct.className="pmcount";ct.textContent="—";ln.appendChild(ct);countEls.push(ct);} pre.appendChild(ln); }); card.appendChild(pre);
-      if(tg.engine==="scopus"){   /* Scopus：#行號組合無法直接輸入 → 組合行下方寫說明；點該行行號複製展開後的完整檢索式 */
-        Array.prototype.forEach.call(pre.querySelectorAll(".qline"),function(ln,i){ var x=allRows[i]; if(!x||!/#\d/.test(String(x.text||""))) return;
-          var rf=(String(x.text).match(/#(\d+)/g)||[]).map(function(m){ return +m.slice(1); }), a=Math.min.apply(null,rf), z=Math.max.apply(null,rf), rg="#"+a+(z>a?(isEn()?"–":"～")+"#"+z:"");
+      if(tg.engine==="scopus"){   /* Scopus：#行號組合無法直接輸入 → 只在最後一個組合行下方寫一次說明；點組合行行號複製展開後的完整檢索式 */
+        var _scComb=[];
+        Array.prototype.forEach.call(pre.querySelectorAll(".qline"),function(ln,i){ var x=allRows[i]; if(!x||!/#\d/.test(String(x.text||""))) return; _scComb.push({ln:ln,n:x.n});
           var gn=ln.querySelector(".qn"), lbl=gn?gn.textContent:"";
           if(gn){ gn.title=isEn()?"Click to copy the full one-line query (Scopus can’t take line combinations typed in)":"點一下複製完整單一串檢索式（Scopus 無法輸入行號組合）";
-            gn.onclick=function(){ var full; try{ full=expandNumberedQuery(x,allRows); }catch(_e){ full=x.text; } try{ navigator.clipboard.writeText(full); }catch(_e){} gn.classList.add("copied"); gn.textContent="✓"; setTimeout(function(){ gn.textContent=lbl; gn.classList.remove("copied"); },1000); }; }
-          var gs=ln.querySelector(".qs"); if(!gs) return; var nt=document.createElement("span"); nt.className="qnote";
-          nt.textContent=isEn()?("Scopus can’t take this line typed in: on the Documents search page, under Search History, tick the searches for "+rg+" (Scopus numbers them its own way) and click “Combine queries” — or click the line number to copy the full one-line query."):("Scopus 無法直接輸入此行：請在文獻搜尋頁下方「搜尋記錄」（Search History）勾選 "+rg+" 對應的那幾筆（Scopus 編號與此不同），按「組合搜尋式」（Combine queries）；或點左邊行號複製完整單一串檢索式。");
-          gs.appendChild(nt); });
+            gn.onclick=function(){ var full; try{ full=expandNumberedQuery(x,allRows); }catch(_e){ full=x.text; } try{ navigator.clipboard.writeText(full); }catch(_e){} gn.classList.add("copied"); gn.textContent="✓"; setTimeout(function(){ gn.textContent=lbl; gn.classList.remove("copied"); },1000); }; } });
+        if(_scComb.length){ var _a=_scComb[0].n, _z=_scComb[_scComb.length-1].n, _rg="#"+_a+(_z>_a?(isEn()?"–":"～")+"#"+_z:""), _gs=_scComb[_scComb.length-1].ln.querySelector(".qs");
+          if(_gs){ var nt=document.createElement("span"); nt.className="qnote";
+            nt.textContent=isEn()?("Scopus can’t take "+_rg+" typed in: on the Documents search page, under Search History, tick the searches each line refers to (Scopus numbers them its own way) and click “Combine queries” — or click a line number to copy the full one-line query."):("Scopus 無法直接輸入 "+_rg+"：請在文獻搜尋頁下方「搜尋記錄」（Search History）勾選各行引用的那幾筆（Scopus 編號與此不同），按「組合搜尋式」（Combine queries）；或點行號複製完整單一串檢索式。");
+            _gs.appendChild(nt); } }
+        /* Scopus 文章數估算（需使用者自填 Scopus API key；只放記憶體）；並提供圖形化組合估算各子問題 */
+        window._srScopusLast={rows:allRows.map(function(x){ return {n:x.n, text:x.text}; }), start:b.lastNum, combo:(customCombo&&customCombo.value)||"", flat:!!((cbFlat&&cbFlat.checked)||forceFlat)};
+        setTimeout(function(){ try{ window.dispatchEvent(new Event("sr-scopus-rows")); }catch(_e){} },0);
+        if(window.srScopus){
+          var scEls=[]; Array.prototype.forEach.call(pre.querySelectorAll(".qline"),function(ln){ var ct=document.createElement("span"); ct.className="pmcount"; ct.textContent="—"; ln.appendChild(ct); scEls.push(ct); });
+          var sest=document.createElement("div"); sest.className="pmestimate";
+          var sBtn=document.createElement("button"); sBtn.className="btn ghost"; sBtn.type="button"; sBtn.textContent=isEn()?"Estimate Scopus counts":"估算 Scopus 文章數";
+          var sRetry=document.createElement("button"); sRetry.className="btn ghost"; sRetry.type="button"; sRetry.style.display="none";
+          var sSt=document.createElement("span"); sSt.className="pmstatus";
+          var sTip=makeInfoTip(isEn()?"Each line is expanded to a full query (shared concepts in OR combinations are factored out to keep it short) and sent one at a time to the Scopus Search API with your own API key (kept in this page’s memory only). The key must allow this site: in dev.elsevier.com → My API Key, add sunfloraf-sketch.github.io to the key’s allowed domains. Counts also need your institution’s Scopus access (campus network or VPN), reflect Scopus at query time, and may differ slightly from the Scopus website. Click a failed line to query it again.":"每行展開成完整檢索式（OR 組合中共同的概念會提出來，縮短長度），以您自己的 Scopus API key 逐筆送至 Scopus Search API（key 只放在本頁記憶體）。key 須允許本網站：在 dev.elsevier.com → My API Key 的允許網域加入 sunfloraf-sketch.github.io。另需機構的 Scopus 權限（校園網路或 VPN）；數量以查詢當下為準，可能與 Scopus 網站略有差異。查詢失敗的行可點一下重查。");
+          sest.appendChild(sBtn); sest.appendChild(sRetry); sest.appendChild(sSt); sest.appendChild(sTip); var _skb=window.srScopus.make(); _skb.style.flexBasis="100%"; sest.appendChild(_skb); card.appendChild(sest);
+          var _scBusy=false, _scRows=allRows.map(function(x){ return {n:x.n, text:x.text}; });
+          var _scFailed=function(){ var a=[]; scEls.forEach(function(c,i){ if(c.classList.contains("err")) a.push(i); }); return a; };
+          var _scSum=function(){ var f=_scFailed().length; sSt.className="pmstatus"+(f?" err":""); sSt.textContent=f?(isEn()?(f+" failed — click a red line or retry"):(f+" 行查詢失敗（點紅字可單行重查）")):(isEn()?"Completed":"估算完成"); sRetry.style.display=f?"":"none"; sRetry.textContent=isEn()?("↻ Retry failed ("+f+")"):("↻ 重查失敗的 "+f+" 行"); };
+          async function _scOne(i){ var cel=scEls[i]; cel.className="pmcount"; cel.title=""; cel.onclick=null; cel.removeAttribute("role"); cel.removeAttribute("tabindex"); cel.textContent=isEn()?"checking…":"查詢中…";
+            try{ var full=window.srScopus.expand?window.srScopus.expand(_scRows, allRows[i].n):expandNumberedQuery(allRows[i],allRows); var n=await window.srScopus.count(full); cel.textContent=n.toLocaleString()+(isEn()?" records":" 篇"); cel.className="pmcount ok"; }
+            catch(err){ cel.className="pmcount err retry"; cel.textContent=isEn()?"failed · retry":"查詢失敗 · 點此重試"; cel.title=String(err&&err.message||err); cel.setAttribute("role","button"); cel.tabIndex=0;
+              cel.onclick=function(){ _scRun([i]); }; cel.onkeydown=function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); _scRun([i]); } };
+              if(err&&err.fatal) throw err; } }
+          async function _scRun(list){
+            if(_scBusy||!list.length) return;
+            if(!window.srScopus.get()){ sSt.className="pmstatus err"; sSt.textContent=isEn()?"Enter a Scopus API key first.":"請先輸入 Scopus API key。"; window.srScopus.open(_skb); return; }
+            _scBusy=true; sBtn.disabled=true; sRetry.disabled=true; sSt.className="pmstatus"; sSt.textContent="";
+            try{ for(var k=0;k<list.length;k++){ sSt.textContent=list.length>1?((k+1)+" / "+list.length):(isEn()?("Retrying line "+(list[k]+1)+"…"):("重新查詢第 "+(list[k]+1)+" 行…")); await _scOne(list[k]); } _scSum(); }
+            catch(err){ list.forEach(function(i){ var c=scEls[i]; if(/查詢中|checking/.test(c.textContent)){ c.className="pmcount"; c.textContent="—"; } }); sSt.className="pmstatus err"; sSt.textContent=String(err&&err.message||err); sRetry.style.display="none"; }
+            _scBusy=false; sBtn.disabled=false; sRetry.disabled=false; }
+          sBtn.onclick=function(){ try{ srCount('pico-scopus-count','PICO-Scopus估算文章數'); }catch(_e){} var a=[]; for(var i=0;i<allRows.length;i++) a.push(i); _scRun(a); };
+          sRetry.onclick=function(){ _scRun(_scFailed()); };
+          window.addEventListener("sr-scopus-key",function(){ if(!_scBusy && /key|授權|擋下|authori|blocked/i.test(sSt.textContent)){ sSt.textContent=""; sSt.className="pmstatus"; } });   /* 改了 key → 清掉舊的錯誤訊息 */
+        }
       }
       if(tg.engine==="ieee"){   // IEEE 相容性檢查面板（檢查展開後的完整檢索式）
         var _iq=""; try{ _iq=expandNumberedQuery(allRows[allRows.length-1], allRows); }catch(_e){ _iq=allRows.map(function(r){return r.text;}).join(" AND "); }
@@ -4208,6 +4394,8 @@ if (typeof module !== "undefined" && module.exports) {
       }
       outs.appendChild(card);
     });
+    window._srPmCount=function(q){ return fetchPubmedCount(q); };
+    try{ var _fd=_freeBuild(rows, startDB, level); if(window.srFree && _fd.lines.length) outs.appendChild(window.srFree.card(_fd, makeInfoTip)); }catch(_fe){ try{ console.warn(_fe); }catch(_x){} }   /* 資料庫估算筆數卡 */
     lastGen={data:exportData, level:lvlLabel, filters:FILTER_SEL, terms:_rowsOrig};
     if($("#wordBtn")) $("#wordBtn").disabled = !exportData.length;
     if(typeof updateRecordBtn==="function") updateRecordBtn();
@@ -5076,21 +5264,27 @@ if (typeof module !== "undefined" && module.exports) {
 })();
 </script>
 <script id="ccGfxScript">
-/* 自訂組合策略：圖形化組合（子問題框；框內 AND、框與框 OR）。寫入同一個 #customCombo，產生語法沿用既有引擎。 */
+/* 自訂組合策略：圖形化組合（子問題框；框內 AND、框與框 OR）。寫入同一個 #customCombo，產生語法沿用既有引擎。
+   欄位完整度：上排概念＝預設（與表格概念欄同步）；框內概念可另設，寫成 L1@LV3（引擎會多產生該完整度的變體行）。
+   筆數估算：Scopus（需 key 與已產生的 Scopus 檢索策略）、Semantic Scholar／OpenAlex／ERIC（免費，srFree；用 window._srFreeLast）。 */
 (function(){
   var box=document.getElementById("ccBox"), ta=document.getElementById("customCombo"), body=document.getElementById("picoBody");
   if(!box||!ta||!body) return;
   var en=function(){ return document.body.classList.contains("en")||document.documentElement.getAttribute("lang")==="en"; };
   var T=function(z,e){ return en()?e:z; };
   var MKEY="sr_pico_nm_cc_mode";
-  var GX={groups:[{name:"",items:[]}]}, sel=0, dirty=false, unparsable=false, lastWritten=null;
+  var LV={L0:{z:"最廣",e:"Broadest",dz:"所有欄位",de:"all fields"},L1:{z:"完整",e:"Comprehensive",dz:"SR 適用",de:"for SRs"},L2:{z:"平衡",e:"Balanced",dz:"偏精準",de:"leaning precise"},L3:{z:"精準",e:"Precise",dz:"最精準",de:"most precise"}};
+  var lvName=function(l){ var m=LV[l]||LV.L1; return T(m.z,m.e); };
+  var GX={groups:[{name:"",items:[],lv:{}}]}, sel=0, unparsable=false, lastWritten=null;
   /* ---------- 版面 ---------- */
   var inner=box.querySelector(":scope > div");
   var bar=document.createElement("div"); bar.className="ccgmode";
-  bar.innerHTML='<span class="ccgseg" role="tablist"><button type="button" role="tab" data-m="text"><span data-zh>文字輸入</span><span data-en>Text</span></button><button type="button" role="tab" data-m="gfx"><span data-zh>圖形化</span><span data-en>Visual</span></button></span>'+
-    '';
+  bar.innerHTML='<span class="ccgseg" role="tablist"><button type="button" role="tab" data-m="text"><span data-zh>文字輸入</span><span data-en>Text</span></button><button type="button" role="tab" data-m="gfx"><span data-zh>圖形化</span><span data-en>Visual</span></button></span>';
   inner.insertBefore(bar, inner.firstChild);
   var gfx=document.createElement("div"); gfx.className="ccg"; gfx.id="ccGfx"; inner.appendChild(gfx);
+  var dyn=document.createElement("div"); dyn.className="ccgdyn"; gfx.appendChild(dyn);
+  var scbar=document.createElement("div"); scbar.className="ccgsc"; scbar.hidden=true; gfx.appendChild(scbar);
+  var pop=document.createElement("div"); pop.className="ccglvpop"; pop.hidden=true; pop.setAttribute("role","menu"); gfx.appendChild(pop);
   Array.prototype.forEach.call(inner.children,function(c){ if(c!==bar&&c!==gfx) c.classList.add("cc-txt"); });
   function mode(){ var m="text"; try{ m=localStorage.getItem(MKEY)||"text"; }catch(_){} return m==="gfx"?"gfx":"text"; }
   function setMode(m){ try{ localStorage.setItem(MKEY,m); }catch(_){} applyMode(); }
@@ -5103,101 +5297,216 @@ if (typeof module !== "undefined" && module.exports) {
       var r=(tr._get&&tr._get())||{}, lab=String(r.label||"").trim(), zh="";
       String(r.zh||"").split("\n").some(function(l){ var w=l.replace(/[()（）"“”「」\[\]]/g," ").replace(/\b(AND|OR|NOT|NEAR\/?\d*|W\/\d+|ADJ\d*)\b/gi," ").trim().split(/\s+/)[0]||""; if(w){ zh=w; return true; } return false; });   /* 中文第一個詞（略過括號、運算子） */
       var nm=lab||zh||T("（未命名）","(unnamed)");
-      if(/^[A-Za-z0-9]{1,2}$/.test(lab) && zh && zh!==lab) nm=lab+" "+(zh.length>10?zh.slice(0,10)+"…":zh);   /* 單字母／兩字元代號（P、I1…）加上中文第一行，較直觀 */
-      return {k:i+1, lab:lab, zh:zh, name:nm}; }); }
+      if(/^[A-Za-z0-9]{1,2}$/.test(lab) && zh && zh!==lab) nm=lab+" "+(zh.length>10?zh.slice(0,10)+"…":zh);   /* 單字母／兩字元代號（P、I1…）加上中文第一個詞，較直觀 */
+      var _ne=function(v){ if(v==null) return false; if(typeof v==="object") return Object.keys(v).some(function(x){ return _ne(v[x]); }); return String(v).trim()!==""; }, fil=Object.keys(r).some(function(x){ return x!=="label" && x!=="level" && _ne(r[x]); });   /* 有任何詞彙（中文、整理前／後、控制詞彙）才算有填 */;
+      return {k:i+1, lab:lab, zh:zh, name:nm, fil:fil, lv:(/^L[0123]$/.test(r.level)?r.level:"L1")}; }); }
   function nameOf(k,cs){ var c=cs[k-1]; return c?c.name:("L"+k); }
+  function defLv(k,cs){ return cs[k-1]?cs[k-1].lv:"L1"; }
+  function effLv(g,k,cs){ return (g.lv&&g.lv[k])||defLv(k,cs); }
+  function isOv(g,k,cs){ return !!(g.lv&&g.lv[k]&&g.lv[k]!==defLv(k,cs)); }
+  function tok(g,k,cs){ return isOv(g,k,cs) ? ("L"+k+"@LV"+g.lv[k].slice(1)) : ("L"+k); }
+  function nmG(g,k,cs){ return nameOf(k,cs)+(isOv(g,k,cs)?"〔"+lvName(g.lv[k])+"〕":""); }
   /* ---------- 文字 ⇄ 圖形 ---------- */
+  var TOK=/L(\d+)(?:@L?V?([0-3]))?/gi, LINE=/^L\d+(?:@L?V?[0-3])?(?:\s+AND\s+L\d+(?:@L?V?[0-3])?)*$/i;
   function parseFromText(){
     var lines=String(ta.value||"").split(/\r?\n/).map(function(s){return s.trim();}).filter(Boolean);
     unparsable=false;
-    if(!lines.length){ GX={groups:[{name:GX.groups[0]?GX.groups[0].name:"",items:[]}]}; return; }
-    var gs=[], i=0, ok=true;
-    while(i<lines.length && /^L\d+(\s+AND\s+L\d+)*$/i.test(lines[i])){ gs.push({name:"",items:lines[i].match(/\d+/g).map(Number)}); i++; }
+    if(!lines.length){ GX={groups:[{name:GX.groups[0]?GX.groups[0].name:"",items:[],lv:{}}]}; return; }
+    var gs=[], i=0, ok=true, m;
+    while(i<lines.length && LINE.test(lines[i])){ var g={name:"",items:[],lv:{}}; TOK.lastIndex=0;
+      while((m=TOK.exec(lines[i]))){ var k=+m[1]; if(g.items.indexOf(k)<0) g.items.push(k); if(m[2]!=null) g.lv[k]="L"+m[2]; }
+      gs.push(g); i++; }
     if(gs.length>1){ var want=gs.map(function(_,j){return "R"+(j+1);}).join(" OR ");
       if(i<lines.length && lines[i].replace(/\s+/g," ").toUpperCase()===want) i++; else ok=false; }
     if(!gs.length || i<lines.length) ok=false;
-    if(!ok){ unparsable=true; GX={groups:[{name:"",items:[]}]}; return; }
+    if(!ok){ unparsable=true; GX={groups:[{name:"",items:[],lv:{}}]}; return; }
     var old=GX.groups; gs.forEach(function(g,j){ if(old[j]) g.name=old[j].name; });
     GX={groups:gs};
   }
-  function toLines(){
-    var G=GX.groups.filter(function(g){return g.items.length;}), lines=G.map(function(g){ return g.items.map(function(k){return "L"+k;}).join(" AND "); });
+  function toLines(cs){
+    cs=cs||concepts();
+    var G=GX.groups.filter(function(g){return g.items.length;}), lines=G.map(function(g){ return g.items.map(function(k){return tok(g,k,cs);}).join(" AND "); });
     if(G.length>1) lines.push(G.map(function(_,j){return "R"+(j+1);}).join(" OR "));
     return lines;
   }
   function write(){ var v=toLines().join("\n"); lastWritten=v; unparsable=false;
     if(ta.value!==v){ ta.value=v; ta.dispatchEvent(new Event("input",{bubbles:true})); } }
-  /* 化簡：把每框都有的概念提出來 */
+  /* 化簡：把每框都有的概念（同一完整度）提出來 */
   function simplify(G,cs){
     if(G.length<2) return null;
-    var common=G[0].items.filter(function(k){ return G.every(function(g){ return g.items.indexOf(k)>=0; }); });
+    var key=function(g,k){ return k+"@"+effLv(g,k,cs); };
+    var common=G[0].items.filter(function(k){ var kk=key(G[0],k); return G.every(function(g){ return g.items.some(function(x){ return key(g,x)===kk; }); }); });
     if(!common.length) return null;
-    var rests=G.map(function(g){ return g.items.filter(function(k){ return common.indexOf(k)<0; }); });
-    var nm=function(k){ return nameOf(k,cs); }, A=common.map(nm).join(" AND ");
+    var ck=common.map(function(k){ return key(G[0],k); });
+    var rests=G.map(function(g){ return g.items.filter(function(k){ return ck.indexOf(key(g,k))<0; }).map(function(k){ return nmG(g,k,cs); }); });
+    var A=common.map(function(k){ return nmG(G[0],k,cs); }).join(" AND ");
     if(rests.some(function(r){return !r.length;})) return {txt:A, note:T("有一框只含共同概念，它已涵蓋其他框，所以結果等於共同概念。","One box holds only the shared concepts, so it already covers the others — the result equals the shared concepts.")};
-    return {txt:A+" AND ("+rests.map(function(r){ var s=r.map(nm).join(" AND "); return r.length>1?"("+s+")":s; }).join(" OR ")+")"};
+    return {txt:A+" AND ("+rests.map(function(r){ var s=r.join(" AND "); return r.length>1?"("+s+")":s; }).join(" OR ")+")"};
+  }
+  /* ---------- 估算各子問題筆數（Scopus 需 key；Semantic Scholar／OpenAlex／ERIC 免費） ---------- */
+  var SRCS=[{id:"pm",nm:"PubMed"},{id:"sc",nm:"Scopus"},{id:"s2",nm:"Semantic Scholar"},{id:"oa",nm:"OpenAlex"},{id:"eric",nm:"ERIC"}];
+  var SC={cache:{}, busy:false, msg:"", err:false, act:""};
+  var srcNm=function(id){ for(var i=0;i<SRCS.length;i++) if(SRCS[i].id===id) return SRCS[i].nm; return id; };
+  var avail=function(id){ if(!window.srFree) return false; if(id==="s2"||id==="oa") return true; var F=window._srFreeLast; return !!(F&&F.has&&F.has[id]); };   /* PubMed／Scopus 需勾選並產生；ERIC 需勾選 */
+  var STALE=function(){ return T("組合已變更，請重新按「生成檢索策略」。","The combination changed — generate the strategy again."); };
+  function scQuery(L,n){ if(window.srScopus&&window.srScopus.expand) return window.srScopus.expand(L.rows,n)||null; var map={}; L.rows.forEach(function(x){ if(x.n!=null) map[x.n]=x.text; }); if(map[n]==null) return null;
+    var t=map[n], g=0; while(/#\d+/.test(t) && g++<60){ t=t.replace(/#(\d+)/g,function(m,d){ return map[d]!=null?"("+map[d]+")":m; }); } return t; }
+  /* 回傳 {qs:[各框檢索式], total} 或 {err} */
+  function boxQ(id,G){
+    var F=window._srFreeLast;
+    if(!F) return {err:T("請先按「生成檢索策略」。","Generate the strategy first.")};
+    if(F.combo!==ta.value) return {err:STALE()};
+    if(F.has && !F.has[id] && id!=="s2" && id!=="oa") return {err:"n/a"};
+    var q2=G.map(function(_,i){ var x=F.lines[F.start+i]; return x?x.q[id]:null; }), tx=G.length>1?F.lines[F.start+G.length]:null;
+    return {qs:q2, total:tx?tx.q[id]:null};
+  }
+  function cntSpan(id,q){ var v=SC.cache[id+"|"+q]; if(!q||v==null) return "";
+    var nm='<b>'+esc(srcNm(id))+'</b> ';
+    if(v==="…") return '<span class="ccgcnt">'+nm+T("查詢中…","checking…")+'</span>';
+    if(typeof v==="string") return '<span class="ccgcnt err" role="button" tabindex="0" data-rq="'+esc(id)+'" data-q="'+esc(q)+'" title="'+esc(v)+'">'+nm+T("查詢失敗 ↻","failed ↻")+'</span>';
+    return '<span class="ccgcnt">'+nm+v.toLocaleString()+'</span>'; }
+  function cntsFor(i,G,all){ return SRCS.map(function(s){ var B=all[s.id]; if(!B||B.err) return ""; return cntSpan(s.id, i==="t"?B.total:B.qs[i]); }).join(""); }
+  async function scRun(id){
+    if(SC.busy||!avail(id)) return;
+    SC.act=id; var G=GX.groups.filter(function(g){return g.items.length;}), B=boxQ(id,G);
+    if(B.err && B.err!=="n/a"){ var gb=document.getElementById("genBtn"); if(gb){ window._srAutoRegen=true; try{ gb.click(); }catch(_e){} finally{ window._srAutoRegen=false; } B=boxQ(id,G); } }   /* 尚未產生或組合已變更：先自動產生檢索策略 */
+    if(B.err){ SC.msg=B.err; SC.err=true; paintSc(); return; }
+    if(id==="sc" && !(window.srScopus&&window.srScopus.get())){ SC.msg=T("請先輸入 Scopus API key。","Enter a Scopus API key first."); SC.err=true; paintSc(); var ic=scbar.querySelector('.ccgscsrc[data-src="sc"] .srkeyic'); if(ic&&window.srFree.openKey) setTimeout(function(){ window.srFree.openKey("sc",ic); },0); return; }
+    var list=B.qs.slice(); if(G.length>1 && B.total) list.push(B.total);
+    list=list.filter(Boolean);
+    if(!list.length){ SC.msg=T("沒有可查詢的檢索式（可能含空白概念）。","Nothing to search (an empty concept?)."); SC.err=true; paintSc(); return; }
+    SC.busy=true; SC.err=false; var fail=0;
+    try{ window.srCount && srCount('pico-gfx-count-'+id,'PICO-圖形化估算-'+srcNm(id)); }catch(_){}
+    for(var i=0;i<list.length;i++){ var q=list[i], ck=id+"|"+q; SC.msg=srcNm(id)+" "+(i+1)+" / "+list.length; SC.cache[ck]="…"; render();
+      try{ SC.cache[ck]=await window.srFree.count(id,q); }
+      catch(err){ fail++; SC.cache[ck]=String(err&&err.message||err); if(err&&err.fatal){ SC.msg=SC.cache[ck]; SC.err=true; for(var j=i+1;j<list.length;j++){ if(SC.cache[id+"|"+list[j]]==="…") delete SC.cache[id+"|"+list[j]]; } SC.busy=false; render(); return; } } }
+    SC.busy=false; SC.err=!!fail; var _rs=[]; list.forEach(function(q){ var v=SC.cache[id+"|"+q]; if(typeof v==="string" && v!=="…" && _rs.indexOf(v)<0) _rs.push(v); }); SC.msg=srcNm(id)+"："+(fail?T(fail+" 項查詢失敗："+_rs.join("；")+"（點紅字可重查）",fail+" failed: "+_rs.join("; ")+" (click the red text to retry)"):T("估算完成","done")); render();
+  }
+  document.addEventListener("input",function(e){ if(e.target&&e.target.closest&&e.target.closest(".srkey") && SC.err && /key/i.test(SC.msg)){ SC.msg=""; SC.err=false; paintSc(); } });
+  function paintSc(){
+    var ids=SRCS.filter(function(s){ return avail(s.id); }); var G=GX.groups.filter(function(g){return g.items.length;});
+    scbar.hidden=!ids.length||!G.length; if(scbar.hidden) return;
+    var sig=ids.map(function(x){ return x.id; }).join(","); if(scbar.dataset.sig!==sig){ scbar.innerHTML=""; scbar.dataset.sig=sig; if(SC.act && !avail(SC.act)){ SC.act=""; SC.msg=""; } }
+    if(!scbar.firstChild){
+      scbar.innerHTML='<span class="ccgsclab"></span>'+ids.map(function(s){ return '<button type="button" class="ccgbtn ccgscsrc" data-src="'+s.id+'">'+esc(s.nm)+'</button>'; }).join("")+'<span class="ccgscst"></span><div class="ccgsctot"></div>';
+      Array.prototype.forEach.call(scbar.querySelectorAll(".ccgscsrc"),function(bt){ var ki=window.srFree.keyIcon&&window.srFree.keyIcon(bt.dataset.src); if(ki) bt.appendChild(ki); });   /* key 圖示在來源按鈕上 */
+      scbar.addEventListener("click",function(e){ var b=e.target.closest(".ccgscsrc"); if(b) scRun(b.dataset.src); }); }
+    scbar.querySelector(".ccgsclab").textContent=T("估算各子問題筆數：","Estimate counts per sub-question: ");
+    Array.prototype.forEach.call(scbar.querySelectorAll(".ccgscsrc"),function(b){ b.disabled=SC.busy; b.classList.toggle("on", b.dataset.src===SC.act); });
+    var st=scbar.querySelector(".ccgscst"); st.className="ccgscst"+(SC.err?" err":""); st.textContent=SC.msg||"";
+    var nt=scbar.querySelector(".ccgscnote"); if(!nt){ nt=document.createElement("div"); nt.className="ccgscnote"; scbar.insertBefore(nt, scbar.querySelector(".ccgsctot")); }
+    var _F=window._srFreeLast, _mx=(_F&&_F.lines)?_F.lines.filter(function(L){ return L.oaMixed; }).map(function(L){ return L.lab; }):[];
+    nt.textContent = SC.act==="s2"?T("Semantic Scholar：只能查標題＋摘要，無法限定欄位，不隨欄位完整度改變。","Semantic Scholar: title + abstract only; field levels are ignored.")
+      : SC.act==="oa"?T("OpenAlex：子問題數量依設定的欄位完整度取得；但不支援切截*。合計數量只能採完整標題＋摘要查詢。","OpenAlex: sub-question counts follow the field level you set, but truncation (*) is not supported. The total can only be searched in title + abstract.") : "";   /* 兩個來源的限制明顯加註 */
+    var all={}; SRCS.forEach(function(s){ if(avail(s.id)) all[s.id]=boxQ(s.id,G); });
+    var tt=G.length>1?cntsFor("t",G,all):""; scbar.querySelector(".ccgsctot").innerHTML=tt?('<span class="ccglab">'+T("合計","Total")+'</span>'+tt):"";
   }
   /* ---------- 繪製 ---------- */
-  function nameW(v){ var w=0; String(v).split("").forEach(function(ch){ w+=/[\u2E80-\uFFEF]/.test(ch)?1:0.56; }); return Math.max(1.2,Math.ceil(w*10)/10+0.15); }   /* 子問題名稱輸入框寬度隨字數 */
+  function nameW(v){ var w=0; String(v).split("").forEach(function(ch){ w+=/[⺀-￯]/.test(ch)?1:0.56; }); return Math.max(1.2,Math.ceil(w*10)/10+0.15); }   /* 子問題名稱輸入框寬度隨字數 */
   function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-  function chip(k,cs,where,gi){ var c=cs[k-1], miss=!c, s='<span class="ccgc'+(miss?' miss':'')+(where==="pal"&&sel===k?' sel':'')+'" draggable="true" data-k="'+k+'" data-w="'+where+'"'+(gi!=null?' data-g="'+gi+'"':'')+' title="'+esc(miss?T("這一列已不存在","This row no longer exists"):(c.zh&&c.lab&&c.zh!==c.lab?c.lab+"｜"+c.zh:c.name))+'">'+
+  function badge(l,k,where,gi,ov,cs){ var t=(where==="pal")?T("欄位完整度（預設，與表格同步）：","Field level (default, synced with the table): ")+lvName(l)
+      :(ov?T("此子問題另設："+lvName(l)+"（預設："+lvName(defLv(k,cs))+"）","Set for this sub-question: "+lvName(l)+" (default: "+lvName(defLv(k,cs))+")"):T("欄位完整度（同預設）："+lvName(l),"Field level (same as default): "+lvName(l)));
+    return '<button type="button" class="ccglvb'+(ov?' ov':'')+'" data-l="'+l+'" data-k="'+k+'" data-w="'+where+'"'+(gi!=null?' data-g="'+gi+'"':'')+' title="'+esc(t)+'" aria-haspopup="menu">'+esc(lvName(l))+'</button>'; }
+  function chip(k,cs,where,gi,g){ var c=cs[k-1], miss=!c, s='<span class="ccgc'+(miss?' miss':'')+(where==="pal"&&sel===k?' sel':'')+'" draggable="true" data-k="'+k+'" data-w="'+where+'"'+(gi!=null?' data-g="'+gi+'"':'')+' title="'+esc(miss?T("這一列已不存在","This row no longer exists"):(c.zh&&c.lab&&c.zh!==c.lab?c.lab+"｜"+c.zh:c.name))+'">'+
       '<b>L'+k+'</b>'+esc(miss?T("已不存在","missing"):c.name);
-    if(where!=="pal") s+='<button type="button" class="ccgx" data-rm="'+k+'" aria-label="'+T("移除","Remove")+'">×</button>';
+    if(where==="pal"){ if(!miss) s+=badge(c.lv,k,"pal",null,false,cs); }   /* 概念區：完整度標籤收在概念片內 */
+    else { if(!miss) s+=badge(effLv(g,k,cs),k,"g",gi,isOv(g,k,cs),cs); s+='<button type="button" class="ccgx" data-rm="'+k+'" aria-label="'+T("移除","Remove")+'">×</button>'; }
     return s+'</span>'; }
   function render(){
     if(mode()!=="gfx") return;
-    var cs=concepts(), h="";
-    h+='<div class="ccgpal"><span class="ccglab">'+T("概念","Concepts")+'</span>'+(cs.length?cs.map(function(c){return chip(c.k,cs,"pal");}).join(""):'<span class="ccgnote">'+T("表格還沒有概念列","No concept rows yet")+'</span>')+'</div>';
+    closePop();
+    var cs=concepts(), h="", G=GX.groups.filter(function(g){return g.items.length;}), gi2=0, allQ={}; SRCS.forEach(function(s){ if(avail(s.id)) allQ[s.id]=boxQ(s.id,G); });
+    h+='<div class="ccgpal"><span class="ccglab">'+T("概念","Concepts")+'</span>'+(cs.some(function(c){ return c.fil; })?cs.filter(function(c){ return c.fil; }).map(function(c){ return chip(c.k,cs,"pal"); }).join(""):'<span class="ccgnote">'+T("表格還沒有填入詞彙","No terms in the table yet")+'</span>')+'</div>';
     if(unparsable) h+='<div class="ccgwarn">'+T("⚠ 目前的文字組合不是「框內 AND、框與框 OR」的形式，無法轉成圖形；在這裡修改會覆蓋它。","⚠ The current text combination isn’t in the “AND within boxes, OR between boxes” form, so it can’t be shown here; editing here will replace it.")+'</div>';
     h+='<div class="ccgboxes">';
     GX.groups.forEach(function(g,gi){
+      var cnt=g.items.length?cntsFor(gi2++,G,allQ):"";
       h+='<div class="ccgbox" data-g="'+gi+'"><div class="ccgbh"><input type="text" class="ccgname" data-g="'+gi+'" maxlength="20" value="'+esc(g.name)+'" placeholder="'+T("子問題","Sub-question ")+(gi+1)+'" style="width:'+nameW(g.name||T("子問題","Sub-question ")+(gi+1))+'em"><span class="ccgbt">'+T("（文章同時提及）：","(papers mention all of):")+'</span>'+
          (GX.groups.length>1?'<button type="button" class="ccgdel" data-del="'+gi+'" title="'+T("刪除這個框","Delete this box")+'">✕</button>':'')+'</div>'+
-         '<div class="ccgdrop">'+(g.items.length?g.items.map(function(k){return chip(k,cs,"g",gi);}).join('<span class="ccgand">AND</span>'):'<span class="ccgph">'+T("把概念拖進來","Drop concepts here")+'</span>')+'</div>'+'</div>';
+         (cnt?'<div class="ccgcnts">'+cnt+'</div>':'')+'<div class="ccgdrop">'+(g.items.length?g.items.map(function(k){return chip(k,cs,"g",gi,g);}).join('<span class="ccgand">AND</span>'):'<span class="ccgph">'+T("把概念拖進來","Drop concepts here")+'</span>')+'</div>'+'</div>';
       if(gi<GX.groups.length-1) h+='<div class="ccgor">OR</div>';
     });
     h+='</div><div class="ccgadd"><button type="button" class="ccgbtn" data-act="add">'+T("＋ 新增子問題","＋ Add sub-question")+'</button></div>';
-    var G=GX.groups.filter(function(g){return g.items.length;}), lines=toLines();
-    if(lines.length){
-      var nm=function(k){ return nameOf(k,cs); };
-      var res=G.map(function(g){ var s=g.items.map(nm).join(" AND "); return G.length>1&&g.items.length>1?"("+s+")":s; }).join(" OR ");
-      var sp=simplify(G,cs);
-      h+='<div class="ccgres"><div class="ccgrow"><span class="ccglab">'+T("組合結果","Result")+'</span><div><code>'+esc(res)+'</code></div></div>'+
-         (sp?'<div class="ccgrow"><span class="ccglab">'+T("化簡","Simplified")+'</span><div><code>'+esc(sp.txt)+'</code>'+(sp.note?'<div class="ccgnote">'+esc(sp.note)+'</div>':'<div class="ccgnote">'+T("每框都有的概念提出來，結果相同。","Concepts shared by every box are pulled out — same result.")+'</div>')+'</div></div>':'')+
-         '<div class="ccgrow"><span class="ccglab">'+T("寫入","Written as")+'</span><div><code class="ccglines">'+lines.map(function(l,j){return "<i>R"+(j+1)+"</i>"+esc(l);}).join("<br>")+'</code></div></div></div>';
-    }
-    if(cs.length>=3 && !G.length) h+='<div class="ccgdemo"><button type="button" class="ccgbtn" data-act="demo">'+T("看示範：共同概念＋兩個子問題","Show an example: shared concepts + two sub-questions")+'</button></div>';
-    gfx.innerHTML=h;
+    /* 組合結果／化簡／寫入 區塊不顯示（Flora 11-14）；組合仍寫入文字輸入區 */
+    if(cs.filter(function(c){ return c.fil; }).length>=3 && !G.length) h+='<div class="ccgdemo"><button type="button" class="ccgbtn" data-act="demo">'+T("看示範：共同概念＋兩個子問題","Show an example: shared concepts + two sub-questions")+'</button></div>';
+    dyn.innerHTML=h; paintSc();
   }
+  /* ---------- 欄位完整度選單 ---------- */
+  var popFor=null;
+  function closePop(){ pop.hidden=true; popFor=null; }
+  function openPop(b){
+    var cs=concepts(), k=+b.dataset.k, w=b.dataset.w, gi=b.dataset.g!=null?+b.dataset.g:null, cur=b.dataset.l, def=defLv(k,cs);
+    popFor={k:k,w:w,g:gi};
+    var hd=(w==="pal")?T("L"+k+" "+nameOf(k,cs)+"・預設（所有子問題）","L"+k+" "+nameOf(k,cs)+" · default (all sub-questions)")
+      :T("L"+k+" "+nameOf(k,cs)+"・"+(GX.groups[gi].name||("子問題"+(gi+1))),"L"+k+" "+nameOf(k,cs)+" · "+(GX.groups[gi].name||("Sub-question "+(gi+1))));
+    pop.innerHTML='<div class="hd">'+esc(hd)+'</div>'+["L0","L1","L2","L3"].map(function(l){ var m=LV[l];
+      return '<button type="button" class="op'+(l===cur?' cur':'')+'" role="menuitemradio" aria-checked="'+(l===cur)+'" data-set="'+l+'"><span class="ccglvb" data-l="'+l+'">'+esc(T(m.z,m.e))+'</span><span class="ds">'+esc(T(m.dz,m.de))+(w!=="pal"&&l===def?T("（預設）"," (default)"):"")+'</span>'+(l===cur?'<span class="ck">✓</span>':'')+'</button>'; }).join("");
+    pop.hidden=false;
+    var gr=gfx.getBoundingClientRect(), br=b.getBoundingClientRect();
+    var left=br.left-gr.left, maxL=gfx.clientWidth-pop.offsetWidth-4; pop.style.left=Math.max(0,Math.min(left,maxL))+"px"; pop.style.top=(br.bottom-gr.top+4)+"px";
+    var f=pop.querySelector(".op.cur")||pop.querySelector(".op"); if(f) f.focus();
+  }
+  function setLv(l){ if(!popFor) return; var p=popFor; closePop();
+    if(p.w==="pal"){ var tr=body.querySelectorAll("tr")[p.k-1], rs=tr&&tr.querySelector("select.rowlvl"); if(rs){ rs.value=l; rs.dispatchEvent(new Event("change",{bubbles:true})); } write(); render(); return; }
+    var g=GX.groups[p.g]; if(!g) return; g.lv=g.lv||{}; if(l===defLv(p.k,concepts())) delete g.lv[p.k]; else g.lv[p.k]=l; changed(); }
+  pop.addEventListener("click",function(e){ var o=e.target.closest("[data-set]"); if(o) setLv(o.dataset.set); });
+  pop.addEventListener("keydown",function(e){ var os=Array.prototype.slice.call(pop.querySelectorAll(".op")), i=os.indexOf(document.activeElement);
+    if(e.key==="Escape"){ e.preventDefault(); closePop(); } else if(e.key==="ArrowDown"||e.key==="ArrowUp"){ e.preventDefault(); var n=os[(i+(e.key==="ArrowDown"?1:-1)+os.length)%os.length]; if(n) n.focus(); } });
+  document.addEventListener("mousedown",function(e){ if(!pop.hidden && !pop.contains(e.target) && !e.target.closest(".ccglvb")) closePop(); },true);
   /* ---------- 操作 ---------- */
-  function changed(){ dirty=true; write(); render(); }
-  function addTo(g,k){ var arr=GX.groups[g].items; if(arr.indexOf(k)<0) arr.push(k); }
-  function rmFrom(g,k){ var arr=GX.groups[g].items, i=arr.indexOf(k); if(i>=0) arr.splice(i,1); }
+  function changed(){ write(); render(); }
+  function addTo(g,k,l){ var G=GX.groups[g]; if(G.items.indexOf(k)<0) G.items.push(k); if(l){ G.lv=G.lv||{}; G.lv[k]=l; } }
+  function rmFrom(g,k){ var G=GX.groups[g], i=G.items.indexOf(k); if(i>=0) G.items.splice(i,1); if(G.lv) delete G.lv[k]; }
   gfx.addEventListener("click",function(e){
     var t=e.target, b;
+    if(pop.contains(t)) return;
+    if((b=t.closest("[data-rq]"))){ (async function(id,q){ if(SC.busy) return; SC.busy=true; SC.act=id; SC.cache[id+"|"+q]="…"; SC.msg=T("重新查詢…","Retrying…"); SC.err=false; render(); try{ SC.cache[id+"|"+q]=await window.srFree.count(id,q); SC.msg=srcNm(id)+"："+T("重查成功","retried"); }catch(err){ SC.cache[id+"|"+q]=String(err&&err.message||err); SC.msg=srcNm(id)+"："+T("仍查詢失敗：","still failing: ")+SC.cache[id+"|"+q]; SC.err=true; } SC.busy=false; render(); })(b.dataset.rq,b.dataset.q); return; }   /* 點失敗紅字：單項重查 */
+    if((b=t.closest(".ccglvb"))){ e.stopPropagation(); if(popFor && popFor.k===+b.dataset.k && popFor.w===b.dataset.w && String(popFor.g)===String(b.dataset.g!=null?+b.dataset.g:null)) closePop(); else openPop(b); return; }
     if((b=t.closest(".ccgx"))){ var c=b.closest(".ccgc"); rmFrom(+c.dataset.g, +c.dataset.k); changed(); return; }
     if((b=t.closest("[data-del]"))){ GX.groups.splice(+b.dataset.del,1); changed(); return; }
     if((b=t.closest("[data-act]"))){ var a=b.dataset.act;
-      if(a==="add") GX.groups.push({name:"",items:[]});
-      else if(a==="demo"){ var n=concepts().length, base=[]; for(var i=1;i<=n-2;i++) base.push(i);
-        GX.groups=[{name:"",items:base.concat([n-1])},{name:"",items:base.concat([n])}]; }
+      if(a==="add") GX.groups.push({name:"",items:[],lv:{}});
+      else if(a==="demo"){ var ks=concepts().filter(function(c){ return c.fil; }).map(function(c){ return c.k; }); var n=ks.length, base=ks.slice(0,n-2);   /* 示範只用有填詞的概念 */
+        GX.groups=[{name:"",items:base.concat([ks[n-2]]),lv:{}},{name:"",items:base.concat([ks[n-1]]),lv:{}}]; }
       changed(); return; }
     if((b=t.closest(".ccgc[data-w=pal]"))){ var k=+b.dataset.k; sel=(sel===k)?0:k; render(); return; }
-    if(t.closest("input")) return;
+    if(t.closest("input,select,.ccgsc")) return;
     if(sel && (b=t.closest(".ccgbox"))){ addTo(+b.dataset.g, sel); sel=0; changed(); }
   });
   gfx.addEventListener("input",function(e){ var i=e.target.closest(".ccgname"); if(i){ GX.groups[+i.dataset.g].name=i.value; i.style.width=nameW(i.value||i.placeholder)+"em"; } });
   var drag=null;
-  gfx.addEventListener("dragstart",function(e){ var c=e.target.closest&&e.target.closest(".ccgc"); if(!c) return; drag={k:+c.dataset.k, from:c.dataset.w==="pal"?null:+c.dataset.g}; try{ e.dataTransfer.setData("text/plain","L"+drag.k); e.dataTransfer.effectAllowed="copyMove"; }catch(_){} });
+  gfx.addEventListener("dragstart",function(e){ var c=e.target.closest&&e.target.closest(".ccgc"); if(!c) return; var from=c.dataset.w==="pal"?null:+c.dataset.g, k=+c.dataset.k;
+    drag={k:k, from:from, lv:(from!=null&&GX.groups[from].lv)?GX.groups[from].lv[k]:null}; try{ e.dataTransfer.setData("text/plain","L"+k); e.dataTransfer.effectAllowed="copyMove"; }catch(_){} });
   gfx.addEventListener("dragover",function(e){ var bx=drag&&e.target.closest(".ccgbox"); if(!bx) return; e.preventDefault(); bx.classList.add("over"); });
   gfx.addEventListener("dragleave",function(e){ var bx=e.target.closest(".ccgbox"); if(bx&&!bx.contains(e.relatedTarget)) bx.classList.remove("over"); });
   gfx.addEventListener("drop",function(e){ var bx=drag&&e.target.closest(".ccgbox"); if(!bx){ drag=null; return; } e.preventDefault();
-    var g=+bx.dataset.g; if(drag.from!==null && drag.from!==g) rmFrom(drag.from,drag.k); addTo(g,drag.k); drag=null; changed(); });
+    var g=+bx.dataset.g; if(drag.from!==null && drag.from!==g) rmFrom(drag.from,drag.k); addTo(g,drag.k,drag.lv); drag=null; changed(); });
   gfx.addEventListener("dragend",function(){ drag=null; Array.prototype.forEach.call(gfx.querySelectorAll(".ccgbox.over"),function(x){x.classList.remove("over");}); });
+  /* 列刪除／移動／新增時：自訂組合的 L 編號跟著重新對應；刪除的概念從組合中移除（整批換掉表格時不處理） */
+  var prevRows=Array.prototype.slice.call(body.querySelectorAll("tr"));
+  var wantClear=0, _wc=function(e){ if(e.target&&e.target.closest&&e.target.closest("#clearBtn,#exBtn,#exBtn2") && (e.type==="click"||e.key==="Enter"||e.key===" ")) wantClear=Date.now(); }; document.addEventListener("click",_wc,true); document.addEventListener("keydown",_wc,true);
+  function dropTok(line, re){ return line.replace(new RegExp("\\s*\\b(?:AND\\s+NOT|AND|OR|NOT)\\s+"+re,"gi"),"").replace(new RegExp(re+"\\s+(?:AND\\s+NOT|AND|OR|NOT)\\b\\s*","gi"),"").replace(new RegExp(re,"g"),"").replace(/\(\s*\)/g,"").trim(); }
+  function remap(){
+    var now=Array.prototype.slice.call(body.querySelectorAll("tr")), keep=prevRows.filter(function(tr){ return now.indexOf(tr)>=0; });
+    var old=prevRows; prevRows=now; if(!keep.length){ if(wantClear && Date.now()-wantClear<3000){ wantClear=0; GX={groups:[{name:"",items:[],lv:{}}]}; SC.cache={}; SC.msg=""; SC.err=false; SC.act=""; if(ta.value){ ta.value=""; lastWritten=""; ta.dispatchEvent(new Event("input",{bubbles:true})); } render(); } return; }   /* 清空表格或載入範例：自訂組合一併清除 */
+    var map={}, changed=false; old.forEach(function(tr,i){ var j=now.indexOf(tr); map[i+1]=j>=0?j+1:0; if(map[i+1]!==i+1) changed=true; });
+    if(!changed || !/\bL\d+/i.test(ta.value)) return;
+    var lines=String(ta.value).split(/\r?\n/), out=[], rmap={}, n=0;
+    lines.forEach(function(line,idx){ if(!line.trim()){ return; }
+      var t=line.replace(/\bL(\d+)((?:@L?V?[0-3])?)\b/gi,function(m,k,sfx){ var v=map[+k]; if(v===undefined) return m; return v?("L"+v+sfx):"\u0002"; });
+      t=dropTok(t,"\u0002");
+      if(t && !/^(?:AND|OR|NOT)\b/i.test(t)){ n++; rmap[idx+1]=n; out.push(t); } else rmap[idx+1]=0; });
+    out=out.map(function(t){ return dropTok(t.replace(/\bR(\d+)\b/gi,function(m,k){ var v=rmap[+k]; return v?("R"+v):(v===0?"\u0003":m); }),"\u0003"); }).filter(Boolean);
+    if(out.length && /^R\d+$/i.test(out[out.length-1])) out.pop();   /* 只剩一個子問題時，最後的 R1 不需要 */
+    var nv=out.join("\n"); if(nv!==ta.value){ ta.value=nv; ta.dispatchEvent(new Event("input",{bubbles:true})); }
+  }
+  new MutationObserver(function(){ remap(); }).observe(body,{childList:true});
   /* 表格或文字變動時同步 */
   var rT=null, rerender=function(){ clearTimeout(rT); rT=setTimeout(function(){ if(mode()==="gfx" && document.activeElement && !gfx.contains(document.activeElement)){ if(ta.value!==lastWritten) parseFromText(); render(); } },250); };
-  body.addEventListener("input",rerender); new MutationObserver(rerender).observe(body,{childList:true});
+  body.addEventListener("input",rerender); body.addEventListener("change",function(e){ if(e.target.closest("select.rowlvl")){ if(mode()==="gfx"){ write(); setTimeout(render,0); } } else rerender(); });
+  var gl=document.getElementById("level"); if(gl) gl.addEventListener("change",function(){ setTimeout(function(){ if(mode()==="gfx"){ write(); render(); } },0); }); new MutationObserver(rerender).observe(body,{childList:true});
   ta.addEventListener("input",function(){ if(ta.value!==lastWritten && mode()==="gfx") rerender(); });
+  window.addEventListener("sr-scopus-rows",function(){ if(mode()==="gfx") setTimeout(render,0); });
   box.addEventListener("toggle",function(){ if(box.open) applyMode(); });
   new MutationObserver(function(){ if(mode()==="gfx") render(); }).observe(document.body,{attributes:true,attributeFilter:["class"]});
   applyMode();
@@ -5236,14 +5545,14 @@ if (typeof module !== "undefined" && module.exports) {
 /* 生成檢索策略：檢視版面切換（全部列出／頁籤，圖示）；不動產生程式，只在 #outs 有結果卡時加頁籤列 */
 (function(){
   var outs=document.getElementById("outs"); if(!outs) return;
-  var KEY="sr_pico_nm_outview", KTAB="sr_pico_nm_outtab";
+  var KEY="sr_pico_nm_outview2", KTAB="sr_pico_nm_outtab";
   var en=function(){ return document.body.classList.contains("en")||document.documentElement.getAttribute("lang")==="en"; };
   function get(k,d){ try{ return localStorage.getItem(k)||d; }catch(_){ return d; } }
   function set(k,v){ try{ localStorage.setItem(k,v); }catch(_){} }
   var ICON_LIST='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="4" y="4" width="16" height="6" rx="1.5"/><rect x="4" y="14" width="16" height="6" rx="1.5"/></svg>';
   var ICON_TABS='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 20V8.5h17V20z"/><path d="M3.5 8.5V5.5Q3.5 4.5 4.5 4.5H9.5Q10.5 4.5 10.5 5.5V8.5"/><path d="M10.5 8.5V6.5h6"/></svg>';
   var sw=document.createElement("span"); sw.className="ovsw"; sw.setAttribute("role","group");
-  sw.innerHTML='<button type="button" data-v="list">'+ICON_LIST+'</button><button type="button" data-v="tabs">'+ICON_TABS+'</button>';
+  sw.innerHTML='<button type="button" data-v="tabs">'+ICON_TABS+'</button><button type="button" data-v="list">'+ICON_LIST+'</button>';   /* 頁籤排第一、為預設 */
   var row=document.createElement("div"); row.className="ovrow";
   var tabs=document.createElement("div"); tabs.className="ovtabs"; tabs.setAttribute("role","tablist");
   var busy=false;
@@ -5252,7 +5561,7 @@ if (typeof module !== "undefined" && module.exports) {
   function apply(){
     if(busy) return; busy=true;
     try{
-      var cs=cards(), mode=get(KEY,"list");
+      var cs=cards(), mode=get(KEY,"tabs");
       Array.prototype.forEach.call(sw.querySelectorAll("button"),function(b){ var on=b.dataset.v===mode; b.classList.toggle("on",on); b.setAttribute("aria-pressed",on?"true":"false");
         var t=b.dataset.v==="list"?(en()?"Show all":"全部列出"):(en()?"Tabs":"頁籤"); b.title=t; b.setAttribute("aria-label",t); });
       outs.classList.toggle("ovtabmode", !!cs.length && mode==="tabs");
@@ -5274,6 +5583,263 @@ if (typeof module !== "undefined" && module.exports) {
   apply();
 })();
 </script>
+<script id="srScopusScript">
+/* Scopus API key（使用者自填）：只放在記憶體，不保存。srScopus.get()／make()（收合式輸入區塊，沿用 .srkey 樣式）／open()／count(query)。
+   Elsevier API 需在該 key 的允許網域加入本網站（CORS），並需機構的 Scopus 權限。 */
+(function(){
+  var KEY="", boxes=[], last=0, okOnce=false;
+  var en=function(){ return document.body.classList.contains("en")||document.documentElement.getAttribute("lang")==="en"; };
+  var EYE='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+  var EYEOFF='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.6 10.6 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.1M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a9.8 9.8 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
+  function sync(){ boxes.forEach(function(d){ var i=d.querySelector("input"); if(i && i.value!==KEY) i.value=KEY; var on=d.querySelector(".srkey-on"); if(on) on.style.display=KEY?"":"none"; }); }
+  function E(msg,fatal){ var e=new Error(msg); e.fatal=!!fatal; return e; }
+  var wait=function(ms){ return new Promise(function(r){ setTimeout(r,ms); }); };
+  window.srScopus={
+    get:function(){ return KEY.trim(); },
+    make:function(){
+      var d=document.createElement("details"); d.className="srkey srkey-scopus";
+      d.innerHTML='<summary><span data-zh>Scopus API key</span><span data-en>Scopus API key</span><span class="srkey-on" style="display:none"><span data-zh>　已輸入</span><span data-en>　entered</span></span></summary>'+
+        '<div class="srkey-body"><span class="keybox"><input type="password" autocomplete="off" spellcheck="false" placeholder="—" data-lpignore="true" data-1p-ignore aria-label="Scopus API key">'+
+        '<button type="button" class="keyshow" aria-pressed="false" aria-label="顯示 API key / Show API key" title="顯示 / Show">'+EYE+'</button></span>'+
+        '<a class="keylink" href="https://dev.elsevier.com/apikey/manage" target="_blank" rel="noopener"><span data-zh>申請／管理 API key ↗</span><span data-en>Get / manage an API key ↗</span></a>'+
+        '<div class="srkey-note"><span data-zh>以 Elsevier 帳號登入 dev.elsevier.com 申請（免費）；並在該 key 的允許網域加入 <b>sunfloraf-sketch.github.io</b>，否則瀏覽器會擋下查詢。需在校園網路或 VPN 下使用（機構 Scopus 權限）。<br>不會保存，重新整理或換頁需重新輸入。</span>'+
+          '<span data-en>Sign in to dev.elsevier.com with an Elsevier account to get a key (free), and add <b>sunfloraf-sketch.github.io</b> to the key’s allowed domains, otherwise the browser blocks the request. Use on campus or via VPN (institutional Scopus access).<br>Not saved; re-enter after reloading or changing pages.</span></div></div>';
+      var inp=d.querySelector("input"), eye=d.querySelector(".keyshow");
+      inp.value=KEY;
+      inp.addEventListener("input", function(){ KEY=inp.value; sync(); try{ window.dispatchEvent(new Event("sr-scopus-key")); }catch(_){} });
+      eye.addEventListener("click", function(){ var show=inp.type==="password"; inp.type=show?"text":"password"; eye.setAttribute("aria-pressed", show?"true":"false"); eye.innerHTML=show?EYEOFF:EYE; });
+      boxes=boxes.filter(function(b){ return document.body.contains(b); }); boxes.push(d); setTimeout(sync,0);
+      return d;
+    },
+    open:function(d){ if(!d) d=boxes.filter(function(b){ return document.body.contains(b); })[0]; if(!d) return; d.open=true; d.scrollIntoView({behavior:"smooth",block:"center"}); var i=d.querySelector("input"); if(i) setTimeout(function(){ i.focus({preventScroll:true}); },350); },
+    count:async function(q){
+      var key=KEY.trim(); if(!key) throw E(en()?"Enter a Scopus API key first.":"請先輸入 Scopus API key。",true);
+      q=String(q||"").trim(); if(!q) throw E(en()?"Empty query":"檢索式是空的");
+      var base="https://api.elsevier.com/content/search/scopus", url=base+"?count=1&field=dc:identifier&query="+encodeURIComponent(q), H={"X-ELS-APIKey":key,"Accept":"application/json"};
+      var LONG=url.length>3500, TOOLONG=en()?("Query too long for the Scopus API (about "+q.length+" characters) — check this line on the Scopus website."):("檢索式太長（約 "+q.length+" 字元），Scopus API 無法估算，請到 Scopus 網站確認這一行。");
+      async function go(post){ var gap=Date.now()-last; if(gap<220) await wait(220-gap); last=Date.now();
+        try{ return post ? await fetch(base,{method:"POST",headers:Object.assign({"Content-Type":"application/x-www-form-urlencoded"},H),body:"count=1&field=dc:identifier&query="+encodeURIComponent(q)})
+                         : await fetch(url,{headers:H}); }catch(_){ return null; } }
+      var r=LONG?null:await go(false);
+      if(LONG || !r || r.status===414 || (r.status===400 && url.length>2500)){ var r2=await go(true); if(r2 && r2.ok) r=r2; else if(LONG || (r && !r.ok)) { if(!r2) throw E(TOOLONG); r=r2; } }   /* 長檢索式改用 POST */
+      if(!r){ if(okOnce) throw E(en()?"Request failed (temporary limit or network) — click to retry.":"查詢失敗（可能暫時限速或網路不穩），請點一下重試。");
+        throw E(en()?"Request blocked: add sunfloraf-sketch.github.io to the API key’s allowed domains at dev.elsevier.com, and check your network/VPN.":"查詢被瀏覽器擋下：請到 dev.elsevier.com 在該 API key 的允許網域加入 sunfloraf-sketch.github.io，並確認網路／VPN。",true); }
+      var j=null; try{ j=await r.json(); }catch(_){}
+      var sm=j&&j["service-error"]&&j["service-error"].status&&j["service-error"].status.statusText;
+      if(r.status===401||r.status===403) throw E((en()?"Not authorised (HTTP "+r.status+"): check the API key, and use it on campus or via VPN.":"未獲授權（HTTP "+r.status+"）：請確認 API key，並在校園網路或 VPN 下使用。")+(sm?" "+sm:""),true);
+      if(r.status===429) throw E(en()?"Quota or rate limit reached (HTTP 429) — try again later.":"已達查詢額度或速度上限（HTTP 429），請稍後再試。",true);
+      if(r.status===414) throw E(TOOLONG);
+      if(!r.ok) throw E((en()?"Query failed (HTTP "+r.status+")":"查詢失敗（HTTP "+r.status+"）")+(sm?"："+sm:""));
+      var t=j&&j["search-results"]&&j["search-results"]["opensearch:totalResults"], n=parseInt(t,10);
+      if(isNaN(n)) throw E(en()?"Unexpected response":"回應格式無法辨識");
+      okOnce=true; return n;
+    },
+    /* 展開 #行號為單一檢索式；「(A AND B) OR (A AND C)」型的組合把共同的 A 提出來：A AND (B OR C)，縮短長度 */
+    expand:function(rows, n){
+      var map={}; rows.forEach(function(x){ if(x.n!=null) map[x.n]=String(x.text); });
+      function naive(t){ var g=0; while(/#\d+/.test(t)&&g++<60) t=t.replace(/#(\d+)/g,function(m,d){ return map[d]!=null?"("+map[d]+")":m; }); return t; }
+      function split(t,op){ var out=[],d=0,cur="",re=new RegExp("^\\s+"+op+"\\s+"); for(var i=0;i<t.length;i++){ var c=t[i]; if(c==="(")d++; else if(c===")")d--; if(d===0){ var m=t.slice(i).match(re); if(m){ out.push(cur.trim()); cur=""; i+=m[0].length-1; continue; } } cur+=c; } out.push(cur.trim()); return out; }
+      function unwrap(t){ t=t.trim(); while(t[0]==="("&&t[t.length-1]===")"){ var d=0,ok=true; for(var i=0;i<t.length-1;i++){ if(t[i]==="(")d++; else if(t[i]===")"){ d--; if(d===0){ ok=false; break; } } } if(!ok) break; t=t.slice(1,-1).trim(); } return t; }
+      function pureAnd(t){ return split(t,"AND").length>1 && split(t,"OR").length===1 && split(t,"NOT").length===1; }
+      function andParts(t,depth){ t=unwrap(t); var m=t.match(/^#(\d+)$/), flat=function(ps){ return [].concat.apply([],ps.map(function(p){ return andParts(p,depth+1); })); };
+        if(depth>20) return [t];
+        if(m && map[m[1]]!=null && /#\d/.test(map[m[1]]) && pureAnd(unwrap(map[m[1]]))) return flat(split(unwrap(map[m[1]]),"AND"));
+        if(pureAnd(t)) return flat(split(t,"AND"));
+        return [t]; }
+      function leaf(x){ var m=x.match(/^#(\d+)$/); return m&&map[m[1]]!=null ? "("+naive(map[m[1]])+")" : (/\s/.test(x)?"("+naive(x)+")":naive(x)); }
+      var t=map[n]; if(t==null) return "";
+      var ors=split(unwrap(t),"OR"); if(ors.length<2 || /\bNOT\b/.test(t)) return naive(t);
+      var sets=ors.map(function(o){ return andParts(o,0); });
+      var common=sets[0].filter(function(x,i,a){ return a.indexOf(x)===i && sets.every(function(s){ return s.indexOf(x)>=0; }); });
+      if(!common.length) return naive(t);
+      var rests=sets.map(function(s){ return s.filter(function(x){ return common.indexOf(x)<0; }); });
+      var head=common.map(leaf).join(" AND ");
+      if(rests.some(function(r){ return !r.length; })) return head;
+      return head+" AND ("+rests.map(function(r){ return r.length>1?"("+r.map(leaf).join(" AND ")+")":leaf(r[0]); }).join(" OR ")+")";
+    }
+  };
+})();
+</script>
+
+<script id="srFreeScript">
+/* 免費資料庫估算筆數：Semantic Scholar（免 key，key 選填）、OpenAlex（免費 key 選填；不填每天額度很少）、ERIC（免 key）。
+   key 只放在記憶體，不保存。srFree.count(src,q)／keyBox(src)／card(data,makeInfoTip)。查詢式由主程式 _freeBuild 產生（window._srFreeLast）。 */
+(function(){
+  var en=function(){ return document.body.classList.contains("en")||document.documentElement.getAttribute("lang")==="en"; };
+  var T=function(z,e){ return en()?e:z; };
+  var esc=function(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); };
+  var wait=function(ms){ return new Promise(function(r){ setTimeout(r,ms); }); };
+  var KEYS={s2:"",oa:""}, boxes={s2:[],oa:[]}, last={};
+  var SRC={
+    pm:{nm:"PubMed", gap:function(){ return window.srKey&&window.srKey.get()?150:400; }},
+    sc:{nm:"Scopus", gap:function(){ return 0; }},
+    s2:{nm:"Semantic Scholar", gap:function(){ return KEYS.s2.trim()?1100:1000; },
+        url:function(q){ return "https://api.semanticscholar.org/graph/v1/paper/search/bulk?fields=paperId&query="+encodeURIComponent(q); },
+        hd:function(){ var k=KEYS.s2.trim(); return k?{"x-api-key":k}:{}; }, n:function(j){ return j&&j.total; }},
+    oa:{nm:"OpenAlex", gap:function(){ return 150; },
+        url:function(q){ var k=KEYS.oa.trim(); return "https://api.openalex.org/works?per_page=1&select=id&filter="+encodeURIComponent(q)+(k?"&api_key="+encodeURIComponent(k):""); },
+        hd:function(){ return {}; }, n:function(j){ return j&&j.meta&&j.meta.count; }},
+    eric:{nm:"ERIC", gap:function(){ return 250; },
+        url:function(q){ return "https://api.ies.ed.gov/eric/?format=json&rows=0&search="+encodeURIComponent(q); },
+        hd:function(){ return {}; }, n:function(j){ return j&&j.response&&j.response.numFound; }}
+  };
+  var KEYINFO={
+    s2:{zh:"Semantic Scholar API key（選填）",en:"Semantic Scholar API key (optional)",link:"https://www.semanticscholar.org/product/api#api-key-form",
+        nz:"不填也能查，但所有未填 key 的使用者共用同一個查詢上限，忙碌時可能失敗（稍候重試即可）。key 免費，需填表申請。",
+        ne:"Works without a key, but everyone without a key shares one rate limit, so requests may fail when it’s busy (just retry). Keys are free on request."},
+    oa:{zh:"OpenAlex API key（選填，建議）",en:"OpenAlex API key (optional, recommended)",link:"https://openalex.org/settings/api-key",
+        nz:"不填也能查，但每天額度只有有 key 的十分之一，用完當天就不能再查；註冊免費帳號取得 key 後額度足夠。",
+        ne:"Works without a key, but the daily allowance is a tenth of a keyed one and stops for the day once used; a free account’s key is plenty."}
+  };
+  var EYE='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+  function sync(s){ boxes[s]=boxes[s].filter(function(b){ return document.body.contains(b); }); boxes[s].forEach(function(d){ var i=d.querySelector("input"); if(i&&i.value!==KEYS[s]) i.value=KEYS[s]; var on=d.querySelector(".srkey-on"); if(on) on.style.display=KEYS[s]?"":"none"; }); }
+  function keyBox(s){
+    var I=KEYINFO[s]; if(!I) return null;
+    var d=document.createElement("details"); d.className="srkey srkey-"+s;
+    d.innerHTML='<summary><span data-zh>'+I.zh+'</span><span data-en>'+I.en+'</span><span class="srkey-on" style="display:none"><span data-zh>　已輸入</span><span data-en>　entered</span></span></summary>'+
+      '<div class="srkey-body"><span class="keybox"><input type="password" autocomplete="off" spellcheck="false" placeholder="—" data-lpignore="true" data-1p-ignore aria-label="API key">'+
+      '<button type="button" class="keyshow" aria-pressed="false" aria-label="顯示 API key / Show API key" title="顯示 / Show">'+EYE+'</button></span>'+
+      '<a class="keylink" href="'+I.link+'" target="_blank" rel="noopener"><span data-zh>申請 API key ↗</span><span data-en>Get an API key ↗</span></a>'+
+      '<div class="srkey-note"><span data-zh>'+I.nz+'<br>不會保存，重新整理或換頁需重新輸入。</span><span data-en>'+I.ne+'<br>Not saved; re-enter after reloading or changing pages.</span></div></div>';
+    var inp=d.querySelector("input"), eye=d.querySelector(".keyshow");
+    inp.value=KEYS[s]; inp.addEventListener("input",function(){ KEYS[s]=inp.value; sync(s); });
+    eye.addEventListener("click",function(){ var show=inp.type==="password"; inp.type=show?"text":"password"; eye.setAttribute("aria-pressed",show?"true":"false"); });
+    boxes[s].push(d); setTimeout(function(){ sync(s); },0); return d;
+  }
+  /* key 圖示（比照 MeSH 欄的 NCBI key 鈕）：放在各來源按鈕上；點圖示開小視窗輸入，已輸入時轉綠 */
+  var KICON='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3 L20 3 M16.5 6.5 l3 3 M14 9 l2 2"/></svg>';
+  var KNAME={pm:"NCBI API key",sc:"Scopus API key",s2:"Semantic Scholar API key",oa:"OpenAlex API key"};
+  function keyOn(k){ return k==="pm"?!!(window.srKey&&window.srKey.get()):k==="sc"?!!(window.srScopus&&window.srScopus.get()):!!(KEYS[k]&&KEYS[k].trim()); }
+  function keyMake(k){ return k==="pm"?(window.srKey&&window.srKey.make()):k==="sc"?(window.srScopus&&window.srScopus.make()):keyBox(k); }
+  function keyTitle(k){ var on=keyOn(k), req=(k==="sc");
+    return on?T("已輸入 "+KNAME[k]+"（點圖示修改）",KNAME[k]+" entered (click the icon to change)"):T(KNAME[k]+(req?"（必填）":"（選填）")+"：點圖示輸入",KNAME[k]+(req?" (required)":" (optional)")+": click the icon to enter"); }
+  function updIcons(){ Array.prototype.forEach.call(document.querySelectorAll(".srkeyic"),function(i){ var k=i.dataset.k; i.classList.toggle("on",keyOn(k)); i.title=keyTitle(k); i.setAttribute("aria-label",keyTitle(k)); }); }
+  var kpop=null, kpopEl={};
+  function kshown(){ return kpop&&kpop.style.display==="block"; }
+  function kclose(){ if(kpop) kpop.style.display="none"; }
+  function openKey(k, anchor){
+    if(!kpop){ kpop=document.createElement("div"); kpop.className="srkeypop"; document.body.appendChild(kpop);
+      kpop.addEventListener("click",function(ev){ ev.stopPropagation(); });
+      document.addEventListener("click",function(){ if(kshown()) kclose(); });
+      document.addEventListener("keydown",function(ev){ if(ev.key==="Escape"&&kshown()) kclose(); });
+      window.addEventListener("resize",function(){ if(kshown()) kclose(); }); window.addEventListener("scroll",function(){ if(kshown()&&kpop._a) kplace(kpop._a); },true); }
+    if(kshown() && kpop._k===k && kpop._a===anchor){ kclose(); return; }
+    if(!kpopEl[k]){ var d=keyMake(k); if(!d) return; d.open=true; kpopEl[k]=d; }
+    kpop.innerHTML=""; kpop.appendChild(kpopEl[k]); kpopEl[k].open=true; kpop._k=k; kpop._a=anchor; kpop.style.display="block"; kplace(anchor);
+    var inp=kpop.querySelector("input"); if(inp) setTimeout(function(){ inp.focus({preventScroll:true}); },30);
+  }
+  function kplace(a){ var r=a.getBoundingClientRect(), w=kpop.offsetWidth; kpop.style.left=Math.max(12,Math.min(r.left-12,innerWidth-w-12))+"px"; kpop.style.top=(r.bottom+8)+"px"; }
+  function keyIcon(k){ if(!KNAME[k]) return null; var i=document.createElement("span"); i.className="srkeyic"; i.dataset.k=k; i.setAttribute("role","button"); i.tabIndex=0; i.innerHTML=KICON;
+    var go=function(e){ e.stopPropagation(); e.preventDefault(); openKey(k,i); };
+    i.addEventListener("click",go); i.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" ") go(e); });
+    setTimeout(updIcons,0); return i; }
+  document.addEventListener("input",function(e){ if(e.target&&e.target.closest&&e.target.closest(".srkey")) updIcons(); });
+  function E(msg,fatal){ var e=new Error(msg); e.fatal=!!fatal; return e; }
+  async function count(s, q){
+    var P=SRC[s]; q=String(q||"").trim(); if(!P) throw E("?"); if(!q) throw E(T("沒有可查詢的詞","Nothing to search"));
+    if(s==="sc"){ if(!window.srScopus) throw E("Scopus?",true); return await window.srScopus.count(q); }
+    if(s==="pm"){ if(!window._srPmCount) throw E("PubMed?",true); var gp=Date.now()-(last.pm||0), gg=P.gap(); if(gp<gg) await wait(gg-gp); last.pm=Date.now();
+      try{ return await window._srPmCount(q); }catch(err){ throw E(String(err&&err.message||err)); } }
+    var url=P.url(q); if(url.length>7800) throw E(T("檢索式太長，API 無法查詢","Query too long for the API"));
+    for(var att=0; att<2; att++){
+      var gap=Date.now()-(last[s]||0), g=P.gap(); if(gap<g) await wait(g-gap); last[s]=Date.now();
+      var r=null, j=null;
+      try{ r=await fetch(url,{headers:P.hd()}); }catch(_){ r=null; }
+      if(!r){ if(s==="s2" && att===0){ await wait(1500); continue; }   /* Semantic Scholar 忙碌時回應常缺 CORS 標頭 → 等一下再試 */
+        throw E(s==="s2"?T("Semantic Scholar 忙碌或無法連線，請稍後重試（或輸入 key）","Semantic Scholar is busy or unreachable — retry later (or enter a key)"):T(P.nm+" 無法連線（網路或瀏覽器阻擋）",P.nm+" unreachable (network or blocked by the browser)"), s!=="s2"); }
+      if(r.status===429 && s==="s2" && att===0){ await wait(1500); continue; }
+      try{ j=await r.json(); }catch(_){}
+      if(s==="oa" && (r.status===429||r.status===409||r.status===402)) throw E(KEYS.oa.trim()?T("OpenAlex 今日額度已用完（HTTP "+r.status+"）","OpenAlex daily allowance used up (HTTP "+r.status+")"):T("OpenAlex 免 key 額度已用完，請輸入免費 OpenAlex key","OpenAlex no-key allowance used up — enter a free OpenAlex key"),true);
+      if(r.status===401||r.status===403) throw E(T(P.nm+" 未獲授權（HTTP "+r.status+"），請確認 API key",P.nm+" not authorised (HTTP "+r.status+") — check the API key"),true);
+      if(r.status===429) throw E(T(P.nm+" 查詢太頻繁（HTTP 429），請稍後再試",P.nm+" rate limit (HTTP 429) — try again later"),true);
+      if(!r.ok){ var m=j&&(j.message||j.error||(j.error&&j.error.message)); throw E(T("查詢失敗（HTTP "+r.status+"）","Query failed (HTTP "+r.status+")")+(m?"："+String(m).slice(0,160):"")); }
+      var n=parseInt(P.n(j),10); if(isNaN(n)) throw E(T("回應格式無法辨識","Unexpected response")); return n;
+    }
+  }
+  function fmt(n){ return n.toLocaleString(); }
+  function card(D, tipFn){
+    var card=document.createElement("div"); card.className="out srfree";
+    var h=document.createElement("h3"); h.innerHTML='<span>'+esc(T("資料庫估算筆數","Count estimates"))+'</span>'; card.appendChild(h);
+    var bar=document.createElement("div"); bar.className="pmestimate srfree-bar";
+    var lab=document.createElement("span"); lab.className="srfree-lab"; lab.textContent=T("估算","Estimate"); bar.appendChild(lab);
+    var HS=D.has||{s2:1,oa:1,eric:D.eric}, SS=["pm","sc","s2","oa","eric"].filter(function(x){ return HS[x]; });
+    var btns={}; SS.forEach(function(s){ var b=document.createElement("button"); b.type="button"; b.className="btn ghost srsrcbtn"; b.textContent=SRC[s].nm; var ki=keyIcon(s); if(ki) b.appendChild(ki); btns[s]=b; bar.appendChild(b); });
+    var st=document.createElement("span"); st.className="pmstatus"; bar.appendChild(st);
+    if(tipFn){ var _eng=SS.filter(function(x){ return x==="pm"||x==="sc"; }).map(function(x){ return SRC[x].nm; }), _sep=T("、",", ");   /* 說明只列目前有的來源（非醫學版沒有 PubMed 就不寫） */
+      var _tz=(_eng.length?_eng.join(_sep)+"：用上方該庫產生的檢索式（展開成單一串）。<br>其他來源":"各來源")+"把各概念的自由詞彙轉成各庫的布林式後查詢，只當<b>量級參考</b>：<br>・Semantic Scholar：只查標題＋摘要（無法限定欄位）。<br>・OpenAlex：子問題數量依設定的欄位完整度取得；但不支援切截*。合計數量只能採完整標題＋摘要查詢。"+(HS.eric?"<br>・ERIC：依欄位完整度查 所有欄位／標題＋摘要＋敘詞／標題＋摘要／標題，並加入 ERIC 控制詞彙。":"")+"<br>・鄰近字一律改成 AND"+(HS.eric?"，除 ERIC 敘詞外不含控制詞彙":"，不含控制詞彙")+"。<br>點失敗的格子可重查；滑過列名可看實際送出的檢索式。";
+      var _te=(_eng.length?_eng.join(_sep)+": the strategy generated above for that database (expanded into one line).<br>Other sources: free":"Free")+"-text terms are converted to each source’s Boolean syntax — treat counts as <b>ballpark figures</b>:<br>• Semantic Scholar: title + abstract only (no field limits).<br>• OpenAlex: sub-question counts follow the field level you set, but truncation (*) is not supported. The total can only be searched in title + abstract."+(HS.eric?"<br>• ERIC: all fields / title + abstract + descriptors / title + abstract / title by field level, plus ERIC descriptors.":"")+"<br>• Proximity becomes AND; "+(HS.eric?"no controlled vocabulary other than ERIC descriptors.":"no controlled vocabulary.")+"<br>Click a failed cell to retry; hover a row label to see the query sent.";
+      bar.appendChild(tipFn(T(_tz,_te))); }
+    var tipEl=bar.querySelector(".infotip");   /* 說明框以視窗定位：不被卡片／頁籤裁切，手機也不超出畫面 */
+    if(tipEl){ var place=function(){ var t=tipEl.querySelector(".tip"); if(!t) return; var r=tipEl.getBoundingClientRect(), w=Math.min(340, innerWidth-16);
+        t.style.width=w+"px"; t.style.left=Math.max(8, Math.min(r.left+r.width/2-w/2, innerWidth-w-8))+"px";
+        var h=t.offsetHeight||0, top=r.bottom+8; if(h && top+h>innerHeight-8 && r.top-8-h>8) top=r.top-8-h; t.style.top=top+"px"; };
+      tipEl.addEventListener("mouseenter",function(){ place(); requestAnimationFrame(place); }); tipEl.addEventListener("click",function(){ requestAnimationFrame(place); });
+      window.addEventListener("scroll",function(){ if(tipEl.classList.contains("show")) place(); },{passive:true}); }
+    /* 估算按鈕直接放在表頭（估算列與表頭合一） */
+    var tb=document.createElement("table"); tb.className="srfree-tb";
+    var thd=document.createElement("thead"), htr=document.createElement("tr"), h0=document.createElement("th"); h0.className="srfree-h0"; h0.appendChild(lab); if(tipEl) h0.appendChild(tipEl); htr.appendChild(h0);
+    SS.forEach(function(x){ var th=document.createElement("th"); th.appendChild(btns[x]); htr.appendChild(th); }); thd.appendChild(htr); tb.appendChild(thd);
+    var tbody=document.createElement("tbody"), cells=[];
+    D.lines.forEach(function(L,i){ var tr=document.createElement("tr"); if(i===D.start) tr.className="sep";
+      var th=document.createElement("th"); th.textContent=L.lab; th.title=SS.map(function(s){ return SRC[s].nm+"：\n"+(L.q[s]||"—"); }).join("\n\n"); tr.appendChild(th);
+      var cs={}; SS.forEach(function(s){ var td=document.createElement("td"); td.textContent=L.q[s]?"—":"✕"; if(!L.q[s]) td.title=T("此行無法轉成 "+SRC[s].nm+" 檢索式（可能含空白概念）","This line can’t be converted for "+SRC[s].nm+" (an empty concept?)"); cs[s]=td; tr.appendChild(td); });
+      cells.push(cs); tbody.appendChild(tr); });
+    tb.appendChild(tbody); var wrap=document.createElement("div"); wrap.className="srfree-wrap"; wrap.appendChild(tb); card.appendChild(wrap); var stw=document.createElement("div"); stw.className="srfree-st"; stw.appendChild(st); card.appendChild(stw); var nts=document.createElement("div"); nts.className="srfree-notes"; var mx=D.lines.filter(function(L){ return L.oaMixed; }).map(function(L){ return L.lab; }); nts.innerHTML="<div>"+esc(T("Semantic Scholar：只能查標題＋摘要，無法限定欄位，不隨欄位完整度改變。","Semantic Scholar: title + abstract only; fields can’t be limited, so field levels are ignored."))+"</div><div>"+esc(T("OpenAlex：子問題數量依設定的欄位完整度取得；但不支援切截*。合計數量只能採完整標題＋摘要查詢。","OpenAlex: sub-question counts follow the field level you set, but truncation (*) is not supported. The total can only be searched in title + abstract."))+"</div>"; card.appendChild(nts);   /* 兩個來源的限制明顯加註 */
+    /* key 改為各來源按鈕上的圖示（不另列輸入框） */
+    var busy={};
+    document.addEventListener("input",function(e){ if(e.target&&e.target.closest&&e.target.closest(".srkey") && /key/i.test(st.textContent) && /err/.test(st.className)){ st.textContent=""; st.className="pmstatus"; } });   /* 輸入 key 後清掉「請先輸入 key」 */
+    async function one(s,i){ var td=cells[i][s], q=D.lines[i].q[s]; if(!q) return true; td.className="busy"; td.textContent=T("查詢中…","checking…"); td.onclick=null; td.title="";
+      try{ var n=await count(s,q); td.className="ok"; td.textContent=fmt(n); return true; }
+      catch(err){ td.className="err"; td.textContent=T("失敗 · 重試","failed · retry"); td.title=String(err&&err.message||err); td.onclick=function(){ run(s,[i]); }; if(err&&err.fatal) throw err; return false; } }
+    async function run(s, list){
+      if(busy[s]) return; busy[s]=true; btns[s].disabled=true; var fail=0;
+      try{ for(var k=0;k<list.length;k++){ st.className="pmstatus"; st.textContent=SRC[s].nm+" "+(k+1)+" / "+list.length; if(!(await one(s,list[k]))) fail++; }
+        st.className="pmstatus"+(fail?" err":""); var _rs=[]; list.forEach(function(i){ var t=cells[i][s]; if(t.className==="err" && t.title && _rs.indexOf(t.title)<0) _rs.push(t.title); }); st.textContent=SRC[s].nm+"："+(fail?(T(fail+" 行失敗：",fail+" failed: ")+_rs.join(T("；","; "))+T("（點紅字可重查）"," (click a red cell to retry)")):T("估算完成","done")); }   /* 直接顯示失敗原因 */
+      catch(err){ st.className="pmstatus err"; st.textContent=String(err&&err.message||err); for(var x=0;x<cells.length;x++){ if(cells[x][s].className==="busy"){ cells[x][s].className=""; cells[x][s].textContent="—"; } } if(/key/i.test(st.textContent)){ var ic=btns[s]&&btns[s].querySelector(".srkeyic"); if(ic) setTimeout(function(){ openKey(s,ic); },0); } }
+      busy[s]=false; btns[s].disabled=false; }
+    SS.forEach(function(s){ btns[s].onclick=function(){ try{ srCount('pico-free-'+s,'PICO-免費估算-'+SRC[s].nm); }catch(_e){} var a=[]; D.lines.forEach(function(L,i){ if(L.q[s]) a.push(i); }); run(s,a); }; });
+    return card;
+  }
+  var css=document.createElement("style");
+  css.textContent=".srfree-lab{font-size:12.5px;color:var(--mut,#6C726B);font-weight:700;margin-right:4px}.srfree-h0{text-align:left !important;vertical-align:middle}"+".srfree-tb thead th{padding-top:10px !important;padding-bottom:8px !important}.srfree-tb thead .srsrcbtn{padding:5px 10px;font-size:12.5px;min-height:0}"+".srfree-notes{padding:0 14px 12px;font-size:12.5px;line-height:1.6;color:#c0392b}.srfree-st{padding:6px 14px 6px;min-height:1em}.srfree-st:empty{display:none}.srfree-st .pmstatus{font-size:12px}"+
+    ".srfree-wrap{overflow-x:auto;margin-top:8px;padding:0 14px}"+".srfree-keys{padding:0 14px 12px}.srfree-tb{border-collapse:collapse;font-size:13px;min-width:420px}"+
+    ".srfree-tb th,.srfree-tb td{padding:4px 14px 4px 0;text-align:right;border-bottom:1px solid var(--line,#E3E8EA);white-space:nowrap;font-variant-numeric:tabular-nums}"+
+    ".srfree-tb thead th{font-weight:700;color:var(--mut,#6C726B);font-size:12px}.srfree-tb tbody th{text-align:left;font-weight:700;color:#0f766e;cursor:help;font-family:'SF Mono',Consolas,monospace;font-size:12.5px}"+
+    ".srfree-tb tr.sep th,.srfree-tb tr.sep td{border-top:2px solid var(--line,#D5DCE0)}"+
+    ".srfree-tb td.ok{color:#2A7A55}.srfree-tb td.err{color:#c0392b;cursor:pointer}.srfree-tb td.busy{color:var(--mut,#6C726B)}"+
+    ".srfree .infotip .tip{position:fixed;bottom:auto;transform:none;max-width:none}.srfree .infotip .tip::after{display:none}"+".srsrcbtn{display:inline-flex;align-items:center;gap:6px}"+".srkeyic{display:inline-flex;align-items:center;line-height:0;color:#A3AAA4;cursor:pointer;border-radius:4px;padding:2px}.srkeyic:hover{color:#1F4538;background:rgba(0,0,0,.05)}.srkeyic.on{color:#2A7A55}"+".srkeypop{display:none;position:fixed;z-index:200;width:330px;max-width:calc(100vw - 24px);padding:12px 14px;background:#fff;border:1px solid #D5DCE0;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.14);text-align:left;font-weight:400;letter-spacing:0}"+".srkeypop .srkey>summary{pointer-events:none}.srkeypop .srkey>summary::after{display:none}.srkeypop .srkey-body{flex-wrap:wrap}";
+  document.head.appendChild(css);
+  window.srFree={count:count, keyBox:keyBox, card:card, keyIcon:keyIcon, openKey:openKey, name:function(s){ return SRC[s]?SRC[s].nm:s; }};
+})();
+</script>
+
+<script id="ericPlatScript">
+/* ERIC 平台選擇：同一個「ERIC」勾選項，下拉選 EBSCOhost（成大）或 eric.ed.gov（免費）。window.SR_ERIC_FREE＝true 時，ERIC 卡改輸出 eric.ed.gov 語法（單一串）並開啟 eric.ed.gov。 */
+(function(){
+  var KEY="sr_pico_nm_eric_plat";
+  var cb=document.querySelector('#dbchecks input[value="eric"], #dbchecksMore input[value="eric"]'); if(!cb) return;
+  var lb=cb.closest("label"), sp=lb&&lb.querySelector("span"); if(!sp) return;
+  var v="ebsco"; try{ v=localStorage.getItem(KEY)||"ebsco"; }catch(_){}
+  window.SR_ERIC_FREE=(v==="free");
+  sp.textContent="ERIC";
+  var sel=document.createElement("select"); sel.className="ericplat"; sel.setAttribute("aria-label","ERIC platform");
+  sel.innerHTML='<option value="ebsco">EBSCOhost</option><option value="free"></option>';
+  function lab(){ var en=document.body.classList.contains("en"); sel.options[1].textContent=en?"eric.ed.gov (free)":"eric.ed.gov（免費）"; sel.title=en?"Choose the ERIC platform: EBSCOhost (NCKU) or the free eric.ed.gov":"選擇 ERIC 平台：EBSCOhost（成大）或免費的 eric.ed.gov"; }
+  lab(); sel.value=window.SR_ERIC_FREE?"free":"ebsco";
+  sel.addEventListener("click",function(e){ e.stopPropagation(); });
+  sel.addEventListener("mousedown",function(e){ e.stopPropagation(); });
+  sel.addEventListener("change",function(){ window.SR_ERIC_FREE=(sel.value==="free"); try{ localStorage.setItem(KEY,sel.value); }catch(_){}
+    if(!cb.checked){ cb.checked=true; cb.dispatchEvent(new Event("change",{bubbles:true})); }
+    var outs=document.getElementById("outs"), g=document.getElementById("genBtn"); if(outs&&outs.children.length&&g) g.click(); });
+  lb.parentNode.insertBefore(sel, lb.nextSibling);
+  if(lb.parentNode.classList && lb.parentNode.id && /dbchecks/.test(lb.parentNode.id)){   /* 勾選框與下拉放同一格 */
+    var cell=document.createElement("div"); cell.className="ericcell"; lb.parentNode.insertBefore(cell, lb); cell.appendChild(lb); cell.appendChild(sel); }
+  new MutationObserver(lab).observe(document.body,{attributes:true,attributeFilter:["class"]});
+  var css=document.createElement("style"); css.textContent=".ericcell{display:flex;align-items:center;gap:6px;min-width:0}.ericcell>label{flex:0 0 auto}select.ericplat{flex:0 1 auto;width:auto !important;min-width:0 !important;max-width:11em !important;height:auto !important;font:inherit;font-size:12px !important;line-height:1.3;padding:1px 2px !important;border:1px solid #D5DCE0;border-radius:5px;background:#fff;color:var(--ink,#23302A);box-shadow:none}"+"@media (max-width:640px){.ericcell{flex-wrap:wrap}select.ericplat{min-width:8.2em !important}}";   /* 手機：資料庫勾選改兩欄（原本四欄擠在一起） */
+  document.head.appendChild(css);
+})();
+</script>
+
 <script id="srMoreScript">
 /* 共用：頁首「⋯ 更多工具」選單（放在偏好設定齒輪與語言鈕之前）。新增工具只要在 ITEMS 加一筆。 */
 (function(){
