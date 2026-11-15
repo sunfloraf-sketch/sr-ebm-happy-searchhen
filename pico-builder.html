@@ -2024,6 +2024,14 @@ function renderProx(node, dst, warn, ctx) {
     return parenP(node.a, pa) + " AND " + parenP(node.b, pb);
   }
 
+  /* Ei Compendex（Engineering Village）：鄰近字兩側只能是詞或 OR 詞組，不能再含鄰近（EV：left side of expression must be a boolean phrase）
+     → 拆開：(x NEAR/a y) NEAR/b C ＝ (x NEAR/a y) AND ((x NEAR/b C) OR (y NEAR/b C))；兩側 OR 詞組逐一分配 */
+  if (dst === "compendex" && (_hasProx(node.a) || _hasProx(node.b))) {
+    var _ch = _chainProx(node, dst, warn, ctx);   /* 優先改為平行鄰近：(a1 OR a2) NEAR/n (b1 OR b2 OR b3) NEAR/n C（Flora 11-16） */
+    if (_ch !== null) { if (warn.indexOf("⚠CHAINPROX⚠" + dst) < 0) warn.push("⚠CHAINPROX⚠" + dst); return _ch; }
+    if (warn.indexOf("⚠NESTPROX⚠" + dst) < 0) warn.push("⚠NESTPROX⚠" + dst);
+    return render(_splitProx(node), dst, warn, ctx);
+  }
   var p = SYNTAX_MAP.proximity[dst];
   var tpl = node.ordered ? p.ordered : p.unordered;
   if (node.ordered && !tpl) { warn.push(DB_LABEL[dst] + "：不支援有次序鄰近，改用無次序 · ordered proximity -> unordered"); tpl = p.unordered; }
@@ -2038,6 +2046,41 @@ function renderProx(node, dst, warn, ctx) {
   if (dst === "embase" && ((node.a && node.a.t === "prox" && node.a._grp) || (node.b && node.b.t === "prox" && node.b._grp)))
     warn.push("⚠EMBCHAIN⚠");
   return tpl.replace("%A", a).replace("%B", b).replace("%N", outN);
+}
+function _proxSets(X) {   /* X＝若干「詞 NEAR 詞」以 OR 串接 → 取出左右兩堆 */
+  var alts = _altsOr(X); if (!alts.length) return null;
+  if (!alts.every(function (p) { return p && p.t === "prox" && !_hasProx(p.a) && !_hasProx(p.b) && p.dist === alts[0].dist && p.ordered === alts[0].ordered; })) return null;
+  var L = [], R = [], seen = {};
+  alts.forEach(function (p) {
+    _altsOr(p.a).forEach(function (x) { var k = "L" + JSON.stringify(x); if (!seen[k]) { seen[k] = 1; L.push(x); } });
+    _altsOr(p.b).forEach(function (x) { var k = "R" + JSON.stringify(x); if (!seen[k]) { seen[k] = 1; R.push(x); } });
+  });
+  return { L: L, R: R, dist: alts[0].dist, ordered: alts[0].ordered };
+}
+function _chainProx(node, dst, warn, ctx) {   /* 巢狀鄰近 → 每組各三詞的平行鄰近，以 OR 串接；做不到回 null（Flora 11-16） */
+  var side = _hasProx(node.a) ? "a" : "b", other = side === "a" ? node.b : node.a;
+  if (_hasProx(other)) return null;
+  var alts = _altsOr(node[side]);
+  if (!alts.length || !alts.every(function (q) { return q && q.t === "prox" && !_hasProx(q.a) && !_hasProx(q.b); })) return null;
+  var p = SYNTAX_MAP.proximity[dst];
+  var op = function (d, ord, x, y) { var t = (ord ? p.ordered : p.unordered) || p.unordered; return t.replace("%A", x).replace("%B", y).replace("%N", Math.max(1, d + (SYNTAX_MAP.proximityOffset[dst] || 0))); };
+  var R = function (n) { return parenP(n, render(n, dst, warn, ctx)); };
+  var c = R(other);
+  var parts = alts.map(function (q) { var inner = op(q.dist, q.ordered, R(q.a), R(q.b)); return side === "a" ? op(node.dist, node.ordered, inner, c) : op(node.dist, node.ordered, c, inner); });
+  return parts.length === 1 ? parts[0] : parts.map(function (x) { return "(" + x + ")"; }).join(" OR ");
+}
+function _hasProx(n) { if (!n) return false; if (n.t === "prox") return true; if (n.t === "bool") return n.kids.some(_hasProx); if (n.t === "field") return _hasProx(n.child); return false; }
+function _altsOr(n) { return (n && n.t === "bool" && n.op === "OR") ? [].concat.apply([], n.kids.map(_altsOr)) : [n]; }
+function _splitProx(node) {   /* 巢狀鄰近 → AND／OR 組合（見 renderProx） */
+  var mk = function (a, b) { return { t: "prox", dist: node.dist, ordered: node.ordered, a: a, b: b }; };
+  var out = [];
+  _altsOr(node.a).forEach(function (A) { _altsOr(node.b).forEach(function (Bn) {
+    if (A && A.t === "prox") out.push({ t: "bool", op: "AND", kids: [A, { t: "bool", op: "OR", kids: [mk(A.a, Bn), mk(A.b, Bn)] }] });
+    else if (Bn && Bn.t === "prox") out.push({ t: "bool", op: "AND", kids: [Bn, { t: "bool", op: "OR", kids: [mk(A, Bn.a), mk(A, Bn.b)] }] });
+    else if (_hasProx(A) || _hasProx(Bn)) out.push({ t: "bool", op: "AND", kids: [A, Bn] });   /* 其他複雜結構：退回 AND */
+    else out.push(mk(A, Bn));
+  }); });
+  return out.length === 1 ? out[0] : { t: "bool", op: "OR", kids: out };
 }
 function parenP(child, s) { return (child && (child.t === "bool" || child.t === "prox")) ? "(" + s + ")" : s; }
 
@@ -4735,7 +4778,9 @@ function befPluralOf(w){
     RENDER_OPTS.pmBare = _pmBare;
     var out; try{ out = render(node, db, warnArr, { scoped:false }); } finally { RENDER_OPTS.pmBare = false; }
     out = String(out||"").replace(/\uE000/g," ");
-    if(warnOut){ warnArr.forEach(function(w){ if(w.indexOf("⚠EMBCHAIN⚠")===0) warnOut.push(isEn() ? "This contains nested proximity (NEAR/NEXT) operators, which Embase.com does not support. Change the relationship between the phrase groups to parallel proximity, or split it into separate sets." : "此式含巢狀鄰近（NEAR／NEXT）運算，Embase.com 不支援，請將詞組間關係改為平行鄰近，或拆成多組處理"); else if(w.indexOf("⚠CVTRUNC⚠")===0) warnOut.push(isEn() ? "IEEE: proximity (NEAR) cannot contain truncation inside a single field group; terms were repeated per operand — verify the expanded proximity expression." : "IEEE：鄰近字已於各運算元重複欄位；請確認展開後的鄰近運算式是否正確。"); else if(w.indexOf("‼WILD‼")===0) warnOut.push(w.replace(/^‼WILD‼/,"")); }); }
+    if(warnOut){ warnArr.forEach(function(w){ if(w.indexOf("⚠CHAINPROX⚠")===0){ if(!warnOut.some(function(x){ return /平行鄰近|parallel proximity/.test(x); })) warnOut.push(isEn() ? "Ei Compendex does not allow nested proximity; it was rewritten as parallel proximity chains, e.g. (A1 NEAR/3 B1 NEAR/3 C) OR (A2 NEAR/3 B2 NEAR/3 C). Please check the result." : "Ei Compendex：不支援巢狀鄰近，已改為平行鄰近（每組三詞），例如 (A1 NEAR/3 B1 NEAR/3 C) OR (A2 NEAR/3 B2 NEAR/3 C)，請確認檢索結果"); return; }   /* 平行鄰近提醒 */
+      if(w.indexOf("⚠NESTPROX⚠")===0){ var _dn=w.slice(10)==="ieee"?"IEEE Xplore":"Ei Compendex"; if(!warnOut.some(function(x){ return x.indexOf(_dn)===0 && /巢狀鄰近|nested proximity/.test(x); })) warnOut.push(isEn() ? _dn+" does not allow nested proximity; it was split into (A NEAR B) AND ((A NEAR C) OR (B NEAR C)). Please check the result." : _dn+"：不支援巢狀鄰近，已改寫為 (A NEAR B) AND ((A NEAR C) OR (B NEAR C))，請確認檢索結果"); return; }   /* 巢狀鄰近拆解提醒 */
+      if(w.indexOf("⚠EMBCHAIN⚠")===0) warnOut.push(isEn() ? "This contains nested proximity (NEAR/NEXT) operators, which Embase.com does not support. Change the relationship between the phrase groups to parallel proximity, or split it into separate sets." : "此式含巢狀鄰近（NEAR／NEXT）運算，Embase.com 不支援，請將詞組間關係改為平行鄰近，或拆成多組處理"); else if(w.indexOf("⚠CVTRUNC⚠")===0) warnOut.push(isEn() ? "IEEE: proximity (NEAR) cannot contain truncation inside a single field group; terms were repeated per operand — verify the expanded proximity expression." : "IEEE：鄰近字已於各運算元重複欄位；請確認展開後的鄰近運算式是否正確。"); else if(w.indexOf("‼WILD‼")===0) warnOut.push(w.replace(/^‼WILD‼/,"")); }); }
     if(db==="ebsco"||db==="wos"||db==="scopus") out=stripOuterParen(out);  // 各行為獨立檢索，最外層括弧不需要
     return out;
   }
@@ -5214,7 +5259,7 @@ function befPluralOf(w){
         q[fl]=bad?null:t.replace(/\s+/g," ").replace(/-\s+\(/g,"-(").trim();
       });
       R[idx+1]=q;
-      lines.push({lab:(ccv.trim()?"R"+(idx+1):(isEn()?"Final":"最終")), kind:"r", idx:idx, q:q});
+      lines.push({lab:(ccv.trim()?"R"+(idx+1):(isEn()?"Final":"最終")), kind:"r", idx:idx, q:q, expr:line.replace(/\s+/g," ").replace(/\b(and|or|not)\b/gi,function(m){ return m.toUpperCase(); })});   /* expr：卡片顯示這行組合了哪幾行 */
     });
     /* OpenAlex：依欄位完整度選欄位（最廣 default.search＝標題＋摘要＋全文、完整／平衡 title_and_abstract.search、精準 title.search）；不同欄位只能用 AND（各一個過濾條件），含 OR／NOT 且欄位不同時改以標題＋摘要查詢（oaMixed） */
     var OAF=function(lv){ return lv==="L0"?"default.search":lv==="L3"?"title.search":"title_and_abstract.search"; };
@@ -7179,7 +7224,7 @@ function befPluralOf(w){
     SS.forEach(function(x){ var th=document.createElement("th"); th.appendChild(btns[x]); htr.appendChild(th); }); thd.appendChild(htr); tb.appendChild(thd);
     var tbody=document.createElement("tbody"), cells=[];
     D.lines.forEach(function(L,i){ var tr=document.createElement("tr"); if(i===D.start) tr.className="sep";
-      var th=document.createElement("th"); th.textContent=L.lab; th.title=SS.map(function(s){ return SRC[s].nm+"：\n"+(L.q[s]||"—"); }).join("\n\n"); tr.appendChild(th);
+      var th=document.createElement("th"); th.textContent=L.lab; if(L.expr){ var ex=document.createElement("span"); ex.className="srfree-ex"; ex.textContent=L.expr.replace(/@L?V?([0-3])/gi,function(m,d){ return "〔"+(en()?["Broadest","Comprehensive","Balanced","Precise"]:["最廣","完整","平衡","精準"])[+d]+"〕"; }); th.appendChild(ex); } th.title=SS.map(function(s){ return SRC[s].nm+"：\n"+(L.q[s]||"—"); }).join("\n\n"); tr.appendChild(th);
       var cs={}; SS.forEach(function(s){ var td=document.createElement("td"); td.textContent=L.q[s]?"—":"✕"; if(!L.q[s]) td.title=T("此行無法轉成 "+SRC[s].nm+" 檢索式（可能含空白概念）","This line can’t be converted for "+SRC[s].nm+" (an empty concept?)"); cs[s]=td; tr.appendChild(td); });
       cells.push(cs); tbody.appendChild(tr); });
     tb.appendChild(tbody); var wrap=document.createElement("div"); wrap.className="srfree-wrap"; wrap.appendChild(tb); card.appendChild(wrap); var stw=document.createElement("div"); stw.className="srfree-st"; stw.appendChild(st); card.appendChild(stw); var nts=document.createElement("div"); nts.className="srfree-notes"; var mx=D.lines.filter(function(L){ return L.oaMixed; }).map(function(L){ return L.lab; }); nts.innerHTML="<div>"+esc(T("Semantic Scholar：只能查標題＋摘要，無法限定欄位，不隨欄位完整度改變。","Semantic Scholar: title + abstract only; fields can’t be limited, so field levels are ignored."))+"</div><div>"+esc(T("OpenAlex：子問題數量依設定的欄位完整度取得；但不支援切截*。合計數量只能採完整標題＋摘要查詢。","OpenAlex: sub-question counts follow the field level you set, but truncation (*) is not supported. The total can only be searched in title + abstract."))+"</div>"; card.appendChild(nts);   /* 兩個來源的限制明顯加註 */
@@ -7199,7 +7244,7 @@ function befPluralOf(w){
     return card;
   }
   var css=document.createElement("style");
-  css.textContent=".srfree-lab{font-size:12.5px;color:var(--mut,#6C726B);font-weight:700;margin-right:4px}.srfree-h0{text-align:left !important;vertical-align:middle}"+".srfree-tb thead th{padding-top:10px !important;padding-bottom:8px !important}.srfree-tb thead .srsrcbtn{padding:5px 10px;font-size:12.5px;min-height:0}"+".srfree-notes{padding:0 14px 12px;font-size:12.5px;line-height:1.6;color:#c0392b}.srfree-st{padding:6px 14px 6px;min-height:1em}.srfree-st:empty{display:none}.srfree-st .pmstatus{font-size:12px}"+
+  css.textContent=".srfree-lab{font-size:12.5px;color:var(--mut,#6C726B);font-weight:700;margin-right:4px}.srfree-h0{text-align:left !important;vertical-align:middle}"+".srfree-tb thead th{padding-top:10px !important;padding-bottom:8px !important}.srfree-tb thead .srsrcbtn{padding:5px 10px;font-size:12.5px;min-height:0}"+".srfree-tb tbody th .srfree-ex{margin-left:12px;font-weight:400;color:#6C726B;font-family:inherit}.srfree-tb tbody th{white-space:nowrap}"+".srfree-notes{padding:0 14px 12px;font-size:12.5px;line-height:1.6;color:#c0392b}.srfree-st{padding:6px 14px 6px;min-height:1em}.srfree-st:empty{display:none}.srfree-st .pmstatus{font-size:12px}"+
     ".srfree-wrap{overflow-x:auto;margin-top:8px;padding:0 14px}"+".srfree-keys{padding:0 14px 12px}.srfree-tb{border-collapse:collapse;font-size:13px;min-width:420px}"+
     ".srfree-tb th,.srfree-tb td{padding:4px 14px 4px 0;text-align:right;border-bottom:1px solid var(--line,#E3E8EA);white-space:nowrap;font-variant-numeric:tabular-nums}"+
     ".srfree-tb thead th{font-weight:700;color:var(--mut,#6C726B);font-size:12px}.srfree-tb tbody th{text-align:left;font-weight:700;color:#0f766e;cursor:help;font-family:'SF Mono',Consolas,monospace;font-size:12.5px}"+
