@@ -5676,7 +5676,7 @@ if (typeof module !== "undefined" && module.exports) {
     s2:{nm:"Semantic Scholar", gap:function(){ return KEYS.s2.trim()?1100:1000; },
         url:function(q){ return "https://api.semanticscholar.org/graph/v1/paper/search/bulk?fields=paperId&query="+encodeURIComponent(q); },
         hd:function(){ var k=KEYS.s2.trim(); return k?{"x-api-key":k}:{}; }, n:function(j){ return j&&j.total; }},
-    oa:{nm:"OpenAlex", gap:function(){ return 150; },
+    oa:{nm:"OpenAlex", gap:function(){ return 300; },
         url:function(q){ var k=KEYS.oa.trim(); return "https://api.openalex.org/works?per_page=1&select=id&filter="+encodeURIComponent(q)+(k?"&api_key="+encodeURIComponent(k):""); },
         hd:function(){ return {}; }, n:function(j){ return j&&j.meta&&j.meta.count; }},
     eric:{nm:"ERIC", gap:function(){ return 250; },
@@ -5747,9 +5747,9 @@ if (typeof module !== "undefined" && module.exports) {
       try{ r=await fetch(url,{headers:P.hd()}); }catch(_){ r=null; }
       if(!r){ if(s==="s2" && att===0){ await wait(1500); continue; }   /* Semantic Scholar 忙碌時回應常缺 CORS 標頭 → 等一下再試 */
         throw E(s==="s2"?T("Semantic Scholar 忙碌或無法連線，請稍後重試（或輸入 key）","Semantic Scholar is busy or unreachable — retry later (or enter a key)"):T(P.nm+" 無法連線（網路或瀏覽器阻擋）",P.nm+" unreachable (network or blocked by the browser)"), s!=="s2"); }
-      if(r.status===429 && s==="s2" && att===0){ await wait(1500); continue; }
+      if(r.status===429 && (s==="s2"||s==="oa") && att===0){ await wait(s==="oa"?2000:1500); continue; }   /* 429 常是瞬間太快：等一下自動再試一次 */
       try{ j=await r.json(); }catch(_){}
-      if(s==="oa" && (r.status===429||r.status===409||r.status===402)) throw E(KEYS.oa.trim()?T("OpenAlex 今日額度已用完（HTTP "+r.status+"）","OpenAlex daily allowance used up (HTTP "+r.status+")"):T("OpenAlex 免 key 額度已用完，請輸入免費 OpenAlex key","OpenAlex no-key allowance used up — enter a free OpenAlex key"),true);
+      if(s==="oa" && (r.status===429||r.status===409||r.status===402)) throw E(KEYS.oa.trim()?T("OpenAlex 暫時拒絕查詢（HTTP "+r.status+"）：可能查詢太快，或今日額度已用完（每天台灣時間早上 8 點重置）。","OpenAlex refused the request (HTTP "+r.status+"): too fast, or today’s allowance is used up (resets at midnight UTC)."):T("OpenAlex 暫時拒絕查詢（HTTP "+r.status+"）：可能查詢太快，或今日未填 key 的免費次數已用完（約 100 次，同一網路的使用者共用，台灣時間早上 8 點重置）。常用請點鑰匙圖示輸入免費 OpenAlex key（每天約 1,000 次）。","OpenAlex refused the request (HTTP "+r.status+"): too fast, or today’s keyless allowance is used up (about 100 searches, shared by users on the same network; resets at midnight UTC). For regular use, enter a free OpenAlex key (about 1,000 searches a day)."));   /* 不視為致命：其他列照查、可單項重查 */
       if(r.status===401||r.status===403) throw E(T(P.nm+" 未獲授權（HTTP "+r.status+"），請確認 API key",P.nm+" not authorised (HTTP "+r.status+") — check the API key"),true);
       if(r.status===429) throw E(T(P.nm+" 查詢太頻繁（HTTP 429），請稍後再試",P.nm+" rate limit (HTTP 429) — try again later"),true);
       if(!r.ok){ var m=j&&(j.message||j.error||(j.error&&j.error.message)); throw E(T("查詢失敗（HTTP "+r.status+"）","Query failed (HTTP "+r.status+")")+(m?"："+String(m).slice(0,160):"")); }
