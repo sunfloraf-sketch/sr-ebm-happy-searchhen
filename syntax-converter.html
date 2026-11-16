@@ -191,6 +191,13 @@
   footer.shfoot .brandline{font-weight:700;color:var(--sh-ink)}
   /* 切換頁面時位置一致：統一寬度、頁頭字型／高度，預留捲軸空間，目前頁不加粗 */
   html{scrollbar-gutter:stable}
+  /* 頁內捲動區滾軸：平時隱形，滑鼠移入才出現（樣式 C，Flora 11-16）；整頁滾軸不變 */
+  body *::-webkit-scrollbar{width:7px;height:7px}
+  body *::-webkit-scrollbar-track,body *::-webkit-scrollbar-corner{background:transparent}
+  body *::-webkit-scrollbar-thumb{background:transparent;border-radius:7px}
+  body *:hover::-webkit-scrollbar-thumb{background:#9AA5AB}
+  body *::-webkit-scrollbar-thumb:hover{background:#7F8C96}
+  @supports not selector(::-webkit-scrollbar){ body *{scrollbar-width:thin;scrollbar-color:transparent transparent} body *:hover{scrollbar-color:#9AA5AB transparent} }
   main{max-width:1280px}
   header.sh{font-family:-apple-system,"Segoe UI","PingFang TC","Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif}
   header.sh .sh-in{min-height:64px;box-sizing:border-box;line-height:1.5}

@@ -17,6 +17,13 @@
         --card:#FFFFFF;--tile:#FFFDF8;--tileb:#D9CFBC;--ok:#2F7A55;--okbg:#E7F3EC;--bad:#B4442F;--badbg:#FBEAE5;--form:#B07420;--formbg:#FCF2E2;--s1:#3E6B8A;--s2:#7A5A9A;--s3:#2F7A6B;--s4:#9A5A3E}
   *{box-sizing:border-box}
   html{scrollbar-gutter:stable}
+  /* 頁內捲動區滾軸：平時隱形，滑鼠移入才出現（樣式 C，Flora 11-16）；整頁滾軸不變 */
+  body *::-webkit-scrollbar{width:7px;height:7px}
+  body *::-webkit-scrollbar-track,body *::-webkit-scrollbar-corner{background:transparent}
+  body *::-webkit-scrollbar-thumb{background:transparent;border-radius:7px}
+  body *:hover::-webkit-scrollbar-thumb{background:#9AA5AB}
+  body *::-webkit-scrollbar-thumb:hover{background:#7F8C96}
+  @supports not selector(::-webkit-scrollbar){ body *{scrollbar-width:thin;scrollbar-color:transparent transparent} body *:hover{scrollbar-color:#9AA5AB transparent} }
   html,body{background:var(--sh-paper)}
   body{margin:0;font-family:-apple-system,"Segoe UI","PingFang TC","Microsoft JhengHei","Noto Sans TC",Roboto,Arial,sans-serif;color:var(--sh-ink);line-height:1.5;font-size:15px}
   [data-en]{display:none} body.en [data-zh]{display:none} body.en [data-en]{display:revert}

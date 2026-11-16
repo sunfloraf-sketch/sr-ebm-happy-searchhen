@@ -192,6 +192,13 @@
   .hero ul.metaphor + p.desc{margin-top:14px;max-width:585px}
   /* 與工具頁一致的頁頭位置 */
   html{scrollbar-gutter:stable}
+  /* 頁內捲動區滾軸：平時隱形，滑鼠移入才出現（樣式 C，Flora 11-16）；整頁滾軸不變 */
+  body *::-webkit-scrollbar{width:7px;height:7px}
+  body *::-webkit-scrollbar-track,body *::-webkit-scrollbar-corner{background:transparent}
+  body *::-webkit-scrollbar-thumb{background:transparent;border-radius:7px}
+  body *:hover::-webkit-scrollbar-thumb{background:#9AA5AB}
+  body *::-webkit-scrollbar-thumb:hover{background:#7F8C96}
+  @supports not selector(::-webkit-scrollbar){ body *{scrollbar-width:thin;scrollbar-color:transparent transparent} body *:hover{scrollbar-color:#9AA5AB transparent} }
   .wrap{max-width:1280px}
   header{font-family:-apple-system,"Segoe UI","PingFang TC","Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif}
   header .nav{padding:12px 24px;min-height:64px;box-sizing:border-box;line-height:1.5}

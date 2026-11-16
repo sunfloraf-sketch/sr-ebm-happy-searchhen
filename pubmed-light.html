@@ -34,6 +34,13 @@
   :root{--sh-paper:#F3F0E8;--sh-paper2:#FBF9F4;--sh-ink:#23302A;--sh-mut:#6C726B;--sh-line:#E5E0D4;--sh-green:#2A5A49;--sh-green-d:#1F4538;--sh-amber:#AE7430;--shw:1280px}
   html,body{background:var(--sh-paper) !important}
   html{scrollbar-gutter:stable}
+  /* 頁內捲動區滾軸：平時隱形，滑鼠移入才出現（樣式 C，Flora 11-16）；整頁滾軸不變 */
+  body *::-webkit-scrollbar{width:7px;height:7px}
+  body *::-webkit-scrollbar-track,body *::-webkit-scrollbar-corner{background:transparent}
+  body *::-webkit-scrollbar-thumb{background:transparent;border-radius:7px}
+  body *:hover::-webkit-scrollbar-thumb{background:#9AA5AB}
+  body *::-webkit-scrollbar-thumb:hover{background:#7F8C96}
+  @supports not selector(::-webkit-scrollbar){ body *{scrollbar-width:thin;scrollbar-color:transparent transparent} body *:hover{scrollbar-color:#9AA5AB transparent} }
   header.sh{background:rgba(243,240,232,.94);color:var(--sh-ink);padding:0;border-bottom:1px solid var(--sh-line);font-family:-apple-system,"Segoe UI","PingFang TC","Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif}
   header.sh .sh-in{max-width:var(--shw,1200px);margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:8px 18px;flex-wrap:wrap;min-height:64px;line-height:1.5}
   header.sh .sh-logo{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--sh-green-d)}
