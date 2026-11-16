@@ -2317,8 +2317,8 @@ if (typeof module !== "undefined" && module.exports) {
       s=s.replace(/\s*[（(]\s*(?:不含[^)）]{0,12}|不狹[義詞]{0,2}|no[\s-]?exp\w*)\s*[)）]\s*$/i,"");   // 這些庫不分展開／不展開：去掉「不含狹義詞」標記
       s=s.replace(/^(?:DE|MH|MM|MW|SU|DF|KW|TI|AB)\b\s*/i,"");
       s=s.replace(/^"IEEE Terms"\s*:\s*/i,"");
-      s=s.replace(/^(?:SU|MAINSUBJECT|IF|SU\.EXACT|DE)\s*\(\s*/i,"").replace(/\)\s*$/,"");
-      s=s.replace(/^\(+/,"").replace(/\)+$/,"");
+      var _fm=s.match(/^(?:SU|MAINSUBJECT|IF|SU\.EXACT|DE)\s*\(\s*/i); if(_fm) s=s.slice(_fm[0].length).replace(/\)\s*$/,"");
+      s=_parSplit(s).core;
       s=s.replace(/^["'“”‘’]\s*|\s*["'“”‘’]$/g,"");
       return s.trim();
     }).filter(Boolean).filter(function(s){ return !/^(?:AND|OR|NOT)$/i.test(s); });
@@ -4895,6 +4895,13 @@ function befPluralOf(w){
     el.style.display="block"; clearTimeout(_cvToastT); _cvToastT=setTimeout(function(){ el.style.display="none"; }, 5000);
   }
   function _cvCleanTa(ta){ var v=ta.value, n=cvSyntaxClean(v, isEn()); if(n!==v){ ta.value=n; ta.dispatchEvent(new Event("input",{bubbles:true})); _cvCleanToast(); return true; } return false; }
+  /* 詞內括號（如 Subjective well-being (Psychology)）要保留：只拆掉多出來的分組括號（Flora 11-16） */
+  function _parWraps(s){ var d=0; for(var i=0;i<s.length;i++){ var ch=s.charAt(i); if(ch==="(")d++; else if(ch===")"){ d--; if(d===0 && i<s.length-1) return false; } } return d===0; }
+  function _parSplit(line){ line=String(line||""); var o=(line.match(/\(/g)||[]).length, c=(line.match(/\)/g)||[]).length;
+    var lr=(line.match(/^\(+/)||[""])[0].length, tr=(line.match(/\)+$/)||[""])[0].length;
+    var L=Math.min(lr,Math.max(0,o-c)), T=Math.min(tr,Math.max(0,c-o)), core=line.slice(L,line.length-T).trim();
+    while(/^\(/.test(core) && /\)$/.test(core) && _parWraps(core)){ core=core.slice(1,-1).trim(); L++; T++; }
+    return {L:L, T:T, core:core}; }
   function renderCVCell(cell, eng, level){
     var seq=[], hasSub=false, hasBool=false;
     String(cell||"").split(/\n/).forEach(function(line){
@@ -4902,8 +4909,7 @@ function befPluralOf(w){
       var scrT=null, _sp=scrParse(line); if(_sp){ scrT=_sp.type; line=_sp.text; }   // 先取出補充概念標註
       var noexp=false, mk=line.match(CV_NOEXP_RE);                  // 先取出「不含…詞」標記，避免其括號被當成分組括號
       if(mk){ noexp=true; line=line.replace(mk[0],"").trim(); }
-      var lead=(line.match(/^\(+/)||[""])[0]; if(lead)line=line.slice(lead.length).trim();
-      var trail=(line.match(/\)+$/)||[""])[0]; if(trail)line=line.slice(0,line.length-trail.length).trim();
+      var _ps=_parSplit(line), lead=new Array(_ps.L+1).join("("), trail=new Array(_ps.T+1).join(")"); line=_ps.core;   /* 詞內括號保留 */
       var k; for(k=0;k<lead.length;k++)seq.push("(");
       if(line){ if(/^(AND|OR|NOT)$/i.test(line)){ seq.push(line.toUpperCase()); if(!/^or$/i.test(line))hasBool=true; } else seq.push({term:line, noexp:noexp, scr:scrT}); }
       for(k=0;k<trail.length;k++)seq.push(")");
@@ -5531,6 +5537,10 @@ function befPluralOf(w){
       allRows = appendPubDate(allRows, tg.engine, PUBDATE, ((SYNTAX_MAP.boolean[tg.engine]&&SYNTAX_MAP.boolean[tg.engine].AND)||"AND"), b.reminders, tg.label);   // 出版日期限定
       allRows = appendEntryDate(allRows, tg.engine, tid, ENTRYDATE, ((SYNTAX_MAP.boolean[tg.engine]&&SYNTAX_MAP.boolean[tg.engine].AND)||"AND"), b.reminders, tg.label);   // 加入資料庫日期限定（更新檢索）
       if(tg.engine==="pubmed"||tg.engine==="scopus"){ (window._srEngRows=window._srEngRows||{})[tg.engine]={rows:allRows.map(function(x){ return {n:x.n, text:x.text}; }), refs:(b.conceptRefs||[]).slice(), start:b.lastNum, flat:!!(((cbFlat&&cbFlat.checked)||forceFlat)&&baseRows.length)}; }   /* 估算筆數卡：沿用此庫的檢索式 */
+      if(window._srEngRows && window._srEngRows[tg.engine] && window._srEngRows[tg.engine].flat && baseRows.length){   /* 合併為一串時，估算卡仍需逐行版本（Flora 11-16） */
+        try{ var _er=baseRows.map(function(x){ return {n:x.n, text:x.text}; }), _A=((SYNTAX_MAP.boolean[tg.engine]&&SYNTAX_MAP.boolean[tg.engine].AND)||"AND");
+          _er=_appendFilter(_er, FILTER_SEL, tid); _er=appendPubDate(_er, tg.engine, PUBDATE, _A, [], tg.label); _er=appendEntryDate(_er, tg.engine, tid, ENTRYDATE, _A, [], tg.label);
+          window._srEngRows[tg.engine]={rows:_er.map(function(x){ return {n:x.n, text:x.text}; }), refs:(b.conceptRefs||[]).slice(), start:b.lastNum, flat:false}; }catch(_e){} }
       if(tid==="eric" && window.SR_ERIC_FREE){   /* ERIC 選 eric.ed.gov（免費）：改用 title:／description:／subject: 單一串（同估算卡 ERIC 欄） */
         try{ var _fe=_freeBuild(rows, startDB, level), _fl=_fe.lines[_fe.lines.length-1]; allRows=[{n:null, text:(_fl&&_fl.q.eric)||""}]; }catch(_e){}
         if(nm && nm.firstChild && nm.firstChild.nodeType===3) nm.firstChild.nodeValue="ERIC (eric.ed.gov)";
@@ -6790,7 +6800,8 @@ function befPluralOf(w){
   var SRCS=[{id:"pm",nm:"PubMed"},{id:"sc",nm:"Scopus"},{id:"s2",nm:"Semantic Scholar"},{id:"oa",nm:"OpenAlex"},{id:"eric",nm:"ERIC"}];
   var SC={cache:{}, busy:false, msg:"", err:false, act:""};
   var srcNm=function(id){ for(var i=0;i<SRCS.length;i++) if(SRCS[i].id===id) return SRCS[i].nm; return id; };
-  var avail=function(id){ if(!window.srFree) return false; if(id==="s2"||id==="oa") return true; var F=window._srFreeLast; return !!(F&&F.has&&F.has[id]); };   /* PubMed／Scopus 需勾選並產生；ERIC 需勾選 */
+  var avail=function(id){ if(!window.srFree) return false; if(id==="s2"||id==="oa") return true; var F=window._srFreeLast; if(F&&F.has&&F.has[id]) return true; var v={pm:"pubmed",sc:"scopus",eric:"eric"}[id], c=v&&document.querySelector('#dbchecks input[value="'+v+'"], #dbchecksMore input[value="'+v+'"]'); return !!(c&&c.checked); };   /* 有勾選該資料庫就先顯示（按下時自動產生）（Flora 11-16） */
+  document.addEventListener("change",function(e){ if(e.target&&e.target.closest&&e.target.closest("#dbchecks, #dbchecksMore")) setTimeout(function(){ try{ paintSc(); }catch(_e){} },0); });   /* PubMed／Scopus 需勾選並產生；ERIC 需勾選 */
   var STALE=function(){ return T("組合已變更，請重新按「生成檢索策略」。","The combination changed — generate the strategy again."); };
   function scQuery(L,n){ if(window.srScopus&&window.srScopus.expand) return window.srScopus.expand(L.rows,n)||null; var map={}; L.rows.forEach(function(x){ if(x.n!=null) map[x.n]=x.text; }); if(map[n]==null) return null;
     var t=map[n], g=0; while(/#\d+/.test(t) && g++<60){ t=t.replace(/#(\d+)/g,function(m,d){ return map[d]!=null?"("+map[d]+")":m; }); } return t; }
