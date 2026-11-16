@@ -2906,7 +2906,8 @@ if (typeof module !== "undefined" && module.exports) {
     });
     /* 自訂組合開著時編輯概念表：暫時展開；滑鼠再移入自訂組合區才收合（Flora 11-16） */
     var paused=false;
-    if(body) body.addEventListener("focusin", function(e){ if(!box.open||!auto||!window._srCompact) return; if(!(e.target&&/^(TEXTAREA|INPUT)$/.test(e.target.tagName))) return; prog=true; tb.click(); prog=false; paused=true; });
+    function _ccPause(e){ if(!box.open||!auto||!window._srCompact) return; if(!(e.target&&/^(TEXTAREA|INPUT)$/.test(e.target.tagName))) return; prog=true; tb.click(); prog=false; paused=true; }
+    if(body){ body.addEventListener("focusin", _ccPause); body.addEventListener("pointerdown", _ccPause); body.addEventListener("input", _ccPause); }   /* 已在該格內（焦點未離開）再點或直接打字也展開 */
     function _ccResume(){ if(box.open && auto && paused && !window._srCompact){ prog=true; tb.click(); prog=false; } paused=false; }
     box.addEventListener("mouseenter", _ccResume); box.addEventListener("focusin", _ccResume);
     if(!body||!ta) return;
