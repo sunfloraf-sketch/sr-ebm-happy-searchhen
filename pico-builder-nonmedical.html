@@ -4137,7 +4137,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
     var renderIds=[]; checked.forEach(function(id){ if(id==='ebsco_custom'){ _custNames.forEach(function(nm,i){ renderIds.push('ebc'+i); }); } else renderIds.push(id); });
     if(picoWarn){
       var msgs=[]; var _hl=function(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); };   // 概念代號可能來自專案檔／Word，放進 innerHTML 前先跳脫
-      if(_befUsed.length) msgs.push(isEn()
+      if(false && _befUsed.length) msgs.push(isEn()   /* Flora 11-18：不需要「已使用整理前」提醒 */
         ? ("Concept "+_befUsed.map(_hl).join(", ")+": “After” is empty, so the strategy was built from the “Before” terms. If needed, tidy them first (Tools ▾ → Copy to After, with truncation / de-duplication) or fill in “After”, then generate again.")
         : (_befUsed.map(_hl).join("、")+" 概念的「整理後」無資料，已使用「整理前」產生檢索策略；如有需要，請先整理（可用「工具 ▾ → 複製到整理後」並勾選切截／去冗），或直接填寫「整理後」，再重新產生。"));
       var _cells=function(r){ var a=[r.ft,r.zh]; if(r.cv) for(var _k in r.cv){ a.push(r.cv[_k]); } return a; };

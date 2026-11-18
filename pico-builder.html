@@ -5492,7 +5492,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
         var tas=_rowTas(tr);            // [中文, 整理後, Emtree, MeSH, CINAHL]
         tas.forEach(function(ta){ if(ta && bad(ta.value)) ta.classList.add("cellerr"); });
       }
-      if(_befUsed.length) msgs.push(isEn()
+      if(false && _befUsed.length) msgs.push(isEn()   /* Flora 11-18：不需要「已使用整理前」提醒 */
         ? ("Concept "+_befUsed.map(_hl).join(", ")+": “After” is empty, so the strategy was built from the “Before” terms. If needed, tidy them first (Tools ▾ → Copy to After, with truncation / de-duplication) or fill in “After”, then generate again.")
         : (_befUsed.map(_hl).join("、")+" 概念的「整理後」無資料，已使用「整理前」產生檢索策略；如有需要，請先整理（可用「工具 ▾ → 複製到整理後」並勾選切截／去冗），或直接填寫「整理後」，再重新產生。"));
       var ub=[]; rows.forEach(function(r, ri){ if(_cells(r).some(function(c){return c && inputUnbalanced(c);})){ ub.push(_hl(r.label)); _markCells(ri, function(v){ return v && inputUnbalanced(v); }); } });
