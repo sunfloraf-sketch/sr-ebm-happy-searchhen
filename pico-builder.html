@@ -2319,7 +2319,7 @@ if (typeof module !== "undefined" && module.exports) {
   var CVX_DBS = ["ageline","eric","pqdt","ieee"];
   var CVX_COL = { ageline:{label:"AgeLine", ph:'DE "詞"'}, eric:{label:"ERIC", ph:'DE "詞"'}, pqdt:{label:"PQDT", ph:'SU("詞")'}, ieee:{label:"IEEE", ph:'"IEEE Terms":詞'} };
   function cvxTerms(text){   // 取出詞彙：純詞或帶語法（DE "…"、SU("…")、"IEEE Terms":…、OR 串接）皆可
-    return String(text||"").split(/\r?\n|\s+OR\s+/i).map(function(s){
+    return _cvDropNotes(text).split(/\r?\n|\s+OR\s+/i).map(function(s){
       s=s.trim();
       s=s.replace(/\s*[（(]\s*(?:不含[^)）]{0,12}|不狹[義詞]{0,2}|no[\s-]?exp\w*)\s*[)）]\s*$/i,"");   // 這些庫不分展開／不展開：去掉「不含狹義詞」標記
       s=s.replace(/^(?:DE|MH|MM|MW|SU|DF|KW|TI|AB)\b\s*/i,"");
@@ -2492,7 +2492,7 @@ if (typeof module !== "undefined" && module.exports) {
     c0.ta.dataset.kind="zh"; c1.ta.dataset.kind="ft"; c2.ta.dataset.kind="mesh"; c3.ta.dataset.kind="emtree"; c4.ta.dataset.kind="cinahl";   // 供浮動工具列辨識欄位類型（不含狹義詞／日後 @欄位、次標目）
     c3.td.classList.add("emtreecell"); c4.td.classList.add("cinahlcell"); c2.td.classList.add("meshcell"); var _mv=document.createElement("div"); _mv.className="mview"; _mv.style.display="none"; c2.td.appendChild(_mv);   // MeSH 欄：驗證後的「已驗證檢視」容器（與輸入框切換）
     cvx=cvx||{}; var cvxCells={};
-    CVX_DBS.forEach(function(id){ var cc=mkCell("cv cvx cvcol-"+id, (phs&&phs.cvx&&phs.cvx[id])||CVX_COL[id].ph); cc.ta.value=cvxTerms(cvx[id]||"").join("\n"); cc.ta.dataset.kind="cvx"; cc.ta.addEventListener("blur", function(){ var t=cvxTerms(cc.ta.value); if(t.length && t.join("\n")!==cc.ta.value.trim()){ cc.ta.value=t.join("\n"); if(typeof saveDraftDebounced==="function") saveDraftDebounced(); } }); cvxCells[id]=cc; });
+    CVX_DBS.forEach(function(id){ var cc=mkCell("cv cvx cvcol-"+id, (phs&&phs.cvx&&phs.cvx[id])||CVX_COL[id].ph); cc.ta.value=_cvTidy(cvx[id]||"", cvxTerms).join("\n"); cc.ta.dataset.kind="cvx"; cc.ta.addEventListener("blur", function(){ var t=_cvTidy(cc.ta.value, cvxTerms); if(t.length && t.join("\n")!==cc.ta.value.trim()){ cc.ta.value=t.join("\n"); if(typeof saveDraftDebounced==="function") saveDraftDebounced(); } }); cvxCells[id]=cc; });
     var rmTd=document.createElement("td"); rmTd.style.verticalAlign="middle";   // 功能鍵垂直置中
     var mv=document.createElement("div"); mv.style.cssText="display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center";   // 上／下／✕ 垂直排列
     var up=document.createElement("button"); up.className="rmrow"; up.textContent="↑"; up.title=isEn()?"Move up":"上移（與上一列對調）";
@@ -3152,7 +3152,7 @@ if (typeof module !== "undefined" && module.exports) {
   function _meshEditCell(tr){ var td=_meshTa(tr).closest("td"); var mv=td&&td.querySelector(".mview"); if(mv) mv.style.display="none"; _meshTa(tr).style.display=""; }
   function _renderMeshCell(tr){
     var ta=_meshTa(tr), td=ta.closest("td"), mv=td&&td.querySelector(".mview"); if(!mv) return Promise.resolve([]);
-    var terms=(ta.value||"").split(/\n/).map(function(x){return x.trim();}).filter(Boolean);
+    var terms=_cvDropNotes(ta.value||"").split(/\n/).map(function(x){return x.trim();}).filter(Boolean);   /* 註記、縮排筆記不查核 */
     mv.innerHTML="";
     var edit=document.createElement("button"); edit.className="medit"; edit.type="button"; edit.textContent=isEn()?"edit":"編輯"; edit.onclick=function(e){ e.stopPropagation(); _meshEditCell(tr); }; mv.appendChild(edit);
     if(!terms.length){ _meshEditCell(tr); return Promise.resolve([]); }
@@ -3240,7 +3240,7 @@ if (typeof module !== "undefined" && module.exports) {
   function updateCodes(){ Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr,i){ var b=tr.querySelector(".ccode"); if(b) b.textContent="L"+(i+1); }); }
   /* ===== 整理前（Before）欄：仿 Word 搜尋紀錄表的 Before / After 兩欄 =====
      比對只用 NLM MeSH Lookup API（與盾牌驗證同一支，含拆字 AND），NCBI 為最後一道。 */
-  function befLines(s){ return String(s||"").split(/\r?\n/).map(function(x){return x.trim();}).filter(Boolean); }
+  function befLines(s){ return _cmtStrip(s).split(/\r?\n/).map(function(x){return x.trim();}).filter(Boolean); }
   function befNorm(s){ return String(s||"").toLowerCase().replace(/[*?#$]/g,"").replace(/["'“”]/g,"").replace(/\s+/g," ").trim(); }
   function befUninvert(s){   // MeSH 倒裝寫法轉正：Diabetes, Gestational → gestational diabetes
     s=String(s||"").replace(/\s+/g," ").trim();
@@ -4493,10 +4493,16 @@ function befPluralOf(w){
       var v=c[1], R=parseInt(v.substr(0,2),16), G=parseInt(v.substr(2,2),16), B=parseInt(v.substr(4,2),16);
       return Math.abs(R-G)<24 && Math.abs(G-B)<24 && R>=0x66 && R<=0xCC;   // 灰色系（非黑非白）
     };
+var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], m=pr.match(/<w:ind\b[^>]*>/);   /* 段落是否縮排（Flora 11-18：控制詞彙縮排＝筆記） */
+      if(m){ var g=function(k){ var x=m[0].match(new RegExp('w:'+k+'="(-?\\d+)"')); return x?parseInt(x[1],10):0; }; if(Math.max(g("left"),g("start"))-g("hanging")>0 || g("firstLine")>0) return true; }
+      var body=pp.replace(/<w:pPr>[\s\S]*?<\/w:pPr>/,""), f1=body.search(/<w:tab\/>|<w:t(?:\s[^>]*)?>/); if(f1<0) return false;
+      if(/^<w:tab\/>/.test(body.slice(f1))) return true;
+      var t1=body.slice(f1).match(/^<w:t(?:\s[^>]*)?>([\s\S]*?)<\/w:t>/); return !!(t1 && /^[ \u3000]+\S/.test(t1[1])); };
     var _cellText=function(tc,keepGray){
       // 逐 run 讀取；灰色字（提示/備註）不納入（keepGray=true 時全保留，供表頭偵測用）
       // 以 ↑ 開頭的段落是樣板說明（例「↑ 鄰近字分堆整理時…」），整段略過
       tc=tc.replace(/<w:p\b[\s\S]*?<\/w:p>/g, function(pp){ var t="", r2=/<w:t(?:\s[^>]*)?>([\s\S]*?)<\/w:t>/g, q; while((q=r2.exec(pp))) t+=q[1]; var ti=pp.search(/<w:t(?:\s[^>]*)?>\s*[^<\s]/), si=pp.indexOf("<w:sym"); return (/^\s*[↑⬆]/.test(t) || (si>=0 && (ti<0 || si<ti)))?"":pp; });   // ↑ 可能是文字或 Wingdings 符號
+      tc=tc.replace(/<w:p\b[\s\S]*?<\/w:p>/g, function(pp){ if(!_pInd(pp)) return pp; var body=pp.replace(/^<w:p\b[^>]*>(\s*<w:pPr>[\s\S]*?<\/w:pPr>)?/,""), head=pp.slice(0,pp.length-body.length); return head+'<w:r><w:t xml:space="preserve">  </w:t></w:r>'+body.replace(/^(\s*<w:r\b[^>]*>(?:\s*<w:rPr>[\s\S]*?<\/w:rPr>)?)\s*<w:tab\/>/,"$1"); });   /* 縮排段落 → 行首兩個空白 */
       var out="", re=/<w:r\b[\s\S]*?<\/w:r>|<w:br\b[^>]*?\/?>|<\/w:p>/g, m;
       while((m=re.exec(tc))){
         var seg=m[0];
@@ -4550,6 +4556,7 @@ function befPluralOf(w){
         while((mm=tre.exec(seg))) txt+=mm[1];
         txt=txt.replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/\s+/g," ").trim();
         if(!txt) continue;
+        if(_pInd(seg)) txt="  "+txt;   /* 縮排段落保留縮排（筆記行） */
         // 顏色依「文字 run」判斷：略過段落標記（pPr）的顏色，並以英文字母／中文字數加權（引號、斜線等符號不算），取最多者
         var body=seg.replace(/<w:pPr>[\s\S]*?<\/w:pPr>/,""), rRe=/<w:r\b[\s\S]*?<\/w:r>/g, rm, wt={};
         while((rm=rRe.exec(body))){ var rs=rm[0], rt="", t2=/<w:t(?:\s[^>]*)?>([\s\S]*?)<\/w:t>/g, m2; while((m2=t2.exec(rs))) rt+=m2[1];
@@ -4911,6 +4918,17 @@ function befPluralOf(w){
   function _cvCleanTa(ta){ var v=ta.value, n=cvSyntaxClean(v, isEn()); if(n!==v){ ta.value=n; ta.dispatchEvent(new Event("input",{bubbles:true})); _cvCleanToast(); return true; } return false; }
   /* 詞內括號（如 Subjective well-being (Psychology)）要保留：只拆掉多出來的分組括號（Flora 11-16） */
   function _parWraps(s){ var d=0; for(var i=0;i<s.length;i++){ var ch=s.charAt(i); if(ch==="(")d++; else if(ch===")"){ d--; if(d===0 && i<s.length-1) return false; } } return d===0; }
+  /* 控制詞彙縮排行＝下位詞筆記，保留在格內；上位詞展開時略過、上位詞「不含狹義詞」時照常納入（Flora 11-18） */
+  /* 「//」註記：該行 // 之後為註記，不放進檢索式；整行註記則略過（Flora 11-18） */
+  function _cmtStrip(t){ return String(t||"").split(/\r?\n/).map(function(l){ return /(^|\s)\/\//.test(l) ? l.replace(/(^|\s)\/\/.*$/,"").replace(/\s+$/,"") : l; }).filter(function(l,i,a){ return l.trim()!=="" || !/(^|\s)\/\//.test(String(t||"").split(/\r?\n/)[i]||""); }).join("\n"); }
+  function _cmtStripRow(r){ if(!r) return r; var o={}; Object.keys(r).forEach(function(k){ var v=r[k]; if(k==="label"||k==="level") o[k]=v; else if(typeof v==="string") o[k]=_cmtStrip(v).trim(); else if(v && typeof v==="object" && !Array.isArray(v)){ var w={}; Object.keys(v).forEach(function(x){ w[x]=typeof v[x]==="string"?_cmtStrip(v[x]).trim():v[x]; }); o[k]=w; } else o[k]=v; }); return o; }
+  function _cvIsNote(l){ l=String(l||""); return /^[ \t\u3000]+\S/.test(l) || /^\s*[└├│•▪◦→]/.test(l) || /^\s*[-–>]\s+\S/.test(l); }
+  function _cvDropNotes(t){   /* 縮排行：上位詞標「不含狹義詞」→ 未被涵蓋，照常納入（去掉縮排與符號）；否則已被上位詞展開涵蓋 → 略過（Flora 11-18） */
+    var pNo=false; return _cmtStrip(t).split(/\r?\n/).map(function(l){
+      if(!_cvIsNote(l)){ pNo=/[（(]\s*(?:不含[^)）]{0,12}|不狹[義詞]{0,2}|no[\s-]?exp\w*)\s*[)）]/i.test(l); return l; }
+      return pNo ? l.replace(/^[\s\u3000]*(?:[└├│•▪◦→]|[-–>](?=\s))?[\s\u3000]*/,"") : null;
+    }).filter(function(l){ return l!==null; }).join("\n"); }
+  function _cvTidy(text, fn){ var out=[]; String(text||"").split(/\r?\n/).forEach(function(l){ if(_cvIsNote(l) || /(^|\s)\/\//.test(l) || /[（(]\s*(?:不含[^)）]{0,12}|不狹[義詞]{0,2}|no[\s-]?exp\w*)\s*[)）]\s*$/i.test(l)) out.push(l.replace(/\s+$/,"")); else out=out.concat(fn(l)); }); return out; }   /* 筆記行與「不含狹義詞」行原樣保留（標記決定下位詞是否納入） */
   function _parSplit(line){ line=String(line||""); var o=(line.match(/\(/g)||[]).length, c=(line.match(/\)/g)||[]).length;
     var lr=(line.match(/^\(+/)||[""])[0].length, tr=(line.match(/\)+$/)||[""])[0].length;
     var L=Math.min(lr,Math.max(0,o-c)), T=Math.min(tr,Math.max(0,c-o)), core=line.slice(L,line.length-T).trim();
@@ -4918,7 +4936,7 @@ function befPluralOf(w){
     return {L:L, T:T, core:core}; }
   function renderCVCell(cell, eng, level){
     var seq=[], hasSub=false, hasBool=false;
-    String(cell||"").split(/\n/).forEach(function(line){
+    _cvDropNotes(cell).split(/\n/).forEach(function(line){
       line=line.replace(/^[,;]+|[,;]+$/g,"").trim(); if(!line)return;
       var scrT=null, _sp=scrParse(line); if(_sp){ scrT=_sp.type; line=_sp.text; }   // 先取出補充概念標註
       var noexp=false, mk=line.match(CV_NOEXP_RE);                  // 先取出「不含…詞」標記，避免其括號被當成分組括號
@@ -5454,7 +5472,7 @@ function befPluralOf(w){
     var FILTER_SEL=Array.prototype.map.call(document.querySelectorAll('input[name=sdfilter]:checked'), function(c){return c.value;}).filter(Boolean);   // 研究設計篩選（可複選）
     var rows=[]; Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr){ rows.push(tr._get()); });  // 全部列（含空列，維持 C1/C2… 對位）
     // 整理後空白、整理前有詞 → 以整理前產生（並提醒）；原始列保留給 Word 檢索詞表
-    var _befUsed=[], _rowsOrig=rows;
+    var _befUsed=[], _rowsOrig=rows; rows=rows.map(_cmtStripRow);   /* 「//」註記不進檢索式；Word 檢索詞表用原始列（保留註記） */
     rows=rows.map(function(r){ if(!r.ft && r.before){ _befUsed.push(r.label); var o={}; for(var k in r) o[k]=r[k]; o.ft=r.before; o._ftFromBefore=true; return o; } return r; });
     window._srEngRows={}; outs.innerHTML=""; lastGen=null; if($("#wordBtn")) $("#wordBtn").disabled=true;
     if(!rows.some(function(r){return r.ft||r.zh||r.mesh||r.emtree||r.cinahl||cvxAny(r);})){ outs.innerHTML='<div class="panel" style="color:var(--warn)">'+(isEn()?"Please fill at least one concept.":"請至少填入一個概念的詞彙。")+'</div>'; return; }
@@ -6234,7 +6252,7 @@ function befPluralOf(w){
       tr.appendChild(_mkTcCV(doc, r.emtree||"", "emtree", {w:W[i++]}));
       tr.appendChild(_mkTcCV(doc, r.mesh||"", "mesh", {w:W[i++]}));
       tr.appendChild(_mkTcCV(doc, r.cinahl||"", "cinahl", {w:W[i++]}));
-      cxKeys.forEach(function(k){ tr.appendChild(_mkTcML(doc, cvxTerms((r.cvx&&r.cvx[k])||"").join("\n"), {w:W[i++]})); });
+      cxKeys.forEach(function(k){ tr.appendChild(_mkTcML(doc, _cvTidy((r.cvx&&r.cvx[k])||"", cvxTerms).join("\n"), {w:W[i++]})); });
       tbl.appendChild(tr);
     });
     _wdFmtTable(tbl,{width:total, hdrFill:"D9D9D9", hdrFont:_WD.hfont});
@@ -7945,6 +7963,57 @@ th.cvhead[data-vocab="mesh"] .colclr{right:26px}
   document.addEventListener("mousedown", function(e){ if(pop && !pop.contains(e.target) && !(st && st.td.contains(e.target))) close(); });
   window.addEventListener("scroll", place, true); window.addEventListener("resize", place);
   window.srTcmLex={data:D, enabled:function(){ return ON; }, findZh:findZh, open:function(ta){ dismissed={}; st=null; check(ta); }, close:close};
+})();
+</script>
+<script id="cvIndentScript">
+/* 控制詞彙格：Tab 縮排、Shift+Tab 取消縮排（縮排行＝筆記，不進檢索式）（Flora 11-18） */
+(function(){
+  document.addEventListener("keydown", function(e){
+    if(e.key!=="Tab" || e.ctrlKey || e.altKey || e.metaKey) return;
+    var ta=e.target; if(!ta || ta.tagName!=="TEXTAREA" || !ta.closest || !ta.closest("#picoBody td.cv")) return;
+    var v=ta.value, a=ta.selectionStart, b=ta.selectionEnd, ls=v.lastIndexOf("\n", a-1)+1, le=v.indexOf("\n", Math.max(a,b-(b>a?1:0))); if(le<0) le=v.length;
+    var block=v.slice(ls, le), lines=block.split("\n"), na=a, nb=b;
+    if(e.shiftKey){ var first=true; lines=lines.map(function(l){ var m=l.match(/^(\t| {1,2}|\u3000)/), k=m?m[0].length:0; if(first){ na=Math.max(ls, a-k); first=false; } nb-=k; return l.slice(k); }); }
+    else { lines=lines.map(function(l){ return "  "+l; }); na=a+2; nb=b+2*lines.length; }
+    e.preventDefault();
+    var nv=lines.join("\n"); ta.setRangeText(nv, ls, le, "preserve"); ta.setSelectionRange(Math.max(ls,na), Math.max(ls,nb));
+    ta.dispatchEvent(new Event("input",{bubbles:true}));
+  }, true);
+})();
+</script>
+<style id="cvNoteViewStyle">
+/* 輸入格：「//」註記與控制詞彙不納入的縮排行以灰字顯示（離開格子時的檢視層；點一下回到編輯）（Flora 11-18） */
+.cvnview{position:absolute;box-sizing:border-box;overflow:hidden;white-space:pre-wrap;word-break:break-word;cursor:text;pointer-events:auto;z-index:1}
+.cvnview .cvnx{color:#A3AAA4}
+</style>
+<script id="cvNoteViewScript">
+(function(){
+  var NOEXP=/[（(]\s*(?:不含[^)）]{0,12}|不狹[義詞]{0,2}|no[\s-]?exp\w*)\s*[)）]/i;
+  function isNote(l){ return /^[ \t\u3000]+\S/.test(l) || /^\s*[└├│•▪◦→]/.test(l) || /^\s*[-–>]\s+\S/.test(l); }
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  function cm(l){ var m=l.match(/(^|\s)(\/\/.*)$/); return m ? {a:l.slice(0,l.length-m[2].length), c:m[2]} : null; }
+  function build(v, cv){ var pNo=false, any=false, h=String(v||"").split(/\r?\n/).map(function(l){
+      var c=cm(l), body=c?c.a:l, tail=c?'<span class="cvnx">'+esc(c.c)+'</span>':""; if(c) any=true;
+      if(!cv || !isNote(body) || !body.trim()){ if(cv && body.trim()) pNo=NOEXP.test(body); return (esc(body)+tail)||" "; }
+      if(pNo) return esc(body)+tail; any=true; return '<span class="cvnx">'+esc(body)+'</span>'+tail; }).join("\n");
+    return any?h:null; }
+  var CS=["paddingTop","paddingRight","paddingBottom","paddingLeft","fontFamily","fontSize","fontWeight","lineHeight","letterSpacing","color","backgroundColor","borderRadius","borderTopWidth","borderRightWidth","borderBottomWidth","borderLeftWidth","borderStyle","borderColor","tabSize"];
+  function paint(ta){
+    var td=ta.closest("td"); if(!td) return; var ov=ta._nv;
+    var mv=td.querySelector('.mview'), html=(document.activeElement===ta || !ta.offsetWidth || (mv && mv.offsetWidth)) ? null : build(ta.value, !!ta.closest('td.cv'));
+    if(!html){ if(ov) ov.style.display="none"; return; }
+    if(!ov){ ov=ta._nv=document.createElement("div"); ov.className="cvnview"; ov.setAttribute("aria-hidden","true");
+      ov.addEventListener("mousedown", function(e){ e.preventDefault(); ov.style.display="none"; ta.focus(); });
+      if(getComputedStyle(td).position==="static") td.style.position="relative"; td.appendChild(ov); }
+    var cs=getComputedStyle(ta); CS.forEach(function(k){ ov.style[k]=cs[k]; });
+    if(/rgba?\(.*,\s*0\)$/.test(cs.backgroundColor)) ov.style.backgroundColor="#fff";
+    ov.style.left=ta.offsetLeft+"px"; ov.style.top=ta.offsetTop+"px"; ov.style.width=ta.offsetWidth+"px"; ov.style.height=ta.offsetHeight+"px";
+    if(ov._h!==html){ ov.innerHTML=html; ov._h=html; } ov.style.display=""; ov.scrollTop=ta.scrollTop; }
+  function all(){ Array.prototype.forEach.call(document.querySelectorAll("#picoBody td textarea"), paint); }
+  document.addEventListener("focusin", function(e){ var t=e.target; if(t && t._nv) t._nv.style.display="none"; });
+  document.addEventListener("focusout", function(e){ var t=e.target; if(t && t.tagName==="TEXTAREA" && t.closest && t.closest("#picoBody td")) setTimeout(function(){ paint(t); }, 0); });
+  window.addEventListener("resize", function(){ setTimeout(all, 50); });
+  setInterval(all, 900); setTimeout(all, 300);
 })();
 </script>
 </body>
