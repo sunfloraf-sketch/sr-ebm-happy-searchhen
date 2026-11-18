@@ -965,7 +965,7 @@ function quoteControlledVocab(body, src) {
 function parseLine(line, src, warn) {
   var trimmed = line.trim();
   // 中文鄰近字：「鄰(近)N個(單)字」→ NEAR/(N + 該庫offset)，再由引擎依各庫轉換
-  trimmed = trimmed.replace(/鄰\s*近?\s*(\d+)(?:\s*個)?(?:\s*單)?(?:\s*字)?/g, function(m,n){ return " NEAR/"+(parseInt(n,10)+(SYNTAX_MAP.proximityOffset[src]||0))+" "; });
+  trimmed = trimmed.replace(/(?:相)?鄰\s*近?\s*(\d+)(?:\s*個)?(?:\s*單)?(?:\s*字)?/g, function(m,n){ return " NEAR/"+(parseInt(n,10)+(SYNTAX_MAP.proximityOffset[src]||0))+" "; });
   // 1) 先剝除行首「行號標籤」（此行自己的編號）
   //    - 帶 . 或 ) 者： "1." "1)" "#1." "S1)"
   var body = trimmed.replace(/^#?\s*S?\d+\s*[.)]\s+/i, "");
@@ -1517,7 +1517,7 @@ if (typeof module !== "undefined" && module.exports) {
     const omitted=[]; const exportCards=[];
 
     // 起始資料庫：自動為控制詞彙補上雙引號（非破壞性，只影響顯示與匯出，不改動輸入框）
-    const srcQuoted = input.split(/\r?\n/).map(function(l){ l=l.replace(/鄰\s*近?\s*(\d+)(?:\s*個)?(?:\s*單)?(?:\s*字)?/g, function(m,n){ return " NEAR/"+(parseInt(n,10)+(SYNTAX_MAP.proximityOffset[src]||0))+" "; }).replace(/ {2,}/g," ").trim(); return quoteControlledVocab(l, src); }).join("\n");
+    const srcQuoted = input.split(/\r?\n/).map(function(l){ l=l.replace(/(?:相)?鄰\s*近?\s*(\d+)(?:\s*個)?(?:\s*單)?(?:\s*字)?/g, function(m,n){ return " NEAR/"+(parseInt(n,10)+(SYNTAX_MAP.proximityOffset[src]||0))+" "; }).replace(/ {2,}/g," ").trim(); return quoteControlledVocab(l, src); }).join("\n");
     // 單字控制詞彙也會靜默補引號；只有「多字詞」被補引號時才顯示警示
     var warnQuote=false;
     if(srcQuoted!==input){

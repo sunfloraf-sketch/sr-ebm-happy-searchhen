@@ -6289,5 +6289,44 @@ if (typeof module !== "undefined" && module.exports) {
   render(); setTimeout(render, 0);   // 偏好設定可能在載入後才套用勾選狀態
 })();
 </script>
+<style>
+/* 欄位標頭：右下角 ✕ 清空整欄（滑過才顯示、需確認）；表頭捲動時固定（Flora 11-18） */
+table.pico{overflow:clip}   /* overflow:hidden 會讓表頭無法固定；clip 外觀相同 */
+table.pico thead th{position:sticky;top:0;z-index:4}
+table.pico thead th[data-vocab],table.pico thead th.colmenu{position:sticky;top:0}   /* MeSH 等表頭原有 position:relative 規則較優先，需蓋過 */
+.colclr{position:absolute;right:3px;bottom:3px;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;padding:0;border:none;border-radius:50%;background:none;color:#9AA5AB;cursor:pointer;line-height:0;opacity:0;transition:opacity .15s}
+table.pico thead th:hover .colclr,.colclr:focus-visible{opacity:1}
+.colclr:hover{color:#fff;background:#c0392b}
+th.cvhead[data-vocab="mesh"] .colclr{right:26px}
+</style>
+<script id="colClrScript">
+(function(){
+  var en=function(){ return document.body.classList.contains("en") || document.documentElement.getAttribute("lang")==="en"; };
+  var X='<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  function tas(th){ var out=[]; Array.prototype.forEach.call(document.querySelectorAll("#picoBody tr"),function(tr){ var td=tr.cells[th.cellIndex]; var t=td&&td.querySelector("textarea"); if(t) out.push(t); }); return out; }
+  function name(th){ var L=en()?"en":"zh", g=function(sel){ var e=th.querySelector(sel); return e?e.textContent.replace(/[▾\s]+$/,"").replace(/\s+/g," ").trim():""; };
+    var m=g(".cvnm")||g(":scope > [data-"+L+"]")||th.textContent.replace(/\s+/g," ").trim().slice(0,20), t=g(".stag [data-"+L+"]");
+    return t?(m+(L==="en"?" ("+t+")":"（"+t+"）")):m; }
+  function mount(){
+    var head=document.querySelector("table.pico thead tr"); var row=document.querySelector("#picoBody tr"); if(!head) return;
+    Array.prototype.forEach.call(head.cells,function(th){
+      if(th.querySelector(".colclr")) return;
+      var td=row&&row.cells[th.cellIndex]; if(!td||!td.querySelector("textarea")) return;   /* 只放在有輸入框的欄 */
+      var b=document.createElement("button"); b.type="button"; b.className="colclr"; b.innerHTML=X;
+      b.addEventListener("mouseenter",function(){ b.title=en()?"Clear this column":"清空整欄"; b.setAttribute("aria-label",b.title); });
+      b.addEventListener("click",function(e){
+        e.stopPropagation(); e.preventDefault();
+        var list=tas(th); if(!list.some(function(t){ return t.value.trim(); })) return;
+        var nm=name(th);
+        if(!window.confirm(en()?("Clear all entries in the “"+nm+"” column? This cannot be undone."):("確定清空「"+nm+"」整欄的內容嗎？清空後無法復原。"))) return;
+        list.forEach(function(t){ t.value=""; t.dispatchEvent(new Event("input",{bubbles:true})); t.dispatchEvent(new Event("change",{bubbles:true})); });
+      });
+      th.appendChild(b);
+    });
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",mount); else mount();
+  setTimeout(mount,800);
+})();
+</script>
 </body>
 </html>

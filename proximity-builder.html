@@ -1316,7 +1316,7 @@ updatePicoBar();
     srcSel.value=sv; fillDist(); fillOrder(); if(typeof build==="function") build();   // 起始資料庫沿用 PICO 傳來的設定
   }
 }catch(e){} })();
-(function(){ try{ var q=new URLSearchParams(location.search); var b=q.get("before"); if(!b) return; var n=q.get("n"); if(n&&/^[234]$/.test(n)){ nSel.value=n; renderStacks(); } beforeTa.value=b; autoSplit(); }catch(e){} })();
+(function(){ try{ var q=new URLSearchParams(location.search); var b=q.get("before"); if(!b) return; var n=q.get("n"); if(n&&/^[234]$/.test(n)){ nSel.value=n; renderStacks(); } beforeTa.value=b; /* 從 PICO 帶入只貼上整理前，不自動分堆（Flora 11-18） */ }catch(e){} })();
 
 window.toggleLang=function(){
   var b=document.body; b.classList.toggle("en");
