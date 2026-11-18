@@ -5548,6 +5548,7 @@ function befPluralOf(w){
       if(tg.engine==="cnki" && allRows.length===1 && allRows[0].n==null) b.reminders.unshift(isEn()?(tg.label+": Click the open button (CNKI advanced search) → “Professional search” tab (scope: All databases). Paste the whole line and click “Search”. Using + works better than OR; the SRIS mirror returns fewer results."):(tg.label+"：按右上「開啟」到 CNKI 高級檢索 → 點「專業檢索」（檢索範圍：總庫）。整串貼上按「檢索」。用 + 比用 OR 結果多；SRIS 網站結果較少。"));
       else if(tg.engine==="cnki") b.reminders.unshift(isEn()?(tg.label+": Click the open button (CNKI advanced search) → “Professional search” tab (scope: All databases). Paste #1 and click “Search”; then paste each next line and click “Search within results” (not “Search”). Using + works better than OR; the SRIS mirror returns fewer results."):(tg.label+"：按右上「開啟」到 CNKI 高級檢索 → 點「專業檢索」（檢索範圍：總庫）。貼上 #1 按「檢索」，之後每行貼上後按「結果中檢索」（不是「檢索」）。用 + 比用 OR 結果多；SRIS 網站結果較少。"));
       if(tg.engine==="wanfang") b.reminders.unshift(isEn()?(tg.label+": Click the open button (Wanfang advanced search) → “Professional search” tab; tick Journal, Thesis and Conference papers. Traditional Chinese also finds simplified-Chinese articles; in the results, “Source database” on the left lets you keep only non-English databases."):(tg.label+"：按右上「開啟」到萬方高級檢索 → 點「專業檢索」，文獻類型勾「期刊論文、學位論文、會議論文」。只用繁體也找得到簡體文章；結果頁左側「來源數據庫」可只挑非英語數據庫。"));   // 研究設計篩選（可複選）
+      if(tg.engine==="cnki"||tg.engine==="wanfang") b.reminders.push(isEn()?(tg.label+": some terms differ across the Strait, not just in character form (e.g. 實證醫學／循证医学, 復健／康复); conversion cannot fix this. Use English as the pivot: look up the Taiwan term in NAER Terms (terms.naer.edu.tw) and the mainland term in Termonline (termonline.cn), then add them yourself."):(tg.label+"：兩岸有些詞用不同說法（例：實證醫學／循证医学、復健／康复），簡繁轉換無法處理。請以英文為軸，查樂詞網（terms.naer.edu.tw，台灣用語）與术语在线（termonline.cn，大陸用語）後自行補入。")+((function(){ var c=document.getElementById("tcmLexOn"); return c&&c.getAttribute("aria-checked")!=="true"; })()?(isEn()?" For Chinese herbal formulas, tick “Enable TCM lexicon” next to Wanfang to get English name suggestions as you type.":"中醫藥方劑可勾選萬方旁的「啟用中醫藥中英詞庫」，輸入方名時會提示中英文名稱。"):""));   /* 大陸用語提醒＋未啟用詞庫時提醒（Flora 11-18） */
       allRows = appendPubDate(allRows, tg.engine, PUBDATE, ((SYNTAX_MAP.boolean[tg.engine]&&SYNTAX_MAP.boolean[tg.engine].AND)||"AND"), b.reminders, tg.label);   // 出版日期限定
       allRows = appendEntryDate(allRows, tg.engine, tid, ENTRYDATE, ((SYNTAX_MAP.boolean[tg.engine]&&SYNTAX_MAP.boolean[tg.engine].AND)||"AND"), b.reminders, tg.label);   // 加入資料庫日期限定（更新檢索）
       if(tg.engine==="pubmed"||tg.engine==="scopus"){ (window._srEngRows=window._srEngRows||{})[tg.engine]={rows:allRows.map(function(x){ return {n:x.n, text:x.text}; }), refs:(b.conceptRefs||[]).slice(), start:b.lastNum, flat:!!(((cbFlat&&cbFlat.checked)||forceFlat)&&baseRows.length)}; }   /* 估算筆數卡：沿用此庫的檢索式 */
@@ -7688,7 +7689,7 @@ table.pico thead th{position:sticky;top:0;z-index:4}
 table.pico thead th[data-vocab],table.pico thead th.colmenu{position:sticky;top:0}   /* MeSH 等表頭原有 position:relative 規則較優先，需蓋過 */
 .colclr{position:absolute;right:3px;bottom:3px;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;padding:0;border:none;border-radius:50%;background:none;color:#9AA5AB;cursor:pointer;line-height:0;opacity:0;transition:opacity .15s}
 table.pico thead th:hover .colclr,.colclr:focus-visible{opacity:1}
-.colclr:hover{color:#fff;background:#c0392b}
+.colclr:hover{color:#c0392b}   /* 滑過只變紅色 ✕，不加紅底（Flora 11-18） */
 th.cvhead[data-vocab="mesh"] .colclr{right:26px}
 </style>
 <script id="colClrScript">
@@ -7790,7 +7791,9 @@ th.cvhead[data-vocab="mesh"] .colclr{right:26px}
     new MutationObserver(lab).observe(document.body,{attributes:true,attributeFilter:["class"]});
     b.addEventListener("mousedown", function(e){ e.stopPropagation(); });
     b.addEventListener("click", function(e){ e.stopPropagation(); if(pop && st && st.g && st.td===th){ close(); return; } openGuide(th); });
-    th.appendChild(b); })();
+    th.appendChild(b);
+    var sync=function(){ var on=!!document.querySelector('#dbchecks input[value="cnki"]:checked, #dbchecksMore input[value="cnki"]:checked, #dbchecks input[value="wanfang"]:checked, #dbchecksMore input[value="wanfang"]:checked'); b.hidden=!on; if(!on && pop && st && st.g && st.td===th) close(); };   /* 勾選 CNKI／萬方才顯示（Flora 11-18） */
+    sync(); document.addEventListener("change", function(e){ if(e.target && e.target.closest && e.target.closest("#dbchecks, #dbchecksMore")) sync(); }); setTimeout(sync, 600); })();
   (function mountToggle(){
     var wf=document.querySelector('#dbchecksMore input[value="wanfang"], #dbchecks input[value="wanfang"]'), lb=wf&&wf.closest("label"); if(!lb) return;
     var cell=document.createElement("div"); cell.className="tcmcell"; lb.parentNode.insertBefore(cell, lb); cell.appendChild(lb);
@@ -7847,21 +7850,17 @@ th.cvhead[data-vocab="mesh"] .colclr{right:26px}
     else s.title=T("PubMed "+D.meta.field+" 實測筆數（"+c.d+"）；筆數會隨時間變動","PubMed "+D.meta.field+" count as of "+c.d+"; counts change over time");
     if(c.n===0) s.classList.add("tcmzero"); return s; }
   var GUIDE={zh:{t:"大陸用語怎麼查？",
-      intro:"兩岸有些詞不只是簡繁字形不同，而是用不同的詞（例：實證醫學／循证医学、復健／康复、中風／卒中）。簡繁轉換解決不了，詞庫也不可能收全。請以英文為軸，三步查證：",
+      intro:"兩岸有些詞不只是簡繁字形不同，而是用不同的詞（例：實證醫學／循证医学、復健／康复、中風／卒中）。簡繁轉換解決不了，詞庫也不可能收全。請以英文為軸查證：",
       s:[["台灣用語：","國家教育研究院樂詞網","https://terms.naer.edu.tw/","，用英文查"],
-         ["大陸用語：","术语在线","https://www.termonline.cn/","（全國科學技術名詞審定委員會，大陸官方規範術語），用同一個英文查"],
-         ["實際用法：候選詞逐一到 CNKI／萬方／華藝跑筆數，有一定筆數的寫法全部放進 OR，不必二選一",null,null,""]],
-      net:["連線提醒：台灣連 CNKI 主站可能失敗，可改用海外版 ","oversea.cnki.net","https://oversea.cnki.net/","；萬方專業檢索會出現滑塊驗證，需人工通過。"]},
+         ["大陸用語：","术语在线","https://www.termonline.cn/","（全國科學技術名詞審定委員會，大陸官方規範術語），用同一個英文查"]]},
     en:{t:"How to find mainland Chinese terms",
-      intro:"Some concepts use different words across the Strait, not just different character forms (e.g. 實證醫學／循证医学, 復健／康复, 中風／卒中). Character conversion cannot fix this, and no lexicon is complete. Use English as the pivot and check in three steps:",
+      intro:"Some concepts use different words across the Strait, not just different character forms (e.g. 實證醫學／循证医学, 復健／康复, 中風／卒中). Character conversion cannot fix this, and no lexicon is complete. Use English as the pivot:",
       s:[["Taiwan term: search the English term in ","NAER Terms (樂詞網)","https://terms.naer.edu.tw/",""],
-         ["Mainland term: search the same English term in ","Termonline (术语在线)","https://www.termonline.cn/"," (China National Committee for Terms in Sciences and Technologies)"],
-         ["Actual usage: run each candidate in CNKI / Wanfang / Airiti; put every form with a meaningful number of hits into OR rather than choosing one",null,null,""]],
-      net:["Access: the CNKI main site may fail from Taiwan; try the overseas site ","oversea.cnki.net","https://oversea.cnki.net/","; Wanfang's professional search shows a slider check that must be passed manually."]}};
+         ["Mainland term: search the same English term in ","Termonline (术语在线)","https://www.termonline.cn/"," (China National Committee for Terms in Sciences and Technologies)"]]}};
   function guideNode(){ var g=GUIDE[en()?"en":"zh"], box=el("div","tcmguidebox");
     box.appendChild(el("div","tcmhint",g.intro)); var ol=el("ol","tcmsteps");
     g.s.forEach(function(x){ var li=el("li"); li.appendChild(document.createTextNode(x[0])); if(x[1]){ var a=el("a",null,x[1]); a.href=x[2]; a.target="_blank"; a.rel="noopener"; li.appendChild(a); } if(x[3]) li.appendChild(document.createTextNode(x[3])); ol.appendChild(li); });
-    box.appendChild(ol); var n=el("div","tcmnet"); n.appendChild(document.createTextNode(g.net[0])); var a2=el("a",null,g.net[1]); a2.href=g.net[2]; a2.target="_blank"; a2.rel="noopener"; n.appendChild(a2); n.appendChild(document.createTextNode(g.net[3])); box.appendChild(n); return box; }
+    box.appendChild(ol); if(!ON){ box.appendChild(el("div","tcmhint",T("中醫藥方劑：可勾選萬方旁的「啟用中醫藥中英詞庫」，輸入方名時會提示中英文名稱。","Chinese herbal formulas: tick “Enable TCM lexicon” next to Wanfang to get English name suggestions as you type."))); } if(!g.net) return box; var n=el("div","tcmnet"); n.appendChild(document.createTextNode(g.net[0])); var a2=el("a",null,g.net[1]); a2.href=g.net[2]; a2.target="_blank"; a2.rel="noopener"; n.appendChild(a2); n.appendChild(document.createTextNode(g.net[3])); box.appendChild(n); return box; }
   function renderGuide(){ pop.textContent=""; var hd=el("div","tcmhd");
     if(st.miss){ hd.appendChild(el("b",null,T("詞庫查無「"+st.miss+"」","No lexicon match for “"+st.miss+"”"))); hd.appendChild(el("span","tcmsub",T(" 大陸用語請自行查證"," check mainland terms yourself"))); }
     else hd.appendChild(el("b",null,GUIDE[en()?"en":"zh"].t));

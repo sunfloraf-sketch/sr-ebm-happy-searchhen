@@ -6296,7 +6296,7 @@ table.pico thead th{position:sticky;top:0;z-index:4}
 table.pico thead th[data-vocab],table.pico thead th.colmenu{position:sticky;top:0}   /* MeSH 等表頭原有 position:relative 規則較優先，需蓋過 */
 .colclr{position:absolute;right:3px;bottom:3px;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;padding:0;border:none;border-radius:50%;background:none;color:#9AA5AB;cursor:pointer;line-height:0;opacity:0;transition:opacity .15s}
 table.pico thead th:hover .colclr,.colclr:focus-visible{opacity:1}
-.colclr:hover{color:#fff;background:#c0392b}
+.colclr:hover{color:#c0392b}   /* 滑過只變紅色 ✕，不加紅底（Flora 11-18） */
 th.cvhead[data-vocab="mesh"] .colclr{right:26px}
 </style>
 <script id="colClrScript">
