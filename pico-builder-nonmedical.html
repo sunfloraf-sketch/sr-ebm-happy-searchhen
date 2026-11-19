@@ -410,6 +410,8 @@
   .infotip:hover{}
   .infotip .tip{display:none;position:absolute;z-index:120;left:50%;transform:translateX(-50%);bottom:135%;width:240px;background:#1c2733;color:#fff;font-size:11.5px;font-weight:400;line-height:1.55;padding:8px 10px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.25);text-align:left;white-space:normal}
   .infotip:hover .tip,.infotip.show .tip{display:block}
+  .infotip .tip::before{content:"";position:absolute;left:0;right:0;top:100%;height:18px}   /* 滑鼠可從 ⓘ 移進說明框（Flora 11-19） */
+  .infotip .tip a{pointer-events:auto}
   .infotip .tip::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#1c2733}
   /* 控制詞彙欄表頭：預設一般樣式；只有可點查核的欄（ASC／BSC／ERIC／Compendex）滑過時才變深灰、展開時最深 */
   table.pico th.cvcol{font-size:13.5px;font-weight:800;letter-spacing:.4px}
@@ -5073,7 +5075,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
     function show(el){
       var txt=textFor(el); if(!txt) return;
       orig=el.getAttribute("title"); if(orig!=null) el.setAttribute("title","");
-      cur=el; tip.textContent=txt; tip.style.display="block"; tip.classList.remove("show");
+      cur=el; tip.textContent=txt; tip.style.display="block"; tip.classList.remove("show"); tip.classList.toggle("srinfo", !!(el.closest && (el.closest(".infotip,.tcmgicon,.srinfo") || ((el.textContent||"").trim()==="ⓘ" && !el.children.length))));
       var r=el.getBoundingClientRect(), tb=tip.getBoundingClientRect();
       var cx=r.left+r.width/2;
       var left=Math.max(6, Math.min(cx-tb.width/2, window.innerWidth-tb.width-6));
@@ -5285,7 +5287,8 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
   }
 
   /* ② 提示文字 顯示／不顯示 */
-  function keepTitle(el){ var t=el.getAttribute&&el.getAttribute("title"); if(t){ el.setAttribute("data-title-keep",t); el.removeAttribute("title"); } }
+  function _isInfo(el){ return !!(el && el.closest && (el.closest(".infotip,.tcmgicon,.srinfo") || ((el.textContent||"").trim()==="ⓘ" && !el.children.length))); }   /* ⓘ 一律保留說明 */
+  function keepTitle(el){ if(_isInfo(el)) return; var t=el.getAttribute&&el.getAttribute("title"); if(t){ el.setAttribute("data-title-keep",t); el.removeAttribute("title"); } }
   function strip(root){ if(root.nodeType!==1) return; keepTitle(root); Array.prototype.forEach.call(root.querySelectorAll("[title]"), keepTitle); }
   function restore(){ Array.prototype.forEach.call(document.querySelectorAll("[data-title-keep]"), function(el){ if(!el.hasAttribute("title")) el.setAttribute("title", el.getAttribute("data-title-keep")); el.removeAttribute("data-title-keep"); }); }
   var tobs=null;
@@ -5316,9 +5319,9 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
     ".srprow .srpl{font-weight:600;margin-right:2px}"+
     ".srprow label{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-weight:600}"+
     ".srprow input{margin:0;accent-color:#0f766e;width:15px;height:15px}"+
-    "body.notips #gtip{display:none !important}"+
+    "body.notips #gtip:not(.srinfo){display:none !important}"+
     "body.notips .hastip::after,body.notips .hastip::before{display:none !important}"+
-    "body.notips .infotip:hover .tip{display:none}body.notips .infotip.show .tip,body.notips .infotip.show:hover .tip{display:block}";
+    "";   /* ⓘ 說明不受「提示文字」關閉影響（Flora 11-19） */
   document.head.appendChild(css);
 
   var lang=document.getElementById("langBtn");

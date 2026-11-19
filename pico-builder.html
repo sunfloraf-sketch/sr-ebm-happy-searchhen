@@ -465,6 +465,8 @@
   .infotip:hover{}
   .infotip .tip{display:none;position:absolute;z-index:120;left:50%;transform:translateX(-50%);bottom:135%;width:240px;background:#1c2733;color:#fff;font-size:11.5px;font-weight:400;line-height:1.55;padding:8px 10px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.25);text-align:left;white-space:normal}
   .infotip:hover .tip,.infotip.show .tip{display:block}
+  .infotip .tip::before{content:"";position:absolute;left:0;right:0;top:100%;height:18px}   /* 滑鼠可從 ⓘ 移進說明框（Flora 11-19） */
+  .infotip .tip a{pointer-events:auto}
   .infotip .tip::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#1c2733}
   /* 控制詞彙查核（表頭觸發 + 浮動選單） */
   th.cvhead{cursor:pointer;user-select:none}
@@ -6421,7 +6423,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
     function show(el){
       var txt=textFor(el); if(!txt) return;
       orig=el.getAttribute("title"); if(orig!=null) el.setAttribute("title","");
-      cur=el; tip.textContent=txt; tip.style.display="block"; tip.classList.remove("show");
+      cur=el; tip.textContent=txt; tip.style.display="block"; tip.classList.remove("show"); tip.classList.toggle("srinfo", !!(el.closest && (el.closest(".infotip,.tcmgicon,.srinfo") || ((el.textContent||"").trim()==="ⓘ" && !el.children.length))));
       var r=el.getBoundingClientRect(), tb=tip.getBoundingClientRect();
       var cx=r.left+r.width/2;
       var left=Math.max(6, Math.min(cx-tb.width/2, window.innerWidth-tb.width-6));
@@ -6663,7 +6665,8 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
   }
 
   /* ② 提示文字 顯示／不顯示 */
-  function keepTitle(el){ var t=el.getAttribute&&el.getAttribute("title"); if(t){ el.setAttribute("data-title-keep",t); el.removeAttribute("title"); } }
+  function _isInfo(el){ return !!(el && el.closest && (el.closest(".infotip,.tcmgicon,.srinfo") || ((el.textContent||"").trim()==="ⓘ" && !el.children.length))); }   /* ⓘ 一律保留說明 */
+  function keepTitle(el){ if(_isInfo(el)) return; var t=el.getAttribute&&el.getAttribute("title"); if(t){ el.setAttribute("data-title-keep",t); el.removeAttribute("title"); } }
   function strip(root){ if(root.nodeType!==1) return; keepTitle(root); Array.prototype.forEach.call(root.querySelectorAll("[title]"), keepTitle); }
   function restore(){ Array.prototype.forEach.call(document.querySelectorAll("[data-title-keep]"), function(el){ if(!el.hasAttribute("title")) el.setAttribute("title", el.getAttribute("data-title-keep")); el.removeAttribute("data-title-keep"); }); }
   var tobs=null;
@@ -6694,9 +6697,9 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
     ".srprow .srpl{font-weight:600;margin-right:2px}"+
     ".srprow label{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-weight:600}"+
     ".srprow input{margin:0;accent-color:#0f766e;width:15px;height:15px}"+
-    "body.notips #gtip{display:none !important}"+
+    "body.notips #gtip:not(.srinfo){display:none !important}"+
     "body.notips .hastip::after,body.notips .hastip::before{display:none !important}"+
-    "body.notips .infotip:hover .tip{display:none}body.notips .infotip.show .tip,body.notips .infotip.show:hover .tip{display:block}";
+    "";   /* ⓘ 說明不受「提示文字」關閉影響（Flora 11-19） */
   document.head.appendChild(css);
 
   var lang=document.getElementById("langBtn");
@@ -7758,6 +7761,8 @@ th.cvhead[data-vocab="mesh"] .colclr{right:26px}
 .tcmw{color:#c0392b;font-size:12px;cursor:help;flex:none}
 .tcmnote{color:#8A949B;font-size:11px;flex:none}
 .tcmn{flex:none;font-size:12px;color:#4E5B66;font-variant-numeric:tabular-nums;min-width:3.2em;text-align:right;cursor:help}
+a.tcmn{color:#2F6E5F;text-decoration:none;cursor:pointer}a.tcmn:hover{text-decoration:underline}
+.tcmsrc a{color:#2F6E5F}
 .tcmn.tcmzero{color:#B0B8BD}
 .tcmn.tcmun{color:#9AA5AB;font-style:italic}
 .tcmn.tcmlive{color:#23282D;font-weight:700}
@@ -7824,7 +7829,7 @@ th.cvhead[data-vocab="mesh"] .colclr{right:26px}
     tl.addEventListener("click", function(e){ if(e.target.closest(".infotip")) return; flip(); });
     cb.addEventListener("keydown", function(e){ if(e.key===" "||e.key==="Enter"){ e.preventDefault(); flip(); } });
     w.appendChild(tl);
-    w.insertAdjacentHTML("beforeend",'<span class="infotip"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip"><span data-zh>勾選後，在「中文同義詞」欄輸入中醫方名（繁簡皆可），會跳出英文詞建議（官方音譯、拼音變體、日本漢方名、韓醫方名、縮寫）與 PubMed 筆數，勾選後才帶入「英文同義詞」欄；在英文欄輸入英文方名可反查中文。<br>資料來源：衛生福利部（2021）《中藥常用方劑效能、適應症 語意解析及英譯彙編》77 方，依政府資料開放授權條款第1版利用；拼音變體、日韓方名、縮寫為本工具增補之候選。詞庫在瀏覽器本機比對，不傳送資料。</span><span data-en>When ticked, typing a Chinese herbal formula name (traditional or simplified) in the Chinese synonyms column suggests English terms (official transliteration, pinyin variants, Japanese Kampo and Korean names, abbreviations) with PubMed counts; only the terms you tick are added. Typing an English formula name in the English column suggests the Chinese names.<br>Source: Ministry of Health and Welfare, Taiwan (2021), 77 formulas, reused under the Open Government Data License v1.0; pinyin variants, Japanese/Korean names and abbreviations are unofficial candidates. Matching runs in your browser; nothing is sent.</span></span></span>');
+    w.insertAdjacentHTML("beforeend",'<span class="infotip"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="4.7" r="1.05" fill="currentColor"/><rect x="7.15" y="6.9" width="1.7" height="4.9" rx="0.85" fill="currentColor"/></svg><span class="tip"><span data-zh>勾選後，在「中文同義詞」欄輸入中醫方名（繁簡皆可），會跳出英文詞建議（官方音譯、拼音變體、日本漢方名、韓醫方名、縮寫）與 PubMed 筆數，勾選後才帶入「英文同義詞」欄；在英文欄輸入英文方名可反查中文。<br>資料來源：衛生福利部（2021）<a href="https://mohw.gov.tw/dl-69997-92bcd2d5-5987-48d1-a15e-ffb2185fb1e7.html" target="_blank" rel="noopener" style="color:#9fd8ff;text-decoration:underline">《中藥常用方劑效能、適應症 語意解析及英譯彙編》</a>77 方，依<a href="https://data.gov.tw/license" target="_blank" rel="noopener" style="color:#9fd8ff;text-decoration:underline">政府資料開放授權條款第1版</a>利用；拼音變體、日韓方名、縮寫為本工具增補之候選。詞庫在瀏覽器本機比對，不傳送資料。</span><span data-en>When ticked, typing a Chinese herbal formula name (traditional or simplified) in the Chinese synonyms column suggests English terms (official transliteration, pinyin variants, Japanese Kampo and Korean names, abbreviations) with PubMed counts; only the terms you tick are added. Typing an English formula name in the English column suggests the Chinese names.<br>Source: <a href="https://mohw.gov.tw/dl-69997-92bcd2d5-5987-48d1-a15e-ffb2185fb1e7.html" target="_blank" rel="noopener" style="color:#9fd8ff;text-decoration:underline">Ministry of Health and Welfare, Taiwan (2021)</a>, 77 formulas, reused under the <a href="https://data.gov.tw/license" target="_blank" rel="noopener" style="color:#9fd8ff;text-decoration:underline">Open Government Data License v1.0</a>; pinyin variants, Japanese/Korean names and abbreviations are unofficial candidates. Matching runs in your browser; nothing is sent.</span></span></span>');
     cell.appendChild(w);
   })();
   var T=function(zh,e){ return en()?e:zh; };
@@ -7864,9 +7869,10 @@ th.cvhead[data-vocab="mesh"] .colclr{right:26px}
   function cntEl(t){ var c=cnt(t), s=el("span","tcmn");
     if(c===null){ s.textContent=T("未驗證","unverified"); s.classList.add("tcmun"); s.title=T("尚未以 PubMed 驗證；可按下方「即時查 PubMed」","Not yet checked in PubMed; use “Check PubMed now” below"); return s; }
     if(c.n==="ERR"){ s.textContent=T("查詢失敗","failed"); s.classList.add("tcmerr"); return s; }
+    s=el("a","tcmn"); s.href="https://pubmed.ncbi.nlm.nih.gov/?term="+encodeURIComponent((/[\s-]/.test(t[0])?'"'+t[0]+'"':t[0])+D.meta.field); s.target="_blank"; s.rel="noopener"; s.addEventListener("click", function(e){ e.stopPropagation(); });   /* 點數字開啟 PubMed 書目結果（Flora 11-19） */
     s.textContent=Number(c.n).toLocaleString(); if(c.live){ s.classList.add("tcmlive"); s.title=T("剛剛即時查詢 PubMed ","Just checked in PubMed ")+D.meta.field; }
     else s.title=T("PubMed "+D.meta.field+" 實測筆數（"+c.d+"）；筆數會隨時間變動","PubMed "+D.meta.field+" count as of "+c.d+"; counts change over time");
-    if(c.n===0) s.classList.add("tcmzero"); return s; }
+    s.title+=T("。點一下開啟 PubMed 書目結果"," — click to open the PubMed results"); if(c.n===0) s.classList.add("tcmzero"); return s; }
   var GUIDE={zh:{t:"大陸用語怎麼查？",
       intro:"兩岸有些詞不只是簡繁字形不同，而是用不同的詞（例：實證醫學／循证医学、復健／康复、中風／卒中）。簡繁轉換解決不了，詞庫也不可能收全。請以英文為軸查證：",
       s:[["台灣用語：","國家教育研究院樂詞網","https://terms.naer.edu.tw/","，用英文查"],
@@ -7930,7 +7936,7 @@ th.cvhead[data-vocab="mesh"] .colclr{right:26px}
     if(f){ var lv=el("button","tcmlink",T("↻ 即時查 PubMed","↻ Check PubMed now")); lv.type="button"; lv.title=T("以 "+D.meta.field+" 查詢目前清單的筆數（不儲存）","Count each listed term in PubMed "+D.meta.field+" (not saved)");
       lv.onclick=function(){ live(f, lv); }; ft.appendChild(lv); }
     pop.appendChild(ft);
-    var src=el("div","tcmsrc"); src.textContent=f?T(D.meta.credit_zh, D.meta.credit_en):T(D.meta.wcredit_zh, D.meta.wcredit_en); pop.appendChild(src);
+    var src=el("div","tcmsrc"); src.textContent=f?T(D.meta.credit_zh, D.meta.credit_en):T(D.meta.wcredit_zh, D.meta.wcredit_en); if(f){ var _sa=el("a",null,T(" 原書 ↗"," Source ↗")); _sa.href="https://mohw.gov.tw/dl-69997-92bcd2d5-5987-48d1-a15e-ffb2185fb1e7.html"; _sa.target="_blank"; _sa.rel="noopener"; src.appendChild(_sa); } pop.appendChild(src);   /* 出處加原書連結（Flora 11-19） */
     place();
   }
   function pmCount(q){ if(typeof window._srPmCount==="function") return window._srPmCount(q);
