@@ -373,6 +373,7 @@
   .pmvar{padding:10px 14px;border-top:1px dashed var(--line);background:#F4F7F8;font-size:12.5px}
   .pmvarhd{font-weight:600;color:var(--deco2);margin-bottom:8px}
   .pmvarrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:7px}
+  .pmvar > .pmvarrow{position:relative;padding-left:130px}.pmvar > .pmvarrow > .pmvarroot{position:absolute;left:0;top:2px;min-width:0;max-width:126px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}   /* 字尾候選換行時第二行起對齊縮排（Flora 11-19） */
   .pmvarroot{font-family:"SF Mono",Consolas,monospace;font-weight:700;color:var(--deco2);min-width:92px}
   .chip{font-size:12px;border:1px solid var(--line);border-radius:14px;padding:2px 10px;cursor:pointer;background:#fff;color:#94a3b8;user-select:none}
   .chip.on{background:var(--accent);border-color:#C6CFD5;color:#25292D;font-weight:600}
@@ -3738,13 +3739,34 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
       var enLines=String(ftCell||"").split(/\r?\n/).map(function(s){return s.trim();}).filter(Boolean);
       var kept=[], dropped=false, keptComplex=false, noVar=false;   /* 華藝（Flora 11-19）：預設不納入英文；全部英文詞都沒有切截與片語時才納入；勾選「加入英文（拼字變化）」則以勾選的字形取代切截 */
       if(!incAll){ if(AIRITI_EN_CLEAN) kept=enLines.slice(); else if(enLines.length) dropped=true; }
-      else enLines.forEach(function(l){
-        var hasOp=OPRE.test(l)||/[()]/.test(l), isPhrase=/\s/.test(l)&&!hasOp;
-        var vf=function(tok){ var m=tok.match(/^([A-Za-z][A-Za-z\-']*)[*?#$]+$/); if(!m) return [tok]; var v=(AIRITI_VARS[m[1].toLowerCase()]||[]).filter(Boolean); if(!v.length) noVar=true; return v; };   /* 未選字形的切截詞不加入（Flora 11-19） */
-        if(hasOp){ var _miss=false, _ol=l.replace(/[A-Za-z][A-Za-z\-']*[*?#$]+/g, function(t){ var v=vf(t); if(!v.length){ _miss=true; return t; } return v.length>1?"("+v.join(" OR ")+")":v[0]; }); if(!_miss){ kept.push(_ol); keptComplex=true; } }
-        else { var parts=l.split(/\s+/), combos=[""]; parts.forEach(function(p){ var v=vf(p), nx=[]; combos.forEach(function(c){ v.forEach(function(x){ if(nx.length<40) nx.push(c?c+" "+x:x); }); }); combos=nx; });
-          combos.forEach(function(c){ if(kept.indexOf(c)<0) kept.push(c); }); if(isPhrase) keptComplex=true; }
-      });
+      else (function(){   /* 加入英文：整格英文解析成運算式；未選字形的切截詞剔除（OR 串中只剔除該詞；AND／鄰近等一側變空則整段剔除）（Flora 11-19） */
+        var OPS=/^(AND|OR|NOT|NEAR(?:\/\d+)?|NEXT(?:\/\d+)?|ADJ\d*|PRE\/\d+|W\/?\d+|N\/?\d+)$/i;
+        var isOpLine=function(s){ return OPS.test(s) || /^(?:相)?鄰\s*近?\s*\d+/.test(s); };
+        var j=enLines[0]||""; for(var q=1;q<enLines.length;q++){ var a=enLines[q-1], b2=enLines[q]; j+=((/\($/.test(a)||isOpLine(a)||/(^|\s)(AND|OR|NOT)$/i.test(a)||/^\)/.test(b2)||isOpLine(b2.split(/\s+/)[0])||isOpLine(b2))?" ":" OR ")+b2; }
+        var toks=[], m, re=/"[^"]*"|\(|\)|(?:相)?鄰\s*近?\s*\d+(?:\s*個)?(?:\s*單)?(?:\s*字)?(?:\s*(?:以|之)?內)?|[^\s()"]+/g;
+        while((m=re.exec(j))){ var v=m[0]; if(v==="("||v===")") toks.push({k:v}); else if(OPS.test(v)||/^(?:相)?鄰/.test(v)) toks.push({k:"op",v:v}); else if(toks.length && toks[toks.length-1].k==="t" && !/^"/.test(v) && !/^"/.test(toks[toks.length-1].v)) toks[toks.length-1].v+=" "+v; else toks.push({k:"t",v:v}); }
+        var pos=0;
+        function P(){ var items=[], ops=[]; while(pos<toks.length){ var t=toks[pos];
+            if(t.k===")"){ break; }
+            if(t.k==="op"){ if(items.length>ops.length) ops.push(t.v); pos++; continue; }
+            if(items.length>ops.length) ops.push("OR");
+            if(t.k==="("){ pos++; items.push(P()); if(toks[pos]&&toks[pos].k===")") pos++; }
+            else { items.push({term:t.v}); pos++; } }
+          return {items:items, ops:ops}; }
+        var tree=P();
+        var vf=function(tok){ var mm=tok.match(/^([A-Za-z][A-Za-z\-']*)[*?#$]+$/); if(!mm) return [tok]; var v=(AIRITI_VARS[mm[1].toLowerCase()]||[]).filter(Boolean); if(!v.length) noVar=true; return v; };
+        function prune(n){
+          if(n.term!=null){ var raw=n.term.replace(/^"|"$/g,""), parts=raw.split(/\s+/), combos=[""];
+            parts.forEach(function(p){ var v=vf(p), nx=[]; combos.forEach(function(c){ v.forEach(function(x){ if(nx.length<40) nx.push(c?c+" "+x:x); }); }); combos=nx; });
+            if(!combos.length) return null; if(parts.length>1) keptComplex=true;
+            var q=combos.map(function(c){ return /\s/.test(c)?'"'+c+'"':c; }); return q.length>1?"("+q.join(" OR ")+")":q[0]; }
+          var it=n.items.map(prune), allOr=n.ops.every(function(o){ return /^OR$/i.test(o); });
+          if(!allOr){ keptComplex=true; if(it.some(function(x){ return x==null; })) return null; }
+          var outI=[], outO=[]; it.forEach(function(x,i){ if(x==null) return; if(outI.length) outO.push(allOr?"OR":n.ops[i-1]); outI.push(x); });
+          if(!outI.length) return null; if(outI.length===1) return outI[0];
+          var s=outI[0]; for(var i=1;i<outI.length;i++) s+=" "+outO[i-1]+" "+outI[i]; return "("+s+")"; }
+        var res=prune(tree); if(res) kept.push(res.replace(/^\((.*)\)$/,function(all,inner){ var d=0; for(var i=0;i<inner.length;i++){ if(inner[i]==="(")d++; else if(inner[i]===")"){ d--; if(d<0) return all; } } return inner; }));
+      })();
       var combined=[]; if(zh.length) combined.push(zhX ? twExprStr(zhX, function(v){ return v; }, "upper") : zh.join(" OR ")); if(kept.length) combined.push(kept.join("\n"));
       var line = combined.length ? scopeFreetext(combined.join("\n"), startEng, "airiti", level, []) : "";
       if(incAll && noVar) pushRem(isEn()
@@ -3988,7 +4010,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
     cinahl_ebsco:"https://search.ebscohost.com/",
     wos:"https://www.webofscience.com/wos/woscc/advanced-search",
     scopus:"https://www.scopus.com/search/form.uri?display=advanced",
-    airiti:"https://www.airitilibrary.com/Search/Advanced",
+    airiti:"https://www.airitilibrary.com/",
     ndltd:"https://ndltd.ncl.edu.tw/",
     ageline:"https://search.ebscohost.com/",
     asc:"https://research.lib.ncku.edu.tw/er/geter/DB000000005",
