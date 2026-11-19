@@ -972,8 +972,8 @@ th.cvhead[data-vocab="mesh"]{position:relative}
       <summary style="cursor:pointer;font-weight:700;font-size:13px;color:#0f766e"><span data-zh>貼上表格（➜ 可參考 AI 提示詞範例）</span><span data-en>Paste a table (➜ AI prompt example available)</span></summary>
       <div style="margin-top:8px">
         <div class="sub" style="font-size:12px;color:var(--mut);margin-bottom:6px">
-          <span data-zh><div>‧ <a href="https://chatgpt.com/share/6ad984b7-e750-83ec-b7fb-359952fa53f5" target="_blank" rel="noopener">開啟 ChatGPT 提示詞與對話範例 ↗</a> 或 <button type="button" class="pcopy" data-pcopy>直接複製提示詞</button>（優先使用 ChatGPT 或 Claude，登入帳號效果較佳）</div><div>‧ 從 ChatGPT 等複製整個表格後，於下方框按 <b>Ctrl+V</b> 貼上，工具會依欄位標題自動對應，並填入下方 PICO 表（亦可從 Word／Excel 複製後貼上）</div><div>‧ 表格請含一列標題（概念／中文／English／Emtree／MeSH／CINAHL。不需要的欄位可不提供；順序不拘）</div><div style="color:var(--mut);padding-left:1.2em">（不同複製方式填入效果可能有差異；含合併／巢狀儲存格的複雜表格，貼上後請檢查並自行調整）</div></span>
-          <span data-en><div>‧ <a href="https://chatgpt.com/share/6ad986ee-28e0-83ee-af26-543ff8b647d1" target="_blank" rel="noopener">Open ChatGPT prompt &amp; chat example ↗</a> or <button type="button" class="pcopy" data-pcopy>copy the prompt</button> (ChatGPT or Claude works best; signing in helps)</div><div>‧ Copy the whole table from ChatGPT etc., click the box below and press <b>Ctrl+V</b>; columns are auto-mapped by header and fill the PICO table below (Word / Excel also work)</div><div>‧ Include a header row (Concept / Chinese / English / Emtree / MeSH / CINAHL; omit columns you don't need; any order)</div><div style="color:var(--mut);padding-left:1.2em">(Results may vary with different copy methods; for complex tables with merged/nested cells, check the filled result and adjust as needed.)</div></span>
+          <span data-zh><div>‧ <a href="https://chatgpt.com/share/6ad984b7-e750-83ec-b7fb-359952fa53f5" target="_blank" rel="noopener">開啟 ChatGPT 提示詞與對話範例 ↗</a> 或 <button type="button" class="pcopy" data-pcopy>直接複製提示詞</button>（優先使用 <a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a> 或 <a href="https://claude.ai/" target="_blank" rel="noopener">Claude</a>，登入帳號效果較佳）</div><div>‧ 從 ChatGPT 等複製整個表格後，於下方框按 <b>Ctrl+V</b> 貼上，工具會依欄位標題自動對應，並填入下方 PICO 表（亦可從 Word／Excel 複製後貼上）</div><div>‧ 表格請含一列標題（概念／中文／English／Emtree／MeSH／CINAHL。不需要的欄位可不提供；順序不拘）</div><div style="color:var(--mut);padding-left:1.2em">（不同複製方式填入效果可能有差異；含合併／巢狀儲存格的複雜表格，貼上後請檢查並自行調整）</div></span>
+          <span data-en><div>‧ <a href="https://chatgpt.com/share/6ad986ee-28e0-83ee-af26-543ff8b647d1" target="_blank" rel="noopener">Open ChatGPT prompt &amp; chat example ↗</a> or <button type="button" class="pcopy" data-pcopy>copy the prompt</button> (<a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a> or <a href="https://claude.ai/" target="_blank" rel="noopener">Claude</a> works best; signing in helps)</div><div>‧ Copy the whole table from ChatGPT etc., click the box below and press <b>Ctrl+V</b>; columns are auto-mapped by header and fill the PICO table below (Word / Excel also work)</div><div>‧ Include a header row (Concept / Chinese / English / Emtree / MeSH / CINAHL; omit columns you don't need; any order)</div><div style="color:var(--mut);padding-left:1.2em">(Results may vary with different copy methods; for complex tables with merged/nested cells, check the filled result and adjust as needed.)</div></span>
         </div>
         <textarea id="pasteZone" spellcheck="false" rows="4" style="width:100%" placeholder="在此按 Ctrl+V 貼上表格"></textarea>
         <label id="pasteAppendLab" style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;margin:6px 0 0 14px;cursor:pointer"><input type="checkbox" id="pasteAppend" style="margin:0"><span data-zh>補上：貼上的每一列加在現有表格之後（不覆蓋現有內容）</span><span data-en>Append: add each pasted row after the existing rows (keep current content)</span></label>
@@ -4354,7 +4354,7 @@ function befPluralOf(w){
     var hrow=-1;
     for(var hr=0; hr<Math.min(rows.length,5); hr++){
       var rl=rows[hr];
-      if(rl.some(function(c){return /mesh/i.test(String(c||""));}) && rl.some(function(c){return /cinahl/i.test(String(c||""));})){ hrow=hr; break; }
+      if((function(_r){ var _t=(_r||[]).map(function(c){return String(c||"");}).join(" "), _n=(/mesh/i.test(_t)?1:0)+(/emtree/i.test(_t)?1:0)+(/cinahl/i.test(_t)?1:0); return _n>=2 || (_n>=1 && /整理後|after|處理後/i.test(_t)); })(rl)){ hrow=hr; break; }
     }
     var hdr, hasHeader, data, col;
     if(hrow>=0){ hdr=mapCols(rows[hrow]); col=hdr; data=rows.slice(hrow+1); hasHeader=true; }
@@ -4449,7 +4449,7 @@ function befPluralOf(w){
     L.push("=== parsed grid ("+rows.length+" row(s)) ===");
     rows.forEach(function(r,i){ L.push("row"+i+" ["+r.length+" col]: "+r.map(function(c){return String(c==null?"":c).replace(/\n/g,"⏎");}).join(" | ")); });
     L.push("");
-    var hrow=-1; for(var hr=0;hr<Math.min(rows.length,5);hr++){ var rl=rows[hr]; if(rl.some(function(c){return /mesh/i.test(String(c||""));})&&rl.some(function(c){return /cinahl/i.test(String(c||""));})){ hrow=hr; break; } }
+    var hrow=-1; for(var hr=0;hr<Math.min(rows.length,5);hr++){ var rl=rows[hr]; if((function(_r){ var _t=(_r||[]).map(function(c){return String(c||"");}).join(" "), _n=(/mesh/i.test(_t)?1:0)+(/emtree/i.test(_t)?1:0)+(/cinahl/i.test(_t)?1:0); return _n>=2 || (_n>=1 && /整理後|after|處理後/i.test(_t)); })(rl)){ hrow=hr; break; } }
     var hdr=(hrow>=0)?mapCols(rows[hrow]):(rows.length?mapCols(rows[0]):null);
     L.push("=== header mapping ("+(hrow>=0?("row"+hrow):(rows.length?"row0 (no MeSH+CINAHL header row found)":"n/a"))+") ===");
     L.push(hdr?Object.keys(hdr).map(function(k){return k+"="+hdr[k];}).join(", "):"(no rows)");
@@ -4537,7 +4537,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
     };
     // 從多個表格中挑出「檢索詞表」：優先含 MeSH＋CINAHL 的表頭列；其次含中文＋英文/After 欄；再不行取欄數最多者
     var _pickSearchTable=function(tables){
-      for(var i=0;i<tables.length;i++){ if(tables[i].some(function(r){ return r.some(function(c){return /mesh/i.test(c);}) && r.some(function(c){return /cinahl/i.test(c);}); })) return i; }
+      for(var i=0;i<tables.length;i++){ if(tables[i].some(function(r){ return (function(_r){ var _t=(_r||[]).map(function(c){return String(c||"");}).join(" "), _n=(/mesh/i.test(_t)?1:0)+(/emtree/i.test(_t)?1:0)+(/cinahl/i.test(_t)?1:0); return _n>=2 || (_n>=1 && /整理後|after|處理後/i.test(_t)); })(r); })) return i; }
       for(var j=0;j<tables.length;j++){ if(tables[j].some(function(r){return r.some(function(c){return /中文|chinese/i.test(c);});}) && tables[j].some(function(r){return r.some(function(c){return /english|英文|after|處理後|synonym|自由詞/i.test(c);});})) return j; }
       var best=-1,bw=-1; tables.forEach(function(rr,idx){ var w=0; rr.forEach(function(r){ if(r.length>w)w=r.length; }); if(rr.length>1 && w>bw){bw=w;best=idx;} });
       return best;
@@ -4605,7 +4605,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
         // 依表頭自動對應欄位（支援 6 欄樣板與你原本含 Before/After 的樣板）
         var maxCols=0; rowsRaw.forEach(function(r){ if(r.length>maxCols)maxCols=r.length; });
         var hi=-1, hdr=null;
-        for(var k=0;k<rowsRaw.length;k++){ if(rowsRaw[k].some(function(c){return /mesh/i.test(c);}) && rowsRaw[k].some(function(c){return /cinahl/i.test(c);})){ hdr=rowsRaw[k]; hi=k; break; } }
+        for(var k=0;k<rowsRaw.length;k++){ if((function(_r){ var _t=(_r||[]).map(function(c){return String(c||"");}).join(" "), _n=(/mesh/i.test(_t)?1:0)+(/emtree/i.test(_t)?1:0)+(/cinahl/i.test(_t)?1:0); return _n>=2 || (_n>=1 && /整理後|after|處理後/i.test(_t)); })(rowsRaw[k])){ hdr=rowsRaw[k]; hi=k; break; } }
         if(hdr && rowsRaw[hi+1]){
           var _sub=rowsRaw[hi+1];
           if(!String(_sub[0]||"").trim() && _sub.some(function(c){ return /^\s*(before|after|整理前|整理後|處理前|處理後)/i.test(String(c||"")); })){
