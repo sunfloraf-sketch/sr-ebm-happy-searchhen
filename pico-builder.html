@@ -4132,7 +4132,7 @@ function befPluralOf(w){
     return out.join("\n");
   }
   // 英文同義詞含逗號：可能是兩個詞（該拆兩行），也可能是倒裝寫法（Catheterization, Central Venous → 該轉正）——無法自動判斷，標橘框提醒自行確認
-  function _commaLines(v){ return String(v||"").split("\n").filter(function(l){ return /[,，]/.test(l.replace(/"[^"]*"/g,"")); }).map(function(l){ return l.trim(); }); }
+  function _commaLines(v){ return String(v||"").split("\n").filter(function(l){ return /[,，]/.test(l.replace(/(^|\s)\/\/.*$/,"").replace(/"[^"]*"/g,"")); })   /* 「//」註記內的逗號不提醒（Flora 11-19） */.map(function(l){ return l.trim(); }); }
   function _commaMark(ta){ if(!ta || ta.classList.contains("cellcomma")) return; ta.classList.add("cellcomma"); ta.addEventListener("input", function _u(){ ta.classList.remove("cellcomma"); ta.removeEventListener("input",_u); }); }
   // mode："all"＝整理前＋整理後都查（匯入時）；"gen"＝產生時只查實際用來產生的欄（整理後有字查整理後，否則查整理前）
   function _commaScan(mode){
@@ -5079,19 +5079,41 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
                                                      : (tgLabel+"：已依國家教育研究院兩岸對照名詞加入大陸用語（與簡繁轉換不同）："+_cnHits.join("、")+"，請確認是否適用。")); }
     var en=isEn(), zhX=twChineseExpr(zhCell), zh=zhX ? null : twChineseTerms(zhCell);
     var OPRE=/\b(?:ADJ\d*|NEAR(?:\/\d+)?|NEXT(?:\/\d+)?|PRE\/\d+|W\/?\d+|N\/?\d+)\b|鄰\s*近?\s*\d|\bwithin\s+\d+\s+words?\b/i;
-    var enT=[], dropped=false, stripped=false, seen={};
-    String(ftCell||"").split(/\r?\n/).forEach(function(l){
-      l=l.trim(); if(!l) return;
-      if(OPRE.test(l)||/[()]/.test(l)||/^(AND|OR|NOT)$/i.test(l)){ dropped=true; return; }
-      l.split(/[、,，;；]+|\s+OR\s+/i).forEach(function(t){
-        t=t.replace(/[“”"']/g,"").replace(/\s+/g," ").trim(); if(!t || /^(AND|OR|NOT)$/i.test(t)) return;
-        if(eng==="cnki" && /[*?#$]/.test(t)){ t=t.replace(/[*?#$]/g,"").trim(); stripped=true; if(!t) return; }
-        var k=t.toLowerCase(); if(seen[k]) return; seen[k]=1;
-        enT.push(/\s/.test(t) ? ('"'+t+'"') : t);
-      });
-    });
-    if(dropped) pushRem(en ? (tgLabel+": English proximity/grouped terms were left out (not supported) — Chinese terms and plain English words/phrases are used.")
-                           : (tgLabel+"：英文同義詞中的鄰近字／括號分組不適用，已略過；只用中文詞與英文單字、片語。"));
+    var enT=[], dropped=false, stripped=false, seen={};   /* 英文：括號分組保留、鄰近字改 AND（Flora 11-19：原本整行略過，breast／mamma* 不見） */
+    (function(){
+      var lines=String(ftCell||"").split(/\r?\n/).map(function(l){ return l.trim(); }).filter(Boolean); if(!lines.length) return;
+      var OPS=/^(AND|OR|NOT|NEAR(?:\/\d+)?|NEXT(?:\/\d+)?|ADJ\d*|PRE\/\d+|W\/?\d+|N\/?\d+)$/i, PX=/^(?:相)?鄰/;
+      var isOpL=function(s){ return OPS.test(s)||PX.test(s); };
+      var j=lines[0]; for(var q2=1;q2<lines.length;q2++){ var a=lines[q2-1], b2=lines[q2]; j+=((/\($/.test(a)||isOpL(a)||/(^|\s)(AND|OR|NOT)$/i.test(a)||/^\)/.test(b2)||isOpL(b2.split(/\s+/)[0]))?" ":" OR ")+b2; }
+      var toks=[], m, re=/"[^"]*"|\(|\)|(?:相)?鄰\s*近?\s*\d+(?:\s*個)?(?:\s*單)?(?:\s*字)?(?:\s*(?:以|之)?內)?|[^\s()"、,，;；]+|[、,，;；]/g;
+      while((m=re.exec(j))){ var v=m[0];
+        if(v==="("||v===")") toks.push({k:v});
+        else if(/^[、,，;；]$/.test(v)) toks.push({k:"op",v:"OR"});
+        else if(OPS.test(v)||PX.test(v)) toks.push({k:"op",v:v});
+        else if(toks.length && toks[toks.length-1].k==="t" && !/^"/.test(v) && !/^"/.test(toks[toks.length-1].v)) toks[toks.length-1].v+=" "+v;
+        else toks.push({k:"t",v:v}); }
+      var pos=0;
+      function P(){ var items=[], ops=[]; while(pos<toks.length){ var t=toks[pos];
+          if(t.k===")") break;
+          if(t.k==="op"){ if(items.length>ops.length) ops.push(t.v); pos++; continue; }
+          if(items.length>ops.length) ops.push("OR");
+          if(t.k==="("){ pos++; items.push(P()); if(toks[pos]&&toks[pos].k===")") pos++; }
+          else { items.push({term:t.v}); pos++; } }
+        return {items:items, ops:ops}; }
+      var tree=P();
+      var opMap=function(o){ o=o.toUpperCase(); if(o==="OR") return eng==="cnki"?"+":"OR"; if(o==="NOT") return eng==="cnki"?"-":"NOT"; if(o!=="AND") dropped=true; return eng==="cnki"?"*":"AND"; };
+      function term(x){ var t=x.replace(/[“”"']/g,"").replace(/\s+/g," ").trim(); if(!t || /^(AND|OR|NOT)$/i.test(t)) return null;
+        if(eng==="cnki" && /[*?#$]/.test(t)){ t=t.replace(/[*?#$]/g,"").trim(); stripped=true; if(!t) return null; }
+        return /\s/.test(t) ? ('"'+t+'"') : t; }
+      function ser(n){ if(n.term!=null) return term(n.term);
+        var it=n.items.map(ser), out=[], oo=[]; it.forEach(function(x,i){ if(x==null) return; if(out.length) oo.push(opMap(n.ops[i-1]||"OR")); out.push(x); });
+        if(!out.length) return null; if(out.length===1) return out[0];
+        var s=out[0]; for(var i=1;i<out.length;i++) s+=" "+oo[i-1]+" "+out[i]; return "("+s+")"; }
+      var top=tree.items, allOr=tree.ops.every(function(o){ return /^OR$/i.test(o); });
+      (allOr?top:[tree]).forEach(function(n){ var s=ser(n); if(!s) return; var k=s.toLowerCase(); if(seen[k]) return; seen[k]=1; enT.push(s); });
+    })();
+    if(dropped) pushRem(en ? (tgLabel+": English proximity was converted to AND"+(eng==="cnki"?" (* in CNKI)":"")+"; grouping in parentheses is kept.")
+                           : (tgLabel+"：英文同義詞中的鄰近字已改為 AND"+(eng==="cnki"?"（CNKI 為 *）":"")+"，括號分組保留。"));
     var out;
     if(eng==="cnki"){
       if(stripped) pushRem(en ? (tgLabel+": CNKI has no truncation (* means AND) — * was removed; add other word forms yourself (e.g. herb + herbal).")
@@ -5667,7 +5689,10 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
         hr.appendChild(openBtn);
       }
       h.appendChild(nm); h.appendChild(hr); card.appendChild(h);
-      if(b.reminders.length){ var rem=document.createElement("div"); rem.className="rem"; var _lblRe=new RegExp("^"+String(tg.label).replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\s*[：:]?\\s*"); b.reminders.forEach(function(m){ var d=document.createElement("div"); d.textContent="⚠ "+String(m).replace(_lblRe,""); rem.appendChild(d); }); card.appendChild(rem); }
+      if(b.reminders.length){ var rem=document.createElement("div"); rem.className="rem"; var _lblRe=new RegExp("^"+String(tg.label).replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\s*[：:]?\\s*"); b.reminders.forEach(function(m){ var d=document.createElement("div"); d.textContent="⚠ "+String(m).replace(_lblRe,"");
+          /* 提醒中的樂詞網／术语在线加超連結（文字先以 textContent 寫入，再只把這兩個固定名稱換成連結）（Flora 11-19） */
+          [["樂詞網","https://terms.naer.edu.tw/"],["NAER Terms","https://terms.naer.edu.tw/"],["术语在线","https://www.termonline.cn/"],["Termonline","https://www.termonline.cn/"]].forEach(function(L){ var tn=null, w=document.createTreeWalker(d,NodeFilter.SHOW_TEXT,null); while(w.nextNode()){ if(w.currentNode.nodeValue.indexOf(L[0])>=0 && !(w.currentNode.parentNode && w.currentNode.parentNode.tagName==="A")){ tn=w.currentNode; break; } } if(!tn) return; var i=tn.nodeValue.indexOf(L[0]), after=tn.splitText(i); after.splitText(L[0].length); var a=document.createElement("a"); a.href=L[1]; a.target="_blank"; a.rel="noopener"; a.textContent=L[0]; after.parentNode.replaceChild(a, after); });
+          rem.appendChild(d); }); card.appendChild(rem); }
       if(vfMiss.length){ var vrem=document.createElement("div"); vrem.className="rem"; var vrd=document.createElement("div"); vrd.textContent=_verifyNote(vfMiss, tid); vrem.appendChild(vrd); card.appendChild(vrem); }   // 尚未整理語法的資料庫：提示統一放在資料庫名稱下方（與其他 ⚠ 提示並列）
       // Embase.com：排除設定（三選一）—— 移到該庫卡片；標籤不加括弧語法說明
       if(tg.engine==="embase"){
