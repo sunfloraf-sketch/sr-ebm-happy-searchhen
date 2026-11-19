@@ -5003,17 +5003,20 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
       // 英文逐行過濾：鄰近字／含括號分組 → 保留（引擎會把鄰近字轉 AND）；單一乾淨字 → 保留；純片語或含切截詞 → 預設略過（勾選則納入）
       var OPRE=/\b(?:ADJ\d*|NEAR(?:\/\d+)?|NEXT(?:\/\d+)?|PRE\/\d+|W\/?\d+|N\/?\d+)\b|鄰\s*近?\s*\d|\bwithin\s+\d+\s+words?\b/i;
       var enLines=String(ftCell||"").split(/\r?\n/).map(function(s){return s.trim();}).filter(Boolean);
-      var kept=[], dropped=false, keptComplex=false;   /* 華藝（Flora 11-19）：預設不納入英文；全部英文詞都沒有切截與片語時才納入；勾選「加入英文（拼字變化）」則以勾選的字形取代切截 */
+      var kept=[], dropped=false, keptComplex=false, noVar=false;   /* 華藝（Flora 11-19）：預設不納入英文；全部英文詞都沒有切截與片語時才納入；勾選「加入英文（拼字變化）」則以勾選的字形取代切截 */
       if(!incAll){ if(AIRITI_EN_CLEAN) kept=enLines.slice(); else if(enLines.length) dropped=true; }
       else enLines.forEach(function(l){
         var hasOp=OPRE.test(l)||/[()]/.test(l), isPhrase=/\s/.test(l)&&!hasOp;
-        var vf=function(tok){ var m=tok.match(/^([A-Za-z][A-Za-z\-']*)[*?#$]+$/); if(!m) return [tok]; var v=(AIRITI_VARS[m[1].toLowerCase()]||[]).filter(Boolean); return v.length?v:[m[1]]; };
-        if(hasOp){ kept.push(l.replace(/[A-Za-z][A-Za-z\-']*[*?#$]+/g, function(t){ var v=vf(t); return v.length>1?"("+v.join(" OR ")+")":v[0]; })); keptComplex=true; }
+        var vf=function(tok){ var m=tok.match(/^([A-Za-z][A-Za-z\-']*)[*?#$]+$/); if(!m) return [tok]; var v=(AIRITI_VARS[m[1].toLowerCase()]||[]).filter(Boolean); if(!v.length) noVar=true; return v; };   /* 未選字形的切截詞不加入（Flora 11-19） */
+        if(hasOp){ var _miss=false, _ol=l.replace(/[A-Za-z][A-Za-z\-']*[*?#$]+/g, function(t){ var v=vf(t); if(!v.length){ _miss=true; return t; } return v.length>1?"("+v.join(" OR ")+")":v[0]; }); if(!_miss){ kept.push(_ol); keptComplex=true; } }
         else { var parts=l.split(/\s+/), combos=[""]; parts.forEach(function(p){ var v=vf(p), nx=[]; combos.forEach(function(c){ v.forEach(function(x){ if(nx.length<40) nx.push(c?c+" "+x:x); }); }); combos=nx; });
           combos.forEach(function(c){ if(kept.indexOf(c)<0) kept.push(c); }); if(isPhrase) keptComplex=true; }
       });
       var combined=[]; if(zh.length) combined.push(zhX ? twExprStr(zhX, function(v){ return v; }, "upper") : zh.join(" OR ")); if(kept.length) combined.push(kept.join("\n"));
       var line = combined.length ? scopeFreetext(combined.join("\n"), startEng, "airiti", level, []) : "";
+      if(incAll && noVar) pushRem(isEn()
+        ? (tgLabel+": truncated terms without a ticked word form were left out — tick the forms on this card.")
+        : (tgLabel+"：尚未勾選字形的切截詞不加入；請在此卡片勾選字形。"));
       if(level==="L0") pushRem(isEn()   /* 華藝 LV0＝LV1（Flora 11-19） */
         ? (tgLabel+": Broadest (LV0) is the same as Comprehensive (LV1) here, both [ALL3]; to search all Airiti fields including full text, change [ALL3] to [ALL] yourself.")
         : (tgLabel+"：選擇 LV0（最廣）與 LV1（完整）相同，皆為 [ALL3]；如要查華藝真正的所有欄位（含文章全文），請自行將 [ALL3] 改為 [ALL]。"));
@@ -5676,7 +5679,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
           var avp=document.createElement("div"); avp.className="pmvar";
           var ahd=document.createElement("div"); ahd.className="pmvarhd"; ahd.textContent=isEn()?"Suffix candidates — tick real word forms, add missing ones:":"字尾候選 — 勾選真實存在的字形、補上漏掉的："; avp.appendChild(ahd);
           var _acands=function(stem){ var c=[stem,stem+"s",stem+"es",stem+"al",stem+"ic",stem+"ing",stem+"ed",stem+"a",stem+"y",stem+"ies",stem+"ion",stem+"ions"]; return c.filter(function(v,i){return c.indexOf(v)===i;}); };
-          _aroots.forEach(function(root){ if(!AIRITI_VARS[root]) AIRITI_VARS[root]=[root];
+          _aroots.forEach(function(root){ if(!AIRITI_VARS[root]) AIRITI_VARS[root]=[];
             var rw=document.createElement("div"); rw.className="pmvarrow"; var lb=document.createElement("span"); lb.className="pmvarroot"; lb.textContent=root+"*"; rw.appendChild(lb);
             var cands=_acands(root); AIRITI_VARS[root].forEach(function(v){ if(cands.indexOf(v)<0) cands.push(v); });
             cands.forEach(function(cand){ var chip=document.createElement("span"); var on=AIRITI_VARS[root].indexOf(cand)>=0; chip.className="chip"+(on?" on":""); chip.textContent=cand;
@@ -7944,7 +7947,7 @@ a.tcmn{color:#2F6E5F;text-decoration:none;cursor:pointer}a.tcmn:hover{text-decor
       var zhs=f.zh.filter(function(z){ return st.dir==="en" || !haveZ[nz(z)]; });
       if(f.note){ var nt=el("div","tcmhint","⚠ "+T(f.note[0],f.note[1])); nt.style.color="#c0392b"; body.appendChild(nt); }   /* 11-19 藥材備註（乾薑、牛膝、川牛膝） */
       if(f.syn && f.syn.length) group(T("同物異名（→ 中文同義詞）","Same herb, other names (→ Chinese synonyms)"), f.syn.map(function(z){ return row(z,"zh"); }));
-      if(st.dir==="en" || f.alias.length || (f.naer && f.zh.length>1)) group(T("中文（→ 中文同義詞）","Chinese (→ Chinese synonyms)"), f.zh.map(function(z){ return row(z,"zh"); }));
+      if(st.dir==="en" || f.alias.length || (f.naer && f.zh.length>1) || f.zh.some(function(z){ return !haveZ[nz(z)]; })) group(T("中文（→ 中文同義詞）","Chinese (→ Chinese synonyms)"), f.zh.map(function(z){ return row(z,"zh"); }));
       var order=["off","py","en","alias","jp","kr","abbr","naer","mohw","std"];
       order.forEach(function(ty){ var arr=f.t.filter(function(t){ return t[1]===ty; }); var nodes=[];
         arr.forEach(function(t){ nodes.push(row(t[0],"en",cntEl(t),t[4])); });   /* 0 筆也預設顯示（灰字），以免日後有資料（Flora 11-19） */
