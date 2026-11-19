@@ -975,6 +975,7 @@ th.cvhead[data-vocab="mesh"]{position:relative}
           <span data-en><div>‧ <a href="https://chatgpt.com/share/6ad986ee-28e0-83ee-af26-543ff8b647d1" target="_blank" rel="noopener">Open ChatGPT prompt &amp; chat example ↗</a> or <button type="button" class="pcopy" data-pcopy>copy the prompt</button> (ChatGPT or Claude works best; signing in helps)</div><div>‧ Copy the whole table from ChatGPT etc., click the box below and press <b>Ctrl+V</b>; columns are auto-mapped by header and fill the PICO table below (Word / Excel also work)</div><div>‧ Include a header row (Concept / Chinese / English / Emtree / MeSH / CINAHL; omit columns you don't need; any order)</div><div style="color:var(--mut);padding-left:1.2em">(Results may vary with different copy methods; for complex tables with merged/nested cells, check the filled result and adjust as needed.)</div></span>
         </div>
         <textarea id="pasteZone" spellcheck="false" rows="4" style="width:100%" placeholder="在此按 Ctrl+V 貼上表格"></textarea>
+        <label id="pasteAppendLab" style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;margin-top:6px;cursor:pointer"><input type="checkbox" id="pasteAppend"><span data-zh>補上：貼上的每一列加在現有表格之後（不覆蓋現有內容）</span><span data-en>Append: add each pasted row after the existing rows (keep current content)</span></label>
         <div id="pasteMsg" style="font-size:12.5px;margin-top:6px"></div>
         <details id="pasteDiagBox" style="margin-top:10px;border-top:1px dashed var(--line);padding-top:8px">
           <summary style="cursor:pointer;font-size:12px;color:var(--mut)"><span data-zh>貼上後沒被正確辨識？點此開啟「貼上診斷」</span><span data-en>Paste not recognized correctly? Open “Paste diagnostics”</span></summary>
@@ -4377,7 +4378,9 @@ function befPluralOf(w){
       if(cols.length){ var _lb=String(r.label||"").trim(); _glued.push((en?("row "+(_ri+1)+(_lb?(" ("+_lb+")"):"")+": "):("第 "+(_ri+1)+" 列"+(_lb?("（"+_lb+"）"):"")+"："))+cols.join(en?", ":"、")); _gluedRows.push({ri:_ri, keys:keys}); } });
     if(!filled.length){ warn(en?"Table has no data rows.":"表格沒有資料列。"); return; }
     var pre=serializeState(); if(stateNonEmpty(pre)){ try{ localStorage.setItem(SNAP_KEY, JSON.stringify(pre)); }catch(e){} }  // 貼上前內容 → 供「還原上次」救回
-    picoBody.innerHTML="";
+    var _pa=document.getElementById("pasteAppend"), _app=!!(_pa&&_pa.checked), _off=0;   /* 補上：整列加在現有列之後（Flora 11-19） */
+    if(_app){ Array.prototype.slice.call(picoBody.querySelectorAll("tr")).forEach(function(tr){ var r=(tr._get&&tr._get())||{}; var has=["zh","ft","before","mesh","emtree","cinahl"].some(function(k){ return String(r[k]||"").trim(); }) || (r.cvx&&Object.keys(r.cvx).some(function(k){ return String(r.cvx[k]||"").trim(); })); if(!has) tr.remove(); }); _off=picoBody.querySelectorAll("tr").length; }
+    else picoBody.innerHTML="";
     var _anyBef=false;
     var _srcBef=(col.before!=null && col.before>=0);
     filled.forEach(function(r){ var sp=_importSplit(r.ft, r.before, _srcBef);
@@ -4391,7 +4394,7 @@ function befPluralOf(w){
     var miss=[]; ["ft","mesh","emtree","cinahl"].forEach(function(k){ if(col[k]<0) miss.push(k); });
     var missZh={ft:"英文同義詞",mesh:"MeSH",emtree:"Emtree",cinahl:"CINAHL"};
     pasteMsg.style.color="#166534";
-    pasteMsg.textContent=(en?("Filled "+filled.length+" row(s)."+(hasHeader?"":" (no header found — used default column order)")):("已填入 "+filled.length+" 列。"+(hasHeader?"":"（未偵測到標題，改用預設欄序）")))
+    pasteMsg.textContent=(en?((_app?"Appended ":"Filled ")+filled.length+" row(s)."+(hasHeader?"":" (no header found — used default column order)")):((_app?"已補上 ":"已填入 ")+filled.length+" 列。"+(hasHeader?"":"（未偵測到標題，改用預設欄序）")))
       +(miss.length?(en?(" Columns not matched: "+miss.map(function(k){return ({ft:"English synonyms",mesh:"MeSH",emtree:"Emtree",cinahl:"CINAHL"})[k]||k;}).join(", ")+"."):("　未對應到的欄："+miss.map(function(k){return missZh[k];}).join("、"))):"");
     // 黏詞提醒：放在「貼上表格」區塊外（貼上後該區塊會收起），並以橘框標示可疑儲存格
     var _pbx=$("#pasteBox"), _gwb=document.getElementById("pasteGlueWarn");
@@ -4415,7 +4418,7 @@ function befPluralOf(w){
       _gwb.appendChild(_gt); _gwb.appendChild(_gok); _gwb.appendChild(_gx);
       _pbx.parentNode.insertBefore(_gwb, _pbx.nextSibling);
       var _trsG=Array.prototype.slice.call(picoBody.querySelectorAll("tr"));
-      _gluedRows.forEach(function(g){ var tr=_trsG[g.ri]; if(!tr) return; g.keys.forEach(function(k){
+      _gluedRows.forEach(function(g){ var tr=_trsG[g.ri+_off]; if(!tr) return; g.keys.forEach(function(k){
         var ta = (k==="before") ? tr.querySelector("textarea.beftxt") : tr.querySelector('textarea[data-kind="'+k+'"]');
         if(k==="ft" && ta && !ta.value.trim()){ var _bt=tr.querySelector("textarea.beftxt"); if(_bt && _bt.value.trim()) ta=_bt; }   // 英文同義詞被帶到「整理前」欄時，標示整理前
         if(ta){ ta.classList.add("cellglue"); ta.addEventListener("input", function _un(){ ta.classList.remove("cellglue"); ta.removeEventListener("input", _un); }); }
@@ -4755,7 +4758,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
   }
   function stripOuterParen(s){ s=(s||"").trim(); if(s[0]!=="("||s[s.length-1]!==")") return s; var depth=0; for(var i=0;i<s.length;i++){ if(s[i]==="(")depth++; else if(s[i]===")"){ depth--; if(depth===0 && i<s.length-1) return s; } } return s.slice(1,-1).trim(); }
   var PM_EXPAND=false, PM_VARIANTS=null;   // PubMed 卡片「使用鄰近字語法（展開群組配對）」狀態
-  var EMBASE_EXCL="medline", AIRITI_INC=false;   // Embase.com 排除設定（none／medline／embaseonly）、華藝納入英文片語與切截：改由各自資料庫卡片的勾選控制
+  var EMBASE_EXCL="medline", AIRITI_INC=false, AIRITI_EN_CLEAN=true, AIRITI_VARS={};   // Embase.com 排除設定（none／medline／embaseonly）、華藝納入英文片語與切截：改由各自資料庫卡片的勾選控制
   function scopeFreetext(freetext, startDB, db, level, warnOut){
     RENDER_OPTS.expand = (db==="pubmed" && !!PM_EXPAND);
     RENDER_OPTS.variants = (db==="pubmed" ? (PM_VARIANTS||null) : null);
@@ -5000,27 +5003,29 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
       // 英文逐行過濾：鄰近字／含括號分組 → 保留（引擎會把鄰近字轉 AND）；單一乾淨字 → 保留；純片語或含切截詞 → 預設略過（勾選則納入）
       var OPRE=/\b(?:ADJ\d*|NEAR(?:\/\d+)?|NEXT(?:\/\d+)?|PRE\/\d+|W\/?\d+|N\/?\d+)\b|鄰\s*近?\s*\d|\bwithin\s+\d+\s+words?\b/i;
       var enLines=String(ftCell||"").split(/\r?\n/).map(function(s){return s.trim();}).filter(Boolean);
-      var kept=[], dropped=false, keptComplex=false;
-      enLines.forEach(function(l){
-        var hasOp=OPRE.test(l)||/[()]/.test(l), isPhrase=/\s/.test(l)&&!hasOp, hasTrunc=/[*?#$]/.test(l);
-        if(hasOp){ kept.push(l); if(hasTrunc)keptComplex=true; }
-        else if(!isPhrase && !hasTrunc){ kept.push(l); }
-        else if(incAll){ kept.push(l); keptComplex=true; }
-        else { dropped=true; }
+      var kept=[], dropped=false, keptComplex=false;   /* 華藝（Flora 11-19）：預設不納入英文；全部英文詞都沒有切截與片語時才納入；勾選「加入英文（拼字變化）」則以勾選的字形取代切截 */
+      if(!incAll){ if(AIRITI_EN_CLEAN) kept=enLines.slice(); else if(enLines.length) dropped=true; }
+      else enLines.forEach(function(l){
+        var hasOp=OPRE.test(l)||/[()]/.test(l), isPhrase=/\s/.test(l)&&!hasOp;
+        var vf=function(tok){ var m=tok.match(/^([A-Za-z][A-Za-z\-']*)[*?#$]+$/); if(!m) return [tok]; var v=(AIRITI_VARS[m[1].toLowerCase()]||[]).filter(Boolean); return v.length?v:[m[1]]; };
+        if(hasOp){ kept.push(l.replace(/[A-Za-z][A-Za-z\-']*[*?#$]+/g, function(t){ var v=vf(t); return v.length>1?"("+v.join(" OR ")+")":v[0]; })); keptComplex=true; }
+        else { var parts=l.split(/\s+/), combos=[""]; parts.forEach(function(p){ var v=vf(p), nx=[]; combos.forEach(function(c){ v.forEach(function(x){ if(nx.length<40) nx.push(c?c+" "+x:x); }); }); combos=nx; });
+          combos.forEach(function(c){ if(kept.indexOf(c)<0) kept.push(c); }); if(isPhrase) keptComplex=true; }
       });
-      var enc=SYNTAX_MAP.truncation.airiti.encode, savedStar=enc["*"]; if(incAll) enc["*"]="*";  // 勾選則保留切截
       var combined=[]; if(zh.length) combined.push(zhX ? twExprStr(zhX, function(v){ return v; }, "upper") : zh.join(" OR ")); if(kept.length) combined.push(kept.join("\n"));
       var line = combined.length ? scopeFreetext(combined.join("\n"), startEng, "airiti", level, []) : "";
-      enc["*"]=savedStar;
+      if(level==="L0") pushRem(isEn()   /* 華藝 LV0＝LV1（Flora 11-19） */
+        ? (tgLabel+": Broadest (LV0) is the same as Comprehensive (LV1) here, both [ALL3]; to search all Airiti fields including full text, change [ALL3] to [ALL] yourself.")
+        : (tgLabel+"：選擇 LV0（最廣）與 LV1（完整）相同，皆為 [ALL3]；如要查華藝真正的所有欄位（含文章全文），請自行將 [ALL3] 改為 [ALL]。"));
       if(dropped) pushRem(isEn()
-        ? (tgLabel+": English phrases and truncated (*) terms were skipped by default — tick “Airiti: include English phrases & truncation” to add them.")
-        : (tgLabel+"：已略過英文片語與含切截（*）的詞（預設）；如需納入請勾選「華藝：納入英文片語與切截」。"));
-      if(OPRE.test(String(ftCell||""))) pushRem(isEn()
+        ? (tgLabel+": English terms are not included by default because some use truncation (*) or phrases, which Airiti does not handle well — tick “Add English (spelling variants)” on this card to add them with the word forms you choose.")
+        : (tgLabel+"：英文詞有切截（*）或片語，華藝支援不佳，預設不納入；如需納入，請勾選此卡片的「加入英文（拼字變化）」並選擇字形。"));
+      if(incAll && OPRE.test(String(ftCell||""))) pushRem(isEn()
         ? (tgLabel+": proximity was converted to AND.")
         : (tgLabel+"：鄰近字已改為 AND。"));
-      if(keptComplex || (!incAll && /[*]/.test(String(ftCell||"")))) pushRem(isEn()
-        ? (tgLabel+": Airiti's support for phrases/truncation is limited — verify in the database.")
-        : (tgLabel+"：華藝對片語／切截支援有限，請自行於資料庫確認結果。"));
+      if(keptComplex) pushRem(isEn()
+        ? (tgLabel+": Airiti's support for English phrases is limited — verify in the database.")
+        : (tgLabel+"：華藝對英文片語支援有限，請自行於資料庫確認結果。"));
       return (line && line.trim()) ? line.trim() : null;
     }
     // ndltd 國圖：中文加雙引號＋欄位；英文交給共用引擎（逐詞加欄位、鄰近字→and、保留 OR 分組、可片語可切截），最後以小寫 or 串接
@@ -5117,6 +5122,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
         return;
       }
       if(eng==="airiti"||eng==="ndltd"){
+        if(eng==="airiti" && _ri===0) AIRITI_EN_CLEAN=rows.every(function(x){ return String(x.ft||"").split(/\r?\n/).every(function(l){ l=l.trim(); return !l || /^[A-Za-z0-9][A-Za-z0-9\-']*$/.test(l); }); });   /* 全部英文詞都是單字、無切截才預設納入 */
         var twLine = buildTaiwanLine(r.zh, r.ft, eng, _lv, reminders, tg.label, startEng);
         if(twLine){ qlines.push({n:lineNum, text:twLine}); refs.push("#"+lineNum); lineNum++; }
         var grp0 = refs.length ? refs[0] : null;
@@ -5658,14 +5664,28 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
         ewrap.appendChild(erow);
         card.appendChild(ewrap);
       }
-      // 華藝：納入英文片語與切截 —— 移到該庫卡片
-      if(tg.engine==="airiti"){
+      if(tg.engine==="airiti"){   /* 華藝：加入英文（拼字變化取代切截），做法同 PubMed 字尾候選（Flora 11-19） */
         var aopt=document.createElement("label"); aopt.className="pmopt";
         var acb=document.createElement("input"); acb.type="checkbox"; acb.checked=AIRITI_INC;
-        var asp=document.createElement("span"); asp.textContent=isEn()?"Include English phrases & truncation (Airiti support is limited)":"納入英文片語與切截（華藝支援有限）";
-        aopt.title=isEn()?"By default Airiti keeps only Chinese terms and single English words; tick to also include English phrases and truncated (*) terms.":"預設只納入中文詞與英文單字；勾選則一併納入英文片語與含切截(*)的詞。";
+        var asp=document.createElement("span"); asp.textContent=isEn()?"Add English (spelling variants replace truncation *)":"加入英文（以拼字變化取代切截 *）";
+        aopt.title=isEn()?"By default English terms are left out unless none of them uses truncation or a phrase. Tick to add them; truncated words are replaced by the word forms you tick below.":"預設不納入英文詞（除非所有英文詞都沒有切截與片語）。勾選後加入英文；含切截的詞改用下方勾選的字形。";
         aopt.appendChild(acb); aopt.appendChild(asp); card.appendChild(aopt);
         acb.onchange=function(){ AIRITI_INC=acb.checked; $("#genBtn").click(); };
+        var _aroots=[]; rows.forEach(function(r){ String(r.ft||"").replace(/[A-Za-z][A-Za-z\-']*(?=[*?#$])/g, function(t){ t=t.toLowerCase(); if(_aroots.indexOf(t)<0) _aroots.push(t); return t; }); });
+        if(AIRITI_INC && _aroots.length){
+          var avp=document.createElement("div"); avp.className="pmvar";
+          var ahd=document.createElement("div"); ahd.className="pmvarhd"; ahd.textContent=isEn()?"Suffix candidates — tick real word forms, add missing ones:":"字尾候選 — 勾選真實存在的字形、補上漏掉的："; avp.appendChild(ahd);
+          var _acands=function(stem){ var c=[stem,stem+"s",stem+"es",stem+"al",stem+"ic",stem+"ing",stem+"ed",stem+"a",stem+"y",stem+"ies",stem+"ion",stem+"ions"]; return c.filter(function(v,i){return c.indexOf(v)===i;}); };
+          _aroots.forEach(function(root){ if(!AIRITI_VARS[root]) AIRITI_VARS[root]=[root];
+            var rw=document.createElement("div"); rw.className="pmvarrow"; var lb=document.createElement("span"); lb.className="pmvarroot"; lb.textContent=root+"*"; rw.appendChild(lb);
+            var cands=_acands(root); AIRITI_VARS[root].forEach(function(v){ if(cands.indexOf(v)<0) cands.push(v); });
+            cands.forEach(function(cand){ var chip=document.createElement("span"); var on=AIRITI_VARS[root].indexOf(cand)>=0; chip.className="chip"+(on?" on":""); chip.textContent=cand;
+              chip.onclick=function(){ var L=AIRITI_VARS[root], k=L.indexOf(cand); if(k>=0) L.splice(k,1); else L.push(cand); $("#genBtn").click(); }; rw.appendChild(chip); });
+            var add=document.createElement("input"); add.type="text"; add.className="pmvaradd"; add.placeholder=isEn()?"Add + Enter":"加詞+Enter";
+            add.onkeydown=function(e){ if(e.key==="Enter"&&add.value.trim()){ var wd=add.value.trim(); if(AIRITI_VARS[root].indexOf(wd)<0) AIRITI_VARS[root].push(wd); $("#genBtn").click(); } }; rw.appendChild(add);
+            avp.appendChild(rw); });
+          card.appendChild(avp);
+        }
       }
       var countEls=[];
       var pre=document.createElement("pre"); allRows.forEach(function(x){ var ln=document.createElement("div"); ln.className="qline"; var gn=document.createElement("span"); gn.className="qn"; var _gnLbl=(x.n!=null?_refPrefix(tg.engine)+x.n:""); gn.textContent=_gnLbl; if(x.n!=null){ gn.classList.add("clk"); var _isComb=/#\d/.test(String(x.text||"")); gn.title=_isComb?(isEn()?"Click to copy the full one-line query (line numbers expanded)":"點一下複製整串檢索語法（行號已展開）"):(isEn()?"Click to copy this line":"點一下複製此行"); (function(_x,_lbl){ gn.onclick=function(){ var _t=_x.text; if(/#\d/.test(String(_t||""))){ try{ _t=expandNumberedQuery(_x,allRows); }catch(_e){} } /* 組合行：複製展開後的整串（Flora 11-16） */ try{ navigator.clipboard.writeText(_dispRefs(_t, tg.engine)); }catch(e){} gn.classList.add("copied"); gn.textContent="✓"; setTimeout(function(){ gn.textContent=_lbl; gn.classList.remove("copied"); },1000); }; })(x,_gnLbl); } var gs=document.createElement("span"); gs.className="qs"; var _tx=_dispRefs(x.text, tg.engine); if((cbColor&&cbColor.checked)||(cbBracket&&cbBracket.checked)||(cbLinks&&cbLinks.checked)){ gs.innerHTML=hlHighlight(_tx, tg.engine, cbColor&&cbColor.checked, cbBracket&&cbBracket.checked, (tg.vocab||tg.cvx||null), cbLinks&&cbLinks.checked).html; } else { gs.textContent=_tx; } ln.appendChild(gn); ln.appendChild(gs); if(tg.engine==="pubmed"){var ct=document.createElement("span");ct.className="pmcount";ct.textContent="—";ln.appendChild(ct);countEls.push(ct);} pre.appendChild(ln); }); card.appendChild(pre);
