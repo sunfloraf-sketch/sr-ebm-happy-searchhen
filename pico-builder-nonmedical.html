@@ -3728,6 +3728,8 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
       return s;
     }).filter(Boolean).filter(function(s){ return !/^(AND|OR|NOT)$/i.test(s); });
   }
+  function _vUnw(x){ return /^\u0001[^\u0001\u0002]*\u0002$/.test(x) ? x.slice(1,-1) : _vWrp(x); }   /* 拼字變化標記：OR 串中去掉、其他位置改成括號（Flora 11-20） */
+  function _vWrp(x){ return String(x).replace(/\u0001/g,"(").replace(/\u0002/g,")"); }
   function buildTaiwanLine(zhCell, ftCell, eng, level, reminders, tgLabel, startEng){
     var zhX = twChineseExpr(zhCell);   // 中文同義詞有括號／布林結構時保留結構
     var zh = zhX ? zhX.filter(function(t){return t.k==="t";}).map(function(t){return t.v;}) : twChineseTerms(zhCell), en = twEnglishTerms(ftCell);
@@ -3759,13 +3761,13 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
           if(n.term!=null){ var raw=n.term.replace(/^"|"$/g,""), parts=raw.split(/\s+/), combos=[""];
             parts.forEach(function(p){ var v=vf(p), nx=[]; combos.forEach(function(c){ v.forEach(function(x){ if(nx.length<40) nx.push(c?c+" "+x:x); }); }); combos=nx; });
             if(!combos.length) return null; if(parts.length>1) keptComplex=true;
-            var q=combos.map(function(c){ return /\s/.test(c)?'"'+c+'"':c; }); return q.length>1?"("+q.join(" OR ")+")":q[0]; }
-          var it=n.items.map(prune), allOr=n.ops.every(function(o){ return /^OR$/i.test(o); });
+            var q=combos.map(function(c){ return /\s/.test(c)?'"'+c+'"':c; }); return q.length>1?"\u0001"+q.join(" OR ")+"\u0002":q[0]; }
+          var allOr=n.ops.every(function(o){ return /^OR$/i.test(o); }), _raw=n.items.map(prune), _nn=_raw.filter(function(x){ return x!=null; }).length, it=_raw.map(function(x){ return (x==null||_nn<2)?x:(allOr?_vUnw(x):_vWrp(x)); });   /* 同一組 OR 裡的拼字變化不另加括號（Flora 11-20） */
           if(!allOr){ keptComplex=true; if(it.some(function(x){ return x==null; })) return null; }
           var outI=[], outO=[]; it.forEach(function(x,i){ if(x==null) return; if(outI.length) outO.push(allOr?"OR":n.ops[i-1]); outI.push(x); });
           if(!outI.length) return null; if(outI.length===1) return outI[0];
           var s=outI[0]; for(var i=1;i<outI.length;i++) s+=" "+outO[i-1]+" "+outI[i]; return "("+s+")"; }
-        var res=prune(tree); if(res) kept.push(res.replace(/^\((.*)\)$/,function(all,inner){ var d=0; for(var i=0;i<inner.length;i++){ if(inner[i]==="(")d++; else if(inner[i]===")"){ d--; if(d<0) return all; } } return inner; }));
+        var res=prune(tree); if(res) res=_vWrp(_vUnw(res)); if(res) kept.push(res.replace(/^\((.*)\)$/,function(all,inner){ var d=0; for(var i=0;i<inner.length;i++){ if(inner[i]==="(")d++; else if(inner[i]===")"){ d--; if(d<0) return all; } } return inner; }));
       })();
       var combined=[]; if(zh.length) combined.push(zhX ? twExprStr(zhX, function(v){ return v; }, "upper") : zh.join(" OR ")); if(kept.length) combined.push(kept.join("\n"));
       var line = combined.length ? scopeFreetext(combined.join("\n"), startEng, "airiti", level, []) : "";
