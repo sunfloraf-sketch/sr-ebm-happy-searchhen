@@ -3739,7 +3739,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
       // 英文逐行過濾：鄰近字／含括號分組 → 保留（引擎會把鄰近字轉 AND）；單一乾淨字 → 保留；純片語或含切截詞 → 預設略過（勾選則納入）
       var OPRE=/\b(?:ADJ\d*|NEAR(?:\/\d+)?|NEXT(?:\/\d+)?|PRE\/\d+|W\/?\d+|N\/?\d+)\b|(?:相)?鄰\s*近?\s*\d/i;
       var enLines=String(ftCell||"").split(/\r?\n/).map(function(s){return s.trim();}).filter(Boolean);
-      var kept=[], dropped=false, keptComplex=false, noVar=false;   /* 華藝（Flora 11-19）：預設不納入英文；全部英文詞都沒有切截與片語時才納入；勾選「加入英文（拼字變化）」則以勾選的字形取代切截 */
+      var kept=[], dropped=false, keptComplex=false, noVar=false, _phD=[];   /* 華藝（Flora 11-19）：預設不納入英文；全部英文詞都沒有切截與片語時才納入；勾選「加入英文（拼字變化）」則以勾選的字形取代切截 */
       if(!incAll){ if(AIRITI_EN_CLEAN) kept=enLines.slice(); else if(enLines.length) dropped=true; }
       else (function(){   /* 加入英文：整格英文解析成運算式；未選字形的切截詞剔除（OR 串中只剔除該詞；AND／鄰近等一側變空則整段剔除）（Flora 11-19） */
         var OPS=/^(AND|OR|NOT|NEAR(?:\/\d+)?|NEXT(?:\/\d+)?|ADJ\d*|PRE\/\d+|W\/?\d+|N\/?\d+)$/i;
@@ -3759,6 +3759,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
         var vf=function(tok){ var mm=tok.match(/^([A-Za-z][A-Za-z\-']*)[*?#$]+$/); if(!mm) return [tok]; var v=(AIRITI_VARS[mm[1].toLowerCase()]||[]).filter(Boolean); if(!v.length) noVar=true; return v; };
         function prune(n){
           if(n.term!=null){ var raw=n.term.replace(/^"|"$/g,""), parts=raw.split(/\s+/), combos=[""];
+            if(parts.length>1){ if(_phD.indexOf(raw)<0) _phD.push(raw); return null; }   /* 華藝不加入英文片語（Flora 11-20） */
             parts.forEach(function(p){ var v=vf(p), nx=[]; combos.forEach(function(c){ v.forEach(function(x){ if(nx.length<40) nx.push(c?c+" "+x:x); }); }); combos=nx; });
             if(!combos.length) return null; if(parts.length>1) keptComplex=true;
             var q=combos.map(function(c){ return /\s/.test(c)?'"'+c+'"':c; }); return q.length>1?"\u0001"+q.join(" OR ")+"\u0002":q[0]; }
@@ -3778,14 +3779,14 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
         ? (tgLabel+": Broadest (LV0) is the same as Comprehensive (LV1) here, both [ALL3]; to search all Airiti fields including full text, change [ALL3] to [ALL] yourself.")
         : (tgLabel+"：選擇 LV0（最廣）與 LV1（完整）相同，皆為 [ALL3]；如要查華藝真正的所有欄位（含文章全文），請自行將 [ALL3] 改為 [ALL]。"));
       if(dropped) pushRem(isEn()
-        ? (tgLabel+": English terms are not included by default because some use truncation (*) or phrases, which Airiti does not handle well — tick “Add English (spelling variants)” on this card to add them with the word forms you choose.")
-        : (tgLabel+"：英文詞有切截（*）或片語，華藝支援不佳，預設不納入；如需納入，請勾選此卡片的「加入英文（拼字變化）」並選擇字形。"));
+        ? (tgLabel+": English terms are not included by default because some use truncation (*) or phrases, which Airiti does not handle well — tick “Add English (spelling variants)” on this card to add them with the word forms you choose (phrases are not added).")
+        : (tgLabel+"：英文詞有切截（*）或片語，華藝支援不佳，預設不納入；如需納入，請勾選此卡片的「加入英文（拼字變化）」並選擇字形（片語不加入）。"));
       if(incAll && OPRE.test(String(ftCell||""))) pushRem(isEn()
         ? (tgLabel+": proximity was converted to AND.")
         : (tgLabel+"：鄰近字已改為 AND。"));
-      if(keptComplex) pushRem(isEn()
-        ? (tgLabel+": Airiti's support for English phrases is limited — verify in the database.")
-        : (tgLabel+"：華藝對英文片語支援有限，請自行於資料庫確認結果。"));
+      if(_phD.length) pushRem(isEn()   /* 華藝不加入英文片語（Flora 11-20） */
+        ? (tgLabel+": English phrases are not added (Airiti handles them poorly): "+_phD.join("; ")+". In an AND / proximity group, the whole group is left out.")
+        : (tgLabel+"：華藝不加入英文片語（支援不佳）："+_phD.join("；")+"。片語在 AND／鄰近組合中時，整段不加入。"));
       return (line && line.trim()) ? line.trim() : null;
     }
     // ndltd 國圖：中文加雙引號＋欄位；英文交給共用引擎（逐詞加欄位、鄰近字→and、保留 OR 分組、可片語可切截），最後以小寫 or 串接
@@ -4298,7 +4299,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
         var aopt=document.createElement("label"); aopt.className="pmopt";
         var acb=document.createElement("input"); acb.type="checkbox"; acb.checked=AIRITI_INC;
         var asp=document.createElement("span"); asp.textContent=isEn()?"Add English (spelling variants replace truncation *)":"加入英文（以拼字變化取代切截 *）";
-        aopt.title=isEn()?"By default English terms are left out unless none of them uses truncation or a phrase. Tick to add them; truncated words are replaced by the word forms you tick below.":"預設不納入英文詞（除非所有英文詞都沒有切截與片語）。勾選後加入英文；含切截的詞改用下方勾選的字形。";
+        aopt.title=isEn()?"By default English terms are left out unless none of them uses truncation or a phrase. Tick to add them; truncated words are replaced by the word forms you tick below; phrases are not added.":"預設不納入英文詞（除非所有英文詞都沒有切截與片語）。勾選後加入英文；含切截的詞改用下方勾選的字形；片語不加入。";
         aopt.appendChild(acb); aopt.appendChild(asp); card.appendChild(aopt);
         acb.onchange=function(){ AIRITI_INC=acb.checked; $("#genBtn").click(); };
         var _aroots=[]; rows.forEach(function(r){ String(r.ft||"").replace(/[A-Za-z][A-Za-z\-']*(?=[*?#$])/g, function(t){ t=t.toLowerCase(); if(_aroots.indexOf(t)<0) _aroots.push(t); return t; }); });
