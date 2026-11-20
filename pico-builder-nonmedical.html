@@ -3782,7 +3782,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
       })();
       var combined=[]; if(zh.length) combined.push(zhX ? twExprStr(zhX, function(v){ return v; }, "upper") : zh.join(" OR ")); if(kept.length) combined.push(kept.join("\n"));
       var line = combined.length ? scopeFreetext(combined.join("\n"), startEng, "airiti", level, []) : "";
-      if(incAll && noVar) pushRem(isEn()
+      if(false /* _noVarRemOff：字尾候選區已有說明，不再提醒（Flora 11-20） */ && incAll && noVar) pushRem(isEn()
         ? (tgLabel+": truncated terms without a ticked word form were left out — tick the forms on this card.")
         : (tgLabel+"：尚未勾選字形的切截詞不加入；請在此卡片勾選字形。"));
       if(level==="L0") pushRem(isEn()   /* 華藝 LV0＝LV1（Flora 11-19） */
