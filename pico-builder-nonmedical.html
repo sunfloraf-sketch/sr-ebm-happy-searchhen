@@ -372,6 +372,7 @@
   .pmnote{padding:7px 14px;background:var(--warnbg);color:var(--warn);font-size:12px;border-top:1px dashed var(--line)}
   .pmvar{padding:10px 14px;border-top:1px dashed var(--line);background:#F4F7F8;font-size:12.5px}
   .pmvarhd{font-weight:600;color:var(--deco2);margin-bottom:8px}
+  .pmvartg{margin-left:auto;color:var(--deco2);font-size:12px;cursor:pointer;white-space:nowrap}.pmvartg:hover{text-decoration:underline}
   .qs.qsclk{cursor:pointer;border-radius:3px}.qs.qsclk:hover{background:#EAF3F0}.qs.qsclk.qsok{background:#DCEBE6}   /* 組合行點文字＝照原樣複製（Flora 11-20） */
   .pmvarrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:7px}
   .pmvar > .pmvarrow{position:relative;padding-left:130px}.pmvar > .pmvarrow > .pmvarroot{position:absolute;left:0;top:2px;min-width:0;max-width:126px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}   /* 字尾候選換行時第二行起對齊縮排（Flora 11-19） */
@@ -4307,11 +4308,11 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
         var acb=document.createElement("input"); acb.type="checkbox"; acb.checked=AIRITI_INC;
         var asp=document.createElement("span"); asp.textContent=isEn()?"Add English (spelling variants replace truncation *)":"加入英文（以拼字變化取代切截 *）";
         aopt.title=isEn()?"By default English terms are left out unless none of them uses truncation or a phrase. Tick to add them; truncated words are replaced by the word forms you tick below; phrases are not added.":"預設不納入英文詞（除非所有英文詞都沒有切截與片語）。勾選後加入英文；含切截的詞改用下方勾選的字形；片語不加入。";
-        aopt.appendChild(acb); aopt.appendChild(asp); card.appendChild(aopt);
+        aopt.appendChild(acb); aopt.appendChild(asp); var _apH=document.createElement("div"); card._apHold=_apH; _apH.appendChild(aopt);   /* 華藝／CNKI 加入英文選項移到檢索式下方（比照 PubMed 鄰近字，Flora 11-20） */
         acb.onchange=function(){ AIRITI_INC=acb.checked; $("#genBtn").click(); };
         var _aroots=[]; rows.forEach(function(r){ String(r.ft||"").replace(/[A-Za-z][A-Za-z\-']*(?=[*?#$])/g, function(t){ t=t.toLowerCase(); if(_aroots.indexOf(t)<0) _aroots.push(t); return t; }); });
         if(AIRITI_INC && _aroots.length){
-          var avp=document.createElement("div"); avp.className="pmvar";
+          var avp=document.createElement("div"); avp.className="pmvar"; var _vhK="airiti", _vh=window._srVarHide||(window._srVarHide={}); if(_vh[_vhK]) avp.style.display="none"; var _tg=document.createElement("span"); _tg.className="pmvartg"; var _tgT=function(){ _tg.textContent=_vh[_vhK]?(isEn()?"Show word forms ▾":"顯示字尾候選 ▾"):(isEn()?"Hide word forms ▴":"隱藏字尾候選 ▴"); }; _tgT(); _tg.onclick=function(e){ e.preventDefault(); e.stopPropagation(); _vh[_vhK]=!_vh[_vhK]; avp.style.display=_vh[_vhK]?"none":""; _tgT(); }; aopt.appendChild(_tg);   /* 字尾候選可隱藏（記憶體，重新產生仍保持；Flora 11-20） */
           var ahd=document.createElement("div"); ahd.className="pmvarhd"; ahd.textContent=isEn()?"Suffix candidates — tick real word forms, add missing ones:":"字尾候選 — 勾選真實存在的字形、補上漏掉的："; avp.appendChild(ahd);
           var _acands=function(stem){ var c=[stem,stem+"s",stem+"es",stem+"al",stem+"ic",stem+"ing",stem+"ed",stem+"a",stem+"y",stem+"ies",stem+"ion",stem+"ions"]; return c.filter(function(v,i){return c.indexOf(v)===i;}); };
           _aroots.forEach(function(root){ if(!AIRITI_VARS[root]) AIRITI_VARS[root]=[];
@@ -4322,7 +4323,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
             var add=document.createElement("input"); add.type="text"; add.className="pmvaradd"; add.placeholder=isEn()?"Add + Enter":"加詞+Enter";
             add.onkeydown=function(e){ if(e.key==="Enter"&&add.value.trim()){ var wd=add.value.trim(); if(AIRITI_VARS[root].indexOf(wd)<0) AIRITI_VARS[root].push(wd); $("#genBtn").click(); } }; rw.appendChild(add);
             avp.appendChild(rw); });
-          card.appendChild(avp);
+          _apH.appendChild(avp);
         }
       }
       var countEls=[];
@@ -4536,6 +4537,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
           } else { varPanel.style.display="none"; noteEl.style.display="none"; pmRecompute(); }
         };
       }
+      if(card._apHold) card.appendChild(card._apHold);
       outs.appendChild(card);
     });
     window._srPmCount=function(q){ return fetchPubmedCount(q); };

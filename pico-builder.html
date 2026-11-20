@@ -418,6 +418,7 @@
   .pmnote{padding:7px 14px;background:var(--warnbg);color:var(--warn);font-size:12px;border-top:1px dashed var(--line)}
   .pmvar{padding:10px 14px;border-top:1px dashed var(--line);background:#F4F7F8;font-size:12.5px}
   .pmvarhd{font-weight:600;color:var(--deco2);margin-bottom:8px}
+  .pmvartg{margin-left:auto;color:var(--deco2);font-size:12px;cursor:pointer;white-space:nowrap}.pmvartg:hover{text-decoration:underline}
   .qs.qsclk{cursor:pointer;border-radius:3px}.qs.qsclk:hover{background:#EAF3F0}.qs.qsclk.qsok{background:#DCEBE6}   /* 組合行點文字＝照原樣複製（Flora 11-20） */
   .pmvarcp{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:-2px 0 8px;color:var(--muted,#5A6872)}.pmvarcpb{font:inherit;font-size:12px;padding:2px 10px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--deco2);cursor:pointer}.pmvarcpb:hover{border-color:var(--deco2);background:#EAF3F0}   /* 字尾候選「比照」按鈕（Flora 11-19） */
   .pmvarrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:7px}
@@ -5750,11 +5751,11 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
         var acb=document.createElement("input"); acb.type="checkbox"; acb.checked=_INC;
         var asp=document.createElement("span"); asp.textContent=isEn()?"Add English (spelling variants replace truncation *)":"加入英文（以拼字變化取代切截 *）";
         aopt.title=_isC?(isEn()?"CNKI has no truncation (* means AND). By default English terms are left out unless none of them uses truncation. Tick to add them; truncated words are replaced by the word forms you tick below.":"CNKI 不支援切截（* 代表 AND）。預設不納入英文詞（除非所有英文詞都沒有切截）。勾選後加入英文；含切截的詞改用下方勾選的字形。"):isEn()?"By default English terms are left out unless none of them uses truncation or a phrase. Tick to add them; truncated words are replaced by the word forms you tick below; phrases are not added.":"預設不納入英文詞（除非所有英文詞都沒有切截與片語）。勾選後加入英文；含切截的詞改用下方勾選的字形；片語不加入。";
-        aopt.appendChild(acb); aopt.appendChild(asp); card.appendChild(aopt);
+        aopt.appendChild(acb); aopt.appendChild(asp); var _apH=document.createElement("div"); card._apHold=_apH; _apH.appendChild(aopt);   /* 華藝／CNKI 加入英文選項移到檢索式下方（比照 PubMed 鄰近字，Flora 11-20） */
         acb.onchange=function(){ if(_isC) CNKI_INC=acb.checked; else AIRITI_INC=acb.checked; $("#genBtn").click(); };
         var _aroots=[]; rows.forEach(function(r){ String(r.ft||"").replace(/[A-Za-z][A-Za-z\-']*(?=[*?#$])/g, function(t){ t=t.toLowerCase(); if(_aroots.indexOf(t)<0) _aroots.push(t); return t; }); });
         if(_INC && _aroots.length){
-          var avp=document.createElement("div"); avp.className="pmvar";
+          var avp=document.createElement("div"); avp.className="pmvar"; var _vhK=(_isC?"cnki":"airiti"), _vh=window._srVarHide||(window._srVarHide={}); if(_vh[_vhK]) avp.style.display="none"; var _tg=document.createElement("span"); _tg.className="pmvartg"; var _tgT=function(){ _tg.textContent=_vh[_vhK]?(isEn()?"Show word forms ▾":"顯示字尾候選 ▾"):(isEn()?"Hide word forms ▴":"隱藏字尾候選 ▴"); }; _tgT(); _tg.onclick=function(e){ e.preventDefault(); e.stopPropagation(); _vh[_vhK]=!_vh[_vhK]; avp.style.display=_vh[_vhK]?"none":""; _tgT(); }; aopt.appendChild(_tg);   /* 字尾候選可隱藏（記憶體，重新產生仍保持；Flora 11-20） */
           var ahd=document.createElement("div"); ahd.className="pmvarhd"; ahd.textContent=isEn()?"Suffix candidates — tick real word forms, add missing ones:":"字尾候選 — 勾選真實存在的字形、補上漏掉的："; avp.appendChild(ahd);
           avp.appendChild(_srVarCpBar([{lb:"PubMed", get:function(){ return PM_VARS_LAST; }}, _isC?{lb:isEn()?"Airiti":"華藝", get:function(){ return AIRITI_VARS; }}:{lb:"CNKI", get:function(){ return CNKI_VARS; }}], function(src){ var n=_srVarCopy(_VS, src, _aroots); if(n) $("#genBtn").click(); return n; }));
           var _acands=function(stem){ var c=[stem,stem+"s",stem+"es",stem+"al",stem+"ic",stem+"ing",stem+"ed",stem+"a",stem+"y",stem+"ies",stem+"ion",stem+"ions"]; return c.filter(function(v,i){return c.indexOf(v)===i;}); };
@@ -5766,7 +5767,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
             var add=document.createElement("input"); add.type="text"; add.className="pmvaradd"; add.placeholder=isEn()?"Add + Enter":"加詞+Enter";
             add.onkeydown=function(e){ if(e.key==="Enter"&&add.value.trim()){ var wd=add.value.trim(); if(_VS[root].indexOf(wd)<0) _VS[root].push(wd); $("#genBtn").click(); } }; rw.appendChild(add);
             avp.appendChild(rw); });
-          card.appendChild(avp);
+          _apH.appendChild(avp);
         }
       }
       var countEls=[];
@@ -5924,6 +5925,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
           } else { varPanel.style.display="none"; noteEl.style.display="none"; pmRecompute(); }
         };
       }
+      if(card._apHold) card.appendChild(card._apHold);
       outs.appendChild(card);
     });
     window._srPmCount=function(q){ return fetchPubmedCount(q); };
