@@ -403,9 +403,17 @@
 .mdtn{font-size:11px;color:#9AA5AB;font-weight:400}
 .mdtbl tr.mdroot2 td{font-size:13px}
 .mdleaf{padding-left:1.05em}
+.mdtbl a.mdcnt{color:inherit;text-decoration:underline dotted #9AA5AB;text-underline-offset:3px}
+.mdtbl a.mdcnt:hover{color:var(--sh-green-d);text-decoration:underline}
 .mdlk{font-size:11px;color:#9AA5AB !important;text-decoration:none}
 .mdlk:hover{color:var(--sh-green-d) !important}
 .mdq{font-family:"SF Mono",Consolas,monospace;font-size:12px;background:var(--codebg);border:1px solid var(--line);border-radius:6px;padding:6px 8px;margin:8px 0 6px;word-break:break-word}
+<style id="stFoldStyle">/* _stFold */
+#stPanel .sthd{cursor:pointer;user-select:none}
+#stPanel .stcar{display:inline-block;width:1em;color:var(--mut);font-size:.8em;transition:transform .15s}
+#stPanel:not(.fold) .stcar{transform:rotate(90deg)}
+#stPanel.fold > :not(.sthd){display:none}
+#stPanel.fold .sthd{margin-bottom:0}
 </style>
 </head>
 <body>
@@ -462,9 +470,9 @@
     </div>
   </div>
 
-  <!-- ② 檢索策略 -->
-  <div class="panel">
-    <h2><span data-zh>② PubMed 檢索策略</span><span data-en>② PubMed search strategy</span></h2>
+  <!-- ② 檢索策略（_stFold：預設縮起，點標題展開；Flora 11-21） -->
+  <div class="panel fold" id="stPanel">
+    <h2 class="sthd" role="button" tabindex="0" aria-expanded="false" aria-controls="stPanel"><span class="stcar" aria-hidden="true">▸</span> <span data-zh>② PubMed 檢索策略與自訂組合</span><span data-en>② PubMed strategy and custom combination</span></h2>
     <div id="stratWrap"></div>
     <div class="combo">
       <label class="cgrp" for="comboTa"><span data-zh>自訂組合（選填）</span><span data-en>Custom combination (optional)</span></label>
@@ -1760,6 +1768,12 @@ function mdApply(){
   addItems(d.k, ls.map(function(l){ return {type:"ft", text:l, from:""}; }));
   MD.applied2=codeOf(d.k); MD.sel={}; MD.applied=String(state.combo||"").trim()?"combo":"ok"; mdRender();
 }
+/* _mdCnt：篇數可點 → 開 PubMed（原檢索式 AND 該標目 [mh]／[majr]；全部結果，不只分析的前 N 篇）（Flora 11-21） */
+function mdCntA(n, label, tag){
+  if(!n || !label || !MD.q) return fmtN(n);
+  var q="("+MD.q+') AND "'+label+'"['+tag+']';
+  return '<a class="mdcnt" href="'+esc(pmUrl(q))+'" target="_blank" rel="noopener" title="'+esc(T("在 PubMed 開啟："+q+"（全部結果，不限分析的前 "+fmtN(MD.n)+" 篇）","Open in PubMed: "+q+" (all results, not only the "+fmtN(MD.n)+" analysed)"))+'">'+fmtN(n)+'</a>';
+}
 function mdCk(u){ var on=!!MD.sel[u]; return '<input type="checkbox" data-ui="'+esc(u)+'"'+(on?' checked':'')+' aria-label="'+esc(mdLab(u))+'">'; }
 /* _mdTree2：樹狀分類改為真正的 MeSH 樹，預設只顯示根目錄 A、B、C…，每點一下展開一層；可依篇數／重點／字母排序（Flora 11-20） */
 function mdNodeStats(showCt){
@@ -1823,7 +1837,7 @@ function mdTreeHtml(list, key, pc){
     var inner=kids.length?('<button type="button" class="mdtog" data-g="'+esc(q)+'" aria-expanded="'+op+'">'+(op?"▾":"▸")+' '+lab+meta+'</button>'):('<span class="mdleaf">'+lab+meta+'</span>');
     if(ui) inner+=' <a class="mdlk" href="https://meshb.nlm.nih.gov/record/ui?ui='+encodeURIComponent(ui)+'" target="_blank" rel="noopener" title="'+esc(T("在 MeSH Browser 查看","Open in MeSH Browser"))+'">↗</a>';
     h+='<tr class="'+(depth?'mdsub':'mdroot2')+(ui&&MD.sel[ui]?' sel':'')+'"><td class="mdck">'+(ui?mdCk(ui):'')+'</td><td style="padding-left:'+(6+depth*16)+'px">'+inner+'</td>'+
-      '<td class="mdn">'+fmtN(ns.n[q]||0)+' <span style="color:var(--mut)">('+pc(ns.n[q]||0)+')</span></td><td class="mdn">'+fmtN(ns.m[q]||0)+' <span style="color:var(--mut)">('+pc(ns.m[q]||0)+')</span></td></tr>';
+      '<td class="mdn">'+mdCntA(ns.n[q]||0, ui?nm:"", "mh")+' <span style="color:var(--mut)">('+pc(ns.n[q]||0)+')</span></td><td class="mdn">'+mdCntA(ns.m[q]||0, ui?nm:"", "majr")+' <span style="color:var(--mut)">('+pc(ns.m[q]||0)+')</span></td></tr>';
     if(op){ kids.sort(cmp).forEach(function(c){ row(c, depth+1); }); }
   }
   Object.keys(ns.kids[""]||{}).sort().forEach(function(L){ row(L, 0); });
@@ -1861,8 +1875,8 @@ function mdRender(){
         var on=!!MD.sel[t.ui];
         return '<tr'+(on?' class="sel"':'')+'><td class="mdck"><input type="checkbox" data-ui="'+esc(t.ui)+'"'+(on?' checked':'')+' aria-label="'+esc(t.label)+'"></td>'+
           '<td><a href="https://meshb.nlm.nih.gov/record/ui?ui='+encodeURIComponent(t.ui)+'" target="_blank" rel="noopener" title="'+esc(T("在 MeSH Browser 查看","Open in MeSH Browser"))+'">'+esc(t.label)+'</a></td>'+
-          '<td class="mdn">'+fmtN(t.n)+' <span style="color:var(--mut)">('+pc(t.n)+')</span>'+(key==="n"?'<span class="mdbarv" style="width:'+Math.max(2,Math.round(t.n*60/top))+'px"></span>':'')+'</td>'+
-          '<td class="mdn">'+fmtN(t.major)+' <span style="color:var(--mut)">('+pc(t.major)+')</span>'+(key==="major"?'<span class="mdbarv mj" style="width:'+Math.max(2,Math.round(t.major*60/top))+'px"></span>':'')+'</td></tr>';
+          '<td class="mdn">'+mdCntA(t.n, t.label, "mh:noexp")+' <span style="color:var(--mut)">('+pc(t.n)+')</span>'+(key==="n"?'<span class="mdbarv" style="width:'+Math.max(2,Math.round(t.n*60/top))+'px"></span>':'')+'</td>'+
+          '<td class="mdn">'+mdCntA(t.major, t.label, "majr:noexp")+' <span style="color:var(--mut)">('+pc(t.major)+')</span>'+(key==="major"?'<span class="mdbarv mj" style="width:'+Math.max(2,Math.round(t.major*60/top))+'px"></span>':'')+'</td></tr>';
       }).join("")+'</tbody></table>';
     if(list.length>LIM) h+='<button type="button" class="mdmore" id="mdMore">'+esc(MD.more?T("只顯示前 "+LIM+" 個","Show top "+LIM+" only"):T("顯示全部 "+list.length+" 個標目","Show all "+list.length+" headings"))+'</button>';
   }
@@ -1894,6 +1908,13 @@ function mdRender(){
     if(t.closest(".mdtog")){ var g=t.closest(".mdtog").getAttribute("data-g"); MD.open[g]=!MD.open[g]; if(MD.open[g] && MD._ns) mdNames(Object.keys(MD._ns.kids[g]||{})); mdRender(); return; }
     if(t.closest("#mdTreeRetry")){ mdTrees(MD.run); return; }
   });
+})();
+(function(){   /* _stFold：② 標題點按／Enter／空白鍵展開收合 */
+  var pn=$("stPanel"), hd=pn&&pn.querySelector(".sthd"); if(!hd) return;
+  function tg(){ var f=pn.classList.toggle("fold"); hd.setAttribute("aria-expanded", String(!f)); }
+  hd.addEventListener("click", tg);
+  hd.addEventListener("keydown", function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); tg(); } });
+  window._pmlStOpen=function(){ if(pn.classList.contains("fold")) tg(); };
 })();
 function renderAll(){ renderRows(); renderStrategy(); renderSide(); }
 // 供網站導覽使用：暫時換成示範內容，結束後還原（示範期間不存檔）
@@ -2140,10 +2161,10 @@ renderAll();
     { el:"#totalBtn",
       zh:{t:"在 PubMed 執行", d:"顯示組合後的總筆數，按下去就直接在 PubMed 開啟這個檢索式。"},
       en:{t:"Run in PubMed", d:"Shows the combined count; click to open the search in PubMed."} },
-    { el:function(){ var s=document.getElementById("stratWrap"); return s&&s.closest(".panel"); },
-      zh:{t:"② PubMed 檢索策略", d:"自動列出逐行策略（#1、#2…）與各行筆數。可以<b>複製檢索式</b>、<b>複製逐行策略</b>，或直接在 PubMed 執行。"},
+    { el:function(){ var s=document.getElementById("stratWrap"); return s&&s.closest(".panel"); }, before:function(){ if(window._pmlStOpen) window._pmlStOpen(); },
+      zh:{t:"② PubMed 檢索策略與自訂組合", d:"點標題展開。自動列出逐行策略（#1、#2…）與各行筆數。可以<b>複製檢索式</b>、<b>複製逐行策略</b>，或直接在 PubMed 執行。"},
       en:{t:"② PubMed strategy", d:"The line-by-line strategy (#1, #2…) with counts. <b>Copy the query</b>, <b>copy line-by-line</b>, or run it in PubMed."} },
-    { el:"#comboTa",
+    { el:"#comboTa", before:function(){ if(window._pmlStOpen) window._pmlStOpen(); },
       zh:{t:"自訂組合（選填）", d:"不想全部 AND？每行寫一個組合，例如 <code>(#1 OR #2) AND #3</code>，可用 AND／OR／NOT 與括號；最後一行就是最終檢索式。"},
       en:{t:"Custom combination (optional)", d:"Not everything AND? Write one combination per line, e.g. <code>(#1 OR #2) AND #3</code>, with AND / OR / NOT and parentheses; the last line is the final query."} },
     { el:"#side",
