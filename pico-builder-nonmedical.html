@@ -2076,7 +2076,9 @@ if (typeof module !== "undefined" && module.exports) {
   // ---- 語法顏色標記 highlighter（綠=自由詞彙欄位+外層括弧, 紅=控制詞彙, 藍=鄰近字）----
   var PROX_RE=/\b(?:ADJ\d+|NEAR\/\d+|NEXT\/\d+|NEXT|N\d+|W\/\d+|W\d+|PRE\/\d+)\b|:~\d+/g;
   var CV_RE={pubmed:/(?:"[^"]*"|[A-Za-z][\w-]*)\s*\[(?:mh|mj|mesh)(?::noexp)?\]/gi,ovid:/(?:\bexp\s+)?\*?"[^"]*"\//gi,embase:/"[^"]*"\/(?:exp(?:\/mj)?|de|mj)\b/gi,cochrane:/\[mh\b[^\[\]]*(?:\[mj\])?\]/gi,ebsco:/\b(?:MH|MM)\s*\([^)]*\)|\bMW\s+"[^"]*"/gi,wos:null,scopus:null};
-  var FIELD_RE={pubmed:/\[(?:tiab|ti|tw|ab|all)\]/gi,ovid:/\.(?:ti|ab|kf|kw|mp|af|tw|nm|pt|sh|fs|xm|lg)(?:,(?:ti|ab|kf|kw|mp|af|tw|nm|pt|sh|fs|xm|lg))*\./gi,embase:/:(?:ti|ab|kw|de)(?:,(?:ti|ab|kw|de))*(?![a-z])/gi,cochrane:/:(?:ti|ab|kw|de)(?:,(?:ti|ab|kw|de))*(?![a-z])/gi,ebsco:/\b(?:TI|AB|KW|TX|XB)\b(?=\s*\()/gi,wos:/\b(?:TI|AB|AK|TS|ALL)=/gi,scopus:/\b(?:TITLE-ABS-KEY|TITLE-ABS|TITLE|ABS|AUTHKEY|KEY|ALL)\b(?=\s*\()/gi};
+  var FIELD_RE={pubmed:/\[(?:tiab|ti|tw|ab|all)\]/gi,ovid:/\.(?:ti|ab|kf|kw|mp|af|tw|nm|pt|sh|fs|xm|lg)(?:,(?:ti|ab|kf|kw|mp|af|tw|nm|pt|sh|fs|xm|lg))*\./gi,embase:/:(?:ti|ab|kw|de)(?:,(?:ti|ab|kw|de))*(?![a-z])/gi,cochrane:/:(?:ti|ab|kw|de)(?:,(?:ti|ab|kw|de))*(?![a-z])/gi,ebsco:/\b(?:TI|AB|KW|TX|XB)\b(?=\s*\()/gi,wos:/\b(?:TI|AB|AK|TS|ALL)=/gi,scopus:/\b(?:TITLE-ABS-KEY|TITLE-ABS|TITLE|ABS|AUTHKEY|KEY|ALL)\b(?=\s*\()/gi,
+    /* _cnFld：中文資料庫欄位也上色（Flora 11-21）：華藝 [ALL3]=、CNKI SU =／TI =／KY =、萬方 主題:／題名或關鍵詞:／題名:、國圖 .ti,ab,kw */
+    airiti:/\[(?:ALL3|ALL|TI|KW|AB|AU)\]=/g, cnki:/\b(?:SU|TI|KY|AB|FT|TKA)\s*=/g, wanfang:/(?:題名或關鍵詞|主題|題名|關鍵詞|摘要)\s*[:：]/g, ndltd:/\.(?:ti|ab|kw)(?:,(?:ti|ab|kw))*(?![a-z])/gi};
   // 控制詞彙查核連結：由標目文字 + 詞表類型 組出詞表查詢網址
   var _EBDEF={asc:"xti3bi",bsc:"j7dc2x",eric:"shmie4"};   // 成大各庫 EBSCOhost 機構碼（各庫不同）＝預設
   var _EBOV={};   // 其他機構：各庫（asc／bsc／eric）各自的覆蓋碼
@@ -2133,7 +2135,7 @@ if (typeof module !== "undefined" && module.exports) {
       PROX_RE.lastIndex=0; while((m=PROX_RE.exec(text))) mk(m.index,m.index+m[0].length,"px");
       var FR=FIELD_RE[engine];
       if(FR){ FR.lastIndex=0; while((m=FR.exec(text))){ var s=m.index,e=s+m[0].length; mk(s,e,"fld");
-        if(engine==="embase"||engine==="ovid"||engine==="cochrane"||engine==="pubmed"){ var j=s-1; while(j>=0&&text[j]===" ")j--; if(text[j]===")"&&closeOf[j]!==undefined){cls[j]="fld";cls[closeOf[j]]="fld";} }
+        if(engine==="embase"||engine==="ovid"||engine==="cochrane"||engine==="pubmed"||engine==="ndltd"){ var j=s-1; while(j>=0&&text[j]===" ")j--; if(text[j]===")"&&closeOf[j]!==undefined){cls[j]="fld";cls[closeOf[j]]="fld";} }
         else { var k2=e; while(k2<n&&text[k2]===" ")k2++; if(text[k2]==="("&&openOf[k2]!==undefined){cls[k2]="fld";cls[openOf[k2]]="fld";} }
       } }
     }

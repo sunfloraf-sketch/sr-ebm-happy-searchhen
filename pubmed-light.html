@@ -401,6 +401,10 @@
 .mdtbl tr.mdroot td{font-size:12px;font-weight:700;color:var(--mut);padding-top:10px;border-bottom:0}
 .mdtog{border:0;background:none;padding:0;font-family:inherit;font-size:13px;color:var(--sh-ink);cursor:pointer;text-align:left}
 .mdtn{font-size:11px;color:#9AA5AB;font-weight:400}
+.mdtbl tr.mdroot2 td{font-size:13px}
+.mdleaf{padding-left:1.05em}
+.mdlk{font-size:11px;color:#9AA5AB !important;text-decoration:none}
+.mdlk:hover{color:var(--sh-green-d) !important}
 .mdq{font-family:"SF Mono",Consolas,monospace;font-size:12px;background:var(--codebg);border:1px solid var(--line);border-radius:6px;padding:6px 8px;margin:8px 0 6px;word-break:break-word}
 </style>
 </head>
@@ -1703,7 +1707,7 @@ function mdTally(xmlText){
 function mdRunNow(){
   var q=fullQuery(); if(!q || MD.busy) return;
   var run=++MD.run, N=+(($("mdN")||{}).value||500);
-  MD={q:q, total:0, got:0, n:0, noMesh:0, tally:{}, sel:{}, sort:MD.sort, more:false, busy:true, run:run, err:"", done:false, view:MD.view, arts:[], trees:{}, gname:{}, open:{}, treeBusy:false, treeErr:""};
+  MD={q:q, total:0, got:0, n:0, noMesh:0, tally:{}, sel:{}, sort:MD.sort, tag:MD.tag, more:false, busy:true, run:run, err:"", done:false, view:MD.view, arts:[], trees:{}, gname:{}, open:{}, treeBusy:false, treeErr:""};
   mdRender();
   eutils("esearch.fcgi",{db:"pubmed",term:q,retmode:"json",retmax:String(N),sort:"relevance"}).then(function(j){
     var r=j&&j.esearchresult; if(!r) throw new Error(T("PubMed 無回應","No response from PubMed"));
@@ -1726,7 +1730,7 @@ function mdTrees(run){
   for(var i=0;i<uis.length;i+=80) (function(b){ chain=chain.then(function(){
     if(run!==MD.run) return;
     return sparql(PFX+'SELECT ?d ?tn WHERE { VALUES ?d { '+b.map(function(u){ return "<"+MESH_URI+u+">"; }).join(" ")+' } ?d meshv:treeNumber ?t . ?t rdfs:label ?tn }', 1000, false).then(function(j){
-      b.forEach(function(u){ MD.trees[u]=MD.trees[u]||[]; });
+      b.forEach(function(u){ MD.trees[u]=MD.trees[u]||[]; }); MD._tv=(MD._tv||0)+1;
       rows(j).forEach(function(r){ var u=didOf(r.d.value); if(u) MD.trees[u].push(r.tn.value); });
     });
   }); })(uis.slice(i,i+80));
@@ -1743,51 +1747,98 @@ function mdLab(u){ if(MD.tally[u]) return MD.tally[u].label; for(var c in MD.gna
 function mdSelLabels(){ return Object.keys(MD.sel).filter(function(u){ return MD.sel[u] && mdLab(u); }).map(mdLab); }
 function mdMajrQ(){
   var ls=mdSelLabels(); if(!ls.length || !MD.q) return "";
-  var m=ls.map(function(l){ return '"'+l+'"[majr]'; }).join(" OR ");
+  var m=ls.map(function(l){ return '"'+l+'"['+mdTag()+']'; }).join(" OR ");
   return "("+MD.q+") AND ("+m+")";
 }
+function mdTag(){ return MD.tag==="mh"?"mh":"majr"; }   /* _mdTag：限縮可選 MeSH [mh] 或重點主題 [majr]（Flora 11-20） */
 function mdApply(){
   var ls=mdSelLabels(); if(!ls.length) return;
-  var d=CONCEPTS.filter(function(c){ return c.type==="F" && c.field==="majr"; })[0];
-  if(!d){ addFieldRow("majr"); d=CONCEPTS.filter(function(c){ return c.type==="F" && c.field==="majr"; }).slice(-1)[0]; }
+  var d=CONCEPTS.filter(function(c){ return c.type==="F" && c.field===mdTag(); })[0];
+  if(!d){ addFieldRow(mdTag()); d=CONCEPTS.filter(function(c){ return c.type==="F" && c.field===mdTag(); }).slice(-1)[0]; }
   if(!d) return;
   state.concepts[d.k].on=true;
   addItems(d.k, ls.map(function(l){ return {type:"ft", text:l, from:""}; }));
-  MD.sel={}; MD.applied=String(state.combo||"").trim()?"combo":"ok"; mdRender();
+  MD.applied2=codeOf(d.k); MD.sel={}; MD.applied=String(state.combo||"").trim()?"combo":"ok"; mdRender();
 }
 function mdCk(u){ var on=!!MD.sel[u]; return '<input type="checkbox" data-ui="'+esc(u)+'"'+(on?' checked':'')+' aria-label="'+esc(mdLab(u))+'">'; }
+/* _mdTree2：樹狀分類改為真正的 MeSH 樹，預設只顯示根目錄 A、B、C…，每點一下展開一層；可依篇數／重點／字母排序（Flora 11-20） */
+function mdNodeStats(showCt){
+  var ck=showCt?1:0, tv=MD._tv||0;
+  if(MD._ns && MD._ns.k===ck && MD._ns.t===tv) return MD._ns;
+  var ns={k:ck, t:tv, n:{}, m:{}, kids:{}, at:{}}, anc={};
+  Object.keys(MD.tally).forEach(function(u){
+    var t=MD.tally[u]; if(!showCt && t.ct) return; var ps={};
+    (MD.trees[u]||[]).forEach(function(tn){
+      var seg=tn.split("."), L=tn.charAt(0), par=L; ps[L]=1; (ns.kids[""]=ns.kids[""]||{})[L]=1;
+      for(var i=1;i<=seg.length;i++){ var q=seg.slice(0,i).join("."); ps[q]=1; (ns.kids[par]=ns.kids[par]||{})[q]=1; par=q; }
+      ns.at[tn]=u;
+    });
+    anc[u]=Object.keys(ps);
+  });
+  MD.arts.forEach(function(a){
+    var s1={}, s2={};
+    a.u.forEach(function(u){ (anc[u]||[]).forEach(function(q){ s1[q]=1; }); });
+    a.m.forEach(function(u){ (anc[u]||[]).forEach(function(q){ s2[q]=1; }); });
+    for(var x in s1) ns.n[x]=(ns.n[x]||0)+1;
+    for(var y in s2) ns.m[y]=(ns.m[y]||0)+1;
+  });
+  MD._ns=ns; return ns;
+}
+function mdNodeUi(ns, q){ return ns.at[q] || (MD.gname[q]&&MD.gname[q].ui) || ""; }
+function mdNodeName(ns, q){
+  if(q.length===1){ var rn=MD_ROOT[q]; return rn?T(rn[0]+" "+rn[1], rn[1]):q; }
+  var u=ns.at[q]; if(u && MD.tally[u]) return MD.tally[u].label;
+  return (MD.gname[q]&&MD.gname[q].label)||"";
+}
+/* 展開時補抓下一層沒有名稱的樹狀號（不在檢索結果裡的中間層，如 C04.557） */
+function mdNames(list){
+  var run=MD.run, need=list.filter(function(q){ return q.length>1 && !MD.gname[q] && !(MD._ns&&MD._ns.at[q]) && !(MD._nmReq||(MD._nmReq={}))[q]; });
+  if(!need.length) return;
+  need.forEach(function(q){ MD._nmReq[q]=1; });
+  var chain=Promise.resolve();
+  for(var i=0;i<need.length;i+=80) (function(b){ chain=chain.then(function(){
+    if(run!==MD.run) return;
+    return sparql(PFX+'SELECT ?tn ?d ?n WHERE { VALUES ?t { '+b.map(function(c){ return "<"+MESH_URI+c+">"; }).join(" ")+' } ?t rdfs:label ?tn . ?d meshv:treeNumber ?t . ?d rdfs:label ?n }', 500, false).then(function(j){
+      rows(j).forEach(function(r){ MD.gname[r.tn.value]={ui:didOf(r.d.value), label:r.n.value}; });
+    });
+  }); })(need.slice(i,i+80));
+  chain.catch(function(){}).then(function(){ if(run===MD.run) mdRender(); });
+}
 function mdTreeHtml(list, key, pc){
   if(MD.treeBusy && !Object.keys(MD.trees).length) return '<div class="mdinfo">'+esc(T("載入樹狀分類…","Loading MeSH tree…"))+'</div>';
   if(!MD.done) return '<div class="mdinfo">'+esc(T("分析完成後顯示樹狀分類。","The tree view appears when the analysis finishes."))+'</div>';
-  var G={}, inL={};
-  list.forEach(function(t){ inL[t.ui]=t; (MD.trees[t.ui]||[]).forEach(function(tn){ var c=tn.split(".")[0], g=G[c]||(G[c]={code:c, items:{}}); if(!g.items[t.ui] || tn.length<g.items[t.ui].length) g.items[t.ui]=tn; }); });
-  var gl=Object.keys(G).map(function(c){ var g=G[c], s={}; Object.keys(g.items).forEach(function(u){ s[u]=1; });
-    g.n=0; g.major=0; MD.arts.forEach(function(a){ if(a.u.some(function(u){ return s[u]; })) g.n++; if(a.m.some(function(u){ return s[u]; })) g.major++; }); return g; });
-  gl.sort(function(a,b){ return a.code.charAt(0)<b.code.charAt(0)?-1:a.code.charAt(0)>b.code.charAt(0)?1:(b[key]-a[key] || a.code.localeCompare(b.code)); });
-  var noTree=list.filter(function(t){ return !(MD.trees[t.ui]||[]).length; }).length;
-  var h='<table class="mdtbl"><thead><tr><th></th><th>MeSH</th><th class="mdsort'+(key==="n"?" on":"")+'" data-s="n">'+esc(T("篇數","Records"))+'</th><th class="mdsort'+(key==="major"?" on":"")+'" data-s="major">'+esc(T("其中重點主題 [majr]","Major topic [majr]"))+'</th></tr></thead><tbody>', L="";
-  gl.forEach(function(g){
-    var lt=g.code.charAt(0);
-    if(lt!==L){ L=lt; var rn=MD_ROOT[lt]; h+='<tr class="mdroot"><td></td><td colspan="3">'+esc(lt+" "+(rn?T(rn[0]+" "+rn[1],rn[1]):""))+'</td></tr>'; }
-    var gn=MD.gname[g.code], op=!!MD.open[g.code], its=Object.keys(g.items).map(function(u){ return inL[u]; });
-    its.sort(function(a,b){ return b[key]-a[key] || a.label.localeCompare(b.label); });
-    h+='<tr class="mdgrp'+(gn&&MD.sel[gn.ui]?' sel':'')+'"><td class="mdck">'+(gn?mdCk(gn.ui):'')+'</td><td><button type="button" class="mdtog" data-g="'+esc(g.code)+'">'+(op?"▾":"▸")+' '+esc(gn?gn.label:g.code)+' <span class="mdtn">'+esc(g.code)+' · '+its.length+T(" 個標目"," headings")+'</span></button></td>'+
-      '<td class="mdn">'+fmtN(g.n)+' <span style="color:var(--mut)">('+pc(g.n)+')</span></td><td class="mdn">'+fmtN(g.major)+' <span style="color:var(--mut)">('+pc(g.major)+')</span></td></tr>';
-    if(op) its.forEach(function(t){ var tn=g.items[t.ui];
-      h+='<tr class="mdsub'+(MD.sel[t.ui]?' sel':'')+'"><td class="mdck">'+mdCk(t.ui)+'</td><td style="padding-left:'+(18+Math.min(5,tn.split(".").length-1)*12)+'px"><a href="https://meshb.nlm.nih.gov/record/ui?ui='+encodeURIComponent(t.ui)+'" target="_blank" rel="noopener">'+esc(t.label)+'</a> <span class="mdtn">'+esc(tn)+'</span></td>'+
-        '<td class="mdn">'+fmtN(t.n)+' <span style="color:var(--mut)">('+pc(t.n)+')</span></td><td class="mdn">'+fmtN(t.major)+' <span style="color:var(--mut)">('+pc(t.major)+')</span></td></tr>'; });
-  });
+  var showCt=!!($("mdCt")&&$("mdCt").checked), ns=mdNodeStats(showCt), sk=MD.sort;
+  var cmp=function(a,b){
+    if(sk==="a"){ var x=mdNodeName(ns,a)||a, y=mdNodeName(ns,b)||b; return x.localeCompare(y) || a.localeCompare(b); }
+    var k=sk==="major"?ns.m:ns.n; return (k[b]||0)-(k[a]||0) || (ns.n[b]||0)-(ns.n[a]||0) || (mdNodeName(ns,a)||a).localeCompare(mdNodeName(ns,b)||b);
+  };
+  var h='<table class="mdtbl"><thead><tr><th></th>'+
+    '<th class="mdsort'+(sk==="a"?" on":"")+'" data-s="a" title="'+esc(T("依字母排序","Sort A–Z"))+'">MeSH</th>'+
+    '<th class="mdsort'+(sk!=="a"&&sk!=="major"?" on":"")+'" data-s="n">'+esc(T("篇數","Records"))+'</th>'+
+    '<th class="mdsort'+(sk==="major"?" on":"")+'" data-s="major">'+esc(T("其中重點主題 [majr]","Major topic [majr]"))+'</th></tr></thead><tbody>';
+  function row(q, depth){
+    var kids=Object.keys(ns.kids[q]||{}), op=!!MD.open[q], ui=depth?mdNodeUi(ns,q):"", nm=mdNodeName(ns,q);
+    var lab=depth===0?'<b>'+esc(nm)+'</b>':(nm?esc(nm):'<span class="mdtn">'+esc(T("載入名稱…","loading…"))+'</span>');
+    var meta=depth?(' <span class="mdtn">'+esc(q)+'</span>'):'';
+    var inner=kids.length?('<button type="button" class="mdtog" data-g="'+esc(q)+'" aria-expanded="'+op+'">'+(op?"▾":"▸")+' '+lab+meta+'</button>'):('<span class="mdleaf">'+lab+meta+'</span>');
+    if(ui) inner+=' <a class="mdlk" href="https://meshb.nlm.nih.gov/record/ui?ui='+encodeURIComponent(ui)+'" target="_blank" rel="noopener" title="'+esc(T("在 MeSH Browser 查看","Open in MeSH Browser"))+'">↗</a>';
+    h+='<tr class="'+(depth?'mdsub':'mdroot2')+(ui&&MD.sel[ui]?' sel':'')+'"><td class="mdck">'+(ui?mdCk(ui):'')+'</td><td style="padding-left:'+(6+depth*16)+'px">'+inner+'</td>'+
+      '<td class="mdn">'+fmtN(ns.n[q]||0)+' <span style="color:var(--mut)">('+pc(ns.n[q]||0)+')</span></td><td class="mdn">'+fmtN(ns.m[q]||0)+' <span style="color:var(--mut)">('+pc(ns.m[q]||0)+')</span></td></tr>';
+    if(op){ kids.sort(cmp).forEach(function(c){ row(c, depth+1); }); }
+  }
+  Object.keys(ns.kids[""]||{}).sort().forEach(function(L){ row(L, 0); });
   h+='</tbody></table>';
+  var noTree=list.filter(function(t){ return !(MD.trees[t.ui]||[]).length; }).length;
   if(MD.treeBusy) h+='<div class="mdinfo">'+esc(T("載入樹狀分類…","Loading MeSH tree…"))+'</div>';
   if(MD.treeErr) h+='<div class="mdinfo err">'+esc(T("樹狀分類載入失敗：","Failed to load the MeSH tree: ")+MD.treeErr)+' <button type="button" class="mdmore" id="mdTreeRetry">'+esc(T("重試","Retry"))+'</button></div>';
-  h+='<div class="mdinfo">'+esc(T("一個標目可能在多個分類；分類的篇數＝含該分類任一標目的文章數（不重複）。勾選分類＝以該分類標目 [majr]（含下位詞）限縮。"+(noTree?"另有 "+noTree+" 個標目無樹狀號未列入。":""),"A heading may sit in several branches; a branch’s count is the number of records with any heading in it. Ticking a branch restricts to its heading [majr] (incl. narrower)."+(noTree?" "+noTree+" headings without tree numbers are not shown.":"")))+'</div>';
+  h+='<div class="mdinfo">'+esc(T("點類別展開下一層。篇數＝含該類別（含下位）任一標目的文章數（不重複）；一個標目可能在多個類別。勾選＝以該標目（含下位詞）限縮。"+(noTree?"另有 "+noTree+" 個標目無樹狀號未列入。":""),"Click a branch to open the next level. Counts are records with any heading in the branch (incl. narrower), counted once; a heading may sit in several branches. Ticking restricts to that heading (incl. narrower)."+(noTree?" "+noTree+" headings without tree numbers are not shown.":"")))+'</div>';
   return h;
 }
 function mdRender(){
   var box=$("mdBody"), btn=$("mdRun"); if(!box || !MD) return;
   var fq=fullQuery();
   if(btn) btn.disabled=!fq || MD.busy;
-  if(!MD.q){ box.innerHTML='<div class="empty">'+(fq?T("按「分析」統計目前檢索結果最常標引的 MeSH 標目，並可勾選以重點主題 [majr] 限縮。","Click Analyse to tally the MeSH headings most often indexed in the current results; tick headings to restrict to Major Topic [majr]."):T("加入檢索詞後即可分析。","Add terms to analyse."))+'</div>'; return; }
+  if(!MD.q){ box.innerHTML='<div class="empty">'+(fq?T("按「分析」統計目前檢索結果最常標引的 MeSH 標目，並可勾選以 MeSH [mh] 或重點主題 [majr] 限縮。","Click Analyse to tally the MeSH headings most often indexed in the current results; tick headings to restrict to MeSH [mh] or Major Topic [majr]."):T("加入檢索詞後即可分析。","Add terms to analyse."))+'</div>'; return; }
   var h="", ind=MD.n-MD.noMesh;
   if(MD.err) h+='<div class="mdinfo err">'+esc(T("分析失敗：","Analysis failed: ")+MD.err)+'</div>';
   if(MD.q!==fq) h+='<div class="mdinfo err">'+esc(T("檢索式已變更，以下為變更前的結果；請重新按「分析」。","The query has changed; these results are for the previous query. Click Analyse again."))+'</div>';
@@ -1797,14 +1848,14 @@ function mdRender(){
   var showCt=!!($("mdCt")&&$("mdCt").checked);
   var list=Object.keys(MD.tally).map(function(u){ return MD.tally[u]; }).filter(function(t){ return showCt || !t.ct; });
   var key=MD.sort==="major"?"major":"n";
-  list.sort(function(a,b){ return b[key]-a[key] || b.n-a.n || b.major-a.major || a.label.localeCompare(b.label); });
+  list.sort(function(a,b){ if(MD.sort==="a") return a.label.localeCompare(b.label); return b[key]-a[key] || b.n-a.n || b.major-a.major || a.label.localeCompare(b.label); });
   var pc=function(x){ return ind?Math.round(x*100/ind)+"%":"—"; };
   if(list.length) h+='<div class="mdtabs"><button type="button" class="mdtab'+(MD.view!=="tree"?" on":"")+'" data-v="list">'+esc(T("依篇數","By records"))+'</button><button type="button" class="mdtab'+(MD.view==="tree"?" on":"")+'" data-v="tree">'+esc(T("依樹狀分類","By MeSH tree"))+'</button></div>';
   if(list.length && MD.view==="tree"){ h+=mdTreeHtml(list, key, pc); }
   else if(list.length){
     var top=list[0][key]||1, LIM=30, vis=MD.more?list:list.slice(0,LIM);
-    h+='<table class="mdtbl"><thead><tr><th></th><th>MeSH</th>'+
-      '<th class="mdsort'+(key==="n"?" on":"")+'" data-s="n" title="'+esc(T("依篇數排序","Sort by records"))+'">'+esc(T("篇數","Records"))+'</th>'+
+    h+='<table class="mdtbl"><thead><tr><th></th><th class="mdsort'+(MD.sort==="a"?" on":"")+'" data-s="a" title="'+esc(T("依字母排序","Sort A–Z"))+'">MeSH</th>'+
+      '<th class="mdsort'+(MD.sort!=="a"&&key==="n"?" on":"")+'" data-s="n" title="'+esc(T("依篇數排序","Sort by records"))+'">'+esc(T("篇數","Records"))+'</th>'+
       '<th class="mdsort'+(key==="major"?" on":"")+'" data-s="major" title="'+esc(T("依重點主題篇數排序","Sort by major-topic records"))+'">'+esc(T("其中重點主題 [majr]","Major topic [majr]"))+'</th></tr></thead><tbody>'+
       vis.map(function(t){
         var on=!!MD.sel[t.ui];
@@ -1818,12 +1869,14 @@ function mdRender(){
   var mq=mdMajrQ();
   if(mq){
     var c=(mq in countCache)?fmtN(countCache[mq]):(MD.cq===mq?"—":"…");
-    h+='<div class="mdq">'+esc(mq)+'</div><div class="acts" style="margin-top:0">'+
-      '<a class="btn sm line" style="text-decoration:none" href="'+esc(pmUrl(mq))+'" target="_blank" rel="noopener">'+esc(T("以重點主題限縮："+c+" 筆 ↗","Restricted to major topic: "+c+" results ↗"))+'</a>'+
-      '<button type="button" class="btn sm" id="mdApply">'+esc(T("新增為 [majr] 列加入策略","Add as a [majr] row to the strategy"))+'</button></div>';
+    var tg=mdTag();
+    h+='<div class="mdtabs" style="margin-top:8px"><span class="mdtn" style="font-size:12.5px;align-self:center">'+esc(T("限縮為：","Restrict to:"))+'</span><button type="button" class="mdtab'+(tg==="mh"?" on":"")+'" data-tg="mh">'+esc(T("MeSH [mh]","MeSH [mh]"))+'</button><button type="button" class="mdtab'+(tg==="majr"?" on":"")+'" data-tg="majr">'+esc(T("重點主題 [majr]","Major topic [majr]"))+'</button></div>'+
+      '<div class="mdq" style="margin-top:4px">'+esc(mq)+'</div><div class="acts" style="margin-top:0">'+
+      '<a class="btn sm line" style="text-decoration:none" href="'+esc(pmUrl(mq))+'" target="_blank" rel="noopener">'+esc(T("限縮後："+c+" 筆 ↗","Restricted: "+c+" results ↗"))+'</a>'+
+      '<button type="button" class="btn sm" id="mdApply">'+esc(T("新增為 ["+tg+"] 列加入策略","Add as a ["+tg+"] row to the strategy"))+'</button></div>';
     if(!(mq in countCache) && MD.cq!==mq){ MD.cq=mq; getCount(mq, true).then(function(){ mdRender(); }); }
   }
-  if(MD.applied){ h+='<div class="mdinfo">'+esc(MD.applied==="combo"?T("已加入「MAJR」列；您有自訂組合，請在組合中加入該列的行號。","Added a MAJR row; you have a custom combination — add its line number there."):T("已加入「MAJR」列（與其他列以 AND 組合）。","Added a MAJR row (ANDed with the other rows)."))+'</div>'; MD.applied=""; }
+  if(MD.applied){ h+='<div class="mdinfo">'+esc(MD.applied==="combo"?T("已加入「"+MD.applied2+"」列；您有自訂組合，請在組合中加入該列的行號。","Added a "+MD.applied2+" row; you have a custom combination — add its line number there."):T("已加入「"+MD.applied2+"」列（與其他列以 AND 組合）。","Added a "+MD.applied2+" row (ANDed with the other rows)."))+'</div>'; MD.applied=""; }
   box.innerHTML=h;
 }
 (function(){
@@ -1836,8 +1889,9 @@ function mdRender(){
     if(t.closest("th.mdsort")){ MD.sort=t.closest("th.mdsort").getAttribute("data-s"); mdRender(); return; }
     if(t.closest("#mdMore")){ MD.more=!MD.more; mdRender(); return; }
     if(t.closest("#mdApply")){ mdApply(); return; }
+    if(t.closest(".mdtab[data-tg]")){ MD.tag=t.closest(".mdtab").getAttribute("data-tg"); mdRender(); return; }
     if(t.closest(".mdtab")){ MD.view=t.closest(".mdtab").getAttribute("data-v"); mdRender(); return; }
-    if(t.closest(".mdtog")){ var g=t.closest(".mdtog").getAttribute("data-g"); MD.open[g]=!MD.open[g]; mdRender(); return; }
+    if(t.closest(".mdtog")){ var g=t.closest(".mdtog").getAttribute("data-g"); MD.open[g]=!MD.open[g]; if(MD.open[g] && MD._ns) mdNames(Object.keys(MD._ns.kids[g]||{})); mdRender(); return; }
     if(t.closest("#mdTreeRetry")){ mdTrees(MD.run); return; }
   });
 })();

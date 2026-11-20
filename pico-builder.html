@@ -2211,7 +2211,9 @@ if (typeof module !== "undefined" && module.exports) {
   // ---- 語法顏色標記 highlighter（綠=自由詞彙欄位+外層括弧, 紅=控制詞彙, 藍=鄰近字）----
   var PROX_RE=/\b(?:ADJ\d+|NEAR\/\d+|NEXT\/\d+|NEXT|N\d+|W\/\d+|W\d+|PRE\/\d+)\b|:~\d+/g;
   var CV_RE={pubmed:/(?:"[^"]*"|[A-Za-z][\w-]*)\s*\[(?:mh|mj|mesh|nm)(?::noexp)?\]/gi,ovid:/(?:\bexp\s+)?\*?"[^"]*"\//gi,jbi:/(?:\bexp\s+)?\*?"[^"]*"\//gi,embase:/"[^"]*"\/(?:exp(?:\/mj)?|de|mj)\b/gi,cochrane:/\[mh\b[^\[\]]*(?:\[mj\])?\]/gi,ebsco:/\b(?:MH|MM)\s*\([^)]*\)|\bMW\s+"[^"]*"/gi,wos:null,scopus:null};
-  var FIELD_RE={pubmed:/\[(?:tiab|ti|tw|ab|all)\]/gi,ovid:/\.(?:ti|ab|kf|kw|mp|af|tw|nm|pt|sh|fs|xm|lg)(?:,(?:ti|ab|kf|kw|mp|af|tw|nm|pt|sh|fs|xm|lg))*\./gi,jbi:/\.(?:ti|ab|kf|kw|mp|af|tw|nm|pt|sh|fs|xm|lg)(?:,(?:ti|ab|kf|kw|mp|af|tw|nm|pt|sh|fs|xm|lg))*\./gi,embase:/:(?:ti|ab|kw|de)(?:,(?:ti|ab|kw|de))*(?![a-z])/gi,cochrane:/:(?:ti|ab|kw|de)(?:,(?:ti|ab|kw|de))*(?![a-z])/gi,ebsco:/\b(?:TI|AB|KW|TX|XB)\b(?=\s*\()/gi,wos:/\b(?:TI|AB|AK|TS|ALL)=/gi,scopus:/\b(?:TITLE-ABS-KEY|TITLE-ABS|TITLE|ABS|AUTHKEY|KEY|ALL)\b(?=\s*\()/gi};
+  var FIELD_RE={pubmed:/\[(?:tiab|ti|tw|ab|all)\]/gi,ovid:/\.(?:ti|ab|kf|kw|mp|af|tw|nm|pt|sh|fs|xm|lg)(?:,(?:ti|ab|kf|kw|mp|af|tw|nm|pt|sh|fs|xm|lg))*\./gi,jbi:/\.(?:ti|ab|kf|kw|mp|af|tw|nm|pt|sh|fs|xm|lg)(?:,(?:ti|ab|kf|kw|mp|af|tw|nm|pt|sh|fs|xm|lg))*\./gi,embase:/:(?:ti|ab|kw|de)(?:,(?:ti|ab|kw|de))*(?![a-z])/gi,cochrane:/:(?:ti|ab|kw|de)(?:,(?:ti|ab|kw|de))*(?![a-z])/gi,ebsco:/\b(?:TI|AB|KW|TX|XB)\b(?=\s*\()/gi,wos:/\b(?:TI|AB|AK|TS|ALL)=/gi,scopus:/\b(?:TITLE-ABS-KEY|TITLE-ABS|TITLE|ABS|AUTHKEY|KEY|ALL)\b(?=\s*\()/gi,
+    /* _cnFld：中文資料庫欄位也上色（Flora 11-21）：華藝 [ALL3]=、CNKI SU =／TI =／KY =、萬方 主題:／題名或關鍵詞:／題名:、國圖 .ti,ab,kw */
+    airiti:/\[(?:ALL3|ALL|TI|KW|AB|AU)\]=/g, cnki:/\b(?:SU|TI|KY|AB|FT|TKA)\s*=/g, wanfang:/(?:題名或關鍵詞|主題|題名|關鍵詞|摘要)\s*[:：]/g, ndltd:/\.(?:ti|ab|kw)(?:,(?:ti|ab|kw))*(?![a-z])/gi};
   // 控制詞彙查核連結：由標目文字 + 詞表類型 組出詞表查詢網址
   function cvUrl(term, vocab){
     var t=String(term||"").replace(CV_SCR_RE,"").replace(/^["']+|["']+$/g,"").replace(/\/(?:exp|de|fs|dg|mj|noexp)\b.*$/i,"").replace(/[+*]+$/,"").replace(/\s+/g," ").trim();
@@ -2259,7 +2261,7 @@ if (typeof module !== "undefined" && module.exports) {
       PROX_RE.lastIndex=0; while((m=PROX_RE.exec(text))) mk(m.index,m.index+m[0].length,"px");
       var FR=FIELD_RE[engine];
       if(FR){ FR.lastIndex=0; while((m=FR.exec(text))){ var s=m.index,e=s+m[0].length; mk(s,e,"fld");
-        if(engine==="embase"||engine==="ovid"||engine==="jbi"||engine==="cochrane"||engine==="pubmed"){ var j=s-1; while(j>=0&&text[j]===" ")j--; if(text[j]===")"&&closeOf[j]!==undefined){cls[j]="fld";cls[closeOf[j]]="fld";} }
+        if(engine==="embase"||engine==="ovid"||engine==="jbi"||engine==="cochrane"||engine==="pubmed"||engine==="ndltd"){ var j=s-1; while(j>=0&&text[j]===" ")j--; if(text[j]===")"&&closeOf[j]!==undefined){cls[j]="fld";cls[closeOf[j]]="fld";} }
         else { var k2=e; while(k2<n&&text[k2]===" ")k2++; if(text[k2]==="("&&openOf[k2]!==undefined){cls[k2]="fld";cls[openOf[k2]]="fld";} }
       } }
     }
@@ -4838,12 +4840,12 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
   var CV_NOEXP_RE=/[（(]\s*(?:不含[^)）]{0,12}|不狹[義詞]{0,2}|no[\s-]?exp\w*)\s*[)）]|(?:^|\s)no[\s-]?exp(?=\s|$)|\s*(?:不含(?:所有)?(?:狹義詞?|狹|下位詞?)|不狹(?:義詞?|詞)?)\s*$/i;  // (不含狹義詞)/(不含下位詞)/(不狹)/(noexp)/(no exp) 或行末 noexp、no exp
   // 補充概念（Supplementary Concept）標註：詞後加「(補充概念：化學物質)」；PubMed 用 [nm]，Ovid MEDLINE 依類型用 .nm./.rx./.px./.ox./.ux./.mx.
   var SCR_TYPES=[{k:"chem",zh:"化學物質",en:"chemical",ovid:"nm",ph:"nm"},{k:"dis",zh:"罕見疾病",en:"rare disease",ovid:"rx",ph:"rs"},{k:"prot",zh:"方案",en:"protocol",ovid:"px",ph:"ps"},{k:"org",zh:"生物",en:"organism",ovid:"ox",ph:"os"},{k:"pop",zh:"族群",en:"population",ovid:"ux",ph:"ul"},{k:"anat",zh:"解剖",en:"anatomy",ovid:"mx",ph:"my"}]   /* ovid＝Word 欄位；ph＝Concept/Phrase 欄位（化學物質沒有獨立 Phrase 欄位，用 .nm.）；輸出優先用 ph */;
-  var CV_SCR_RE=/\s*[（(]\s*(?:補充概念|supplementary(?:\s+concept)?)\s*(?:[:：]\s*([^)）]*?))?\s*[)）]\s*$/i;
+  var CV_SCR_RE=/\s*[（(\[［]\s*(?:補充概念|supplementary(?:\s+concept)?)\s*(?:[:：]\s*([^)）\]］]*?))?\s*[)）\]］]\s*$/i;   /* _scrBr：也接受 PubMed 顯示的「suanzaoren [Supplementary Concept]」（方括號，Flora 11-20） */
   function scrParse(line){
     var m=String(line||"").match(CV_SCR_RE); if(!m) return null;
     var t=(m[1]||"").trim().toLowerCase(), type="";
     SCR_TYPES.forEach(function(x){ if(t && (t===x.zh||t===x.en||t===x.k)) type=x.k; });
-    return {text:String(line).replace(CV_SCR_RE,"").trim(), type:type};
+    return {text:String(line).replace(CV_SCR_RE,"").trim().replace(/^["“'](.*)["”']$/,"$1").trim(), type:type};
   }
   function scrMarker(type){ var x=SCR_TYPES.filter(function(y){return y.k===type;})[0]; return x?(isEn()?(" (supplementary: "+x.en+")"):(" (補充概念："+x.zh+")")):(isEn()?" (supplementary)":" (補充概念)"); }
   function scrOvid(term, type){
@@ -5196,6 +5198,10 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
       if(eng==="cnki"||eng==="wanfang"){
         if(eng==="cnki" && _ri===0) CNKI_EN_CLEAN=rows.every(function(x){ return !/[A-Za-z][*?#$]/.test(String(x.ft||"")); });   /* CNKI：英文詞都沒有切截才預設納入（比照華藝，Flora 11-19） */
         var cnLine = buildZhCnLine(r.zh, r.ft, eng, reminders, tg.label);
+        if(cnLine){   /* _cnLv：欄位完整度 → CNKI SU／TI OR KY／TI；萬方 主題／題名或關鍵詞／題名（Flora 11-20） */
+          if(eng==="cnki"){ var _sm=/^SU = \(([\s\S]*)\)$/.exec(cnLine); if(_sm && _lv==="L2") cnLine="TI = ("+_sm[1]+") OR KY = ("+_sm[1]+")"; else if(_sm && _lv==="L3") cnLine="TI = ("+_sm[1]+")"; }
+          else cnLine=(_lv==="L2"?"題名或關鍵詞":_lv==="L3"?"題名":"主題")+":"+cnLine;
+        }
         if(cnLine){ qlines.push({n:lineNum, text:cnLine}); refs.push("#"+lineNum); lineNum++; }
         var grpC = refs.length ? refs[0] : null;
         conceptRefs.push(grpC);
@@ -5347,6 +5353,61 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
   // 自訂組合：每行一條；C1/C2… → 對應概念的行號群組（依各庫），L1/L2… → 上方已寫的組合行
   // 舊版代號（概念 C1、組合行 L1）→ 新版（概念 L1、組合行 R1）；只有出現 C 數字時才視為舊格式
   function _ccMigrate(t){ t=String(t||""); if(!/\bC\d+\b/i.test(t)) return t; return t.replace(/\bL(\d+)\b/gi,"R$1").replace(/\bC(\d+)\b/gi,"L$1"); }
+/* _cnkiCnf：CNKI 只能逐行「結果中檢索」（＝AND）。把自訂組合化成「AND 的各組 OR」，同一組 OR 的概念合併成同一行 SU = (… + …)。
+     例：L1 AND (L2 OR L3)、或圖形化的 (L1 AND L2) OR (L1 AND L3) → #1 L1、#2 L2＋L3。含 NOT 或展開後超過 12 行時回傳 null（Flora 11-20） */
+  function _cnFparts(t){   /* 「SU = (…)」「TI = (…) OR KY = (…)」→ [{f,x}]；格式不符丟出例外 */
+    t=String(t||""); var i=0, out=[];
+    while(true){
+      var m=/^\s*(SU|TI|KY)\s*=\s*\(/.exec(t.slice(i)); if(!m) throw 0;
+      var st=i+m[0].length, d=1, j=st;
+      for(; j<t.length && d; j++){ var ch=t.charAt(j); if(ch==="(") d++; else if(ch===")") d--; }
+      if(d) throw 0;
+      out.push({f:m[1], x:t.slice(st, j-1).trim()}); i=j;
+      var o=/^\s*OR\s+/.exec(t.slice(i)); if(!o) break; i+=o[0].length;
+    }
+    if(t.slice(i).trim()) throw 0;
+    return out;
+  }
+  function _cnkiCnf(text, b){
+    var lines=_ccMigrate(text).split(/\r?\n/).map(function(x){ return x.trim(); }).filter(Boolean); if(!lines.length) return null;
+    if(/\bNOT\b/i.test(lines.join(" "))) return null;
+    var R={};
+    function parse(str){
+      var toks=str.match(/\(|\)|\bAND\b|\bOR\b|\bL\d+(?:@L?V?[0-3])?\b|\bR\d+\b/gi)||[], i=0;
+      function prim(){ var t=toks[i++]; if(t==null) throw 0;
+        if(t==="("){ var e=orE(); if(toks[i++]!==")") throw 0; return e; }
+        var m=/^L(\d+)(?:@L?V?([0-3]))?$/i.exec(t); if(m) return {lf:m[2]!=null?(+m[1])+"@L"+m[2]:String(+m[1])};
+        var r=/^R(\d+)$/i.exec(t); if(r){ if(!R[+r[1]]) throw 0; return R[+r[1]]; }
+        throw 0; }
+      function andE(){ var a=[prim()]; while(toks[i] && /^AND$/i.test(toks[i])){ i++; a.push(prim()); } return a.length>1?{and:a}:a[0]; }
+      function orE(){ var a=[andE()]; while(toks[i] && /^OR$/i.test(toks[i])){ i++; a.push(andE()); } return a.length>1?{or:a}:a[0]; }
+      var e=orE(); if(i!==toks.length) throw 0; return e;
+    }
+    var last=null;
+    try{ lines.forEach(function(l,ix){ last=R[ix+1]=parse(l); }); }catch(_e){ return null; }
+    function cnf(e){
+      if(e.lf) return [[e.lf]];
+      if(e.and){ var o=[]; e.and.forEach(function(x){ o=o.concat(cnf(x)); if(o.length>12) throw 0; }); return o; }
+      var acc=[[]]; e.or.forEach(function(x){ var c=cnf(x), n=[]; acc.forEach(function(a){ c.forEach(function(cc){ n.push(a.concat(cc)); }); }); acc=n; if(acc.length>40) throw 0; }); return acc;
+    }
+    var cl; try{ cl=cnf(last); }catch(_e){ return null; }
+    cl=cl.map(function(c){ var u=[]; c.forEach(function(x){ if(u.indexOf(x)<0) u.push(x); }); return u; });
+    cl=cl.filter(function(c,i){ return !cl.some(function(d,j){ if(j===i) return false; var sub=d.every(function(x){ return c.indexOf(x)>=0; }); return sub && (d.length<c.length || j<i); }); });
+    if(!cl.length || cl.length>12) return null;
+    var byN={}; b.qlines.forEach(function(q){ if(q.n!=null) byN[q.n]=q.text; });
+    function inner(lf){
+      var V=b.conceptRefs.vars||{}, g=(lf.indexOf("@")>0 && V[lf]!==undefined)?V[lf]:b.conceptRefs[parseInt(lf,10)-1];
+      if(g==null) return [];
+      var out=[]; String(g).replace(/#(\d+)/g, function(m,d){ _cnFparts(byN[+d]).forEach(function(x){ out.push(x); }); return m; });
+      return out;
+    }
+    var res=[];
+    try{ cl.forEach(function(c){ var fs=[], by={}, seen={};
+      c.forEach(function(lf){ inner(lf).forEach(function(x){ if(!by[x.f]){ by[x.f]=[]; fs.push(x.f); } if(!seen[x.f+"|"+x.x]){ seen[x.f+"|"+x.x]=1; by[x.f].push(x.x); } }); });
+      if(fs.length) res.push({c:c, text:fs.map(function(f){ return f+" = ("+by[f].join(" + ")+")"; }).join(" OR ")}); }); }catch(_e){ return null; }
+    if(!res.length) return null;
+    return res.map(function(r,i){ return {n:i+1, text:r.text, desc:r.c.map(function(x){ return "L"+x.replace(/@L(\d)/,"@LV$1"); }).join(" OR ")}; });
+  }
   function buildCombos(text, conceptRefs, lastNum, eng){   // C1／L1 與 AND／OR／NOT 大小寫皆可；運算子輸出依資料庫（如國圖 and／or、Scopus AND NOT）
     var lines=_ccMigrate(text).split(/\r?\n/).map(function(s){return s.trim();}).filter(Boolean);
     var out=[], Lmap={};
@@ -5651,23 +5712,31 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
         if(/(#\d|\bAND\b|\bOR\b|\bNOT\b)/.test(_lt.text)) _lt.text = _lt.text + (EMBASE_EXCL==="embaseonly" ? " AND [embase]/lim" : " NOT ([medline]/lim NOT [embase]/lim)");
       }
       if(tg.engine==="cnki"){   // CNKI：每個概念一行，依序「結果中檢索」＝AND；自訂組合（OR／NOT）無法用結果中檢索完成
-        if(combos && combos.length) b.reminders.push(isEn()?(tg.label+": CNKI combines lines only by “Search within results” (AND) — the custom combination was not applied; combine the sets yourself in Search History, or use Wanfang."):(tg.label+"：CNKI 只能用「結果中檢索」逐行 AND，未套用自訂組合；請自行在「檢索歷史」組合，或改用萬方。"));
+        var _cq=(combos && combos.length && customCombo)?_cnkiCnf(customCombo.value, b):null;   /* _cnkiCnf：自訂組合化成逐行 AND，OR 的概念併入同一行 */
+        if(_cq){ b.qlines=_cq.map(function(x){ return {n:x.n, text:x.text}; });
+          if(_cq.some(function(x){ return / OR /.test(x.desc); })) b.reminders.push(isEn()?(tg.label+": the custom combination is applied as lines combined with “Search within results” (AND); concepts joined by OR are merged into one line ("+_cq.map(function(x){ return "#"+x.n+" = "+x.desc; }).join("; ")+")."):(tg.label+"：已依自訂組合改寫為逐行「結果中檢索」（AND）；以 OR 組合的概念已併入同一行（"+_cq.map(function(x){ return "#"+x.n+"＝"+x.desc; }).join("；")+"）。")); }
+        else if(combos && combos.length) b.reminders.push(isEn()?(tg.label+": CNKI combines lines only by “Search within results” (AND) — the custom combination was not applied; combine the sets yourself in Search History, or use Wanfang."):(tg.label+"：CNKI 只能用「結果中檢索」逐行 AND，未套用自訂組合；請自行在「檢索歷史」組合，或改用萬方。"));
         tail=[];
       }
       var baseRows = b.qlines.concat(tail);
       var allRows;
       var forceFlat = (tg.engine==="airiti"||tg.engine==="wanfang");   // 萬方也只用一式（主題:(…)）  // 華藝只有一式完成檢索：一律併成單一條完整檢索式
       if(tg.engine==="cnki" && cbFlat && cbFlat.checked && baseRows.length>1){   // CNKI 專業檢索可用 AND 串成一式
-        allRows = [{n:null, text:baseRows.map(function(q){ return q.text; }).join(" AND ")}];
+        allRows = [{n:null, text:baseRows.map(function(q){ return / OR [A-Z]{2} = \(/.test(q.text)?("("+q.text+")"):q.text; }).join(" AND ")}];
       } else if(tg.engine!=="cnki" && ((cbFlat && cbFlat.checked) || forceFlat) && baseRows.length){
         // 整併為單一長式：把最後一行的 #行號全部展開，串成一條檢索式
-        var qmap={}; baseRows.forEach(function(q){ if(q.n!=null) qmap[q.n]=q.text; });
-        var ft = baseRows[baseRows.length-1].text;
+        var _wfMix=(tg.engine==="wanfang") && baseRows.some(function(q){ return /^(題名或關鍵詞|題名):/.test(q.text); });
+        var _wfT=function(t){ return (tg.engine==="wanfang" && !_wfMix) ? String(t).replace(/^主題:/,"") : t; };
+        var qmap={}; baseRows.forEach(function(q){ if(q.n!=null) qmap[q.n]=_wfT(q.text); });
+        var ft = _wfT(baseRows[baseRows.length-1].text);
         // 華藝概念區塊本身已自成一體（[ALL3]=(...) 或 ([TI]=() OR [KW]=())），展開時不再多包一層括號；其他資料庫維持加括號以保運算優先序
         ft=_flatExpand(ft, qmap, forceFlat);
         if(tg.engine==="wanfang"){   // 萬方：研究設計 RCT 直接併入同一式，再包上「主題:」
+          if(_wfMix){ if(FILTER_SEL.indexOf("rct")>=0) ft=ft+" AND 主題:("+STUDY_FILTERS.rct.wanfang+")"; }
+          else {
           if(FILTER_SEL.indexOf("rct")>=0) ft=ft+" AND ("+STUDY_FILTERS.rct.wanfang+")";
           ft="主題:("+ft+")";
+          }
         }
         allRows = [{n:null, text:ft}];
       } else {
