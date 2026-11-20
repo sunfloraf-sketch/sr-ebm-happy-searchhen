@@ -4514,6 +4514,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
       // 以 ↑ 開頭的段落是樣板說明（例「↑ 鄰近字分堆整理時…」），整段略過
       tc=tc.replace(/<w:p\b[\s\S]*?<\/w:p>/g, function(pp){ var t="", r2=/<w:t(?:\s[^>]*)?>([\s\S]*?)<\/w:t>/g, q; while((q=r2.exec(pp))) t+=q[1]; var ti=pp.search(/<w:t(?:\s[^>]*)?>\s*[^<\s]/), si=pp.indexOf("<w:sym"); return (/^\s*[↑⬆]/.test(t) || (si>=0 && (ti<0 || si<ti)))?"":pp; });   // ↑ 可能是文字或 Wingdings 符號
       tc=tc.replace(/<w:p\b[\s\S]*?<\/w:p>/g, function(pp){ if(!_pInd(pp)) return pp; var body=pp.replace(/^<w:p\b[^>]*>(\s*<w:pPr>[\s\S]*?<\/w:pPr>)?/,""), head=pp.slice(0,pp.length-body.length); return head+'<w:r><w:t xml:space="preserve">  </w:t></w:r>'+body.replace(/^(\s*<w:r\b[^>]*>(?:\s*<w:rPr>[\s\S]*?<\/w:rPr>)?)\s*<w:tab\/>/,"$1"); });   /* 縮排段落 → 行首兩個空白 */
+      tc=tc.replace(/<w:p(\s[^>]*)?\/>/g,"<w:p></w:p>"); tc=tc.replace(/<w:p\b[\s\S]*?<\/w:p>/g, function(pp){ return /<w:t(?:\s[^>]*)?>[^<]*\S[^<]*<\/w:t>|<w:tab\/>|<w:sym\b|<w:br\b/.test(pp) ? pp : "<w:p><w:r><w:t>\u0003</w:t></w:r></w:p>"; });   /* _blankPara：Word 原本的空白段落 → 保留成空行（灰字略過造成的空段落不算；Flora 11-20） */
       var out="", re=/<w:r\b[\s\S]*?<\/w:r>|<w:br\b[^>]*?\/?>|<\/w:p>/g, m;
       while((m=re.exec(tc))){
         var seg=m[0];
@@ -4522,7 +4523,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
         var tre=/<w:t(?:\s[^>]*)?>([\s\S]*?)<\/w:t>|<w:br\b[^>]*?\/?>/g, mm;
         while((mm=tre.exec(seg))){ out += (mm[1]!==undefined ? mm[1] : "\n"); }
       }
-      return out.replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/[ \t]+\n/g,"\n").replace(/\n{2,}/g,"\n").replace(/\n+$/,"").replace(/^\n+/,"").trim();
+      return out.replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/[ \t]+\n/g,"\n").replace(/\n{2,}/g,"\n").split("\n").map(function(l){ return /^\s*\u0003\s*$/.test(l)?"":l.replace(/\u0003/g,""); }).join("\n").replace(/\n{3,}/g,"\n\n").replace(/\n+$/,"").replace(/^\n+/,"").trim();
     };
     // 解析文件中「所有」表格（前後可含其他表格／段落）；回傳表格陣列，每個表格為列陣列
     // 儲存格的水平合併數（gridSpan）：只看該格自己的 tcPr

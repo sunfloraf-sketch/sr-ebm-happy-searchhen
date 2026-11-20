@@ -3235,7 +3235,7 @@ if (typeof module !== "undefined" && module.exports) {
       if(!byLab[key]){ byLab[key]={label:r.label||"",zh:"",ft:"",before:"",cv:{}}; order.push(key); }
       var t=byLab[key]; if(r.zh)t.zh=r.zh; if(r.ft)t.ft=r.ft; if(r.before)t.before=r.before; if(r.label&&!t.label)t.label=r.label; CV_DBS.forEach(function(id){ if(r.cv&&r.cv[id])t.cv[id]=r.cv[id]; });
     }); });
-    order.forEach(function(k){ var r=byLab[k]; r.zh=_synSplit(r.zh); r.ft=_synSplit(r.ft); r.before=_synSplit(r.before);
+    order.forEach(function(k){ var r=byLab[k]; r.zh=_synSplit(r.zh); r.ft=_synSplit(r.ft); r.before=_synSplit(r.before); var _bl=function(x){ return String(x||"").split("\n").map(function(l){ return /^\s*\u0003\s*$/.test(l)?"":l.replace(/\u0003/g,""); }).join("\n").replace(/\n{3,}/g,"\n\n").replace(/^\n+|\n+$/g,""); }; r.zh=_bl(r.zh); r.ft=_bl(r.ft); r.before=_bl(r.before); if(r.cv) Object.keys(r.cv).forEach(function(id){ r.cv[id]=_bl(r.cv[id]); });   /* Word 空行保留（Flora 11-20） */
       var sp=_importSplit(r.ft, r.before, _srcBef); r.ft=sp.ft; r.before=sp.before; if(r.cv) Object.keys(r.cv).forEach(function(id){ r.cv[id]=_synSplit(r.cv[id]); }); });   // 分號／OR 串起的詞 → 一行一個（貼上與上傳 Word 共用）
     return order.map(function(k){return byLab[k];});
   }
@@ -3357,6 +3357,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
     var _cellText=function(tc,keepGray){
       // 逐 run 讀取；灰色字（提示/備註）不納入（keepGray=true 時全保留，供表頭偵測用）
       tc=tc.replace(/<w:p\b[\s\S]*?<\/w:p>/g, function(pp){ if(!_pInd(pp)) return pp; var body=pp.replace(/^<w:p\b[^>]*>(\s*<w:pPr>[\s\S]*?<\/w:pPr>)?/,""), head=pp.slice(0,pp.length-body.length); return head+'<w:r><w:t xml:space="preserve">  </w:t></w:r>'+body.replace(/^(\s*<w:r\b[^>]*>(?:\s*<w:rPr>[\s\S]*?<\/w:rPr>)?)\s*<w:tab\/>/,"$1"); });   /* 縮排段落 → 行首兩個空白 */
+      tc=tc.replace(/<w:p(\s[^>]*)?\/>/g,"<w:p></w:p>"); tc=tc.replace(/<w:p\b[\s\S]*?<\/w:p>/g, function(pp){ return /<w:t(?:\s[^>]*)?>[^<]*\S[^<]*<\/w:t>|<w:tab\/>|<w:sym\b|<w:br\b/.test(pp) ? pp : "<w:p><w:r><w:t>\u0003</w:t></w:r></w:p>"; });   /* _blankPara：Word 原本的空白段落 → 保留成空行（灰字略過造成的空段落不算；Flora 11-20） */
       var out="", re=/<w:r\b[\s\S]*?<\/w:r>|<w:br\b[^>]*?\/?>|<\/w:p>/g, m;
       while((m=re.exec(tc))){
         var seg=m[0];
@@ -3365,7 +3366,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
         var tre=/<w:t(?:\s[^>]*)?>([\s\S]*?)<\/w:t>|<w:br\b[^>]*?\/?>/g, mm;
         while((mm=tre.exec(seg))){ out += (mm[1]!==undefined ? mm[1] : "\n"); }
       }
-      return out.replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/[ \t]+\n/g,"\n").replace(/\n{2,}/g,"\n").replace(/\n+$/,"").replace(/^\n+/,"").trim();
+      return out.replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/[ \t]+\n/g,"\n").replace(/\n{2,}/g,"\n").replace(/^(?:\s*\u0003\s*\n)+|(?:\n\s*\u0003\s*)+$/g,"").replace(/^\s*\u0003\s*$/,"").replace(/\n+$/,"").replace(/^\n+/,"").trim();   /* 空行以 \u0003 標記保留，經貼上解析器後在 _incomingFromGrids 還原成空行 */
     };
     // 解析文件中「所有」表格（前後可含其他表格／段落）；回傳表格陣列，每個表格為列陣列
     var _allTables=function(xml,keepGray){
