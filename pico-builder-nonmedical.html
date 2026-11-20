@@ -864,7 +864,7 @@
           <span data-en><div>‧ Open a ChatGPT prompt example: <a href="https://chatgpt.com/share/6ab1b85c-35cc-83ee-9424-29e95ff41d2d" target="_blank" rel="noopener">example 1 ↗</a>, <a href="https://chatgpt.com/share/6af2af0a-0528-83e8-bcf8-784dafe011c2" target="_blank" rel="noopener">example 2 (MEMS) ↗</a> or copy a prompt: <button type="button" class="pcopy" data-pcopy="pico">PICO framework</button> <button type="button" class="pcopy" data-pcopy="nopico">non-PICO</button> (<a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a> or <a href="https://claude.ai/" target="_blank" rel="noopener">Claude</a> works best; signing in helps)</div><div>‧ Copy the whole table from ChatGPT etc., click the box below and press <b>Ctrl+V</b>; columns are auto-mapped by header and fill the PICO table below (Word / Excel also work)</div><div>‧ Include a header row (Concept / Chinese / English / ASC / BSC / ERIC / Compendex / IEEE / PQDT controlled-vocab columns; omit columns you don't need; any order)</div><div style="color:var(--mut);padding-left:1.2em">(Controlled-vocab cells may be plain terms or include field syntax like DE "…" OR …; databases that get data are revealed automatically. Results may vary with different copy methods; for complex tables with merged/nested cells, check the filled result and adjust as needed.)</div></span>
         </div>
         <textarea id="pasteZone" spellcheck="false" rows="4" style="width:100%" placeholder="在此按 Ctrl+V 貼上表格"></textarea>
-        <label id="pasteAppendLab" style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;margin:6px 0 0 14px;cursor:pointer"><input type="checkbox" id="pasteAppend" style="margin:0"><span data-zh>補上：貼上的每一列加在現有表格之後（不覆蓋現有內容）</span><span data-en>Append: add each pasted row after the existing rows (keep current content)</span></label>
+        <label id="pasteAppendLab" style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;margin:6px 0 0 14px;cursor:pointer"><input type="checkbox" id="pasteAppend" style="margin:0"><span data-zh>補上：貼上的每一列加在現有表格之後（不覆蓋現有內容）。請注意需要有適當表頭一起貼上。如果失敗，請用人工方式處理。</span><span data-en>Append: add each pasted row after the existing rows (keep current content). Please paste the matching header row as well. If this fails, please add the rows manually.</span></label>
         <div id="pasteMsg" style="font-size:12.5px;margin:6px 0 0 14px"></div>
         <details id="pasteDiagBox" style="margin-top:10px;border-top:1px dashed var(--line);padding-top:8px">
           <summary style="cursor:pointer;font-size:12px;color:var(--mut)"><span data-zh>貼上後沒被正確辨識？點此開啟「貼上診斷」</span><span data-en>Paste not recognized correctly? Open “Paste diagnostics”</span></summary>
@@ -3890,6 +3890,26 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
     var finalExpr = finalParts.join(" "+_andTok+" ");
     var emitFinal = finalParts.length>1 || (finalParts.length===1 && /\bOR\b|\bAND\b/i.test(finalParts[0]));
     var finalRow = (finalExpr && emitFinal) ? {n:lineNum, text:finalExpr} : null;
+    if(!buildForTarget._noVar && eng!=="cnki" && _ccv && _ccv.trim()){   /* _ccPrune：有自訂組合時只列出組合用到的概念行並重新編號（Flora 11-20；CNKI 不套用自訂組合，維持全部） */
+      var _use={}, _anyL=false, _lre=/\bL(\d+)(?:@L?V?([0-3]))?\b/gi, _lm;
+      var _addR=function(g){ if(g!=null) String(g).replace(/#(\d+)/g, function(m,d){ _use[+d]=1; return m; }); };
+      while((_lm=_lre.exec(_ccv))){ _anyL=true; var _lk=+_lm[1];
+        if(_lm[2]!=null){ var _lg=(conceptRefs.vars||{})[_lk+"@L"+_lm[2]]; _addR(_lg!==undefined?_lg:conceptRefs[_lk-1]); } else _addR(conceptRefs[_lk-1]); }
+      if(_anyL){
+        var _chg=true; while(_chg){ _chg=false; qlines.forEach(function(q){ if(_use[q.n]) String(q.text).replace(/#(\d+)/g, function(m,d){ if(!_use[+d]){ _use[+d]=1; _chg=true; } return m; }); }); }
+        var _kept=qlines.filter(function(q){ return _use[q.n]; });
+        if(_kept.length && _kept.length<qlines.length){
+          var _map={}; _kept.forEach(function(q,i){ _map[q.n]=i+1; });
+          var _rn=function(t){ return String(t).replace(/#(\d+)/g, function(m,d){ return _map[+d]!=null?("#"+_map[+d]):m; }); };
+          var _rr=function(g){ if(g==null) return g; var ok=true; String(g).replace(/#(\d+)/g, function(m,d){ if(_map[+d]==null) ok=false; return m; }); return ok?_rn(g):null; };
+          _kept.forEach(function(q){ q.n=_map[q.n]; q.text=_rn(q.text); });
+          qlines=_kept;
+          for(var _ci=0; _ci<conceptRefs.length; _ci++) conceptRefs[_ci]=_rr(conceptRefs[_ci]);
+          if(conceptRefs.vars) Object.keys(conceptRefs.vars).forEach(function(k){ conceptRefs.vars[k]=_rr(conceptRefs.vars[k]); });
+          lineNum=_kept.length+1; finalRow=null;
+        }
+      }
+    }
     return { qlines:qlines, finalRow:finalRow, reminders:reminders, conceptRefs:conceptRefs, lastNum:(lineNum-1) };
   }
 
@@ -5573,7 +5593,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
     GX.groups.forEach(function(g,gi){
       var cnt=g.items.length?cntsFor(gi2++,G,allQ):"";
       h+='<div class="ccgbox" data-g="'+gi+'"><div class="ccgbh"><input type="text" class="ccgname" data-g="'+gi+'" maxlength="20" value="'+esc(g.name)+'" placeholder="'+T("子問題","Sub-question ")+(gi+1)+'" style="width:'+nameW(g.name||T("子問題","Sub-question ")+(gi+1))+'em"><span class="ccgbt">'+T("（文章同時提及）：","(papers mention all of):")+'</span>'+
-         (GX.groups.length>1?'<button type="button" class="ccgdel" data-del="'+gi+'" title="'+T("刪除這個框","Delete this box")+'">✕</button>':'')+'</div>'+
+         (GX.groups.length>1?'<button type="button" class="ccgdel" data-del="'+gi+'" title="'+T("刪除這個框","Delete this box")+'">✕</button>':((g.items.length||g.name)?'<button type="button" class="ccgdel" data-clr="'+gi+'" title="'+T("清除這個框的內容","Clear this box")+'">✕</button>':''))+'</div>'+
          (cnt?'<div class="ccgcnts">'+cnt+'</div>':'')+'<div class="ccgdrop">'+(g.items.length?g.items.map(function(k){return chip(k,cs,"g",gi,g);}).join('<span class="ccgand">AND</span>'):'<span class="ccgph">'+T("把概念拖進來","Drop concepts here")+'</span>')+'</div>'+'</div>';
       if(gi<GX.groups.length-1) h+='<div class="ccgor">OR</div>';
     });
@@ -5615,6 +5635,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
     if((b=t.closest(".ccglvb"))){ e.stopPropagation(); if(popFor && popFor.k===+b.dataset.k && popFor.w===b.dataset.w && String(popFor.g)===String(b.dataset.g!=null?+b.dataset.g:null)) closePop(); else openPop(b); return; }
     if((b=t.closest(".ccgx"))){ var c=b.closest(".ccgc"); rmFrom(+c.dataset.g, +c.dataset.k); changed(); return; }
     if((b=t.closest("[data-del]"))){ GX.groups.splice(+b.dataset.del,1); changed(); return; }
+    if((b=t.closest("[data-clr]"))){ GX.groups[+b.dataset.clr]={name:"",items:[],lv:{}}; changed(); return; }   /* _ccgClr：只剩一個子問題框時 ✕＝清除內容、保留框（Flora 11-20） */
     if((b=t.closest("[data-act]"))){ var a=b.dataset.act;
       if(a==="add") GX.groups.push({name:"",items:[],lv:{}});
       else if(a==="demo"){ var ks=concepts().filter(function(c){ return c.fil; }).map(function(c){ return c.k; }); var n=ks.length, base=ks.slice(0,n-2);   /* 示範只用有填詞的概念 */
@@ -6474,7 +6495,7 @@ th.cvhead[data-vocab="mesh"] .colclr{right:26px}
     var mv=td.querySelector('.mview'), html=(document.activeElement===ta || !ta.offsetWidth || (mv && mv.offsetWidth)) ? null : build(ta.value, !!ta.closest('td.cv'));
     if(!html){ if(ov) ov.style.display="none"; return; }
     if(!ov){ ov=ta._nv=document.createElement("div"); ov.className="cvnview"; ov.setAttribute("aria-hidden","true");
-      ov.addEventListener("mousedown", function(e){ e.preventDefault(); ov.style.display="none"; ta.focus(); });
+      ov.style.pointerEvents="none"; ta.addEventListener("scroll", function(){ if(ov.style.display!=="none") ov.scrollTop=ta.scrollTop; });   /* _nvClick：灰字顯示層不攔點擊，點擊直接落在輸入格 → 游標定位在點的位置（原本 focus 後跳回上次游標處；Flora 11-20） */
       if(getComputedStyle(td).position==="static") td.style.position="relative"; td.appendChild(ov); }
     var cs=getComputedStyle(ta); CS.forEach(function(k){ ov.style[k]=cs[k]; });
     if(/rgba?\(.*,\s*0\)$/.test(cs.backgroundColor)) ov.style.backgroundColor="#fff";
