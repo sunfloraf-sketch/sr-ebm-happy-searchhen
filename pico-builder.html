@@ -249,6 +249,8 @@
   .ovtabs button[data-i].on{color:#23282D;border-bottom-color:#E0644F}
   .ovtabs button small{font-size:11px;font-weight:400;color:#8E99A1;margin-left:5px}
   .ovtabs .ovsw{align-self:center}
+  .ovtabs button.ovadd{font:inherit;font-size:20px;line-height:1;font-weight:400;padding:4px 8px 6px;margin:0 0 2px -6px;border:0;background:transparent;color:#5A6872;cursor:pointer;align-self:center;border-radius:6px}.ovtabs button.ovadd:hover{color:#23282D;background:#EEF2F5}
+  .ovaddpop{position:fixed;z-index:80;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.12);padding:8px 12px 10px;max-height:60vh;overflow:auto;font-size:13px;min-width:200px}.ovaddpop .ovaddhd{font-weight:700;color:#23282D;margin-bottom:4px}.ovaddpop .ovaddsub{font-size:12px;color:#8E99A1;margin:8px 0 2px;border-top:1px dashed var(--line);padding-top:6px}.ovaddpop label{display:flex;gap:7px;align-items:center;padding:3px 0;cursor:pointer;white-space:nowrap}   /* 頁籤列「+」加選資料庫（Flora 11-20） */
   #outs.ovtabmode > .out h3 > span:first-child{display:none}
   #outs.ovtabmode > .out h3{justify-content:flex-end;padding-top:6px;padding-bottom:6px}
   @media (max-width:640px){
@@ -7169,11 +7171,38 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
       if(row.parentNode) row.remove();
       var names=cs.map(nameOf), cur=get(KTAB,""), idx=Math.max(0,names.indexOf(cur));
       tabs.innerHTML=names.map(function(n,i){ var start=cs[i].querySelector("h3 > span span"); return '<button type="button" role="tab" data-i="'+i+'" class="'+(i===idx?"on":"")+'" aria-selected="'+(i===idx)+'">'+n.replace(/&/g,"&amp;").replace(/</g,"&lt;")+(start?'<small>'+(en()?"start":"起始")+'</small>':'')+'</button>'; }).join("");
-      tabs.appendChild(sw);   /* 頁籤模式：切換圖示放在頁籤列最右邊 */
+      tabs.appendChild(addBtn); tabs.appendChild(sw);   /* 頁籤模式：最後一個資料庫右側「+」加選資料庫（Flora 11-20）；切換圖示放在頁籤列最右邊 */
       if(tabs.parentNode!==outs || tabs.nextElementSibling!==cs[0]) outs.insertBefore(tabs, cs[0]);
       cs.forEach(function(c,i){ c.hidden=(i!==idx); });
     } finally { busy=false; }
   }
+  /* 「+」加選資料庫（Flora 11-20）：列出 #dbchecks／#dbchecksMore 的資料庫勾選框，勾選即同步原勾選框並重新產生 */
+  var addBtn=document.createElement("button"); addBtn.type="button"; addBtn.className="ovadd"; addBtn.textContent="+";
+  var pop=null;
+  function closePop(){ if(pop){ pop.remove(); pop=null; } }
+  function dbInputs(id){ var box=document.getElementById(id); return box?Array.prototype.slice.call(box.querySelectorAll('input[type="checkbox"]')):[]; }
+  function labelOf(inp){ var l=inp.closest("label"); var t=l?(l.innerText||l.textContent):(inp.value||""); t=String(t).replace(/\s+/g," ").trim(); return /[:：]$/.test(t)?t.replace(/[:：]$/,"")+(en()?" (custom)":"（自訂）"):t; }
+  function openPop(){
+    closePop(); pop=document.createElement("div"); pop.className="ovaddpop";
+    var hd=document.createElement("div"); hd.className="ovaddhd"; hd.textContent=en()?"Add / remove databases":"加選資料庫"; pop.appendChild(hd);
+    [["dbchecks",""],["dbchecksMore",en()?"More databases":"更多資料庫"]].forEach(function(g){
+      var ins=dbInputs(g[0]).filter(function(x){ return x.value; }); if(!ins.length) return;
+      if(g[1]){ var sh=document.createElement("div"); sh.className="ovaddsub"; sh.textContent=g[1]; pop.appendChild(sh); }
+      ins.forEach(function(orig){ var lb=document.createElement("label"); var cb=document.createElement("input"); cb.type="checkbox"; cb.checked=orig.checked; var sp=document.createElement("span"); sp.textContent=labelOf(orig);
+        cb.onchange=function(){ orig.checked=cb.checked; try{ orig.dispatchEvent(new Event("change",{bubbles:true})); }catch(_){}
+          var g2=document.getElementById("genBtn"); if(g2) setTimeout(function(){ g2.click(); },0); };
+        lb.appendChild(cb); lb.appendChild(sp); pop.appendChild(lb); });
+    });
+    document.body.appendChild(pop);
+    var r=addBtn.getBoundingClientRect(), w=pop.offsetWidth, h=pop.offsetHeight;
+    var left=Math.min(r.left, window.innerWidth-w-8), top=r.bottom+4; if(top+h>window.innerHeight-8) top=Math.max(8, r.top-h-4);
+    pop.style.left=Math.max(8,left)+"px"; pop.style.top=top+"px";
+  }
+  addBtn.title=en()?"Add databases":"加選資料庫"; addBtn.setAttribute("aria-label", addBtn.title);
+  addBtn.addEventListener("click",function(e){ e.stopPropagation(); if(pop) closePop(); else openPop(); });
+  document.addEventListener("mousedown",function(e){ if(pop && !pop.contains(e.target) && e.target!==addBtn) closePop(); });
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape") closePop(); });
+  window.addEventListener("resize",closePop);
   sw.addEventListener("click",function(e){ var b=e.target.closest("button[data-v]"); if(!b) return; set(KEY,b.dataset.v); apply(); });
   tabs.addEventListener("click",function(e){ var b=e.target.closest("button[data-i]"); if(!b) return; var cs=cards(), i=+b.dataset.i; if(cs[i]) set(KTAB,nameOf(cs[i])); apply(); });
   tabs.addEventListener("keydown",function(e){ if((e.key!=="ArrowRight"&&e.key!=="ArrowLeft")||!e.target.closest("button[data-i]")) return; var bs=tabs.querySelectorAll("button[data-i]"), cur=Array.prototype.findIndex.call(bs,function(x){return x.classList.contains("on");}); var n=(cur+(e.key==="ArrowRight"?1:-1)+bs.length)%bs.length; e.preventDefault(); bs[n].click(); var nb=tabs.querySelectorAll("button[data-i]")[n]; if(nb) nb.focus(); });
