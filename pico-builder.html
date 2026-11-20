@@ -2675,10 +2675,10 @@ if (typeof module !== "undefined" && module.exports) {
   }
   // 片語比不到時，把字拆開 AND：找「同義詞同時含有這些字」的標目
   // 例：pregnancy diabetes → Pregnancy in Diabetes → Pregnancy in Diabetics
-  var _MESH_STOP={"in":1,"of":1,"and":1,"or":1,"the":1,"a":1,"an":1,"to":1,"for":1,"with":1,"on":1,"by":1};
+  var _MESH_STOP={"in":1,"of":1,"and":1,"or":1,"the":1,"a":1,"an":1,"to":1,"for":1,"with":1,"on":1,"by":1,"at":1,"as":1,"is":1,"be":1,"vs":1,"no":1,"not":1};
   function _meshWords(term){
     return String(term||"").toLowerCase().replace(/[^a-z0-9\s-]/g," ").split(/[\s-]+/)
-      .filter(function(w){ return w.length>=3 && !_MESH_STOP[w]; });
+      .filter(function(w){ return w.length>=2 && !_MESH_STOP[w]; });
   }
   function _meshStem(w){ return w.length>=7 ? w.slice(0, w.length-3) : w; }   // diabetes→diabe，可對到 diabetics
   function _meshAndWords(term){
@@ -3281,7 +3281,7 @@ if (typeof module !== "undefined" && module.exports) {
     var jobs=terms.slice(0,10).map(function(term){
       return function(){
         var bare=String(term).replace(/\*/g,"").trim();
-        if(bare.length<3) return Promise.resolve();
+        if(bare.length<2) return Promise.resolve();   /* _short2：2 個字母（如 qi）也查 MeSH（Flora 11-20） */
         var enc=encodeURIComponent(bare), isTrunc=/\*/.test(term);
         var wide=isTrunc?"startswith":"contains";
         function hit(){ return Object.keys(out).some(function(k){ return out[k].via[term]; }); }
