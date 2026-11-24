@@ -869,6 +869,37 @@ th.cvhead[data-vocab="mesh"]{position:relative}
 <style id="thZStyle">/* _thZ：固定表頭各欄 z-index 相同，後面欄位會蓋住前一欄展開的選單（如「工具 ▾」英文較寬時被下一欄遮住）；操作中的表頭提到最上層（Flora 11-24） */
 table.pico thead th:hover, table.pico thead th:focus-within, table.pico thead th:has(.befmenu:not([hidden])){z-index:7}
 </style>
+<style id="ccgBlockStyle">/* 積木式組合（原「圖形化」，Flora 11-24）：概念積木＋AND 連接塊（凸榫嵌入凹槽）＋問題/策略之間 OR 膠囊；只改外觀，邏輯不變 */
+.ccgbox{background:#F1EFE8;border-color:#F1EFE8;border-radius:12px}
+.ccgc{position:relative;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;height:34px;padding:0 10px;background:#fff;color:#444441;border:1px solid #fff;border-radius:6px;box-sizing:border-box}
+.ccgpal .ccgc,.ccgc.pal{border-color:#D3D1C7}
+.ccgc b{font-size:11px;color:#0F6E56}
+.ccgc:hover{border-color:#B4B2A9}
+.ccgc.sel{border-color:#0F6E56;background:#fff;box-shadow:0 0 0 1px #0F6E56 inset}
+.ccgc .ccglvb{font-size:11px;padding:3px 6px;border:0}
+.ccglvb[data-l=L0]{background:#F1EFE8;color:#5F5E5A;border-color:transparent}
+.ccglvb[data-l=L1]{background:#E1F5EE;color:#085041}
+.ccglvb[data-l=L2]{background:#FAEEDA;color:#633806}
+.ccglvb[data-l=L3]{background:#085041;color:#fff}
+/* 問題/策略內：概念垂直堆疊、靠左，寬度依文字 */
+.ccgdrop{flex-direction:column;flex-wrap:nowrap;align-items:flex-start;gap:0}
+.ccgdrop > .ccgc{z-index:1}
+/* 凹槽：寬 14、深 10、距左 17；第一塊無上凹槽、最後一塊無下凹槽 */
+.ccgdrop > .ccgc:not(:first-child)::before,.ccgdrop > .ccgc:not(:last-child)::after{content:"";position:absolute;left:17px;width:14px;height:10px;background:#F1EFE8;pointer-events:none}
+.ccgdrop > .ccgc:not(:first-child)::before{top:-1px}
+.ccgdrop > .ccgc:not(:last-child)::after{bottom:-1px}
+/* AND 連接塊：48×20，上下凸榫 12×8 對準凹槽，層級高於積木 */
+.ccgdrop > .ccgand{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;width:48px;height:20px;margin:0;box-sizing:border-box;background:#E2E0D9;border:1px solid #E2E0D9;border-radius:3px;font-family:inherit;font-size:11px;font-weight:600;color:#888780;letter-spacing:.02em}
+.ccgdrop > .ccgand::before,.ccgdrop > .ccgand::after{content:"";position:absolute;left:18px;width:12px;height:8px;background:#E2E0D9}
+.ccgdrop > .ccgand::before{top:-8px}
+.ccgdrop > .ccgand::after{bottom:-8px}
+/* 刪除 ×：hover／focus 才顯示（保留佔位）；觸控裝置常駐 */
+.ccgc .ccgx{opacity:0;transition:opacity .12s}
+.ccgc:hover .ccgx,.ccgc:focus-within .ccgx{opacity:1}
+@media (hover:none){ .ccgc .ccgx{opacity:1} }
+/* 問題/策略之間：OR 淡綠膠囊 */
+.ccgor{display:inline-flex;align-items:center;align-self:center;padding:2px 10px;border-radius:999px;background:#E1F5EE;color:#0F6E56;font-size:11.5px;font-weight:700}
+</style>
 </head>
 <body>
 <header class="sh">
@@ -5311,7 +5342,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
       reminders.push(isEn() ? (tg.label+" has no controlled vocabulary — free-text only")
                             : (tg.label+" 無控制詞彙，僅用自由詞彙"));
     }
-    /* 子問題另設欄位完整度：自訂組合含 L1@LV3 → 該概念另產生該完整度的檢索行（行號接在後面），供 buildCombos 對應 */
+    /* 問題/策略另設欄位完整度：自訂組合含 L1@LV3 → 該概念另產生該完整度的檢索行（行號接在後面），供 buildCombos 對應 */
     conceptRefs.vars={};
     var _ccvEl=document.getElementById("customCombo"), _ccv=_ccMigrate(_ccvEl?_ccvEl.value:"");
     if(!buildForTarget._noVar && /\bL\d+@L?V?[0-3]\b/i.test(_ccv)){
@@ -5428,7 +5459,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
     lines.forEach(function(line, idx){
       var num=lastNum+1+idx;
       var txt=line
-        .replace(/\bL(\d+)@L?V?([0-3])\b/gi, function(m,k,l){ var V=conceptRefs.vars||{}, g=V[parseInt(k,10)+"@L"+l]; if(g===undefined) g=conceptRefs[parseInt(k,10)-1]; return (g!=null)?g:m; })   /* 子問題另設欄位完整度 */
+        .replace(/\bL(\d+)@L?V?([0-3])\b/gi, function(m,k,l){ var V=conceptRefs.vars||{}, g=V[parseInt(k,10)+"@L"+l]; if(g===undefined) g=conceptRefs[parseInt(k,10)-1]; return (g!=null)?g:m; })   /* 問題/策略另設欄位完整度 */
         .replace(/\bL(\d+)\b/gi, function(m,k){ var g=conceptRefs[parseInt(k,10)-1]; return (g!=null)?g:m; })
         .replace(/\bR(\d+)\b/gi, function(m,k){ var n=Lmap[parseInt(k,10)]; return (n!=null)?("#"+n):m; })
         .replace(/\b(AND\s+NOT|AND|OR|NOT)\b/gi, function(m){ var k=m.toUpperCase().replace(/\s+/g," "); var B=(eng && SYNTAX_MAP.boolean[eng])||null; if(k==="AND NOT") k="NOT"; return B ? (B[k]||k) : k; });
@@ -5888,7 +5919,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
           if(_gs){ var nt=document.createElement("span"); nt.className="qnote";
             nt.textContent=isEn()?("Scopus can’t take "+_rg+" typed in: on the Documents search page, under Search History, tick the searches each line refers to (Scopus numbers them its own way) and click “Combine queries” — or click a line number to copy the full one-line query."):("Scopus 無法直接輸入 "+_rg+"：請在文獻搜尋頁下方「搜尋記錄」（Search History）勾選各行引用的那幾筆（Scopus 編號與此不同），按「組合搜尋式」（Combine queries）；或點行號複製完整單一串檢索式。");
             _gs.appendChild(nt); } }
-        /* Scopus 文章數估算（需使用者自填 Scopus API key；只放記憶體）；並提供圖形化組合估算各子問題 */
+        /* Scopus 文章數估算（需使用者自填 Scopus API key；只放記憶體）；並提供圖形化組合估算各問題/策略 */
         window._srScopusLast={rows:allRows.map(function(x){ return {n:x.n, text:x.text}; }), start:b.lastNum, combo:(customCombo&&customCombo.value)||"", flat:!!((cbFlat&&cbFlat.checked)||forceFlat)};
         setTimeout(function(){ try{ window.dispatchEvent(new Event("sr-scopus-rows")); }catch(_e){} },0);
         if(window.srScopus){
@@ -6971,7 +7002,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
 })();
 </script>
 <script id="ccGfxScript">
-/* 自訂組合策略：圖形化組合（子問題框；框內 AND、框與框 OR）。寫入同一個 #customCombo，產生語法沿用既有引擎。
+/* 自訂組合策略：圖形化組合（問題/策略框；框內 AND、框與框 OR）。寫入同一個 #customCombo，產生語法沿用既有引擎。
    欄位完整度：上排概念＝預設（與表格概念欄同步）；框內概念可另設，寫成 L1@LV3（引擎會多產生該完整度的變體行）。
    筆數估算：Scopus（需 key 與已產生的 Scopus 檢索策略）、Semantic Scholar／OpenAlex／ERIC（免費，srFree；用 window._srFreeLast）。 */
 (function(){
@@ -6986,7 +7017,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
   /* ---------- 版面 ---------- */
   var inner=box.querySelector(":scope > div");
   var bar=document.createElement("div"); bar.className="ccgmode";
-  bar.innerHTML='<span class="ccgseg" role="tablist"><button type="button" role="tab" data-m="text"><span data-zh>文字輸入</span><span data-en>Text</span></button><button type="button" role="tab" data-m="gfx"><span data-zh>圖形化</span><span data-en>Visual</span></button></span>';
+  bar.innerHTML='<span class="ccgseg" role="tablist"><button type="button" role="tab" data-m="text"><span data-zh>文字輸入</span><span data-en>Text</span></button><button type="button" role="tab" data-m="gfx"><span data-zh>積木式組合</span><span data-en>Blocks</span></button></span>';
   inner.insertBefore(bar, inner.firstChild);
   var gfx=document.createElement("div"); gfx.className="ccg"; gfx.id="ccGfx"; inner.appendChild(gfx);
   var dyn=document.createElement("div"); dyn.className="ccgdyn"; gfx.appendChild(dyn);
@@ -7050,7 +7081,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
     if(rests.some(function(r){return !r.length;})) return {txt:A, note:T("有一框只含共同概念，它已涵蓋其他框，所以結果等於共同概念。","One box holds only the shared concepts, so it already covers the others — the result equals the shared concepts.")};
     return {txt:A+" AND ("+rests.map(function(r){ var s=r.join(" AND "); return r.length>1?"("+s+")":s; }).join(" OR ")+")"};
   }
-  /* ---------- 估算各子問題筆數（Scopus 需 key；Semantic Scholar／OpenAlex／ERIC 免費） ---------- */
+  /* ---------- 估算各問題/策略筆數（Scopus 需 key；Semantic Scholar／OpenAlex／ERIC 免費） ---------- */
   var SRCS=[{id:"pm",nm:"PubMed"},{id:"sc",nm:"Scopus"},{id:"s2",nm:"Semantic Scholar"},{id:"oa",nm:"OpenAlex"},{id:"eric",nm:"ERIC"}];
   var SC={cache:{}, busy:false, msg:"", err:false, act:""};
   var srcNm=function(id){ for(var i=0;i<SRCS.length;i++) if(SRCS[i].id===id) return SRCS[i].nm; return id; };
@@ -7099,21 +7130,21 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
       scbar.innerHTML='<span class="ccgsclab"></span>'+ids.map(function(s){ return '<button type="button" class="ccgbtn ccgscsrc" data-src="'+s.id+'">'+esc(s.nm)+'</button>'; }).join("")+'<span class="ccgscst"></span><div class="ccgsctot"></div>';
       Array.prototype.forEach.call(scbar.querySelectorAll(".ccgscsrc"),function(bt){ var ki=window.srFree.keyIcon&&window.srFree.keyIcon(bt.dataset.src); if(ki) bt.appendChild(ki); });   /* key 圖示在來源按鈕上 */
       scbar.addEventListener("click",function(e){ var b=e.target.closest(".ccgscsrc"); if(b) scRun(b.dataset.src); }); }
-    scbar.querySelector(".ccgsclab").textContent=T("估算各子問題筆數：","Estimate counts per sub-question: ");
+    scbar.querySelector(".ccgsclab").textContent=T("估算各問題/策略筆數：","Estimate counts per question/strategy: ");
     Array.prototype.forEach.call(scbar.querySelectorAll(".ccgscsrc"),function(b){ b.disabled=SC.busy; b.classList.toggle("on", b.dataset.src===SC.act); });
     var st=scbar.querySelector(".ccgscst"); st.className="ccgscst"+(SC.err?" err":""); st.textContent=SC.msg||"";
     var nt=scbar.querySelector(".ccgscnote"); if(!nt){ nt=document.createElement("div"); nt.className="ccgscnote"; scbar.insertBefore(nt, scbar.querySelector(".ccgsctot")); }
     var _F=window._srFreeLast, _mx=(_F&&_F.lines)?_F.lines.filter(function(L){ return L.oaMixed; }).map(function(L){ return L.lab; }):[];
     nt.textContent = SC.act==="s2"?T("Semantic Scholar：只能查標題＋摘要，無法限定欄位，不隨欄位完整度改變。","Semantic Scholar: title + abstract only; field levels are ignored.")
-      : SC.act==="oa"?T("OpenAlex：子問題數量依設定的欄位完整度取得；但不支援切截*。合計數量只能採完整標題＋摘要查詢。","OpenAlex: sub-question counts follow the field level you set, but truncation (*) is not supported. The total can only be searched in title + abstract.") : "";   /* 兩個來源的限制明顯加註 */
+      : SC.act==="oa"?T("OpenAlex：問題/策略數量依設定的欄位完整度取得；但不支援切截*。合計數量只能採完整標題＋摘要查詢。","OpenAlex: question/strategy counts follow the field level you set, but truncation (*) is not supported. The total can only be searched in title + abstract.") : "";   /* 兩個來源的限制明顯加註 */
     var all={}; SRCS.forEach(function(s){ if(avail(s.id)) all[s.id]=boxQ(s.id,G); });
     var tt=G.length>1?cntsFor("t",G,all):""; scbar.querySelector(".ccgsctot").innerHTML=tt?('<span class="ccglab">'+T("合計","Total")+'</span>'+tt):"";
   }
   /* ---------- 繪製 ---------- */
-  function nameW(v){ var w=0; String(v).split("").forEach(function(ch){ w+=/[⺀-￯]/.test(ch)?1:0.56; }); return Math.max(1.2,Math.ceil(w*10)/10+0.15); }   /* 子問題名稱輸入框寬度隨字數 */
+  function nameW(v){ var w=0; String(v).split("").forEach(function(ch){ w+=/[⺀-￯]/.test(ch)?1:0.56; }); return Math.max(1.2,Math.ceil(w*10)/10+0.15); }   /* 問題/策略名稱輸入框寬度隨字數 */
   function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
   function badge(l,k,where,gi,ov,cs){ var t=(where==="pal")?T("欄位完整度（預設，與表格同步）：","Field level (default, synced with the table): ")+lvName(l)
-      :(ov?T("此子問題另設："+lvName(l)+"（預設："+lvName(defLv(k,cs))+"）","Set for this sub-question: "+lvName(l)+" (default: "+lvName(defLv(k,cs))+")"):T("欄位完整度（同預設）："+lvName(l),"Field level (same as default): "+lvName(l)));
+      :(ov?T("此問題/策略另設："+lvName(l)+"（預設："+lvName(defLv(k,cs))+"）","Set for this question/strategy: "+lvName(l)+" (default: "+lvName(defLv(k,cs))+")"):T("欄位完整度（同預設）："+lvName(l),"Field level (same as default): "+lvName(l)));
     return '<button type="button" class="ccglvb'+(ov?' ov':'')+'" data-l="'+l+'" data-k="'+k+'" data-w="'+where+'"'+(gi!=null?' data-g="'+gi+'"':'')+' title="'+esc(t)+'" aria-haspopup="menu">'+esc(lvName(l))+'</button>'; }
   function chip(k,cs,where,gi,g){ var c=cs[k-1], miss=!c, s='<span class="ccgc'+(miss?' miss':'')+(where==="pal"&&sel===k?' sel':'')+'" draggable="true" data-k="'+k+'" data-w="'+where+'"'+(gi!=null?' data-g="'+gi+'"':'')+' title="'+esc(miss?T("這一列已不存在","This row no longer exists"):(c.zh&&c.lab&&c.zh!==c.lab?c.lab+"｜"+c.zh:c.name))+'">'+
       '<b>L'+k+'</b>'+esc(miss?T("已不存在","missing"):c.name);
@@ -7129,14 +7160,14 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
     h+='<div class="ccgboxes">';
     GX.groups.forEach(function(g,gi){
       var cnt=g.items.length?cntsFor(gi2++,G,allQ):"";
-      h+='<div class="ccgbox" data-g="'+gi+'"><div class="ccgbh"><input type="text" class="ccgname" data-g="'+gi+'" maxlength="20" value="'+esc(g.name)+'" placeholder="'+T("子問題","Sub-question ")+(gi+1)+'" style="width:'+nameW(g.name||T("子問題","Sub-question ")+(gi+1))+'em"><span class="ccgbt">'+T("（文章同時提及）：","(papers mention all of):")+'</span>'+
+      h+='<div class="ccgbox" data-g="'+gi+'"><div class="ccgbh"><input type="text" class="ccgname" data-g="'+gi+'" maxlength="20" value="'+esc(g.name)+'" placeholder="'+T("問題/策略","Question/strategy ")+(gi+1)+'" style="width:'+nameW(g.name||T("問題/策略","Question/strategy ")+(gi+1))+'em"><span class="ccgbt">'+T("（文章同時提及）：","(papers mention all of):")+'</span>'+
          (GX.groups.length>1?'<button type="button" class="ccgdel" data-del="'+gi+'" title="'+T("刪除這個框","Delete this box")+'">✕</button>':((g.items.length||g.name)?'<button type="button" class="ccgdel" data-clr="'+gi+'" title="'+T("清除這個框的內容","Clear this box")+'">✕</button>':''))+'</div>'+
          (cnt?'<div class="ccgcnts">'+cnt+'</div>':'')+'<div class="ccgdrop">'+(g.items.length?g.items.map(function(k){return chip(k,cs,"g",gi,g);}).join('<span class="ccgand">AND</span>'):'<span class="ccgph">'+T("把概念拖進來","Drop concepts here")+'</span>')+'</div>'+'</div>';
       if(gi<GX.groups.length-1) h+='<div class="ccgor">OR</div>';
     });
-    h+='</div><div class="ccgadd"><button type="button" class="ccgbtn" data-act="add">'+T("＋ 新增子問題","＋ Add sub-question")+'</button></div>';
+    h+='</div><div class="ccgadd"><button type="button" class="ccgbtn" data-act="add">'+T("＋ 新增問題/策略","＋ Add question/strategy")+'</button></div>';
     /* 組合結果／化簡／寫入 區塊不顯示（Flora 11-14）；組合仍寫入文字輸入區 */
-    if(cs.filter(function(c){ return c.fil; }).length>=3 && !G.length) h+='<div class="ccgdemo"><button type="button" class="ccgbtn" data-act="demo">'+T("看示範：共同概念＋兩個子問題","Show an example: shared concepts + two sub-questions")+'</button></div>';
+    if(cs.filter(function(c){ return c.fil; }).length>=3 && !G.length) h+='<div class="ccgdemo"><button type="button" class="ccgbtn" data-act="demo">'+T("看示範：共同概念＋兩個問題/策略","Show an example: shared concepts + two questions/strategies")+'</button></div>';
     dyn.innerHTML=h; paintSc();
   }
   /* ---------- 欄位完整度選單 ---------- */
@@ -7145,8 +7176,8 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
   function openPop(b){
     var cs=concepts(), k=+b.dataset.k, w=b.dataset.w, gi=b.dataset.g!=null?+b.dataset.g:null, cur=b.dataset.l, def=defLv(k,cs);
     popFor={k:k,w:w,g:gi};
-    var hd=(w==="pal")?T("L"+k+" "+nameOf(k,cs)+"・預設（所有子問題）","L"+k+" "+nameOf(k,cs)+" · default (all sub-questions)")
-      :T("L"+k+" "+nameOf(k,cs)+"・"+(GX.groups[gi].name||("子問題"+(gi+1))),"L"+k+" "+nameOf(k,cs)+" · "+(GX.groups[gi].name||("Sub-question "+(gi+1))));
+    var hd=(w==="pal")?T("L"+k+" "+nameOf(k,cs)+"・預設（所有問題/策略）","L"+k+" "+nameOf(k,cs)+" · default (all questions/strategies)")
+      :T("L"+k+" "+nameOf(k,cs)+"・"+(GX.groups[gi].name||("問題/策略"+(gi+1))),"L"+k+" "+nameOf(k,cs)+" · "+(GX.groups[gi].name||("Question/strategy "+(gi+1))));
     pop.innerHTML='<div class="hd">'+esc(hd)+'</div>'+["L0","L1","L2","L3"].map(function(l){ var m=LV[l];
       return '<button type="button" class="op'+(l===cur?' cur':'')+'" role="menuitemradio" aria-checked="'+(l===cur)+'" data-set="'+l+'"><span class="ccglvb" data-l="'+l+'">'+esc(T(m.z,m.e))+'</span><span class="ds">'+esc(T(m.dz,m.de))+(w!=="pal"&&l===def?T("（預設）"," (default)"):"")+'</span>'+(l===cur?'<span class="ck">✓</span>':'')+'</button>'; }).join("");
     pop.hidden=false;
@@ -7172,7 +7203,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
     if((b=t.closest(".ccglvb"))){ e.stopPropagation(); if(popFor && popFor.k===+b.dataset.k && popFor.w===b.dataset.w && String(popFor.g)===String(b.dataset.g!=null?+b.dataset.g:null)) closePop(); else openPop(b); return; }
     if((b=t.closest(".ccgx"))){ var c=b.closest(".ccgc"); rmFrom(+c.dataset.g, +c.dataset.k); changed(); return; }
     if((b=t.closest("[data-del]"))){ GX.groups.splice(+b.dataset.del,1); changed(); return; }
-    if((b=t.closest("[data-clr]"))){ GX.groups[+b.dataset.clr]={name:"",items:[],lv:{}}; changed(); return; }   /* _ccgClr：只剩一個子問題框時 ✕＝清除內容、保留框（Flora 11-20） */
+    if((b=t.closest("[data-clr]"))){ GX.groups[+b.dataset.clr]={name:"",items:[],lv:{}}; changed(); return; }   /* _ccgClr：只剩一個問題/策略框時 ✕＝清除內容、保留框（Flora 11-20） */
     if((b=t.closest("[data-act]"))){ var a=b.dataset.act;
       if(a==="add") GX.groups.push({name:"",items:[],lv:{}});
       else if(a==="demo"){ var ks=concepts().filter(function(c){ return c.fil; }).map(function(c){ return c.k; }); var n=ks.length, base=ks.slice(0,n-2);   /* 示範只用有填詞的概念 */
@@ -7206,7 +7237,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
       t=dropTok(t,"\u0002");
       if(t && !/^(?:AND|OR|NOT)\b/i.test(t)){ n++; rmap[idx+1]=n; out.push(t); } else rmap[idx+1]=0; });
     out=out.map(function(t){ return dropTok(t.replace(/\bR(\d+)\b/gi,function(m,k){ var v=rmap[+k]; return v?("R"+v):(v===0?"\u0003":m); }),"\u0003"); }).filter(Boolean);
-    if(out.length && /^R\d+$/i.test(out[out.length-1])) out.pop();   /* 只剩一個子問題時，最後的 R1 不需要 */
+    if(out.length && /^R\d+$/i.test(out[out.length-1])) out.pop();   /* 只剩一個問題/策略時，最後的 R1 不需要 */
     var nv=out.join("\n"); if(nv!==ta.value){ ta.value=nv; ta.dispatchEvent(new Event("input",{bubbles:true})); }
   }
   new MutationObserver(function(){ remap(); }).observe(body,{childList:true});
@@ -7502,8 +7533,8 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
     var btns={}; SS.forEach(function(s){ var b=document.createElement("button"); b.type="button"; b.className="btn ghost srsrcbtn"; b.textContent=SRC[s].nm; var ki=keyIcon(s); if(ki) b.appendChild(ki); btns[s]=b; bar.appendChild(b); });
     var st=document.createElement("span"); st.className="pmstatus"; bar.appendChild(st);
     if(tipFn){ var _eng=SS.filter(function(x){ return x==="pm"||x==="sc"; }).map(function(x){ return SRC[x].nm; }), _sep=T("、",", ");   /* 說明只列目前有的來源（非醫學版沒有 PubMed 就不寫） */
-      var _tz=(_eng.length?_eng.join(_sep)+"：用上方該庫產生的檢索式（展開成單一串）。<br>其他來源":"各來源")+"把各概念的自由詞彙轉成各庫的布林式後查詢，只當<b>量級參考</b>：<br>・Semantic Scholar：只查標題＋摘要（無法限定欄位）。<br>・OpenAlex：子問題數量依設定的欄位完整度取得；但不支援切截*。合計數量只能採完整標題＋摘要查詢。"+(HS.eric?"<br>・ERIC：依欄位完整度查 所有欄位／標題＋摘要＋敘詞／標題＋摘要／標題，並加入 ERIC 控制詞彙。":"")+"<br>・鄰近字一律改成 AND"+(HS.eric?"，除 ERIC 敘詞外不含控制詞彙":"，不含控制詞彙")+"。<br>點失敗的格子可重查；滑過列名可看實際送出的檢索式。";
-      var _te=(_eng.length?_eng.join(_sep)+": the strategy generated above for that database (expanded into one line).<br>Other sources: free":"Free")+"-text terms are converted to each source’s Boolean syntax — treat counts as <b>ballpark figures</b>:<br>• Semantic Scholar: title + abstract only (no field limits).<br>• OpenAlex: sub-question counts follow the field level you set, but truncation (*) is not supported. The total can only be searched in title + abstract."+(HS.eric?"<br>• ERIC: all fields / title + abstract + descriptors / title + abstract / title by field level, plus ERIC descriptors.":"")+"<br>• Proximity becomes AND; "+(HS.eric?"no controlled vocabulary other than ERIC descriptors.":"no controlled vocabulary.")+"<br>Click a failed cell to retry; hover a row label to see the query sent.";
+      var _tz=(_eng.length?_eng.join(_sep)+"：用上方該庫產生的檢索式（展開成單一串）。<br>其他來源":"各來源")+"把各概念的自由詞彙轉成各庫的布林式後查詢，只當<b>量級參考</b>：<br>・Semantic Scholar：只查標題＋摘要（無法限定欄位）。<br>・OpenAlex：問題/策略數量依設定的欄位完整度取得；但不支援切截*。合計數量只能採完整標題＋摘要查詢。"+(HS.eric?"<br>・ERIC：依欄位完整度查 所有欄位／標題＋摘要＋敘詞／標題＋摘要／標題，並加入 ERIC 控制詞彙。":"")+"<br>・鄰近字一律改成 AND"+(HS.eric?"，除 ERIC 敘詞外不含控制詞彙":"，不含控制詞彙")+"。<br>點失敗的格子可重查；滑過列名可看實際送出的檢索式。";
+      var _te=(_eng.length?_eng.join(_sep)+": the strategy generated above for that database (expanded into one line).<br>Other sources: free":"Free")+"-text terms are converted to each source’s Boolean syntax — treat counts as <b>ballpark figures</b>:<br>• Semantic Scholar: title + abstract only (no field limits).<br>• OpenAlex: question/strategy counts follow the field level you set, but truncation (*) is not supported. The total can only be searched in title + abstract."+(HS.eric?"<br>• ERIC: all fields / title + abstract + descriptors / title + abstract / title by field level, plus ERIC descriptors.":"")+"<br>• Proximity becomes AND; "+(HS.eric?"no controlled vocabulary other than ERIC descriptors.":"no controlled vocabulary.")+"<br>Click a failed cell to retry; hover a row label to see the query sent.";
       bar.appendChild(tipFn(T(_tz,_te))); }
     var tipEl=bar.querySelector(".infotip");   /* 說明框以視窗定位：不被卡片／頁籤裁切，手機也不超出畫面 */
     if(tipEl){ var place=function(){ var t=tipEl.querySelector(".tip"); if(!t) return; var r=tipEl.getBoundingClientRect(), w=Math.min(340, innerWidth-16);
@@ -7520,7 +7551,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
       var th=document.createElement("th"); th.textContent=L.lab; if(L.expr){ var ex=document.createElement("span"); ex.className="srfree-ex"; ex.textContent=L.expr.replace(/@L?V?([0-3])/gi,function(m,d){ return "〔"+(en()?["Broadest","Comprehensive","Balanced","Precise"]:["最廣","完整","平衡","精準"])[+d]+"〕"; }); th.appendChild(ex); } th.title=SS.map(function(s){ return SRC[s].nm+"：\n"+(L.q[s]||"—"); }).join("\n\n"); tr.appendChild(th);
       var cs={}; SS.forEach(function(s){ var td=document.createElement("td"); td.textContent=L.q[s]?"—":"✕"; if(!L.q[s]) td.title=T("此行無法轉成 "+SRC[s].nm+" 檢索式（可能含空白概念）","This line can’t be converted for "+SRC[s].nm+" (an empty concept?)"); cs[s]=td; tr.appendChild(td); });
       cells.push(cs); tbody.appendChild(tr); });
-    tb.appendChild(tbody); var wrap=document.createElement("div"); wrap.className="srfree-wrap"; wrap.appendChild(tb); card.appendChild(wrap); var stw=document.createElement("div"); stw.className="srfree-st"; stw.appendChild(st); card.appendChild(stw); var nts=document.createElement("div"); nts.className="srfree-notes"; var mx=D.lines.filter(function(L){ return L.oaMixed; }).map(function(L){ return L.lab; }); nts.innerHTML="<div>"+esc(T("Semantic Scholar：只能查標題＋摘要，無法限定欄位，不隨欄位完整度改變。","Semantic Scholar: title + abstract only; fields can’t be limited, so field levels are ignored."))+"</div><div>"+esc(T("OpenAlex：子問題數量依設定的欄位完整度取得；但不支援切截*。合計數量只能採完整標題＋摘要查詢。","OpenAlex: sub-question counts follow the field level you set, but truncation (*) is not supported. The total can only be searched in title + abstract."))+"</div>"; card.appendChild(nts);   /* 兩個來源的限制明顯加註 */
+    tb.appendChild(tbody); var wrap=document.createElement("div"); wrap.className="srfree-wrap"; wrap.appendChild(tb); card.appendChild(wrap); var stw=document.createElement("div"); stw.className="srfree-st"; stw.appendChild(st); card.appendChild(stw); var nts=document.createElement("div"); nts.className="srfree-notes"; var mx=D.lines.filter(function(L){ return L.oaMixed; }).map(function(L){ return L.lab; }); nts.innerHTML="<div>"+esc(T("Semantic Scholar：只能查標題＋摘要，無法限定欄位，不隨欄位完整度改變。","Semantic Scholar: title + abstract only; fields can’t be limited, so field levels are ignored."))+"</div><div>"+esc(T("OpenAlex：問題/策略數量依設定的欄位完整度取得；但不支援切截*。合計數量只能採完整標題＋摘要查詢。","OpenAlex: question/strategy counts follow the field level you set, but truncation (*) is not supported. The total can only be searched in title + abstract."))+"</div>"; card.appendChild(nts);   /* 兩個來源的限制明顯加註 */
     /* key 改為各來源按鈕上的圖示（不另列輸入框） */
     var busy={};
     document.addEventListener("input",function(e){ if(e.target&&e.target.closest&&e.target.closest(".srkey") && /key/i.test(st.textContent) && /err/.test(st.className)){ st.textContent=""; st.className="pmstatus"; } });   /* 輸入 key 後清掉「請先輸入 key」 */
@@ -7665,7 +7696,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
 })();
 </script>
 <script id="srTourSteps">
-/* PICO 檢索策略產生器：導覽步驟（11-15 改版：自訂組合圖形化、子問題欄位完整度、估算筆數、結果頁籤；key 換新版讓所有人再自動播一次） */
+/* PICO 檢索策略產生器：導覽步驟（11-15 改版：自訂組合圖形化、問題/策略欄位完整度、估算筆數、結果頁籤；key 換新版讓所有人再自動播一次） */
 (function(){
   var Q=function(s){ return document.querySelector(s); };
   /* 導覽示範：表格是空的就先載入範例（結束時清掉）；需要結果時自動產生；自訂組合暫時打開並切到圖形化，結束後還原 */
@@ -7690,14 +7721,14 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
       zh:{t:"自訂組合（選填）", d:"不想全部 AND？可以自己寫組合：點<b>概念表左側的 L1、L2</b>、輸入框左邊的 <b>R1、R2</b> 插入，搭配 <b>AND／OR／NOT、( )</b>，例如 <code>(L1 OR L2) AND L3</code>。上方可切換<b>文字輸入／圖形化</b>。"},
       en:{t:"Custom combination (optional)", d:"Not everything AND? Write your own: click <b>L1, L2</b> beside the concept table or <b>R1, R2</b> beside the box, with <b>AND / OR / NOT / ( )</b>, e.g. <code>(L1 OR L2) AND L3</code>. Switch between <b>Text</b> and <b>Visual</b> at the top."} },
     { el:function(){ return Q("#ccGfx"); }, before:function(){ openCC(true); },
-      zh:{t:"圖形化：子問題", d:"適合碩士論文這類有好幾個子問題的題目：把上方的概念<b>拖進子問題框</b>（手機：點概念再點框）。<b>框內＝AND（文章同時提及）</b>、<b>框與框＝OR</b>，可按「＋ 新增子問題」。組合會自動寫成 R1、R2…。"},
-      en:{t:"Visual: sub-questions", d:"For topics with several sub-questions (e.g. a thesis): <b>drag concepts into sub-question boxes</b> (on phones, tap a concept then a box). <b>Within a box = AND</b>, <b>between boxes = OR</b>; add boxes with “+ Add sub-question”. Lines R1, R2… are written for you."} },
+      zh:{t:"積木式組合：問題/策略", d:"適合碩士論文這類有好幾個問題/策略的題目：把上方的概念<b>拖進問題/策略框</b>（手機：點概念再點框）。<b>框內＝AND（文章同時提及）</b>、<b>框與框＝OR</b>，可按「＋ 新增問題/策略」。組合會自動寫成 R1、R2…。"},
+      en:{t:"Blocks: questions/strategies", d:"For topics with several questions/strategies (e.g. a thesis): <b>drag concepts into question/strategy boxes</b> (on phones, tap a concept then a box). <b>Within a box = AND</b>, <b>between boxes = OR</b>; add boxes with “+ Add question/strategy”. Lines R1, R2… are written for you."} },
     { el:function(){ return Q("#ccGfx .ccgbox .ccglvb")||Q("#ccGfx .ccglvb"); }, before:function(){ openCC(true); },
-      zh:{t:"子問題的欄位完整度", d:"每個概念上的標籤是欄位完整度：<b>最廣、完整、平衡、精準</b>，顏色越深越精準。上排概念的標籤＝預設（和表格同步）；<b>子問題框裡可以另設</b>，例如同一個概念在子問題 1 只查標題，產生時會多一行該完整度的檢索式。"},
-      en:{t:"Field level per sub-question", d:"The label on each concept is its field level: <b>Broadest, Comprehensive, Balanced, Precise</b> — darker means more precise. Labels in the top row are the defaults (synced with the table); <b>inside a box you can set a different level</b> for that sub-question, and an extra line at that level is generated."} },
+      zh:{t:"問題/策略的欄位完整度", d:"每個概念上的標籤是欄位完整度：<b>最廣、完整、平衡、精準</b>，顏色越深越精準。上排概念的標籤＝預設（和表格同步）；<b>問題/策略框裡可以另設</b>，例如同一個概念在問題/策略 1 只查標題，產生時會多一行該完整度的檢索式。"},
+      en:{t:"Field level per question/strategy", d:"The label on each concept is its field level: <b>Broadest, Comprehensive, Balanced, Precise</b> — darker means more precise. Labels in the top row are the defaults (synced with the table); <b>inside a box you can set a different level</b> for that question/strategy, and an extra line at that level is generated."} },
     { el:function(){ return Q("#ccGfx .ccgsc"); }, before:function(){ openCC(true); },
-      zh:{t:"估算各子問題筆數", d:"按來源名稱就能估算每個子問題與合計的文章數（尚未產生策略會自動先產生）。按鈕旁的 "+KEYICON+" 可輸入 API key：<b>Scopus 必填</b>；Semantic Scholar、OpenAlex 選填。失敗的紅字可以點一下重查。"},
-      en:{t:"Counts per sub-question", d:"Click a source to estimate each sub-question and the total (strategies are generated first if needed). The "+KEYICON+" next to a source takes an API key: <b>required for Scopus</b>, optional for Semantic Scholar and OpenAlex. Click red “failed” text to retry."} }
+      zh:{t:"估算各問題/策略筆數", d:"按來源名稱就能估算每個問題/策略與合計的文章數（尚未產生策略會自動先產生）。按鈕旁的 "+KEYICON+" 可輸入 API key：<b>Scopus 必填</b>；Semantic Scholar、OpenAlex 選填。失敗的紅字可以點一下重查。"},
+      en:{t:"Counts per question/strategy", d:"Click a source to estimate each question/strategy and the total (strategies are generated first if needed). The "+KEYICON+" next to a source takes an API key: <b>required for Scopus</b>, optional for Semantic Scholar and OpenAlex. Click red “failed” text to retry."} }
   ];
   var OUT_STEPS=[
     { el:function(){ return Q("#outs .ovtabs")||Q("#outs .ovrow")||Q("#outs .out"); }, before:function(){ closeCC(); ensureOut(); showTab(function(b,i){ return true; }); },
