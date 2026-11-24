@@ -871,6 +871,8 @@ table.pico thead th:hover, table.pico thead th:focus-within, table.pico thead th
 </style>
 <style id="ccgBlockStyle">/* 積木式組合（原「圖形化」，Flora 11-24）：概念積木＋AND 連接塊（凸榫嵌入凹槽）＋問題/策略之間 OR 膠囊；只改外觀，邏輯不變 */
 .ccgbox{background:#F1EFE8;border-color:#F1EFE8;border-radius:12px}
+/* _ccgFit：框寬度貼合內容，不撐滿整列（Flora 11-24）；窄螢幕仍佔滿 */
+@media (min-width:641px){ .ccgbox{flex:0 1 auto;min-width:200px} }
 .ccgc{position:relative;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;height:34px;padding:0 10px;background:#fff;color:#444441;border:1px solid #fff;border-radius:6px;box-sizing:border-box}
 .ccgpal .ccgc,.ccgc.pal{border-color:#D3D1C7}
 .ccgc b{font-size:11px;color:#0F6E56}
