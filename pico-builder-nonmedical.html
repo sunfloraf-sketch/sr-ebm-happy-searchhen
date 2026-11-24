@@ -752,6 +752,9 @@
   .dupflash{position:absolute;right:8px;bottom:8px;z-index:5;background:#1F4538;color:#fff;font-size:10.5px;font-weight:700;line-height:1.5;padding:2px 7px;border-radius:999px;box-shadow:0 2px 8px rgba(20,28,34,.22);opacity:0;transition:opacity .18s;pointer-events:none}
   .dupflash.on{opacity:.95}
 </style>
+<style id="thZStyle">/* _thZ：固定表頭各欄 z-index 相同，後面欄位會蓋住前一欄展開的選單（如「工具 ▾」英文較寬時被下一欄遮住）；操作中的表頭提到最上層（Flora 11-24） */
+table.pico thead th:hover, table.pico thead th:focus-within, table.pico thead th:has(.befmenu:not([hidden])){z-index:7}
+</style>
 </head>
 <body>
 <header class="sh">
@@ -2488,7 +2491,8 @@ if (typeof module !== "undefined" && module.exports) {
     grip.addEventListener("mousedown", function(){ tr.setAttribute("draggable","true"); });
     grip.addEventListener("mouseup", function(){ tr.removeAttribute("draggable"); });
     mv.appendChild(grip); mv.appendChild(up); mv.appendChild(dn); mv.appendChild(rm); rmTd.appendChild(mv);
-    tr.addEventListener("dragstart", function(e){ _dragTr=tr; tr.classList.add("dragging"); try{ e.dataTransfer.effectAllowed="move"; e.dataTransfer.setData("text/plain","row"); }catch(_){} });
+    tr.addEventListener("dragstart", function(e){ if(e.target!==tr) return;   /* _dragTxt：在格內拖曳選取文字時不當成拖曳整列（原本會把「row」寫進拖放內容；Flora 11-24） */
+      _dragTr=tr; tr.classList.add("dragging"); try{ e.dataTransfer.effectAllowed="move"; e.dataTransfer.setData("text/plain","row"); }catch(_){} });
     tr.addEventListener("dragend", function(){ _dragTr=null; tr.classList.remove("dragging"); tr.removeAttribute("draggable"); _clearDrop(); });
     tr.addEventListener("dragover", function(e){ if(!_dragTr||_dragTr===tr) return; e.preventDefault(); try{e.dataTransfer.dropEffect="move";}catch(_){} var r=tr.getBoundingClientRect(); var after=(e.clientY-r.top)>r.height/2; _clearDrop(); tr.classList.add(after?"drop-after":"drop-before"); });
     tr.addEventListener("dragleave", function(){ tr.classList.remove("drop-before","drop-after"); });
@@ -2859,6 +2863,7 @@ if (typeof module !== "undefined" && module.exports) {
       Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr,ri){
         var lab=(tr._get&&tr._get().label)||"", code="L"+(ri+1);
         Array.prototype.forEach.call(tr.querySelectorAll("textarea"), function(ta){
+          if(ta===document.activeElement) return;   /* _parenBlur：正在編輯的格子不標紅框，離開格子才檢查（Flora 11-24） */
           if(inputUnbalanced(ta.value)){
             var o=(ta.value.match(/\(/g)||[]).length, c=(ta.value.match(/\)/g)||[]).length;
             ta.classList.add("cellparen");
@@ -2871,6 +2876,7 @@ if (typeof module !== "undefined" && module.exports) {
       else { box.style.display="none"; box.innerHTML=""; }
     }
     picoBody.addEventListener("focusout", function(e){ if(e.target && e.target.tagName==="TEXTAREA") scan(); });
+    picoBody.addEventListener("focusin", function(e){ var t=e.target; if(t && t.tagName==="TEXTAREA" && t.classList.contains("cellparen")){ t.classList.remove("cellparen"); t.removeAttribute("title"); } });   /* _parenBlur：進入格子編輯時先拿掉紅框 */
     window._parenScan=scan;
   })();
 
@@ -5138,6 +5144,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
     Array.prototype.forEach.call(picoBody.querySelectorAll("tr"), function(tr){ if(tr._refreshLvlLabel) tr._refreshLvlLabel(); });
     refreshLvlNote();
     setLangPlaceholders();
+    if(typeof autoRegen==="function") autoRegen();   /* srI18nScript：切換語言時重畫已產生的檢索策略卡片，避免殘留另一種語言 */
     setTimeout(function(){ if(window._befRelabel) window._befRelabel(); }, 0);
   };
 
@@ -6508,6 +6515,142 @@ th.cvhead[data-vocab="mesh"] .colclr{right:26px}
   document.addEventListener("focusout", function(e){ var t=e.target; if(t && t.tagName==="TEXTAREA" && t.closest && t.closest("#picoBody td")) setTimeout(function(){ paint(t); }, 0); });
   window.addEventListener("resize", function(){ setTimeout(all, 50); });
   setInterval(all, 900); setTimeout(all, 300);
+})();
+</script>
+<script id="srI18nScript">
+/* srI18nScript：切換中英文時，把已經畫在畫面上的介面文字一起換語言（Flora 11-23）。
+   原因：很多動態內容（查核結果、找 MeSH 候選、按鈕提示…）是在產生當下依語言寫死，切換語言後會殘留另一種語言。
+   做法：執行時從本頁程式碼抽出所有「en?"英":"中"」「isEn()?"英":"中"」「T("中","英")」字串對，加上下方 MANUAL 固定文字，
+   切換語言（body.en）或畫面新增內容時，把文字節點與 title／aria-label／placeholder／data-tip 中「完全相同」的介面字串換成目前語言。
+   不動：輸入框內容、檢索式（pre／.qline）、MeSH 詞、概念名稱、詞庫浮窗等使用者資料。 */
+(function(){
+  var cjk=/[㐀-鿿]/;
+  var Z2E={}, E2Z={};
+  function add(zh,en,force){
+    if(zh==null||en==null) return; zh=String(zh).trim(); en=String(en).trim();
+    if(!zh||!en||zh===en||!cjk.test(zh)||cjk.test(en)) return;
+    if(!(zh in Z2E)) Z2E[zh]=en;
+    var w1=(en.match(/[A-Za-z]{3,}/)||[""])[0];
+    if(!(en in E2Z) && en.length>=3 && (force || !(w1 && zh.length<=18 && zh.indexOf(w1)>=0))) E2Z[en]=zh;   /* 短的中英並列標籤（如「類實驗 Quasi」）不反向替換，避免把中文介面原本就顯示的英文標籤改掉 */
+  }
+  function unq(s,q){ try{ if(q==="'") s=s.replace(/\\'/g,"'").replace(/"/g,'\\"'); return JSON.parse('"'+s.replace(/\\x([0-9a-fA-F]{2})/g,"\\u00$1")+'"'); }catch(e){ return null; } }
+  var MANUAL={
+    "點一下展開 Emtree 各概念詞彙的查核連結":"Click to show Emtree check links for each concept",
+    "點一下展開 MeSH 各概念詞彙的查核連結":"Click to show MeSH check links for each concept",
+    "點一下展開 CINAHL 各概念詞彙的查核連結":"Click to show CINAHL check links for each concept",
+    "點一下展開 AgeLine 各概念詞彙的查核連結":"Click to show AgeLine check links for each concept",
+    "點一下展開 ERIC 各概念詞彙的查核連結":"Click to show ERIC check links for each concept",
+    "點一下展開 PQDT 各概念詞彙的查核連結":"Click to show PQDT check links for each concept",
+    "點一下展開 PQDT 各概念詞彙":"Click to show PQDT check links",
+    "點一下展開 IEEE 查核連結":"Click to show IEEE check links",
+    "點一下展開各概念詞彙的 Ei Compendex 查核連結":"Click to show Ei Compendex check links for each concept",
+    "點一下展開各概念詞彙的成大 ASC 查核連結":"Click to show NCKU ASC check links for each concept",
+    "點一下展開各概念詞彙的成大 BSC 查核連結":"Click to show NCKU BSC check links for each concept",
+    "點一下展開各概念詞彙的成大 ERIC 查核連結":"Click to show NCKU ERIC check links for each concept",
+    "線上查核此欄每個 MeSH 詞是否為正式標目，並可帶入同義詞／狹義詞":"Check online whether each MeSH term in this column is an official heading, and bring in synonyms / narrower terms",
+    "NCBI API key（選填）：可加快 MeSH 查驗":"NCBI API key (optional): speeds up MeSH checks",
+    "把目前的 PICO 表與設定存成專案檔(.json)到你的電腦，日後可開啟繼續編輯":"Save the current PICO table and settings as a project file (.json) on your computer to continue later",
+    "開啟先前儲存的專案檔(.json)，還原整張表繼續編輯":"Open a saved project file (.json) and restore the whole table",
+    "還原到上次自動暫存的表格內容":"Restore the table from the last auto-save",
+    "填入示範資料，整理後欄留白，可練習用「工具」整理（會覆蓋目前內容）":"Fill in example data with the After column blank, to practise with Tools (replaces current content)",
+    "填入示範資料，連整理後欄（切截、鄰近字寫法）一起填好（會覆蓋目前內容）":"Fill in example data including the After column (truncation and proximity) (replaces current content)",
+    "清空整張表":"Clear the whole table",
+    "用鄰近字組合器加概念":"Add a concept with the proximity builder",
+    "新增一列概念":"Add a concept row",
+    "自由詞彙欄位＋外層括弧=綠、控制詞彙=紅、鄰近字=藍":"Free-text fields + outer brackets = green, controlled vocabulary = red, proximity = blue",
+    "以顏色標出成對圓括弧":"Colour matching parentheses",
+    "產出的控制詞彙（MeSH／Emtree／CINAHL／AgeLine／ERIC／IEEE）加上可點的詞表查核連結；Word 下載也內嵌超連結":"Add clickable thesaurus check links to controlled vocabulary (MeSH / Emtree / CINAHL / AgeLine / ERIC / IEEE); the Word download includes the links too",
+    "產出的控制詞彙（MeSH／Emtree／CINAHL／AgeLine／ERIC／IEEE）加上可點的詞表查核連結；Word 下載也內嵌超連結。連結只供核對，複製的檢索式仍為純文字。":"Add clickable thesaurus check links to controlled vocabulary (MeSH / Emtree / CINAHL / AgeLine / ERIC / IEEE); the Word download includes the links too. Links are for checking only; copied queries stay plain text.",
+    "把最後一行的 #行號組合展開，串成一條可直接貼入單一檢索框的長檢索式":"Expand the #line combination in the last line into one long query that can be pasted into a single search box",
+    "限定出版年：填起訖年，可只填一邊。留空＝不限定。限定會接在最後合併行之後。":"Publication year limit: enter a start and/or end year; leave blank for no limit. The limit is added after the final combined line.",
+    "更新檢索：以『書目加入資料庫的日期』限定，抓上次檢索後新增的文章。填年月日；結束可留空＝取至最新。建議起始日填『上次檢索日往前一日』以免時差遺漏。":"Update search: limit by the date records were added to the database, to catch articles added since your last search. Enter year/month/day; leave the end blank for up to now. Start one day before your last search to avoid time-zone gaps.",
+    "你機構的 EBSCO 專屬代碼（research.ebsco.com/c/XXXX/ 中的 XXXX，如 shmie4）；填了 CINAHL 控制詞彙才會有查核連結。只存在你的瀏覽器本機。":"Your institution’s EBSCO code (the XXXX in research.ebsco.com/c/XXXX/, e.g. shmie4); needed for CINAHL check links. Stored only in your browser.",
+    "其他機構：貼上網址或代碼":"Other institutions: paste URL or code",
+    "多個資料庫請用分號 ; 區隔，例如：PsycINFO; SPORTDiscus":"Separate several databases with semicolons, e.g. PsycINFO; SPORTDiscus",
+    "自行輸入庫名（多個用 ; 區隔）":"Database name(s), separated by ;",
+    "在檢索策略裡，把控制詞彙(ASC/BSC/ERIC/Ei Compendex 等)加上可點的詞表查核連結，方便向館員諮詢時快速複查。":"Add clickable thesaurus check links to controlled vocabulary (ASC / BSC / ERIC / Ei Compendex, etc.) in the strategy, for quick review with a librarian.",
+    "在檢索策略裡，把控制詞彙(ASC/BSC/ERIC/Ei Compendex 等)加上可點的詞表查核連結，方便向館員諮詢時快速複查。連結只供核對，複製的檢索式仍為純文字。":"Add clickable thesaurus check links to controlled vocabulary (ASC / BSC / ERIC / Ei Compendex, etc.) in the strategy, for quick review with a librarian. Links are for checking only; copied queries stay plain text.",
+    'DE "詞"':'DE "term"', 'SU("詞")':'SU("term")', '"IEEE Terms":詞':'"IEEE Terms":term',
+    "加選資料庫":"Add databases",
+    "提醒您！請確實查核控制詞彙，並覆核檢索策略，應謹慎於資料庫實測與評估。SearchHen 不負保證責任。":"Reminder: please verify the controlled vocabulary and review the strategy, and test it carefully in each database. SearchHen gives no warranty."
+  };
+  /* 中文資料庫名稱（英文介面顯示英文名；只換顯示文字，不影響程式） */
+  var DBN=[["華藝線上圖書館","Airiti Library"],["臺灣博碩士論文（國圖）","NDLTD in Taiwan"],["CNKI 中國知網","CNKI (China National Knowledge Infrastructure)"],["萬方數據庫","Wanfang Data"],["資料庫估算筆數","Estimated counts"]];
+  var built=false;
+  function build(){
+    if(built) return; built=true;
+    Object.keys(MANUAL).forEach(function(k){ add(k, MANUAL[k], true); });
+    var src=Array.prototype.map.call(document.querySelectorAll('script:not([src]):not([type="application/json"])'), function(s){ return s.id==="srI18nScript"?"":s.textContent; }).join("\n");
+    var D='"((?:[^"\\\\\\n]|\\\\.)*)"', S="'((?:[^'\\\\\\n]|\\\\.)*)'", m, re;
+    [[D,'"'],[S,"'"]].forEach(function(p){
+      re=new RegExp('(?:\\ben\\d?|\\bEN|isEn\\(\\)|_en|_isEn\\(\\))\\s*\\?\\s*\\(?\\s*'+p[0]+'\\s*\\)?\\s*:\\s*\\(?\\s*'+p[0],'g');
+      while((m=re.exec(src))) add(unq(m[2],p[1]), unq(m[1],p[1]));
+      re=new RegExp('\\bT\\(\\s*'+p[0]+'\\s*,\\s*'+p[0]+'\\s*\\)','g');
+      while((m=re.exec(src))) add(unq(m[1],p[1]), unq(m[2],p[1]));
+    });
+    mkPfx();
+  }
+  var PZ=[], PE=[];
+  function mkPfx(){ PZ=Object.keys(Z2E).filter(function(k){ return /[：:]\s*$/.test(k); }).sort(function(a,b){ return b.length-a.length; }); PE=Object.keys(E2Z).filter(function(k){ return /:\s*$/.test(k); }).sort(function(a,b){ return b.length-a.length; }); }
+  function isEn(){ return document.body.classList.contains("en"); }
+  var SKIPC="textarea,input,select,option,script,style,pre,.qline,.qs,.tcmpop,.labshow,[contenteditable],#gtip,.srtour-card";
+  var SKIPP=".mtext,.cname,.ehd,.mcname";
+  function conv(t, en){
+    var core=t.trim(); if(!core) return t;
+    var map=en?Z2E:E2Z, v=map[core];
+    if(v==null){
+      v=core;
+      var pf=en?PZ:PE;   /* 「來自：…」這類「標籤＋內容」：只換開頭的標籤 */
+      for(var i=0;i<pf.length;i++){ if(core.indexOf(pf[i])===0 && core.length>pf[i].length){ var rest=core.slice(pf[i].length); var lab=map[pf[i]]; if(/：$/.test(lab)) rest=rest.replace(/^\s+/,""); else if(/:$/.test(lab) && !/^\s/.test(rest)) rest=" "+rest; v=lab+rest; break; } }
+      DBN.forEach(function(d){ var a=en?d[0]:d[1], b=en?d[1]:d[0]; if(v.indexOf(a)>=0) v=v.split(a).join(b); });
+      if(en) v=v.replace(/^([A-Za-z][\w .()\/-]*)：/, "$1: ");
+      if(v===core) return t;
+    }
+    return t.replace(core, v);
+  }
+  var ATTR=["title","aria-label","placeholder","data-tip"];
+  function doEl(el, en){
+    if(!el || el.nodeType!==1) return;
+    var host=/^(TEXTAREA|INPUT|SELECT)$/.test(el.tagName)?el.parentElement:el;   /* 輸入框本身的 placeholder／title 要換，內容不動 */
+    if(host && host.closest && host.closest(SKIPC)) return;
+    ATTR.forEach(function(a){
+      var v=el.getAttribute(a); if(!v || el.hasAttribute("data-both-"+a)) return;
+      var n=conv(v, en); if(n!==v) el.setAttribute(a, n);
+    });
+  }
+  function walk(root){
+    build(); var en=isEn();
+    if(!root || !root.nodeType) return;
+    if(root.nodeType===3){ fixText(root, en); return; }
+    if(root.nodeType!==1 || (root.closest && root.closest(SKIPC))) return;
+    doEl(root, en);
+    Array.prototype.forEach.call(root.querySelectorAll("[title],[aria-label],[placeholder],[data-tip]"), function(el){ doEl(el, en); });
+    var w=document.createTreeWalker(root, NodeFilter.SHOW_TEXT), n;
+    while((n=w.nextNode())) fixText(n, en);
+  }
+  function fixText(n, en){
+    var pe=n.parentElement; if(!pe) return;
+    var v=n.nodeValue; if(!v || !v.trim()) return;
+    if(en && !cjk.test(v)) return;
+    if(pe.closest(SKIPC) || pe.matches(SKIPP)) return;
+    var nv=conv(v, en); if(nv!==v) n.nodeValue=nv;
+  }
+  var busy=false, pend=[], raf=0;
+  function flush(){ raf=0; if(busy) return; busy=true; try{ var list=pend; pend=[]; list.forEach(walk); } finally { busy=false; } }
+  function queue(n){ pend.push(n); if(!raf) raf=requestAnimationFrame(flush); }
+  new MutationObserver(function(muts){
+    if(busy) return;
+    muts.forEach(function(m){
+      if(m.type==="childList") Array.prototype.forEach.call(m.addedNodes, queue);
+      else if(m.type==="characterData") queue(m.target);
+      else if(m.type==="attributes"){
+        if(m.target===document.body && m.attributeName==="class"){ if(/(^|\s)en(\s|$)/.test(m.oldValue||"") !== isEn()) queue(document.body); }
+        else queue(m.target);
+      }
+    });
+  }).observe(document.body, {subtree:true, childList:true, characterData:true, attributes:true, attributeOldValue:true, attributeFilter:["class","title","aria-label","placeholder","data-tip"]});
+  window.srI18nRefresh=function(){ queue(document.body); };
+  if(isEn()) queue(document.body);
 })();
 </script>
 </body>
