@@ -870,7 +870,7 @@ th.cvhead[data-vocab="mesh"]{position:relative}
 table.pico thead th:hover, table.pico thead th:focus-within, table.pico thead th:has(.befmenu:not([hidden])){z-index:7}
 </style>
 <style id="ccgBlockStyle">/* 積木式組合（原「圖形化」，Flora 11-24）：概念積木＋AND 連接塊（凸榫嵌入凹槽）＋問題/策略之間 OR 膠囊；只改外觀，邏輯不變 */
-.ccgbox{background:#F1EFE8;border-color:#F1EFE8;border-radius:12px}
+.ccgbox{background:#F5F4EF;border-color:#F5F4EF;border-radius:12px}   /* _ccgPalC：配色 C（更淡暖米底＋AND 淡），AND 字滑過才顯示（Flora 11-25） */
 /* _ccgFit：框寬度貼合內容，不撐滿整列（Flora 11-24）；窄螢幕仍佔滿 */
 @media (min-width:641px){ .ccgbox{flex:0 1 auto;min-width:200px} }
 .ccgc{position:relative;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;height:34px;padding:0 10px;background:#fff;color:#444441;border:1px solid #fff;border-radius:6px;box-sizing:border-box}
@@ -887,12 +887,14 @@ table.pico thead th:hover, table.pico thead th:focus-within, table.pico thead th
 .ccgdrop{flex-direction:column;flex-wrap:nowrap;align-items:flex-start;gap:0}
 .ccgdrop > .ccgc{z-index:1}
 /* 凹槽：寬 14、深 10、距左 17；第一塊無上凹槽、最後一塊無下凹槽 */
-.ccgdrop > .ccgc:not(:first-child)::before,.ccgdrop > .ccgc:not(:last-child)::after{content:"";position:absolute;left:17px;width:14px;height:10px;background:#F1EFE8;pointer-events:none}
+.ccgdrop > .ccgc:not(:first-child)::before,.ccgdrop > .ccgc:not(:last-child)::after{content:"";position:absolute;left:17px;width:14px;height:10px;background:#F5F4EF;pointer-events:none}
 .ccgdrop > .ccgc:not(:first-child)::before{top:-1px}
 .ccgdrop > .ccgc:not(:last-child)::after{bottom:-1px}
 /* AND 連接塊：48×20，上下凸榫 12×8 對準凹槽，層級高於積木 */
-.ccgdrop > .ccgand{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;width:48px;height:20px;margin:0;box-sizing:border-box;background:#E2E0D9;border:1px solid #E2E0D9;border-radius:3px;font-family:inherit;font-size:11px;font-weight:600;color:#888780;letter-spacing:.02em}
-.ccgdrop > .ccgand::before,.ccgdrop > .ccgand::after{content:"";position:absolute;left:18px;width:12px;height:8px;background:#E2E0D9}
+.ccgdrop > .ccgand{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;width:48px;height:20px;margin:0;box-sizing:border-box;background:#E9E7E0;border:1px solid #E9E7E0;border-radius:3px;font-family:inherit;font-size:11px;font-weight:600;color:transparent;letter-spacing:.02em;transition:color .12s}
+.ccgdrop > .ccgand:hover{color:#A3A29B}
+@media (hover:none){ .ccgdrop > .ccgand{color:#A3A29B} }
+.ccgdrop > .ccgand::before,.ccgdrop > .ccgand::after{content:"";position:absolute;left:18px;width:12px;height:8px;background:#E9E7E0}
 .ccgdrop > .ccgand::before{top:-8px}
 .ccgdrop > .ccgand::after{bottom:-8px}
 /* 刪除 ×：hover／focus 才顯示（保留佔位）；觸控裝置常駐 */
