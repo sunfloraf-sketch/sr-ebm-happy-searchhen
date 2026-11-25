@@ -364,6 +364,8 @@
   .mview .mi.none{color:#c2410c}
   .mview .mi.chk{color:#9aa4ac;font-weight:400}
   .mview .mtext{flex:1 1 auto;min-width:0;word-break:break-word}
+  .mview .mline.mnote{padding-left:20px}
+  .mview .mline.mout .mtext{color:#9AA5AB}
   .mview .medit{position:absolute;top:3px;right:5px;font-size:11px;color:#69737c;background:#fff;border:1px solid var(--line);border-radius:5px;padding:1px 7px;cursor:pointer;opacity:.55}
   .mview .medit:hover{opacity:1;background:#eef2f4}
   #meshCard{position:absolute;z-index:70;width:330px;max-width:93vw;background:#fff;border:1px solid #d3dadf;border-radius:10px;box-shadow:0 8px 28px rgba(28,36,42,.18);padding:12px 14px;font-size:13px;display:none}
@@ -400,6 +402,7 @@
   .out pre .qs{white-space:pre-wrap;word-break:break-word;flex:1 1 auto;min-width:0}
   .pmcount{flex:0 0 auto;min-width:86px;text-align:right;color:var(--mut);font-size:11.5px;white-space:nowrap}
   .pmcount.ok{color:#355E55;font-weight:700}.pmcount.err{color:#A33A32}
+  .pmcount.lnk{cursor:pointer}.pmcount.lnk:hover{text-decoration:underline;text-underline-offset:2px;color:#0f766e}
   .pmcount.retry{cursor:pointer;text-decoration:underline dotted;text-underline-offset:2px}
   .pmcount.retry:hover{color:#7E1F19}
   .pmestimate{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 14px;border-top:1px dashed var(--line);background:#F5F8F7;font-size:12px}
@@ -875,7 +878,8 @@ table.pico thead th:hover, table.pico thead th:focus-within, table.pico thead th
 @media (min-width:641px){ .ccgbox{flex:0 1 auto;min-width:200px} }
 .ccgc{position:relative;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;height:34px;padding:0 10px;background:#fff;color:#444441;border:1px solid #fff;border-radius:6px;box-sizing:border-box}
 .ccgpal .ccgc,.ccgc.pal{border-color:#D3D1C7}
-.ccgc b{order:1;align-self:flex-end;margin:0 0 6px -3px;font-size:10px;font-weight:600;color:#B4B2A9}   /* _ccgSubLt：L 代號改淺灰（Flora 11-25）；_ccgSub：L 代號與概念名稱同色、置於名稱右下角（Flora 11-25） */
+.ccgc{padding-right:20px}
+.ccgc b{position:absolute;right:5px;bottom:3px;margin:0;font-size:9px;line-height:1;font-weight:600;color:#B4B2A9}   /* _ccgOut：L 代號放在整塊積木右下角（Flora 11-25） */   /* _ccgSubLt：L 代號改淺灰（Flora 11-25）；_ccgSub：L 代號與概念名稱同色、置於名稱右下角（Flora 11-25） */
 .ccgc .ccgx{order:3}
 .ccgc .ccglvb,.ccgc .ccglvb.ov{box-shadow:none;border-color:transparent}   /* _ccgNoOv：完整度標籤不加任何外框（含另設的黑框、最廣的淺框）（Flora 11-25）；滑過標籤的提示仍會說明「此問題/策略另設」 */
 .ccgc:hover{border-color:#B4B2A9}
@@ -890,15 +894,15 @@ table.pico thead th:hover, table.pico thead th:focus-within, table.pico thead th
 .ccgdrop > .ccgc:not(:last-child)::after{bottom:-1px}
 /* AND 連接塊：48×20，上下凸榫 12×8 對準凹槽，層級高於積木 */
 .ccgdrop > .ccgand{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;width:48px;height:20px;margin:0;box-sizing:border-box;background:#E9E7E0;border:1px solid #E9E7E0;border-radius:3px;font-family:inherit;font-size:11px;font-weight:600;color:transparent;letter-spacing:.02em;transition:color .12s}
-.ccgdrop > .ccgand:hover{color:#A3A29B}
+.ccgbox:hover .ccgdrop > .ccgand{color:#A3A29B}
 @media (hover:none){ .ccgdrop > .ccgand{color:#A3A29B} }
 .ccgdrop > .ccgand::before,.ccgdrop > .ccgand::after{content:"";position:absolute;left:18px;width:12px;height:8px;background:#E9E7E0}
 .ccgdrop > .ccgand::before{top:-8px}
 .ccgdrop > .ccgand::after{bottom:-8px}
 /* 刪除 ×：hover／focus 才顯示（保留佔位）；觸控裝置常駐 */
-.ccgc .ccgx{opacity:0;transition:opacity .12s}
-.ccgc:hover .ccgx,.ccgc:focus-within .ccgx{opacity:1}
-@media (hover:none){ .ccgc .ccgx{opacity:1} }
+.ccgc .ccgx{opacity:1}
+@media (hover:hover){ .ccgc .ccgx{display:none} .ccgc:focus-within .ccgx{display:inline-block} }
+.ccgc.ccgdrg.ccgrm{opacity:.3}
 /* 問題/策略之間：OR 淡綠膠囊 */
 .ccgor{display:inline-flex;align-items:center;align-self:center;padding:2px 10px;border-radius:999px;background:#E1F5EE;color:#0F6E56;font-size:11.5px;font-weight:700}
 </style>
@@ -3207,14 +3211,17 @@ if (typeof module !== "undefined" && module.exports) {
   function _meshEditCell(tr){ var td=_meshTa(tr).closest("td"); var mv=td&&td.querySelector(".mview"); if(mv) mv.style.display="none"; _meshTa(tr).style.display=""; }
   function _renderMeshCell(tr){
     var ta=_meshTa(tr), td=ta.closest("td"), mv=td&&td.querySelector(".mview"); if(!mv) return Promise.resolve([]);
-    var terms=_cvDropNotes(ta.value||"").split(/\n/).map(function(x){return x.trim();}).filter(Boolean);   /* 註記、縮排筆記不查核 */
+    /* _mvNote：縮排（下位詞筆記）的行也查核，縮排顯示；不放進檢索式的以灰字顯示（Flora 11-25）；「//」註記仍不查核 */
+    var _keep={}; _cvDropNotes(ta.value||"").split(/\n/).forEach(function(x){ x=x.trim(); if(x) _keep[x]=1; });
+    var items=[]; _cmtStrip(ta.value||"").split(/\r?\n/).forEach(function(l){ if(!l.trim()) return; var nt=_cvIsNote(l), t=nt?l.replace(/^[\s\u3000]*(?:[└├│•▪◦→]|[-–>](?=\s))?[\s\u3000]*/,"").trim():l.trim(); if(t) items.push({t:t, note:nt, out:nt&&!_keep[t]}); });
+    var terms=items.map(function(x){ return x.t; });
     mv.innerHTML="";
     var edit=document.createElement("button"); edit.className="medit"; edit.type="button"; edit.textContent=isEn()?"edit":"編輯"; edit.onclick=function(e){ e.stopPropagation(); _meshEditCell(tr); }; mv.appendChild(edit);
     if(!terms.length){ _meshEditCell(tr); return Promise.resolve([]); }
     var _proms=[];
-    terms.forEach(function(rawTerm){
+    items.forEach(function(_it){ var rawTerm=_it.t;
       var bare=_meshBare(rawTerm);
-      var line=document.createElement("div"); line.className="mline";
+      var line=document.createElement("div"); line.className="mline"+(_it.note?" mnote":"")+(_it.out?" mout":"");
       var ic=document.createElement("span"); ic.className="mi chk"; ic.textContent="…"; line.appendChild(ic);
       var tx=document.createElement("span"); tx.className="mtext"; tx.textContent=rawTerm; line.appendChild(tx);
       mv.appendChild(line);
@@ -3224,7 +3231,7 @@ if (typeof module !== "undefined" && module.exports) {
         // 輸入只差在撇號／變音符號（Sjögren’s → Sjogren's）：驗證通過後直接改成 MeSH 正式寫法，避免檢索式帶入全形撇號或變音字母
         if(r.state==="ok" && r.label && bare && r.label.toLowerCase()!==bare.toLowerCase() && _meshNormKey(r.label)===_meshNormKey(bare)){
           var _newRaw=rawTerm.replace(bare, r.label);
-          ta.value=(ta.value||"").split(/\n/).map(function(l){ return l.trim()===rawTerm ? _newRaw : l; }).join("\n");
+          ta.value=(ta.value||"").split(/\n/).map(function(l){ var _s=_cvIsNote(l)?l.replace(/^[\s\u3000]*(?:[└├│•▪◦→]|[-–>](?=\s))?[\s\u3000]*/,"").trim():l.trim(); return _s===rawTerm ? l.replace(rawTerm,_newRaw) : l; }).join("\n");
           tx.textContent=_newRaw; rawTerm=_newRaw; bare=r.label;
           if(typeof saveDraftDebounced==="function") saveDraftDebounced();
         }
@@ -5990,7 +5997,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
           try{
             var full=expandNumberedQuery(allRows[ci],allRows);
             var n=await fetchPubmedCount(full);
-            cel.textContent=n.toLocaleString()+(isEn()?" records":" 篇"); cel.className="pmcount ok"; return true;
+            cel.textContent=n.toLocaleString()+(isEn()?" records":" 篇"); cel.className="pmcount ok"; /* _pmCntLnk：點篇數開 PubMed 查詢結果（該行展開後的完整檢索式；Flora 11-25） */ cel.classList.add("lnk"); (function(c,u){ c.title=isEn()?"Open these results in PubMed":"在 PubMed 開啟這一行的查詢結果"; c.setAttribute("role","link"); c.tabIndex=0; c.onclick=function(){ window.open(u,"_blank","noopener"); }; c.onkeydown=function(e){ if(e.key==="Enter"){ e.preventDefault(); window.open(u,"_blank","noopener"); } }; })(cel,"https://pubmed.ncbi.nlm.nih.gov/?term="+encodeURIComponent(full)); return true;
           }catch(err){
             cel.textContent=isEn()?"failed · retry":"查詢失敗 · 點此重試"; cel.className="pmcount err retry";
             cel.title=(isEn()?"Click to query this line again. ":"點一下重新查詢這一行。")+String(err&&err.message||err);
@@ -7148,7 +7155,7 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
   function badge(l,k,where,gi,ov,cs){ var t=(where==="pal")?T("欄位完整度（預設，與表格同步）：","Field level (default, synced with the table): ")+lvName(l)
       :(ov?T("此問題/策略另設："+lvName(l)+"（預設："+lvName(defLv(k,cs))+"）","Set for this question/strategy: "+lvName(l)+" (default: "+lvName(defLv(k,cs))+")"):T("欄位完整度（同預設）："+lvName(l),"Field level (same as default): "+lvName(l)));
     return '<button type="button" class="ccglvb'+(ov?' ov':'')+'" data-l="'+l+'" data-k="'+k+'" data-w="'+where+'"'+(gi!=null?' data-g="'+gi+'"':'')+' title="'+esc(t)+'" aria-haspopup="menu">'+esc(lvName(l))+'</button>'; }
-  function chip(k,cs,where,gi,g){ var c=cs[k-1], miss=!c, s='<span class="ccgc'+(miss?' miss':'')+(where==="pal"&&sel===k?' sel':'')+'" draggable="true" data-k="'+k+'" data-w="'+where+'"'+(gi!=null?' data-g="'+gi+'"':'')+' title="'+esc(miss?T("這一列已不存在","This row no longer exists"):(c.zh&&c.lab&&c.zh!==c.lab?c.lab+"｜"+c.zh:c.name))+'">'+
+  function chip(k,cs,where,gi,g){ var c=cs[k-1], miss=!c, s='<span class="ccgc'+(miss?' miss':'')+(where==="pal"&&sel===k?' sel':'')+'" draggable="true" data-k="'+k+'" data-w="'+where+'"'+(gi!=null?' data-g="'+gi+'"':'')+' title="'+esc((miss?T("這一列已不存在","This row no longer exists"):(c.zh&&c.lab&&c.zh!==c.lab?c.lab+"｜"+c.zh:c.name))+(where==="g"?T("\n拖到框外即可移除","\nDrag outside the box to remove"):""))+'">'+
       '<b>L'+k+'</b>'+esc(miss?T("已不存在","missing"):c.name);
     if(where==="pal"){ if(!miss) s+=badge(c.lv,k,"pal",null,false,cs); }   /* 概念區：完整度標籤收在概念片內 */
     else { if(!miss) s+=badge(effLv(g,k,cs),k,"g",gi,isOv(g,k,cs),cs); s+='<button type="button" class="ccgx" data-rm="'+k+'" aria-label="'+T("移除","Remove")+'">×</button>'; }
@@ -7162,9 +7169,9 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
     h+='<div class="ccgboxes">';
     GX.groups.forEach(function(g,gi){
       var cnt=g.items.length?cntsFor(gi2++,G,allQ):"";
-      h+='<div class="ccgbox" data-g="'+gi+'"><div class="ccgbh"><input type="text" class="ccgname" data-g="'+gi+'" maxlength="20" value="'+esc(g.name)+'" placeholder="'+T("問題/策略","Question/strategy ")+(gi+1)+'" style="width:'+nameW(g.name||T("問題/策略","Question/strategy ")+(gi+1))+'em"><span class="ccgbt">'+T("（文章同時提及）：","(papers mention all of):")+'</span>'+
+      h+='<div class="ccgbox" data-g="'+gi+'"><div class="ccgbh"><input type="text" class="ccgname" data-g="'+gi+'" maxlength="20" value="'+esc(g.name)+'" placeholder="'+T("問題/策略","Question/strategy ")+(gi+1)+'" style="width:'+nameW(g.name||T("問題/策略","Question/strategy ")+(gi+1))+'em">'+(gi===0?'<span class="ccgbt">'+T("（文章同時提及）：","(papers mention all of):")+'</span>':'')+
          (GX.groups.length>1?'<button type="button" class="ccgdel" data-del="'+gi+'" title="'+T("刪除這個框","Delete this box")+'">✕</button>':((g.items.length||g.name)?'<button type="button" class="ccgdel" data-clr="'+gi+'" title="'+T("清除這個框的內容","Clear this box")+'">✕</button>':''))+'</div>'+
-         (cnt?'<div class="ccgcnts">'+cnt+'</div>':'')+'<div class="ccgdrop">'+(g.items.length?g.items.map(function(k){return chip(k,cs,"g",gi,g);}).join('<span class="ccgand">AND</span>'):'<span class="ccgph">'+T("把概念拖進來","Drop concepts here")+'</span>')+'</div>'+'</div>';
+         (cnt?'<div class="ccgcnts">'+cnt+'</div>':'')+'<div class="ccgdrop">'+(g.items.length?g.items.map(function(k){return chip(k,cs,"g",gi,g);}).join('<span class="ccgand">AND</span>'):'<span class="ccgph">'+T("把概念拖進來，能找到文章同時提及","Drop concepts here to find papers that mention all of them")+'</span>')+'</div>'+'</div>';
       if(gi<GX.groups.length-1) h+='<div class="ccgor">OR</div>';
     });
     h+='</div><div class="ccgadd"><button type="button" class="ccgbtn" data-act="add">'+T("＋ 新增問題/策略","＋ Add question/strategy")+'</button></div>';
@@ -7218,12 +7225,16 @@ var _pInd=function(pp){ var pr=(pp.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0], 
   gfx.addEventListener("input",function(e){ var i=e.target.closest(".ccgname"); if(i){ GX.groups[+i.dataset.g].name=i.value; i.style.width=nameW(i.value||i.placeholder)+"em"; } });
   var drag=null;
   gfx.addEventListener("dragstart",function(e){ var c=e.target.closest&&e.target.closest(".ccgc"); if(!c) return; var from=c.dataset.w==="pal"?null:+c.dataset.g, k=+c.dataset.k;
-    drag={k:k, from:from, lv:(from!=null&&GX.groups[from].lv)?GX.groups[from].lv[k]:null}; try{ e.dataTransfer.setData("text/plain","L"+k); e.dataTransfer.effectAllowed="copyMove"; }catch(_){} });
+    drag={k:k, from:from, el:c, lv:(from!=null&&GX.groups[from].lv)?GX.groups[from].lv[k]:null}; c.classList.add("ccgdrg"); try{ e.dataTransfer.setData("text/plain","L"+k); e.dataTransfer.effectAllowed="copyMove"; }catch(_){} });
   gfx.addEventListener("dragover",function(e){ var bx=drag&&e.target.closest(".ccgbox"); if(!bx) return; e.preventDefault(); bx.classList.add("over"); });
   gfx.addEventListener("dragleave",function(e){ var bx=e.target.closest(".ccgbox"); if(bx&&!bx.contains(e.relatedTarget)) bx.classList.remove("over"); });
-  gfx.addEventListener("drop",function(e){ var bx=drag&&e.target.closest(".ccgbox"); if(!bx){ drag=null; return; } e.preventDefault();
+  gfx.addEventListener("drop",function(e){ var bx=drag&&e.target.closest(".ccgbox"); if(!bx) return; e.preventDefault();
     var g=+bx.dataset.g; if(drag.from!==null && drag.from!==g) rmFrom(drag.from,drag.k); addTo(g,drag.k,drag.lv); drag=null; changed(); });
-  gfx.addEventListener("dragend",function(){ drag=null; Array.prototype.forEach.call(gfx.querySelectorAll(".ccgbox.over"),function(x){x.classList.remove("over");}); });
+  /* _ccgOut：框內的概念拖到框外放開＝移除（Esc 取消拖曳不移除；Flora 11-25） */
+  function _outBox(e){ var t=e.target; return !(t && t.closest && t.closest(".ccgbox")); }
+  document.addEventListener("dragover",function(e){ if(!drag||drag.from==null) return; var out=_outBox(e); if(drag.el) drag.el.classList.toggle("ccgrm",out); if(!out) return; e.preventDefault(); try{ e.dataTransfer.dropEffect="move"; }catch(_){} });
+  document.addEventListener("drop",function(e){ if(!drag||drag.from==null||!_outBox(e)) return; e.preventDefault(); var d=drag; drag=null; rmFrom(d.from,d.k); changed(); });
+  gfx.addEventListener("dragend",function(){ drag=null; Array.prototype.forEach.call(gfx.querySelectorAll(".ccgdrg"),function(x){ x.classList.remove("ccgdrg","ccgrm"); }); Array.prototype.forEach.call(gfx.querySelectorAll(".ccgbox.over"),function(x){x.classList.remove("over");}); });
   /* 列刪除／移動／新增時：自訂組合的 L 編號跟著重新對應；刪除的概念從組合中移除（整批換掉表格時不處理） */
   var prevRows=Array.prototype.slice.call(body.querySelectorAll("tr"));
   var wantClear=0, _wc=function(e){ if(e.target&&e.target.closest&&e.target.closest("#clearBtn,#exBtn,#exBtn2") && (e.type==="click"||e.key==="Enter"||e.key===" ")) wantClear=Date.now(); }; document.addEventListener("click",_wc,true); document.addEventListener("keydown",_wc,true);
