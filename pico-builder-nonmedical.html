@@ -761,14 +761,11 @@ table.pico thead th:hover, table.pico thead th:focus-within, table.pico thead th
 @media (min-width:641px){ .ccgbox{flex:0 1 auto;min-width:200px} }
 .ccgc{position:relative;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;height:34px;padding:0 10px;background:#fff;color:#444441;border:1px solid #fff;border-radius:6px;box-sizing:border-box}
 .ccgpal .ccgc,.ccgc.pal{border-color:#D3D1C7}
-.ccgc b{font-size:11px;color:#0F6E56}
+.ccgc b{order:1;align-self:flex-end;margin:0 0 6px -3px;font-size:10px;font-weight:600;color:#444441}   /* _ccgSub：L 代號與概念名稱同色、置於名稱右下角（Flora 11-25） */
+.ccgc .ccgx{order:3}
 .ccgc:hover{border-color:#B4B2A9}
 .ccgc.sel{border-color:#0F6E56;background:#fff;box-shadow:0 0 0 1px #0F6E56 inset}
-.ccgc .ccglvb{font-size:11px;padding:3px 6px;border:0}
-.ccglvb[data-l=L0]{background:#F1EFE8;color:#5F5E5A;border-color:transparent}
-.ccglvb[data-l=L1]{background:#E1F5EE;color:#085041}
-.ccglvb[data-l=L2]{background:#FAEEDA;color:#633806}
-.ccglvb[data-l=L3]{background:#085041;color:#fff}
+.ccgc .ccglvb{font-size:11px;padding:3px 6px;order:2}
 /* 問題/策略內：概念垂直堆疊、靠左，寬度依文字 */
 .ccgdrop{flex-direction:column;flex-wrap:nowrap;align-items:flex-start;gap:0}
 .ccgdrop > .ccgc{z-index:1}
