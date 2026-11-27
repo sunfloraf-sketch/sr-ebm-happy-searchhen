@@ -40,3 +40,6 @@ Claude outputs/
 # 本機一次性小工具（不發佈）/ local one-off scripts
 *_local.bat
 _圖檔/
+
+# 開蛋大吉等小遊戲的說明檔（games/ 內所有 .md 都不公開；Flora 11-27）
+games/*.md
