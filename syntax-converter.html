@@ -1139,7 +1139,18 @@ function renderTerm(node, dst, warn, ctx) {
   var val = encodeTrunc(node.value, dst, warn);
   var isPhrase = node.phrase || /\s/.test(val);
   var body;
-  if (isPhrase && dst === "cochrane" && /\s/.test(val) && /[*?]/.test(val)) {
+  if (dst === "cochrane" && /-/.test(val) && (/[*?]/.test(val) || !/\s/.test(val))) {
+    /* _cochHyph：Cochrane 連字號詞＋切截（Flora 11-27）
+       單一連字號詞、沒有切截或只有最後一段切截：intra-arterial、"intra-arterial" → intra-arterial；intra-arter*、"intra-arter*" → intra-arter*（不加引號）
+       非最後一段有切截：intra*-arter*、"intra*-arter*-embolization*" → (intra* NEXT arter* NEXT embolization*)
+       片語中另有其他字時，各字以 NEXT 銜接（同原本「片語含切截」規則） */
+    var _nx = false, _ws = val.split(/\s+/).filter(Boolean).map(function (w) {
+      var ps = w.split("-");
+      if (ps.length > 1 && ps.slice(0, -1).some(function (x) { return /[*?]/.test(x); })) { _nx = true; return ps.filter(Boolean).join(" NEXT "); }
+      return w;
+    });
+    body = (_nx || _ws.length > 1) ? "(" + _ws.join(" NEXT ") + ")" : _ws[0];
+  } else if (isPhrase && dst === "cochrane" && /\s/.test(val) && /[*?]/.test(val)) {
     // Cochrane 不允許引號片語內含截字："high dose*" -> (high NEXT dose*)
     body = "(" + val.split(/\s+/).join(" NEXT ") + ")";
   } else if (!isPhrase && dst === "ebsco" && val && !/[*?#]/.test(val)) {

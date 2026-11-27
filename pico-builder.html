@@ -366,6 +366,7 @@
   .mview .mtext{flex:1 1 auto;min-width:0;word-break:break-word}
   .mview .mline.mnote{padding-left:20px}
   .mview .mline.mout .mtext{color:#9AA5AB}
+  .mview .mline.mop .mtext{color:#9AA5AB}
   .mview .medit{position:absolute;top:3px;right:5px;font-size:11px;color:#69737c;background:#fff;border:1px solid var(--line);border-radius:5px;padding:1px 7px;cursor:pointer;opacity:.55}
   .mview .medit:hover{opacity:1;background:#eef2f4}
   #meshCard{position:absolute;z-index:70;width:330px;max-width:93vw;background:#fff;border:1px solid #d3dadf;border-radius:10px;box-shadow:0 8px 28px rgba(28,36,42,.18);padding:12px 14px;font-size:13px;display:none}
@@ -2033,7 +2034,18 @@ function renderTerm(node, dst, warn, ctx) {
   var val = encodeTrunc(node.value, dst, warn);
   var isPhrase = node.phrase || /\s/.test(val);
   var body;
-  if (isPhrase && dst === "cochrane" && /\s/.test(val) && /[*?]/.test(val)) {
+  if (dst === "cochrane" && /-/.test(val) && (/[*?]/.test(val) || !/\s/.test(val))) {
+    /* _cochHyph：Cochrane 連字號詞＋切截（Flora 11-27）
+       單一連字號詞、沒有切截或只有最後一段切截：intra-arterial、"intra-arterial" → intra-arterial；intra-arter*、"intra-arter*" → intra-arter*（不加引號）
+       非最後一段有切截：intra*-arter*、"intra*-arter*-embolization*" → (intra* NEXT arter* NEXT embolization*)
+       片語中另有其他字時，各字以 NEXT 銜接（同原本「片語含切截」規則） */
+    var _nx = false, _ws = val.split(/\s+/).filter(Boolean).map(function (w) {
+      var ps = w.split("-");
+      if (ps.length > 1 && ps.slice(0, -1).some(function (x) { return /[*?]/.test(x); })) { _nx = true; return ps.filter(Boolean).join(" NEXT "); }
+      return w;
+    });
+    body = (_nx || _ws.length > 1) ? "(" + _ws.join(" NEXT ") + ")" : _ws[0];
+  } else if (isPhrase && dst === "cochrane" && /\s/.test(val) && /[*?]/.test(val)) {
     // Cochrane 不允許引號片語內含截字："high dose*" -> (high NEXT dose*)
     body = "(" + val.split(/\s+/).join(" NEXT ") + ")";
   } else if (!isPhrase && dst === "ebsco" && val && !/[*?#]/.test(val) && !/\uE000/.test(val)) {   // （\uE000＝多字詞「依輸入條件」：不加引號）
@@ -3215,13 +3227,22 @@ if (typeof module !== "undefined" && module.exports) {
     var _keep={}; _cvDropNotes(ta.value||"").split(/\n/).forEach(function(x){ x=x.trim(); if(x) _keep[x]=1; });
     var items=[]; _cmtStrip(ta.value||"").split(/\r?\n/).forEach(function(l){ if(!l.trim()) return; var nt=_cvIsNote(l), t=nt?l.replace(/^[\s\u3000]*(?:[└├│•▪◦→]|[-–>](?=\s))?[\s\u3000]*/,"").trim():l.trim(); if(t) items.push({t:t, note:nt, out:nt&&!_keep[t]}); });
     var terms=items.map(function(x){ return x.t; });
+    /* _mvQ：MeSH 格內用 AND／OR／NOT 與括號組合時，運算子行不查核、詞前後的分組括號不算進詞（Flora 11-27：「(Laser Therapy」「AND」「Acupuncture Points))」被判為非標目） */
+    function _mvQ(t){ t=String(t||"").trim();
+      if(/^[()\s]*(?:AND|OR|NOT)[()\s]*$/i.test(t)) return "";
+      t=t.replace(/^(?:AND|OR|NOT)\s+/i,"").replace(/\s+(?:AND|OR|NOT)$/i,"").trim();
+      var n=function(c){ return t.split(c).length-1; };
+      while(t.charAt(0)==="(" && n("(")>n(")")) t=t.slice(1).trim();
+      while(t.slice(-1)===")" && n(")")>n("(")) t=t.slice(0,-1).trim();
+      while(t.charAt(0)==="(" && t.slice(-1)===")"){ var d=0, ok=true; for(var i=0;i<t.length-1;i++){ if(t[i]==="(") d++; else if(t[i]===")"){ d--; if(d===0){ ok=false; break; } } } if(!ok) break; t=t.slice(1,-1).trim(); }
+      return t; }
     mv.innerHTML="";
     var edit=document.createElement("button"); edit.className="medit"; edit.type="button"; edit.textContent=isEn()?"edit":"編輯"; edit.onclick=function(e){ e.stopPropagation(); _meshEditCell(tr); }; mv.appendChild(edit);
     if(!terms.length){ _meshEditCell(tr); return Promise.resolve([]); }
     var _proms=[];
     items.forEach(function(_it){ var rawTerm=_it.t;
-      var bare=_meshBare(rawTerm);
-      var line=document.createElement("div"); line.className="mline"+(_it.note?" mnote":"")+(_it.out?" mout":"");
+      var bare=_meshBare(_mvQ(rawTerm));
+      var line=document.createElement("div"); line.className="mline"+(_it.note?" mnote":"")+(_it.out?" mout":"")+(_mvQ(rawTerm)?"":" mop");
       var ic=document.createElement("span"); ic.className="mi chk"; ic.textContent="…"; line.appendChild(ic);
       var tx=document.createElement("span"); tx.className="mtext"; tx.textContent=rawTerm; line.appendChild(tx);
       mv.appendChild(line);
